@@ -85,12 +85,21 @@ const Dashboard = () => {
 
   const contactForm = useForm<z.infer<typeof contactSchema>>({
     resolver: zodResolver(contactSchema),
-    defaultValues: contactInfo,
+    defaultValues: {
+      phone: "+1 (555) 123-4567",
+      email: "hello@amzadscout.com",
+      businessHours: "Mon-Fri: 9AM-6PM PST",
+      address: "123 Business St, Suite 100, San Francisco, CA 94105"
+    },
   });
 
   const logoForm = useForm<z.infer<typeof logoSchema>>({
     resolver: zodResolver(logoSchema),
-    defaultValues: logoSettings,
+    defaultValues: {
+      logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
+      logoSize: "h-12",
+      logoAlt: "AMZ AD SCOUT - The Growth Agency"
+    },
   });
 
   // Load data from localStorage
@@ -171,7 +180,6 @@ const Dashboard = () => {
             address: parsedData.address
           };
           setContactInfo(validatedContactData);
-          contactForm.reset(validatedContactData);
         }
       } catch (error) {
         console.log("Failed to parse contact data from localStorage:", error);
@@ -193,13 +201,21 @@ const Dashboard = () => {
             logoAlt: parsedData.logoAlt
           };
           setLogoSettings(validatedLogoData);
-          logoForm.reset(validatedLogoData);
         }
       } catch (error) {
         console.log("Failed to parse logo data from localStorage:", error);
       }
     }
   }, []);
+
+  // Update forms when state changes
+  useEffect(() => {
+    contactForm.reset(contactInfo);
+  }, [contactInfo]);
+
+  useEffect(() => {
+    logoForm.reset(logoSettings);
+  }, [logoSettings]);
 
   const savePricingData = (data: PricingTier[]) => {
     localStorage.setItem('pricingData', JSON.stringify(data));
