@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight, BookOpen, ArrowLeft, RefreshCw } from "lucide-react";
@@ -17,7 +16,29 @@ const Blog = () => {
     refetchOnWindowFocus: false,
   });
 
-  const categories = ["all", "Shopify Insights", "Walmart Tech", "Facebook Creators", "Facebook Community", "Facebook Research", "Facebook Ads", "Amazon Business", "Amazon Ads"];
+  const categories = [
+    "all", 
+    "About Amazon", 
+    "Amazon AI", 
+    "Amazon Offices", 
+    "Amazon Prime", 
+    "AWS", 
+    "Books & Authors", 
+    "Community", 
+    "Company News", 
+    "Devices", 
+    "Entertainment", 
+    "How Amazon Works", 
+    "Innovation", 
+    "Job Creation", 
+    "Operations", 
+    "Policy", 
+    "Retail", 
+    "Small Business", 
+    "Sustainability", 
+    "Transportation", 
+    "Workplace"
+  ];
   
   const filteredItems = selectedCategory === "all" 
     ? rssItems 
@@ -63,13 +84,13 @@ const Blog = () => {
         <div className="text-center mb-20">
           <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-full border border-blue-200/50 mb-8">
             <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
-            <span className="text-sm font-semibold text-blue-600 tracking-wide">LIVE RSS FEEDS</span>
+            <span className="text-sm font-semibold text-blue-600 tracking-wide">AMAZON RSS FEEDS</span>
           </div>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-slate-900 leading-tight">
-            Latest <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">Industry News</span>
+            Latest <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">Amazon News</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light mb-8">
-            Real-time updates from Shopify, Walmart, Amazon, and Facebook - curated automatically from official RSS feeds
+            Real-time updates from Amazon's official RSS feeds - covering AI, AWS, devices, and more
           </p>
           
           <div className="flex items-center justify-center gap-4 mb-8">

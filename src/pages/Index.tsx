@@ -30,14 +30,14 @@ const Index = () => {
       }))
     : [
         {
-          title: "Amazon PPC Strategy: How to Maximize Your ROI in 2024",
-          excerpt: "Learn the latest Amazon PPC strategies that top sellers use to increase their return on ad spend.",
+          title: "Amazon AI Innovation: The Future of E-commerce",
+          excerpt: "Discover how Amazon's AI initiatives are transforming the retail landscape and customer experience.",
           date: "March 15, 2024",
           isRSS: false
         },
         {
-          title: "Walmart Connect vs Amazon Advertising: Which Platform is Right for You?",
-          excerpt: "A comprehensive comparison to help you choose the best platform for your business.",
+          title: "AWS Latest Updates: Cloud Computing Excellence",
+          excerpt: "Stay updated with the latest AWS announcements and how they can benefit your business.",
           date: "March 12, 2024",
           isRSS: false
         }
@@ -56,7 +56,7 @@ const Index = () => {
             <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-full border border-blue-200/50 mb-8">
               <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
               <span className="text-sm font-semibold text-blue-600 tracking-wide">
-                {rssItems.length > 0 ? 'LIVE RSS FEEDS' : 'LATEST INSIGHTS'}
+                {rssItems.length > 0 ? 'AMAZON RSS FEEDS' : 'LATEST INSIGHTS'}
               </span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">
@@ -64,7 +64,7 @@ const Index = () => {
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               {rssItems.length > 0 
-                ? 'Real-time updates from Shopify, Walmart, Amazon, and Facebook - automatically curated from official sources'
+                ? 'Real-time updates from Amazon\'s official RSS feeds - covering AI, AWS, devices, and business insights'
                 : 'Get the latest tips, strategies, and insights from our team of digital marketing experts'
               }
             </p>
