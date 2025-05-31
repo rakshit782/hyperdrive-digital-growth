@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -156,14 +157,14 @@ const Dashboard = () => {
 
     const savedContact = localStorage.getItem('contactData');
     if (savedContact) {
-      const data = JSON.parse(savedContact);
+      const data = JSON.parse(savedContact) as ContactInfo;
       setContactInfo(data);
       contactForm.reset(data);
     }
 
     const savedLogo = localStorage.getItem('logoData');
     if (savedLogo) {
-      const data = JSON.parse(savedLogo);
+      const data = JSON.parse(savedLogo) as LogoSettings;
       setLogoSettings(data);
       logoForm.reset(data);
     }
@@ -553,7 +554,7 @@ const Dashboard = () => {
                     <CardHeader>
                       <CardTitle>Update Logo Settings</CardTitle>
                       <CardDescription>
-                        Manage your website logo appearance and sizing
+                        Update your website logo using a direct URL and customize its appearance
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -567,13 +568,13 @@ const Dashboard = () => {
                                 <FormLabel>Logo URL</FormLabel>
                                 <FormControl>
                                   <Input 
-                                    placeholder="/lovable-uploads/your-logo.png" 
+                                    placeholder="https://example.com/your-logo.png" 
                                     {...field} 
                                   />
                                 </FormControl>
                                 <FormMessage />
                                 <p className="text-sm text-slate-500 mt-1">
-                                  Upload your logo to Lovable first, then use the URL here
+                                  Enter a direct URL to your logo image (PNG, JPG, SVG supported)
                                 </p>
                               </FormItem>
                             )}
@@ -663,18 +664,18 @@ const Dashboard = () => {
                     <Card className="bg-blue-50 border-blue-200">
                       <CardHeader>
                         <CardTitle className="text-blue-800 flex items-center">
-                          <Upload className="w-5 h-5 mr-2" />
-                          How to Upload a Logo
+                          <Image className="w-5 h-5 mr-2" />
+                          Logo URL Guidelines
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="text-blue-700">
-                        <ol className="list-decimal list-inside space-y-2 text-sm">
-                          <li>Click the "Upload" button in the chat interface</li>
-                          <li>Select your logo file (PNG, JPG recommended)</li>
-                          <li>Copy the generated URL that starts with "/lovable-uploads/"</li>
-                          <li>Paste the URL in the "Logo URL" field above</li>
-                          <li>Choose your preferred size and update</li>
-                        </ol>
+                        <ul className="list-disc list-inside space-y-2 text-sm">
+                          <li>Use a direct link to your logo image file</li>
+                          <li>Supported formats: PNG, JPG, JPEG, SVG</li>
+                          <li>Recommended: PNG with transparent background</li>
+                          <li>Make sure the URL is publicly accessible</li>
+                          <li>For best quality, use high-resolution images</li>
+                        </ul>
                       </CardContent>
                     </Card>
                   </div>
