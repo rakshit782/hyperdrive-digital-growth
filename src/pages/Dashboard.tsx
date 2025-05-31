@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Save, Plus, Trash2, Phone, Mail, Clock } from "lucide-react";
+import { Settings, Save, Plus, Trash2, Phone, Mail, Clock, Upload, Image } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const pricingSchema = z.object({
@@ -25,6 +25,12 @@ const contactSchema = z.object({
   email: z.string().email("Valid email is required"),
   businessHours: z.string().min(1, "Business hours are required"),
   address: z.string().min(1, "Address is required"),
+});
+
+const logoSchema = z.object({
+  logoUrl: z.string().min(1, "Logo URL is required"),
+  logoSize: z.string().min(1, "Logo size is required"),
+  logoAlt: z.string().min(1, "Logo alt text is required"),
 });
 
 interface PricingTier {
@@ -44,6 +50,12 @@ interface ContactInfo {
   address: string;
 }
 
+interface LogoSettings {
+  logoUrl: string;
+  logoSize: string;
+  logoAlt: string;
+}
+
 const Dashboard = () => {
   const { toast } = useToast();
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
@@ -53,6 +65,11 @@ const Dashboard = () => {
     email: "hello@amzadscout.com",
     businessHours: "Mon-Fri: 9AM-6PM PST",
     address: "123 Business St, Suite 100, San Francisco, CA 94105"
+  });
+  const [logoSettings, setLogoSettings] = useState<LogoSettings>({
+    logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
+    logoSize: "h-12",
+    logoAlt: "AMZ AD SCOUT - The Growth Agency"
   });
 
   const pricingForm = useForm<z.infer<typeof pricingSchema>>({
@@ -69,6 +86,11 @@ const Dashboard = () => {
   const contactForm = useForm<z.infer<typeof contactSchema>>({
     resolver: zodResolver(contactSchema),
     defaultValues: contactInfo,
+  });
+
+  const logoForm = useForm<z.infer<typeof logoSchema>>({
+    resolver: zodResolver(logoSchema),
+    defaultValues: logoSettings,
   });
 
   // Load data from localStorage
@@ -138,7 +160,14 @@ const Dashboard = () => {
       setContactInfo(data);
       contactForm.reset(data);
     }
-  }, [contactForm]);
+
+    const savedLogo = localStorage.getItem('logoData');
+    if (savedLogo) {
+      const data = JSON.parse(savedLogo);
+      setLogoSettings(data);
+      logoForm.reset(data);
+    }
+  }, [contactForm, logoForm]);
 
   const savePricingData = (data: PricingTier[]) => {
     localStorage.setItem('pricingData', JSON.stringify(data));
@@ -148,6 +177,13 @@ const Dashboard = () => {
   const saveContactData = (data: ContactInfo) => {
     localStorage.setItem('contactData', JSON.stringify(data));
     setContactInfo(data);
+  };
+
+  const saveLogoData = (data: LogoSettings) => {
+    localStorage.setItem('logoData', JSON.stringify(data));
+    setLogoSettings(data);
+    // Trigger a custom event to notify Header component
+    window.dispatchEvent(new CustomEvent('logoUpdated', { detail: data }));
   };
 
   const onPricingSubmit = (values: z.infer<typeof pricingSchema>) => {
@@ -188,6 +224,15 @@ const Dashboard = () => {
     toast({
       title: "Contact Information Updated!",
       description: "The contact information has been saved successfully.",
+    });
+  };
+
+  const onLogoSubmit = (values: z.infer<typeof logoSchema>) => {
+    saveLogoData(values);
+    
+    toast({
+      title: "Logo Settings Updated!",
+      description: "The logo settings have been saved successfully.",
     });
   };
 
@@ -232,9 +277,10 @@ const Dashboard = () => {
             </div>
 
             <Tabs defaultValue="pricing" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="pricing">Pricing Management</TabsTrigger>
                 <TabsTrigger value="contact">Contact Information</TabsTrigger>
+                <TabsTrigger value="logo">Logo Settings</TabsTrigger>
               </TabsList>
               
               <TabsContent value="pricing" className="space-y-8">
@@ -494,6 +540,141 @@ const Dashboard = () => {
                           <h4 className="font-semibold text-slate-900 mb-2">Address</h4>
                           <p className="text-slate-700">{contactInfo.address}</p>
                         </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="logo" className="space-y-8">
+                <div className="grid lg:grid-cols-2 gap-8">
+                  {/* Logo Form */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Update Logo Settings</CardTitle>
+                      <CardDescription>
+                        Manage your website logo appearance and sizing
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Form {...logoForm}>
+                        <form onSubmit={logoForm.handleSubmit(onLogoSubmit)} className="space-y-6">
+                          <FormField
+                            control={logoForm.control}
+                            name="logoUrl"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Logo URL</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    placeholder="/lovable-uploads/your-logo.png" 
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                                <p className="text-sm text-slate-500 mt-1">
+                                  Upload your logo to Lovable first, then use the URL here
+                                </p>
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={logoForm.control}
+                            name="logoSize"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Logo Size</FormLabel>
+                                <FormControl>
+                                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                                    <option value="h-8">Small (h-8)</option>
+                                    <option value="h-10">Medium Small (h-10)</option>
+                                    <option value="h-12">Medium (h-12)</option>
+                                    <option value="h-16">Large (h-16)</option>
+                                    <option value="h-20">Extra Large (h-20)</option>
+                                  </select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={logoForm.control}
+                            name="logoAlt"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Logo Alt Text</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    placeholder="Your Company Name - Description" 
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <Button type="submit" className="w-full">
+                            <Save className="w-4 h-4 mr-2" />
+                            Update Logo Settings
+                          </Button>
+                        </form>
+                      </Form>
+                    </CardContent>
+                  </Card>
+
+                  {/* Logo Preview */}
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-slate-900">Logo Preview</h2>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Current Logo</CardTitle>
+                        <CardDescription>This is how your logo appears in the header</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        <div className="flex items-center justify-center p-8 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200">
+                          <img 
+                            src={logoSettings.logoUrl} 
+                            alt={logoSettings.logoAlt}
+                            className={`${logoSettings.logoSize} w-auto object-contain`}
+                            onError={(e) => {
+                              console.log("Logo preview failed to load:", e.currentTarget.src);
+                              e.currentTarget.style.display = 'none';
+                            }}
+                            onLoad={() => console.log("Logo preview loaded successfully")}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-sm text-slate-600">
+                            <strong>URL:</strong> {logoSettings.logoUrl}
+                          </p>
+                          <p className="text-sm text-slate-600">
+                            <strong>Size:</strong> {logoSettings.logoSize}
+                          </p>
+                          <p className="text-sm text-slate-600">
+                            <strong>Alt Text:</strong> {logoSettings.logoAlt}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-blue-50 border-blue-200">
+                      <CardHeader>
+                        <CardTitle className="text-blue-800 flex items-center">
+                          <Upload className="w-5 h-5 mr-2" />
+                          How to Upload a Logo
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="text-blue-700">
+                        <ol className="list-decimal list-inside space-y-2 text-sm">
+                          <li>Click the "Upload" button in the chat interface</li>
+                          <li>Select your logo file (PNG, JPG recommended)</li>
+                          <li>Copy the generated URL that starts with "/lovable-uploads/"</li>
+                          <li>Paste the URL in the "Logo URL" field above</li>
+                          <li>Choose your preferred size and update</li>
+                        </ol>
                       </CardContent>
                     </Card>
                   </div>

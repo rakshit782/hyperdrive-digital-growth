@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -11,9 +10,20 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
+interface LogoSettings {
+  logoUrl: string;
+  logoSize: string;
+  logoAlt: string;
+}
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [logoSettings, setLogoSettings] = useState<LogoSettings>({
+    logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
+    logoSize: "h-12",
+    logoAlt: "AMZ AD SCOUT - The Growth Agency"
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +31,22 @@ const Header = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Load logo settings from localStorage
+    const savedLogo = localStorage.getItem('logoData');
+    if (savedLogo) {
+      setLogoSettings(JSON.parse(savedLogo));
+    }
+
+    // Listen for logo updates
+    const handleLogoUpdate = (event: CustomEvent) => {
+      setLogoSettings(event.detail);
+    };
+
+    window.addEventListener('logoUpdated', handleLogoUpdate as EventListener);
+    return () => window.removeEventListener('logoUpdated', handleLogoUpdate as EventListener);
   }, []);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -51,9 +77,9 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center group">
             <img 
-              src="/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png" 
-              alt="AMZ AD SCOUT - The Growth Agency" 
-              className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              src={logoSettings.logoUrl}
+              alt={logoSettings.logoAlt}
+              className={`${logoSettings.logoSize} w-auto object-contain transition-transform duration-300 group-hover:scale-105`}
               onError={handleImageError}
               onLoad={handleImageLoad}
               style={{ maxWidth: '180px', display: 'block' }}
