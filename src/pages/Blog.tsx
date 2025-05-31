@@ -1,131 +1,42 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, ArrowRight, BookOpen, RefreshCw } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchAllRSSFeeds, formatDate, type RSSItem } from "@/utils/rssParser";
-import { useState } from "react";
-import ArticleView from "@/components/ArticleView";
+import { BookOpen, PlusCircle } from "lucide-react";
 
 const Blog = () => {
-  const [selectedArticle, setSelectedArticle] = useState<RSSItem | null>(null);
-  
-  const { data: rssItems = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['rss-feeds'],
-    queryFn: fetchAllRSSFeeds,
-    staleTime: 12 * 60 * 60 * 1000, // 12 hours - refresh twice a day
-    refetchInterval: 12 * 60 * 60 * 1000, // Auto-refresh every 12 hours
-    refetchOnWindowFocus: false,
-  });
-
-  if (error) {
-    console.error("Error loading RSS feeds:", error);
-  }
-
-  const handleArticleClick = (item: RSSItem) => {
-    setSelectedArticle(item);
-  };
-
-  const handleBackToList = () => {
-    setSelectedArticle(null);
-  };
-
-  // If an article is selected, show the article view
-  if (selectedArticle) {
-    return <ArticleView article={selectedArticle} onBack={handleBackToList} />;
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       <div className="container mx-auto px-6 py-20">
         <div className="text-center mb-20">
           <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-full border border-blue-200/50 mb-8">
             <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
-            <span className="text-sm font-semibold text-blue-600 tracking-wide">MARKETING & ADVERTISING NEWS</span>
+            <span className="text-sm font-semibold text-blue-600 tracking-wide">BLOG</span>
           </div>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-slate-900 leading-tight">
-            Latest <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">Industry News</span>
+            Our <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">Blog</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light mb-8">
-            Real-time updates from Amazon, top advertising platforms, and marketing strategy blogs - your complete digital marketing news hub
+            Insights, tips, and strategies from our digital marketing experts
           </p>
-          
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <Button
-              onClick={() => refetch()}
-              disabled={isLoading}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-              Refresh Feeds
-            </Button>
-          </div>
         </div>
 
-        {isLoading ? (
-          <div className="text-center py-20">
-            <RefreshCw className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-            <p className="text-xl text-slate-600">Loading latest news from RSS feeds...</p>
-          </div>
-        ) : error ? (
-          <div className="text-center py-20">
-            <div className="bg-red-50 border border-red-200 rounded-xl p-8 max-w-md mx-auto">
-              <p className="text-red-600 font-medium mb-4">Unable to load RSS feeds</p>
-              <p className="text-red-500 text-sm mb-4">This might be due to CORS restrictions or network issues.</p>
-              <Button onClick={() => refetch()} variant="outline">
-                Try Again
+        <div className="text-center py-20">
+          <div className="max-w-md mx-auto">
+            <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl p-8 shadow-lg">
+              <PlusCircle className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Coming Soon</h3>
+              <p className="text-slate-600 mb-6">
+                We're working on bringing you valuable insights and industry updates. Stay tuned!
+              </p>
+              <Button 
+                variant="outline"
+                className="w-full"
+                onClick={() => window.location.href = '/'}
+              >
+                Back to Home
               </Button>
             </div>
           </div>
-        ) : rssItems.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-xl text-slate-600">No articles found.</p>
-          </div>
-        ) : (
-          <div className="grid lg:grid-cols-2 gap-8 mb-12">
-            {rssItems.map((item: RSSItem, index: number) => (
-              <Card key={index} className="group bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="px-3 py-1 bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-600 text-sm font-medium rounded-full">
-                      {item.category}
-                    </span>
-                    <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full capitalize">
-                      {item.source}
-                    </span>
-                  </div>
-                  <CardTitle className="text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
-                    {item.title}
-                  </CardTitle>
-                  <CardDescription className="text-slate-600 leading-relaxed text-base">
-                    {item.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center text-slate-500 text-sm">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {formatDate(item.pubDate)}
-                    </div>
-                  </div>
-                  <Button 
-                    onClick={() => handleArticleClick(item)}
-                    className="w-full group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white group-hover:border-transparent transition-all duration-500 py-3 font-semibold rounded-xl"
-                    variant="outline"
-                  >
-                    Read Article
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        <div className="text-center">
-          <p className="text-slate-500 text-sm">
-            News automatically updated twice daily from official RSS feeds • Last updated: {new Date().toLocaleString()}
-          </p>
         </div>
       </div>
     </div>
