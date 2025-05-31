@@ -40,12 +40,6 @@ const Header = () => {
     { title: "Shopify Development", href: "/shopify-development" },
   ];
 
-  const caseStudyPages = [
-    { title: "Amazon Case Studies", href: "/amazon-case-studies" },
-    { title: "Walmart Case Studies", href: "/walmart-case-studies" },
-    { title: "Meta Case Studies", href: "/meta-case-studies" },
-  ];
-
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
       isScrolled 
@@ -79,11 +73,11 @@ const Header = () => {
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide">
+                <NavigationMenuTrigger className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide bg-transparent">
                   Services
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="grid w-[400px] gap-3 p-4">
+                  <div className="grid w-[400px] gap-3 p-4 bg-white">
                     {servicePages.map((service) => (
                       <NavigationMenuLink
                         key={service.href}
@@ -107,22 +101,12 @@ const Header = () => {
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide">
+                <NavigationMenuLink 
+                  href="/amazon-case-studies"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
+                >
                   Case Studies
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="grid w-[300px] gap-3 p-4">
-                    {caseStudyPages.map((caseStudy) => (
-                      <NavigationMenuLink
-                        key={caseStudy.href}
-                        href={caseStudy.href}
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        <div className="text-sm font-medium leading-none">{caseStudy.title}</div>
-                      </NavigationMenuLink>
-                    ))}
-                  </div>
-                </NavigationMenuContent>
+                </NavigationMenuLink>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
@@ -194,22 +178,13 @@ const Header = () => {
                 About
               </a>
               
-              {/* Mobile Case Studies Dropdown */}
-              <div className="space-y-2">
-                <div className="text-slate-700 font-medium py-2 px-4">Case Studies</div>
-                <div className="pl-4 space-y-2">
-                  {caseStudyPages.map((caseStudy) => (
-                    <a 
-                      key={caseStudy.href}
-                      href={caseStudy.href}
-                      className="block text-slate-600 hover:text-blue-600 transition-colors py-1 px-4 rounded-lg hover:bg-blue-50 text-sm"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {caseStudy.title}
-                    </a>
-                  ))}
-                </div>
-              </div>
+              <a 
+                href="/amazon-case-studies"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Case Studies
+              </a>
               
               <a 
                 href="/contact"
