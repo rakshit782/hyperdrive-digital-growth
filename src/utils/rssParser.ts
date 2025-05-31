@@ -1,3 +1,4 @@
+
 export interface RSSItem {
   title: string;
   description: string;
@@ -13,9 +14,9 @@ export interface RSSFeed {
   items: RSSItem[];
 }
 
-// Updated RSS feed URLs - keeping only feeds that work reliably without CORS issues
+// RSS feed URLs - your backend will handle fetching these
 export const RSS_FEEDS = {
-  // Amazon Feeds (these typically work well with CORS proxy)
+  // Amazon Feeds
   'amazon-general': 'https://www.aboutamazon.com/about-amazon-rss.rss',
   'amazon-ai': 'https://www.aboutamazon.com/news/amazon-ai.rss',
   'aws': 'https://www.aboutamazon.com/news/aws.rss',
@@ -25,46 +26,41 @@ export const RSS_FEEDS = {
   'retail': 'https://www.aboutamazon.com/news/retail.rss',
   'sustainability': 'https://www.aboutamazon.com/news/sustainability.rss',
   
-  // Marketing Strategy Feeds (keeping only the most reliable ones)
+  // Marketing Strategy Feeds
   'hubspot': 'https://blog.hubspot.com/marketing/rss.xml',
   'content-marketing-institute': 'https://contentmarketinginstitute.com/feed'
 };
 
+// Your backend API base URL - update this to match your server
+const API_BASE_URL = process.env.VITE_API_URL || 'http://localhost:3001';
+
 export const parseRSSFeed = async (url: string, source: string): Promise<RSSItem[]> => {
   try {
-    // Using a CORS proxy to fetch RSS feeds
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const response = await fetch(proxyUrl);
-    const data = await response.json();
-    
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
-    
-    const items = xmlDoc.querySelectorAll('item');
-    const rssItems: RSSItem[] = [];
-    
-    items.forEach((item, index) => {
-      if (index < 5) { // Limit to 5 items per feed
-        const title = item.querySelector('title')?.textContent || '';
-        const description = item.querySelector('description')?.textContent || '';
-        const link = item.querySelector('link')?.textContent || '';
-        const pubDate = item.querySelector('pubDate')?.textContent || '';
-        
-        // Clean up description (remove HTML tags)
-        const cleanDescription = description.replace(/<[^>]*>/g, '').substring(0, 200) + '...';
-        
-        rssItems.push({
-          title: title.trim(),
-          description: cleanDescription.trim(),
-          link: link.trim(),
-          pubDate: pubDate.trim(),
-          source,
-          category: getCategoryFromSource(source)
-        });
-      }
+    // Send request to your backend RSS proxy endpoint
+    const response = await fetch(`${API_BASE_URL}/api/rss`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url, source }),
     });
     
-    return rssItems;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Your backend should return parsed RSS items
+    return data.items.map((item: any) => ({
+      title: item.title?.trim() || '',
+      description: item.description?.trim() || '',
+      link: item.link?.trim() || '',
+      pubDate: item.pubDate?.trim() || '',
+      source,
+      category: getCategoryFromSource(source)
+    }));
+    
   } catch (error) {
     console.error(`Error fetching RSS feed for ${source}:`, error);
     return [];
@@ -103,20 +99,25 @@ const getCategoryFromSource = (source: string): string => {
 };
 
 export const fetchAllRSSFeeds = async (): Promise<RSSItem[]> => {
-  const feedPromises = Object.entries(RSS_FEEDS).map(([source, url]) =>
-    parseRSSFeed(url, source)
-  );
-  
   try {
-    const results = await Promise.all(feedPromises);
-    const allItems = results.flat();
-    
-    // Sort by publication date (newest first)
-    return allItems.sort((a, b) => {
-      const dateA = new Date(a.pubDate).getTime();
-      const dateB = new Date(b.pubDate).getTime();
-      return dateB - dateA;
+    // Send all feed URLs to your backend in a single request
+    const response = await fetch(`${API_BASE_URL}/api/rss/all`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ feeds: RSS_FEEDS }),
     });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Your backend should return all RSS items sorted by date
+    return data.items || [];
+    
   } catch (error) {
     console.error('Error fetching RSS feeds:', error);
     return [];
