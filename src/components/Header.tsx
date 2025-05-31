@@ -21,7 +21,7 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center">
             <img 
-              src="https://mljzybpxsnaa.i.optimole.com/cb:gP8a.f194/w:auto/h:auto/q:mauto/ig:avif/https://amzadscout.com/wp-content/uploads/2024/06/Black-150x150-1.png" 
+              src="https://amzadscout.com/wp-content/uploads/2024/06/Black-150x150-1.png" 
               alt="AMZ AD SCOUT - The Growth Agency" 
               className="h-8 w-auto object-contain"
               onError={handleImageError}
