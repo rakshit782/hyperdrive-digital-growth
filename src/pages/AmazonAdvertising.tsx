@@ -1,83 +1,157 @@
-
+import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Target, Search, BarChart3, ArrowRight, CheckCircle } from "lucide-react";
+import { TrendingUp, Target, BarChart3, Zap, CheckCircle, ArrowRight } from "lucide-react";
 
 const AmazonAdvertising = () => {
   const features = [
-    "Sponsored Products optimization",
-    "Sponsored Brands campaigns",
-    "Keyword research & targeting",
-    "Performance analytics & reporting",
-    "Bid management strategies",
-    "Campaign structure optimization"
+    {
+      title: "Enhanced Brand Visibility",
+      description: "Increase your brand's visibility on Amazon through strategic advertising placements.",
+      icon: TrendingUp,
+    },
+    {
+      title: "Targeted Advertising",
+      description: "Reach your ideal customers with precision using Amazon's advanced targeting options.",
+      icon: Target,
+    },
+    {
+      title: "Performance Tracking",
+      description: "Monitor your campaign's performance in real-time and make data-driven optimizations.",
+      icon: BarChart3,
+    },
+    {
+      title: "Maximize ROI",
+      description: "Optimize your advertising spend to achieve the highest possible return on investment.",
+      icon: Zap,
+    },
   ];
 
-  const benefits = [
-    { title: "Increased Visibility", description: "Get your products in front of more potential customers" },
-    { title: "Higher Sales", description: "Drive more traffic and conversions to your listings" },
-    { title: "Better ROI", description: "Optimize your ad spend for maximum return on investment" },
-    { title: "Expert Management", description: "Let our certified Amazon specialists handle your campaigns" }
+  const stats = [
+    { label: "Increased Sales", value: "30%" },
+    { label: "Improved Conversion Rate", value: "15%" },
+    { label: "Reduced ACoS", value: "20%" },
+  ];
+
+  const testimonials = [
+    {
+      name: "John Doe",
+      title: "CEO of Tech Innovations",
+      quote: "Amazon Advertising helped us significantly increase our product visibility and sales. Highly recommended!",
+    },
+    {
+      name: "Jane Smith",
+      title: "Marketing Director at Fashion Forward",
+      quote: "We saw a remarkable improvement in our conversion rates after implementing Amazon Advertising strategies.",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50">
-      <div className="container mx-auto px-6 py-20">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500/10 to-red-500/10 backdrop-blur-sm rounded-full border border-orange-200/50 mb-8">
-            <ShoppingCart className="w-5 h-5 mr-2 text-orange-600" />
-            <span className="text-sm font-semibold text-orange-600 tracking-wide">AMAZON ADVERTISING</span>
-          </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-8 text-slate-900 leading-tight">
-            Dominate <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Amazon Search</span>
+    <div className="min-h-screen">
+      <Header />
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-blue-50 via-white to-blue-50/30 py-24">
+        <div className="container mx-auto px-6 text-center">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-slate-900 leading-tight">
+            Dominate Amazon with <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">Strategic Advertising</span>
           </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Expert Amazon PPC management that drives sales, increases visibility, and maximizes your return on ad spend
+          <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light mb-12">
+            Unlock the full potential of Amazon's advertising platform and drive exponential growth for your business.
           </p>
+          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+            Get a Free Consultation
+          </Button>
         </div>
+      </section>
 
-        <div className="grid lg:grid-cols-2 gap-12 mb-20">
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader>
-              <CardTitle className="text-3xl text-slate-900 flex items-center">
-                <Target className="mr-4 w-8 h-8 text-orange-600" />
-                What We Offer
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {features.map((feature, index) => (
-                  <div key={index} className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span className="text-lg text-slate-700">{feature}</span>
-                  </div>
-                ))}
+      {/* Features Section */}
+      <section className="py-20 bg-slate-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">Key Benefits</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Discover how our Amazon Advertising strategies can transform your business.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                    <feature.icon className="w-5 h-5 text-blue-600" />
+                    {feature.title}
+                  </CardTitle>
+                  <CardDescription className="text-slate-600">{feature.description}</CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-gradient-to-br from-white to-blue-50/30">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">Our Results</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              See the impact of our Amazon Advertising expertise.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-5xl font-bold text-blue-600 mb-2">{stat.value}</div>
+                <div className="text-lg text-slate-600">{stat.label}</div>
               </div>
-            </CardContent>
-          </Card>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <div className="space-y-6">
-            {benefits.map((benefit, index) => (
-              <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">{benefit.title}</h3>
-                  <p className="text-slate-600">{benefit.description}</p>
+      {/* Testimonials Section */}
+      <section className="py-20 bg-slate-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">What Our Clients Say</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Read testimonials from businesses that have achieved success with our Amazon Advertising services.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <CardContent>
+                  <p className="text-slate-700 italic mb-4">"{testimonial.quote}"</p>
+                  <div className="flex items-center">
+                    <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                    <div>
+                      <div className="font-semibold text-slate-900">{testimonial.name}</div>
+                      <div className="text-sm text-slate-500">{testimonial.title}</div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
+      </section>
 
-        <div className="text-center">
-          <Button 
-            size="lg" 
-            className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-12 py-6 text-xl font-semibold rounded-2xl shadow-2xl"
-          >
-            Start Your Amazon Campaign
-            <ArrowRight className="ml-3 w-6 h-6" />
+      {/* CTA Section */}
+      <section className="py-24 bg-gradient-to-br from-blue-50 via-white to-blue-50/30">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-8 text-slate-900">
+            Ready to Elevate Your Amazon Presence?
+          </h2>
+          <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light mb-12">
+            Contact us today for a free consultation and discover how we can help you achieve your business goals on Amazon.
+          </p>
+          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+            Schedule a Consultation
+            <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

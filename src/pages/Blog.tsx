@@ -1,4 +1,4 @@
-
+import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, PlusCircle } from "lucide-react";
@@ -6,7 +6,8 @@ import { BookOpen, PlusCircle } from "lucide-react";
 const Blog = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-      <div className="container mx-auto px-6 py-20">
+      <Header />
+      <div className="container mx-auto px-6 py-20 pt-32">
         <div className="text-center mb-20">
           <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-full border border-blue-200/50 mb-8">
             <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
