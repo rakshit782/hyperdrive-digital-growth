@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight, BookOpen, ArrowLeft, RefreshCw } from "lucide-react";
@@ -6,36 +7,15 @@ import { fetchAllRSSFeeds, formatDate, type RSSItem } from "@/utils/rssParser";
 import { useState } from "react";
 
 const Blog = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedArticle, setSelectedArticle] = useState<RSSItem | null>(null);
 
   const { data: rssItems = [], isLoading, error, refetch } = useQuery({
     queryKey: ['rss-feeds'],
     queryFn: fetchAllRSSFeeds,
-    staleTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 12 * 60 * 60 * 1000, // 12 hours - refresh twice a day
+    refetchInterval: 12 * 60 * 60 * 1000, // Auto-refresh every 12 hours
     refetchOnWindowFocus: false,
   });
-
-  const categories = [
-    "all",
-    // Amazon categories
-    "About Amazon", "Amazon AI", "Amazon Offices", "Amazon Prime", "AWS", 
-    "Books & Authors", "Community", "Company News", "Devices", "Entertainment", 
-    "How Amazon Works", "Innovation", "Job Creation", "Operations", "Policy", 
-    "Retail", "Small Business", "Sustainability", "Transportation", "Workplace",
-    
-    // Advertising categories
-    "Advertising Strategy", "Ad Tech", "Social Media Ads", "Creative Advertising", 
-    "Advertising News", "Microsoft Advertising", "Amazon Advertising",
-    
-    // Marketing categories
-    "Marketing Strategy", "SEO & Marketing", "Social Media Marketing", 
-    "SEO & Content", "Content Marketing", "Digital Marketing", "SEO & Search"
-  ];
-  
-  const filteredItems = selectedCategory === "all" 
-    ? rssItems 
-    : rssItems.filter(item => item.category === selectedCategory);
 
   if (error) {
     console.error("Error loading RSS feeds:", error);
@@ -77,13 +57,13 @@ const Blog = () => {
         <div className="text-center mb-20">
           <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-full border border-blue-200/50 mb-8">
             <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
-            <span className="text-sm font-semibold text-blue-600 tracking-wide">AMAZON RSS FEEDS</span>
+            <span className="text-sm font-semibold text-blue-600 tracking-wide">MARKETING & ADVERTISING NEWS</span>
           </div>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-slate-900 leading-tight">
-            Latest <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">Amazon News</span>
+            Latest <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">Industry News</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light mb-8">
-            Real-time updates from Amazon's official RSS feeds - covering AI, AWS, devices, and more
+            Real-time updates from Amazon, top advertising platforms, and marketing strategy blogs - your complete digital marketing news hub
           </p>
           
           <div className="flex items-center justify-center gap-4 mb-8">
@@ -96,24 +76,6 @@ const Blog = () => {
               Refresh Feeds
             </Button>
           </div>
-        </div>
-
-        {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              onClick={() => setSelectedCategory(category)}
-              className={`rounded-full px-6 py-3 font-medium transition-all duration-300 ${
-                selectedCategory === category
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
-                  : "hover:bg-blue-50 hover:border-blue-300"
-              }`}
-            >
-              {category === "all" ? "All Sources" : category}
-            </Button>
-          ))}
         </div>
 
         {isLoading ? (
@@ -131,13 +93,13 @@ const Blog = () => {
               </Button>
             </div>
           </div>
-        ) : filteredItems.length === 0 ? (
+        ) : rssItems.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-xl text-slate-600">No articles found for the selected category.</p>
+            <p className="text-xl text-slate-600">No articles found.</p>
           </div>
         ) : (
           <div className="grid lg:grid-cols-2 gap-8 mb-12">
-            {filteredItems.map((item: RSSItem, index: number) => (
+            {rssItems.map((item: RSSItem, index: number) => (
               <Card key={index} className="group bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2">
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between mb-4">
@@ -178,7 +140,7 @@ const Blog = () => {
 
         <div className="text-center">
           <p className="text-slate-500 text-sm">
-            News automatically updated from official RSS feeds • Last updated: {new Date().toLocaleString()}
+            News automatically updated twice daily from official RSS feeds • Last updated: {new Date().toLocaleString()}
           </p>
         </div>
       </div>
