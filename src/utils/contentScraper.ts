@@ -1,4 +1,3 @@
-
 export interface ScrapedContent {
   title: string;
   content: string;
@@ -145,5 +144,54 @@ export const scrapeArticleContent = async (url: string): Promise<ScrapedContent>
       success: false,
       error: errorMessage
     };
+  }
+};
+
+export const scrapeRssFeed = async (rssUrl: string): Promise<ScrapedContent[]> => {
+  try {
+    console.log(`Fetching RSS feed: ${rssUrl}`);
+    const proxyUrl = `${CORS_PROXY}${encodeURIComponent(rssUrl)}`;
+    const response = await fetch(proxyUrl);
+    if (!response.ok) throw new Error(`Failed to fetch RSS feed: ${response.status}`);
+    
+    const data = await response.json();
+    const xmlString = data.contents;
+    console.log(`RSS XML length: ${xmlString?.length || 0}`);
+    
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlString, 'application/xml');
+    
+    const parseError = doc.querySelector('parsererror');
+    if (parseError) throw new Error('Failed to parse XML RSS feed');
+
+    const items = Array.from(doc.querySelectorAll('item')).map(item => {
+      const title = item.querySelector('title')?.textContent || 'No Title';
+      const description = item.querySelector('description')?.textContent || 'No Description';
+      const author = item.querySelector('author')?.textContent || '';
+      const pubDate = item.querySelector('pubDate')?.textContent || '';
+      const contentEncoded = item.querySelector('content\\:encoded')?.textContent || description;
+
+      console.log(`Extracted item: ${title.substring(0, 50)}...`);
+
+      return {
+        title,
+        content: contentEncoded || description,
+        author,
+        publishedDate: pubDate,
+        success: true
+      } as ScrapedContent;
+    });
+
+    console.log(`Successfully extracted ${items.length} items from RSS feed`);
+    return items;
+
+  } catch (error) {
+    console.error('RSS scraping error:', error);
+    return [{
+      title: '',
+      content: '',
+      success: false,
+      error: (error as Error).message
+    }];
   }
 };
