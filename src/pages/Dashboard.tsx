@@ -44,16 +44,16 @@ interface PricingTier {
 }
 
 interface ContactInfo {
-  phone: string;
-  email: string;
-  businessHours: string;
-  address: string;
+  phone?: string;
+  email?: string;
+  businessHours?: string;
+  address?: string;
 }
 
 interface LogoSettings {
-  logoUrl: string;
-  logoSize: string;
-  logoAlt: string;
+  logoUrl?: string;
+  logoSize?: string;
+  logoAlt?: string;
 }
 
 const Dashboard = () => {
