@@ -14,12 +14,16 @@ export interface RSSFeed {
   items: RSSItem[];
 }
 
-// RSS feed URLs for different platforms
+// Updated RSS feed URLs for different platforms
 export const RSS_FEEDS = {
-  amazon: 'https://press.aboutamazon.com/rss/news-releases.xml',
-  walmart: 'https://corporate.walmart.com/news.xml',
-  shopify: 'https://www.shopify.com/blog.rss',
-  facebook: 'https://about.fb.com/news/rss/'
+  shopify: 'https://www.shopify.com/in/blog.rss',
+  walmart: 'https://tech.walmart.com/content/walmart-global-tech/en_us/blog/post.rss',
+  'facebook-creators': 'https://creators.facebook.com/blog/feed/?locale=en_US',
+  'facebook-community': 'https://www.facebook.com/community/feed/',
+  'facebook-research': 'https://research.facebook.com/blog/feed/',
+  'facebook-ads': 'https://developers.facebook.com/blog/feed/',
+  'amazon-business': 'https://business.amazon.com/en/discover-more/blog.rss',
+  'amazon-ads': 'https://advertising.amazon.com/resources/library.rss'
 };
 
 export const parseRSSFeed = async (url: string, source: string): Promise<RSSItem[]> => {
@@ -65,14 +69,22 @@ export const parseRSSFeed = async (url: string, source: string): Promise<RSSItem
 
 const getCategoryFromSource = (source: string): string => {
   switch (source) {
-    case 'amazon':
-      return 'Amazon News';
-    case 'walmart':
-      return 'Walmart Updates';
     case 'shopify':
       return 'Shopify Insights';
-    case 'facebook':
-      return 'Meta News';
+    case 'walmart':
+      return 'Walmart Tech';
+    case 'facebook-creators':
+      return 'Facebook Creators';
+    case 'facebook-community':
+      return 'Facebook Community';
+    case 'facebook-research':
+      return 'Facebook Research';
+    case 'facebook-ads':
+      return 'Facebook Ads';
+    case 'amazon-business':
+      return 'Amazon Business';
+    case 'amazon-ads':
+      return 'Amazon Ads';
     default:
       return 'General';
   }

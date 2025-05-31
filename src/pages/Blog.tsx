@@ -1,13 +1,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, ArrowRight, BookOpen, ExternalLink, RefreshCw } from "lucide-react";
+import { Calendar, ArrowRight, BookOpen, ArrowLeft, RefreshCw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllRSSFeeds, formatDate, type RSSItem } from "@/utils/rssParser";
 import { useState } from "react";
 
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedArticle, setSelectedArticle] = useState<RSSItem | null>(null);
 
   const { data: rssItems = [], isLoading, error, refetch } = useQuery({
     queryKey: ['rss-feeds'],
@@ -16,7 +17,7 @@ const Blog = () => {
     refetchOnWindowFocus: false,
   });
 
-  const categories = ["all", "Amazon News", "Walmart Updates", "Shopify Insights", "Meta News"];
+  const categories = ["all", "Shopify Insights", "Walmart Tech", "Facebook Creators", "Facebook Community", "Facebook Research", "Facebook Ads", "Amazon Business", "Amazon Ads"];
   
   const filteredItems = selectedCategory === "all" 
     ? rssItems 
@@ -24,6 +25,36 @@ const Blog = () => {
 
   if (error) {
     console.error("Error loading RSS feeds:", error);
+  }
+
+  // If an article is selected, show it in an iframe
+  if (selectedArticle) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+        <div className="container mx-auto px-6 py-8">
+          <div className="mb-6">
+            <Button
+              onClick={() => setSelectedArticle(null)}
+              variant="outline"
+              className="mb-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Blog
+            </Button>
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">{selectedArticle.title}</h1>
+            <p className="text-slate-600 mb-4">{selectedArticle.category} • {formatDate(selectedArticle.pubDate)}</p>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <iframe
+              src={selectedArticle.link}
+              className="w-full h-[calc(100vh-200px)]"
+              title={selectedArticle.title}
+            />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -38,7 +69,7 @@ const Blog = () => {
             Latest <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">Industry News</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light mb-8">
-            Real-time updates from Amazon, Walmart, Shopify, and Meta - curated automatically from official RSS feeds
+            Real-time updates from Shopify, Walmart, Amazon, and Facebook - curated automatically from official RSS feeds
           </p>
           
           <div className="flex items-center justify-center gap-4 mb-8">
@@ -118,14 +149,12 @@ const Blog = () => {
                     </div>
                   </div>
                   <Button 
-                    asChild
+                    onClick={() => setSelectedArticle(item)}
                     className="w-full group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white group-hover:border-transparent transition-all duration-500 py-3 font-semibold rounded-xl"
                     variant="outline"
                   >
-                    <a href={item.link} target="_blank" rel="noopener noreferrer">
-                      Read Full Article
-                      <ExternalLink className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                    </a>
+                    Read Full Article
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </CardContent>
               </Card>

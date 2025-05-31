@@ -25,7 +25,7 @@ const Index = () => {
           month: 'long', 
           day: 'numeric' 
         }),
-        link: item.link,
+        link: `/blog?article=${encodeURIComponent(item.link)}`,
         isRSS: true
       }))
     : [
@@ -64,7 +64,7 @@ const Index = () => {
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               {rssItems.length > 0 
-                ? 'Real-time updates from Amazon, Walmart, Shopify, and Meta - automatically curated from official sources'
+                ? 'Real-time updates from Shopify, Walmart, Amazon, and Facebook - automatically curated from official sources'
                 : 'Get the latest tips, strategies, and insights from our team of digital marketing experts'
               }
             </p>
@@ -80,19 +80,10 @@ const Index = () => {
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-slate-500">{post.date}</span>
-                    {post.isRSS ? (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={post.link} target="_blank" rel="noopener noreferrer">
-                          Read More
-                          <ArrowRight className="ml-2 w-4 h-4" />
-                        </a>
-                      </Button>
-                    ) : (
-                      <Button variant="outline" size="sm">
-                        Read More
-                        <ArrowRight className="ml-2 w-4 h-4" />
-                      </Button>
-                    )}
+                    <Button variant="outline" size="sm" onClick={() => window.location.href = post.isRSS ? post.link : '/blog'}>
+                      Read More
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
