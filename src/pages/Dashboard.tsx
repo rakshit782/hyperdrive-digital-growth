@@ -156,34 +156,47 @@ const Dashboard = () => {
 
     const savedContact = localStorage.getItem('contactData');
     if (savedContact) {
-      const parsedData = JSON.parse(savedContact);
-      // Validate that the parsed data has all required ContactInfo properties
-      if (parsedData && typeof parsedData === 'object' && 
-          parsedData.phone && parsedData.email && parsedData.businessHours && parsedData.address) {
-        const data: ContactInfo = {
-          phone: parsedData.phone,
-          email: parsedData.email,
-          businessHours: parsedData.businessHours,
-          address: parsedData.address
-        };
-        setContactInfo(data);
-        contactForm.reset(data);
+      try {
+        const parsedData = JSON.parse(savedContact);
+        // Validate that the parsed data has all required ContactInfo properties
+        if (parsedData && typeof parsedData === 'object' && 
+            typeof parsedData.phone === 'string' && 
+            typeof parsedData.email === 'string' && 
+            typeof parsedData.businessHours === 'string' && 
+            typeof parsedData.address === 'string') {
+          const validatedContactData: ContactInfo = {
+            phone: parsedData.phone,
+            email: parsedData.email,
+            businessHours: parsedData.businessHours,
+            address: parsedData.address
+          };
+          setContactInfo(validatedContactData);
+          contactForm.reset(validatedContactData);
+        }
+      } catch (error) {
+        console.log("Failed to parse contact data from localStorage:", error);
       }
     }
 
     const savedLogo = localStorage.getItem('logoData');
     if (savedLogo) {
-      const parsedData = JSON.parse(savedLogo);
-      // Validate that the parsed data has all required LogoSettings properties
-      if (parsedData && typeof parsedData === 'object' && 
-          parsedData.logoUrl && parsedData.logoSize && parsedData.logoAlt) {
-        const data: LogoSettings = {
-          logoUrl: parsedData.logoUrl,
-          logoSize: parsedData.logoSize,
-          logoAlt: parsedData.logoAlt
-        };
-        setLogoSettings(data);
-        logoForm.reset(data);
+      try {
+        const parsedData = JSON.parse(savedLogo);
+        // Validate that the parsed data has all required LogoSettings properties
+        if (parsedData && typeof parsedData === 'object' && 
+            typeof parsedData.logoUrl === 'string' && 
+            typeof parsedData.logoSize === 'string' && 
+            typeof parsedData.logoAlt === 'string') {
+          const validatedLogoData: LogoSettings = {
+            logoUrl: parsedData.logoUrl,
+            logoSize: parsedData.logoSize,
+            logoAlt: parsedData.logoAlt
+          };
+          setLogoSettings(validatedLogoData);
+          logoForm.reset(validatedLogoData);
+        }
+      } catch (error) {
+        console.log("Failed to parse logo data from localStorage:", error);
       }
     }
   }, []);
@@ -606,11 +619,16 @@ const Dashboard = () => {
                                 <FormLabel>Logo Size</FormLabel>
                                 <FormControl>
                                   <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                                    <option value="h-6">Extra Small (h-6)</option>
                                     <option value="h-8">Small (h-8)</option>
                                     <option value="h-10">Medium Small (h-10)</option>
                                     <option value="h-12">Medium (h-12)</option>
+                                    <option value="h-14">Medium Large (h-14)</option>
                                     <option value="h-16">Large (h-16)</option>
                                     <option value="h-20">Extra Large (h-20)</option>
+                                    <option value="h-24">XXL (h-24)</option>
+                                    <option value="h-28">XXXL (h-28)</option>
+                                    <option value="h-32">Huge (h-32)</option>
                                   </select>
                                 </FormControl>
                                 <FormMessage />
