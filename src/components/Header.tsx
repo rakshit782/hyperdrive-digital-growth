@@ -11,8 +11,15 @@ const Header = () => {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="font-bold text-2xl text-slate-900">
-            <span className="text-blue-600">Digital</span>Scale
+          <div className="flex items-center space-x-3">
+            <img 
+              src="/lovable-uploads/cb75eb86-5dd5-4e21-8be8-e30b95ad3c19.png" 
+              alt="AMZ AD SCOUT Logo" 
+              className="h-10 w-auto"
+            />
+            <div className="font-bold text-xl text-slate-900">
+              <span className="text-blue-600">AMZ AD</span> SCOUT
+            </div>
           </div>
           
           {/* Desktop Navigation */}

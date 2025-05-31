@@ -14,14 +14,22 @@ const Hero = () => {
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
+          <div className="flex justify-center mb-8">
+            <img 
+              src="/lovable-uploads/cb75eb86-5dd5-4e21-8be8-e30b95ad3c19.png" 
+              alt="AMZ AD SCOUT Logo" 
+              className="h-20 w-auto"
+            />
+          </div>
+          
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight animate-fade-in">
             Scale Your Business with
             <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent"> Expert</span>
-            <br />Digital Marketing
+            <br />Amazon & Multi-Platform Growth
           </h1>
           
           <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto leading-relaxed animate-fade-in">
-            We specialize in Amazon, Walmart, and Meta advertising with complete account management, 
+            AMZ AD SCOUT specializes in Amazon advertising, Walmart advertising, and Meta advertising with complete account management, 
             Shopify development, and seamless integrations that drive real results.
           </p>
           

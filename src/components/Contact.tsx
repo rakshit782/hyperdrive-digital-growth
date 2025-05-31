@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,7 +20,7 @@ const Contact = () => {
             Ready to <span className="text-cyan-400">Scale Your Business</span>?
           </h2>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            Get a free strategy consultation and discover how we can 3x your revenue with our proven marketing systems
+            Get a free strategy consultation with AMZ AD SCOUT and discover how we can 3x your revenue with our proven marketing systems
           </p>
         </div>
         
@@ -100,7 +99,7 @@ const Contact = () => {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-cyan-400" />
-                  <span className="text-blue-100">hello@yourdigitalagency.com</span>
+                  <span className="text-blue-100">hello@amzadscout.com</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Clock className="w-5 h-5 text-cyan-400" />
