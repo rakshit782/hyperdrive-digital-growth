@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, ExternalLink } from "lucide-react";
+import { ArrowLeft, Calendar, ExternalLink, AlertCircle } from "lucide-react";
 import { RSSItem } from "@/utils/rssParser";
 
 interface ArticleViewProps {
@@ -45,22 +45,42 @@ const ArticleView = ({ article, onBack }: ArticleViewProps) => {
             </div>
           </CardHeader>
           <CardContent className="prose max-w-none">
-            <div className="text-lg text-slate-700 leading-relaxed mb-8">
-              {article.description}
+            <div className="text-lg text-slate-700 leading-relaxed mb-8 whitespace-pre-wrap">
+              {article.description || "No preview content available for this article."}
             </div>
             
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-              <p className="text-blue-800 mb-4">
-                This is a preview of the article. For the complete content, you can visit the original source.
-              </p>
-              <Button 
-                onClick={() => window.open(article.link, '_blank', 'noopener,noreferrer')}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-              >
-                Read Full Article
-                <ExternalLink className="ml-2 w-4 h-4" />
-              </Button>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-amber-800 mb-2">Limited Preview Available</h3>
+                  <p className="text-amber-700 mb-4">
+                    This is a preview of the article content from the RSS feed. Due to content restrictions, only a summary is available here. For the complete article with full details, images, and interactive content, please visit the original source.
+                  </p>
+                  <Button 
+                    onClick={() => window.open(article.link, '_blank', 'noopener,noreferrer')}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    Read Full Article
+                    <ExternalLink className="ml-2 w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
+
+            {article.link && (
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <p className="text-sm text-slate-600 mb-2">Original Source:</p>
+                <a 
+                  href={article.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium break-all"
+                >
+                  {article.link}
+                </a>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
