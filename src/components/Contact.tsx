@@ -12,7 +12,8 @@ import {
   ArrowRight,
   Sparkles,
   Shield,
-  Zap
+  Zap,
+  TrendingUp
 } from "lucide-react";
 
 const Contact = () => {
