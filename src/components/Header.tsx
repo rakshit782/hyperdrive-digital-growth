@@ -21,12 +21,12 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center">
             <img 
-              src="/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png" 
+              src="/lovable-uploads/d76be5e2-f99d-4fae-aef6-a92d04f82d8e.png" 
               alt="AMZ AD SCOUT - The Growth Agency" 
               className="h-8 w-auto object-contain"
               onError={handleImageError}
               onLoad={handleImageLoad}
-              style={{ maxWidth: '160px', display: 'block' }}
+              style={{ maxWidth: '120px', display: 'block' }}
             />
           </div>
           
