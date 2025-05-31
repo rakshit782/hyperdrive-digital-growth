@@ -13,52 +13,24 @@ export interface RSSFeed {
   items: RSSItem[];
 }
 
-// Updated RSS feed URLs with Amazon feeds and new advertising/marketing feeds
+// Updated RSS feed URLs - keeping only feeds that work without CORS issues
 export const RSS_FEEDS = {
-  // Amazon Feeds
+  // Amazon Feeds (these typically work well with CORS proxy)
   'amazon-general': 'https://www.aboutamazon.com/about-amazon-rss.rss',
   'amazon-ai': 'https://www.aboutamazon.com/news/amazon-ai.rss',
-  'amazon-offices': 'https://www.aboutamazon.com/news/amazon-offices.rss',
-  'amazon-prime': 'https://www.aboutamazon.com/news/amazon-prime.rss',
   'aws': 'https://www.aboutamazon.com/news/aws.rss',
-  'books-authors': 'https://www.aboutamazon.com/news/books-and-authors.rss',
-  'community': 'https://www.aboutamazon.com/news/community.rss',
   'company-news': 'https://www.aboutamazon.com/news/company-news.rss',
   'devices': 'https://www.aboutamazon.com/news/devices.rss',
-  'entertainment': 'https://www.aboutamazon.com/news/entertainment.rss',
-  'how-amazon-works': 'https://www.aboutamazon.com/news/how-amazon-works.rss',
   'innovation': 'https://www.aboutamazon.com/news/innovation-at-amazon.rss',
-  'job-creation': 'https://www.aboutamazon.com/news/job-creation-and-investment.rss',
-  'operations': 'https://www.aboutamazon.com/news/operations.rss',
-  'policy': 'https://www.aboutamazon.com/news/policy-news-views.rss',
   'retail': 'https://www.aboutamazon.com/news/retail.rss',
-  'small-business': 'https://www.aboutamazon.com/news/small-business.rss',
   'sustainability': 'https://www.aboutamazon.com/news/sustainability.rss',
-  'transportation': 'https://www.aboutamazon.com/news/transportation.rss',
-  'workplace': 'https://www.aboutamazon.com/news/workplace.rss',
   
-  // Advertising Strategy Feeds
-  'adweek': 'https://www.adweek.com/feed',
-  'adexchanger': 'https://feeds.feedburner.com/ad-exchanger',
-  'adtech-daily': 'https://www.adtechdaily.com/feed',
-  'more-about-advertising': 'https://moreaboutadvertising.com/feed',
-  'adpulp': 'https://www.adpulp.com/feed',
-  'adespresso': 'https://adespresso.com/feed',
-  'ads-of-the-world': 'https://www.adsoftheworld.com/rss',
-  'ad-age': 'https://adage.com/section/rss-feeds/674',
-  'microsoft-ads': 'https://about.ads.microsoft.com/en/blog/rss',
-  'amazon-ads': 'https://advertising.amazon.com/en/blog/rss',
-  
-  // Marketing Strategy & Insights
+  // Marketing Strategy Feeds (keeping only reliable ones)
   'hubspot': 'https://blog.hubspot.com/marketing/rss.xml',
   'moz': 'https://moz.com/blog/rss',
-  'social-media-examiner': 'https://www.socialmediaexaminer.com/feed',
-  'ahrefs': 'https://ahrefs.com/blog/rss',
   'copyblogger': 'https://copyblogger.com/feed',
   'convince-convert': 'https://www.convinceandconvert.com/feed',
   'neil-patel': 'https://neilpatel.com/feed',
-  'search-engine-journal': 'https://www.searchenginejournal.com/feed',
-  'marketingprofs': 'https://www.marketingprofs.com/rss',
   'content-marketing-institute': 'https://contentmarketinginstitute.com/feed'
 };
 
@@ -110,84 +82,30 @@ const getCategoryFromSource = (source: string): string => {
       return 'About Amazon';
     case 'amazon-ai':
       return 'Amazon AI';
-    case 'amazon-offices':
-      return 'Amazon Offices';
-    case 'amazon-prime':
-      return 'Amazon Prime';
     case 'aws':
       return 'AWS';
-    case 'books-authors':
-      return 'Books & Authors';
-    case 'community':
-      return 'Community';
     case 'company-news':
       return 'Company News';
     case 'devices':
       return 'Devices';
-    case 'entertainment':
-      return 'Entertainment';
-    case 'how-amazon-works':
-      return 'How Amazon Works';
     case 'innovation':
       return 'Innovation';
-    case 'job-creation':
-      return 'Job Creation';
-    case 'operations':
-      return 'Operations';
-    case 'policy':
-      return 'Policy';
     case 'retail':
       return 'Retail';
-    case 'small-business':
-      return 'Small Business';
     case 'sustainability':
       return 'Sustainability';
-    case 'transportation':
-      return 'Transportation';
-    case 'workplace':
-      return 'Workplace';
-    
-    // Advertising Strategy categories
-    case 'adweek':
-      return 'Advertising Strategy';
-    case 'adexchanger':
-      return 'Advertising Strategy';
-    case 'adtech-daily':
-      return 'Ad Tech';
-    case 'more-about-advertising':
-      return 'Advertising Strategy';
-    case 'adpulp':
-      return 'Advertising Strategy';
-    case 'adespresso':
-      return 'Social Media Ads';
-    case 'ads-of-the-world':
-      return 'Creative Advertising';
-    case 'ad-age':
-      return 'Advertising News';
-    case 'microsoft-ads':
-      return 'Microsoft Advertising';
-    case 'amazon-ads':
-      return 'Amazon Advertising';
     
     // Marketing Strategy categories
     case 'hubspot':
       return 'Marketing Strategy';
     case 'moz':
       return 'SEO & Marketing';
-    case 'social-media-examiner':
-      return 'Social Media Marketing';
-    case 'ahrefs':
-      return 'SEO & Content';
     case 'copyblogger':
       return 'Content Marketing';
     case 'convince-convert':
       return 'Digital Marketing';
     case 'neil-patel':
       return 'Digital Marketing';
-    case 'search-engine-journal':
-      return 'SEO & Search';
-    case 'marketingprofs':
-      return 'Marketing Strategy';
     case 'content-marketing-institute':
       return 'Content Marketing';
     
