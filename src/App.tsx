@@ -39,6 +39,7 @@ const App = () => (
           <Route path="/account-management" element={<AccountManagement />} />
           <Route path="/shopify-integration" element={<ShopifyIntegration />} />
           <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+          <Route path="/case-studies" element={<CaseStudies />} />
           <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
           <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
           <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
