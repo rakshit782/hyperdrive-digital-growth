@@ -66,15 +66,14 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   href="/"
-                  className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group px-3 py-2"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
                 >
                   Home
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-full"></span>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group">
+                <NavigationMenuTrigger className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide">
                   Services
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -95,30 +94,27 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   href="#about"
-                  className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group px-3 py-2"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
                 >
                   About
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-full"></span>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   href="#case-studies"
-                  className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group px-3 py-2"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
                 >
                   Case Studies
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-full"></span>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   href="#contact"
-                  className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group px-3 py-2"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
                 >
                   Contact
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-full"></span>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
