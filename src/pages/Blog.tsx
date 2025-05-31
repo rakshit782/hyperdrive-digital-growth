@@ -1,14 +1,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, ArrowRight, BookOpen, ArrowLeft, RefreshCw } from "lucide-react";
+import { Calendar, ArrowRight, BookOpen, RefreshCw, ExternalLink } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllRSSFeeds, formatDate, type RSSItem } from "@/utils/rssParser";
-import { useState } from "react";
 
 const Blog = () => {
-  const [selectedArticle, setSelectedArticle] = useState<RSSItem | null>(null);
-
   const { data: rssItems = [], isLoading, error, refetch } = useQuery({
     queryKey: ['rss-feeds'],
     queryFn: fetchAllRSSFeeds,
@@ -21,35 +18,9 @@ const Blog = () => {
     console.error("Error loading RSS feeds:", error);
   }
 
-  // If an article is selected, show it in an iframe
-  if (selectedArticle) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-        <div className="container mx-auto px-6 py-8">
-          <div className="mb-6">
-            <Button
-              onClick={() => setSelectedArticle(null)}
-              variant="outline"
-              className="mb-4"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Blog
-            </Button>
-            <h1 className="text-2xl font-bold text-slate-900 mb-2">{selectedArticle.title}</h1>
-            <p className="text-slate-600 mb-4">{selectedArticle.category} • {formatDate(selectedArticle.pubDate)}</p>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <iframe
-              src={selectedArticle.link}
-              className="w-full h-[calc(100vh-200px)]"
-              title={selectedArticle.title}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleArticleClick = (item: RSSItem) => {
+    window.open(item.link, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
@@ -125,12 +96,12 @@ const Blog = () => {
                     </div>
                   </div>
                   <Button 
-                    onClick={() => setSelectedArticle(item)}
+                    onClick={() => handleArticleClick(item)}
                     className="w-full group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white group-hover:border-transparent transition-all duration-500 py-3 font-semibold rounded-xl"
                     variant="outline"
                   >
                     Read Full Article
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ExternalLink className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </CardContent>
               </Card>
