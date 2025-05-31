@@ -53,10 +53,10 @@ const Header = () => {
             <img 
               src="/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png" 
               alt="AMZ AD SCOUT - The Growth Agency" 
-              className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               onError={handleImageError}
               onLoad={handleImageLoad}
-              style={{ maxWidth: '140px', display: 'block' }}
+              style={{ maxWidth: '180px', display: 'block' }}
             />
           </div>
           
@@ -89,6 +89,15 @@ const Header = () => {
                     ))}
                   </div>
                 </NavigationMenuContent>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink 
+                  href="/pricing"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
+                >
+                  Pricing
+                </NavigationMenuLink>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
@@ -169,6 +178,14 @@ const Header = () => {
                   ))}
                 </div>
               </div>
+              
+              <a 
+                href="/pricing"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Pricing
+              </a>
               
               <a 
                 href="/about"

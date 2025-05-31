@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +19,8 @@ import MetaCaseStudies from "./pages/MetaCaseStudies";
 import FreeAudit from "./pages/FreeAudit";
 import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
+import Pricing from "./pages/Pricing";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
           <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
           <Route path="/meta-advertising" element={<MetaAdvertising />} />

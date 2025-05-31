@@ -51,25 +51,25 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      value: "admin@amzadscout.com",
+      value: "hello@amzadscout.com",
       description: "Send us an email anytime"
     },
     {
       icon: Phone,
       title: "Phone",
-      value: "+1 (555) 123-4567",
+      value: "+1 (555) 987-6543",
       description: "Call us during business hours"
     },
     {
       icon: MapPin,
       title: "Office",
-      value: "123 Business Ave, Suite 100",
-      description: "New York, NY 10001"
+      value: "456 Growth Street, Suite 200",
+      description: "Los Angeles, CA 90210"
     },
     {
       icon: Clock,
       title: "Hours",
-      value: "Mon-Fri 9AM-6PM EST",
+      value: "Mon-Fri 8AM-7PM PST",
       description: "We're here to help"
     }
   ];

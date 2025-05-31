@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -135,8 +134,9 @@ const Services = () => {
           <Button 
             size="lg" 
             className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white px-12 py-6 text-xl font-semibold rounded-2xl shadow-2xl shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-500 hover:scale-110 hover:-translate-y-2 border border-blue-400/30"
+            onClick={() => window.location.href = '/pricing'}
           >
-            Get Custom Strategy
+            View Pricing
             <ArrowRight className="ml-3 w-6 h-6" />
           </Button>
         </div>
