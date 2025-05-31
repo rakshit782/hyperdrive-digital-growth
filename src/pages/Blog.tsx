@@ -17,27 +17,20 @@ const Blog = () => {
   });
 
   const categories = [
-    "all", 
-    "About Amazon", 
-    "Amazon AI", 
-    "Amazon Offices", 
-    "Amazon Prime", 
-    "AWS", 
-    "Books & Authors", 
-    "Community", 
-    "Company News", 
-    "Devices", 
-    "Entertainment", 
-    "How Amazon Works", 
-    "Innovation", 
-    "Job Creation", 
-    "Operations", 
-    "Policy", 
-    "Retail", 
-    "Small Business", 
-    "Sustainability", 
-    "Transportation", 
-    "Workplace"
+    "all",
+    // Amazon categories
+    "About Amazon", "Amazon AI", "Amazon Offices", "Amazon Prime", "AWS", 
+    "Books & Authors", "Community", "Company News", "Devices", "Entertainment", 
+    "How Amazon Works", "Innovation", "Job Creation", "Operations", "Policy", 
+    "Retail", "Small Business", "Sustainability", "Transportation", "Workplace",
+    
+    // Advertising categories
+    "Advertising Strategy", "Ad Tech", "Social Media Ads", "Creative Advertising", 
+    "Advertising News", "Microsoft Advertising", "Amazon Advertising",
+    
+    // Marketing categories
+    "Marketing Strategy", "SEO & Marketing", "Social Media Marketing", 
+    "SEO & Content", "Content Marketing", "Digital Marketing", "SEO & Search"
   ];
   
   const filteredItems = selectedCategory === "all" 

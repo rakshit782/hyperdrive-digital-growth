@@ -64,7 +64,7 @@ const Index = () => {
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               {rssItems.length > 0 
-                ? 'Real-time updates from Amazon\'s official RSS feeds - covering AI, AWS, devices, and business insights'
+                ? 'Real-time updates from Amazon, top advertising platforms, and marketing strategy blogs - your complete digital marketing news hub'
                 : 'Get the latest tips, strategies, and insights from our team of digital marketing experts'
               }
             </p>

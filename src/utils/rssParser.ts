@@ -13,8 +13,9 @@ export interface RSSFeed {
   items: RSSItem[];
 }
 
-// Updated RSS feed URLs using Amazon's official RSS feeds
+// Updated RSS feed URLs with Amazon feeds and new advertising/marketing feeds
 export const RSS_FEEDS = {
+  // Amazon Feeds
   'amazon-general': 'https://www.aboutamazon.com/about-amazon-rss.rss',
   'amazon-ai': 'https://www.aboutamazon.com/news/amazon-ai.rss',
   'amazon-offices': 'https://www.aboutamazon.com/news/amazon-offices.rss',
@@ -34,7 +35,31 @@ export const RSS_FEEDS = {
   'small-business': 'https://www.aboutamazon.com/news/small-business.rss',
   'sustainability': 'https://www.aboutamazon.com/news/sustainability.rss',
   'transportation': 'https://www.aboutamazon.com/news/transportation.rss',
-  'workplace': 'https://www.aboutamazon.com/news/workplace.rss'
+  'workplace': 'https://www.aboutamazon.com/news/workplace.rss',
+  
+  // Advertising Strategy Feeds
+  'adweek': 'https://www.adweek.com/feed',
+  'adexchanger': 'https://feeds.feedburner.com/ad-exchanger',
+  'adtech-daily': 'https://www.adtechdaily.com/feed',
+  'more-about-advertising': 'https://moreaboutadvertising.com/feed',
+  'adpulp': 'https://www.adpulp.com/feed',
+  'adespresso': 'https://adespresso.com/feed',
+  'ads-of-the-world': 'https://www.adsoftheworld.com/rss',
+  'ad-age': 'https://adage.com/section/rss-feeds/674',
+  'microsoft-ads': 'https://about.ads.microsoft.com/en/blog/rss',
+  'amazon-ads': 'https://advertising.amazon.com/en/blog/rss',
+  
+  // Marketing Strategy & Insights
+  'hubspot': 'https://blog.hubspot.com/marketing/rss.xml',
+  'moz': 'https://moz.com/blog/rss',
+  'social-media-examiner': 'https://www.socialmediaexaminer.com/feed',
+  'ahrefs': 'https://ahrefs.com/blog/rss',
+  'copyblogger': 'https://copyblogger.com/feed',
+  'convince-convert': 'https://www.convinceandconvert.com/feed',
+  'neil-patel': 'https://neilpatel.com/feed',
+  'search-engine-journal': 'https://www.searchenginejournal.com/feed',
+  'marketingprofs': 'https://www.marketingprofs.com/rss',
+  'content-marketing-institute': 'https://contentmarketinginstitute.com/feed'
 };
 
 export const parseRSSFeed = async (url: string, source: string): Promise<RSSItem[]> => {
@@ -80,6 +105,7 @@ export const parseRSSFeed = async (url: string, source: string): Promise<RSSItem
 
 const getCategoryFromSource = (source: string): string => {
   switch (source) {
+    // Amazon categories
     case 'amazon-general':
       return 'About Amazon';
     case 'amazon-ai':
@@ -120,6 +146,51 @@ const getCategoryFromSource = (source: string): string => {
       return 'Transportation';
     case 'workplace':
       return 'Workplace';
+    
+    // Advertising Strategy categories
+    case 'adweek':
+      return 'Advertising Strategy';
+    case 'adexchanger':
+      return 'Advertising Strategy';
+    case 'adtech-daily':
+      return 'Ad Tech';
+    case 'more-about-advertising':
+      return 'Advertising Strategy';
+    case 'adpulp':
+      return 'Advertising Strategy';
+    case 'adespresso':
+      return 'Social Media Ads';
+    case 'ads-of-the-world':
+      return 'Creative Advertising';
+    case 'ad-age':
+      return 'Advertising News';
+    case 'microsoft-ads':
+      return 'Microsoft Advertising';
+    case 'amazon-ads':
+      return 'Amazon Advertising';
+    
+    // Marketing Strategy categories
+    case 'hubspot':
+      return 'Marketing Strategy';
+    case 'moz':
+      return 'SEO & Marketing';
+    case 'social-media-examiner':
+      return 'Social Media Marketing';
+    case 'ahrefs':
+      return 'SEO & Content';
+    case 'copyblogger':
+      return 'Content Marketing';
+    case 'convince-convert':
+      return 'Digital Marketing';
+    case 'neil-patel':
+      return 'Digital Marketing';
+    case 'search-engine-journal':
+      return 'SEO & Search';
+    case 'marketingprofs':
+      return 'Marketing Strategy';
+    case 'content-marketing-institute':
+      return 'Content Marketing';
+    
     default:
       return 'General';
   }
