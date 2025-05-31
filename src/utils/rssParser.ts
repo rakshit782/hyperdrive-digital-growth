@@ -1,3 +1,4 @@
+
 export interface RSSItem {
   title: string;
   description: string;
@@ -31,6 +32,8 @@ const API_BASE_URL = process.env.VITE_API_URL || 'http://localhost:3001';
 
 export const parseRSSFeed = async (url: string, source: string): Promise<RSSItem[]> => {
   try {
+    console.log(`Attempting to fetch RSS feed for ${source} from ${API_BASE_URL}/api/rss`);
+    
     // Send request to your backend RSS proxy endpoint
     const response = await fetch(`${API_BASE_URL}/api/rss`, {
       method: 'POST',
@@ -40,11 +43,14 @@ export const parseRSSFeed = async (url: string, source: string): Promise<RSSItem
       body: JSON.stringify({ url, source }),
     });
     
+    console.log(`Response status for ${source}:`, response.status);
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const data = await response.json();
+    console.log(`Received data for ${source}:`, data);
     
     // Your backend should return parsed RSS items
     return data.items.map((item: any) => ({
@@ -89,6 +95,9 @@ const getCategoryFromSource = (source: string): string => {
 
 export const fetchAllRSSFeeds = async (): Promise<RSSItem[]> => {
   try {
+    console.log(`Attempting to fetch all RSS feeds from ${API_BASE_URL}/api/rss/all`);
+    console.log('Feeds to fetch:', RSS_FEEDS);
+    
     // Send all feed URLs to your backend in a single request
     const response = await fetch(`${API_BASE_URL}/api/rss/all`, {
       method: 'POST',
@@ -98,11 +107,14 @@ export const fetchAllRSSFeeds = async (): Promise<RSSItem[]> => {
       body: JSON.stringify({ feeds: RSS_FEEDS }),
     });
     
+    console.log('Response status for all feeds:', response.status);
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const data = await response.json();
+    console.log('Received all feeds data:', data);
     
     // Your backend should return all RSS items sorted by date
     return data.items || [];
