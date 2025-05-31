@@ -19,9 +19,10 @@ const Services = () => {
       icon: ShoppingCart,
       title: "Amazon Advertising",
       description: "Expert PPC management, keyword optimization, and campaign strategies that maximize your Amazon sales and ROI.",
-      features: ["Sponsored Products", "Sponsored Brands", "DSP Campaigns", "Keyword Research"],
+      features: ["Sponsored Products", "Sponsored Brands", "Keyword Research", "Performance Analytics"],
       gradient: "from-orange-500 to-red-500",
-      bgGradient: "from-orange-50 to-red-50"
+      bgGradient: "from-orange-50 to-red-50",
+      link: "/amazon-advertising"
     },
     {
       icon: Store,
@@ -29,7 +30,8 @@ const Services = () => {
       description: "Comprehensive Walmart Connect advertising solutions to boost your visibility and sales on the growing marketplace.",
       features: ["Search Ads", "Display Campaigns", "Video Advertising", "Performance Analytics"],
       gradient: "from-blue-500 to-indigo-500",
-      bgGradient: "from-blue-50 to-indigo-50"
+      bgGradient: "from-blue-50 to-indigo-50",
+      link: "/walmart-advertising"
     },
     {
       icon: Users,
@@ -37,7 +39,8 @@ const Services = () => {
       description: "Facebook and Instagram ad campaigns that drive traffic, generate leads, and increase conversions for your business.",
       features: ["Facebook Ads", "Instagram Campaigns", "Audience Targeting", "Creative Optimization"],
       gradient: "from-purple-500 to-pink-500",
-      bgGradient: "from-purple-50 to-pink-50"
+      bgGradient: "from-purple-50 to-pink-50",
+      link: "/meta-advertising"
     },
     {
       icon: Settings,
@@ -45,7 +48,8 @@ const Services = () => {
       description: "Full-service account management with dedicated specialists monitoring and optimizing your campaigns 24/7.",
       features: ["24/7 Monitoring", "Performance Reports", "Strategy Optimization", "Dedicated Manager"],
       gradient: "from-emerald-500 to-teal-500",
-      bgGradient: "from-emerald-50 to-teal-50"
+      bgGradient: "from-emerald-50 to-teal-50",
+      link: "/account-management"
     },
     {
       icon: Link2,
@@ -53,7 +57,8 @@ const Services = () => {
       description: "Seamless integration of your Shopify store with Amazon and Walmart marketplaces for unified inventory management.",
       features: ["Inventory Sync", "Order Management", "Product Listing", "Multi-channel Setup"],
       gradient: "from-cyan-500 to-blue-500",
-      bgGradient: "from-cyan-50 to-blue-50"
+      bgGradient: "from-cyan-50 to-blue-50",
+      link: "/shopify-integration"
     },
     {
       icon: Code,
@@ -61,7 +66,8 @@ const Services = () => {
       description: "Custom Shopify store development and theme customization to create a powerful e-commerce presence.",
       features: ["Custom Themes", "App Integration", "Mobile Optimization", "Speed Enhancement"],
       gradient: "from-violet-500 to-purple-500",
-      bgGradient: "from-violet-50 to-purple-50"
+      bgGradient: "from-violet-50 to-purple-50",
+      link: "/shopify-development"
     }
   ];
 
@@ -115,6 +121,7 @@ const Services = () => {
                 <Button 
                   variant="outline" 
                   className={`w-full group-hover:bg-gradient-to-r group-hover:${service.gradient} group-hover:text-white group-hover:border-transparent transition-all duration-500 py-6 text-lg font-semibold rounded-xl border-2`}
+                  onClick={() => window.location.href = service.link}
                 >
                   Learn More
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
