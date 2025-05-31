@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 
@@ -16,9 +15,9 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-8">
             <img 
-              src="/lovable-uploads/cb75eb86-5dd5-4e21-8be8-e30b95ad3c19.png" 
+              src="/lovable-uploads/d76be5e2-f99d-4fae-aef6-a92d04f82d8e.png" 
               alt="AMZ AD SCOUT Logo" 
-              className="h-20 w-auto"
+              className="h-24 w-auto object-contain"
             />
           </div>
           
