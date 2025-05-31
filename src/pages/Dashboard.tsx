@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -157,16 +156,35 @@ const Dashboard = () => {
 
     const savedContact = localStorage.getItem('contactData');
     if (savedContact) {
-      const data = JSON.parse(savedContact) as ContactInfo;
-      setContactInfo(data);
-      contactForm.reset(data);
+      const parsedData = JSON.parse(savedContact);
+      // Validate that the parsed data has all required ContactInfo properties
+      if (parsedData && typeof parsedData === 'object' && 
+          parsedData.phone && parsedData.email && parsedData.businessHours && parsedData.address) {
+        const data: ContactInfo = {
+          phone: parsedData.phone,
+          email: parsedData.email,
+          businessHours: parsedData.businessHours,
+          address: parsedData.address
+        };
+        setContactInfo(data);
+        contactForm.reset(data);
+      }
     }
 
     const savedLogo = localStorage.getItem('logoData');
     if (savedLogo) {
-      const data = JSON.parse(savedLogo) as LogoSettings;
-      setLogoSettings(data);
-      logoForm.reset(data);
+      const parsedData = JSON.parse(savedLogo);
+      // Validate that the parsed data has all required LogoSettings properties
+      if (parsedData && typeof parsedData === 'object' && 
+          parsedData.logoUrl && parsedData.logoSize && parsedData.logoAlt) {
+        const data: LogoSettings = {
+          logoUrl: parsedData.logoUrl,
+          logoSize: parsedData.logoSize,
+          logoAlt: parsedData.logoAlt
+        };
+        setLogoSettings(data);
+        logoForm.reset(data);
+      }
     }
   }, [contactForm, logoForm]);
 
