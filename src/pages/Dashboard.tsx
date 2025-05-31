@@ -186,7 +186,7 @@ const Dashboard = () => {
         logoForm.reset(data);
       }
     }
-  }, [contactForm, logoForm]);
+  }, []);
 
   const savePricingData = (data: PricingTier[]) => {
     localStorage.setItem('pricingData', JSON.stringify(data));
