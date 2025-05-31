@@ -200,6 +200,8 @@ const CaseStudies = () => {
     }
   ];
 
+  console.log("Case studies loaded:", allCaseStudies.length);
+
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case "Amazon": return ShoppingCart;
@@ -241,8 +243,16 @@ const CaseStudies = () => {
       {/* All Case Studies */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
+          {/* Debug information */}
+          <div className="mb-8 text-center">
+            <p className="text-lg text-slate-600">
+              Showing {allCaseStudies.length} Case Studies
+            </p>
+          </div>
+          
           <div className="space-y-20">
             {allCaseStudies.map((study, index) => {
+              console.log(`Rendering case study ${index + 1}:`, study.title);
               const IconComponent = getPlatformIcon(study.platform);
               return (
                 <div key={index} className="max-w-6xl mx-auto">
@@ -278,7 +288,7 @@ const CaseStudies = () => {
                             <p className="text-slate-600 leading-relaxed">{study.solution}</p>
                           </div>
                           
-                          <div className={`bg-gradient-to-r ${study.platformColor.replace('from-', 'from-').replace('to-', 'to-').replace('-600', '-50').replace('-600', '-50')} p-6 rounded-xl`}>
+                          <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl">
                             <h3 className="text-xl font-bold text-slate-900 mb-3 flex items-center">
                               <TrendingUp className="w-5 h-5 mr-2 text-green-500" />
                               Results in {study.results.timeframe}
