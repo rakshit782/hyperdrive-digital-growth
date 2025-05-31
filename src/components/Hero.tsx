@@ -1,7 +1,16 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 
 const Hero = () => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.log("Hero logo failed to load:", e.currentTarget.src);
+  };
+
+  const handleImageLoad = () => {
+    console.log("Hero logo loaded successfully");
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 text-white overflow-hidden">
       {/* Background Pattern */}
@@ -17,7 +26,10 @@ const Hero = () => {
             <img 
               src="/lovable-uploads/d76be5e2-f99d-4fae-aef6-a92d04f82d8e.png" 
               alt="AMZ AD SCOUT Logo" 
-              className="h-24 w-auto object-contain"
+              className="h-24 w-auto object-contain bg-white/10 p-2 rounded-lg backdrop-blur-sm"
+              onError={handleImageError}
+              onLoad={handleImageLoad}
+              style={{ maxWidth: '200px', display: 'block' }}
             />
           </div>
           

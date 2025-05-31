@@ -6,6 +6,14 @@ import { useState } from "react";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.log("Header logo failed to load:", e.currentTarget.src);
+  };
+
+  const handleImageLoad = () => {
+    console.log("Header logo loaded successfully");
+  };
+
   return (
     <header className="fixed top-0 w-full bg-white/90 backdrop-blur-lg border-b border-gray-200/50 z-50">
       <div className="container mx-auto px-6">
@@ -15,7 +23,10 @@ const Header = () => {
             <img 
               src="/lovable-uploads/d76be5e2-f99d-4fae-aef6-a92d04f82d8e.png" 
               alt="AMZ AD SCOUT Logo" 
-              className="h-10 w-auto object-contain"
+              className="h-10 w-auto object-contain bg-white p-1 rounded"
+              onError={handleImageError}
+              onLoad={handleImageLoad}
+              style={{ maxWidth: '120px', display: 'block' }}
             />
             <div className="font-bold text-xl text-slate-900">
               <span className="text-blue-600">AMZ AD</span> SCOUT
