@@ -13,7 +13,7 @@ export interface RSSFeed {
   items: RSSItem[];
 }
 
-// Updated RSS feed URLs - keeping only feeds that work without CORS issues
+// Updated RSS feed URLs - keeping only feeds that work reliably without CORS issues
 export const RSS_FEEDS = {
   // Amazon Feeds (these typically work well with CORS proxy)
   'amazon-general': 'https://www.aboutamazon.com/about-amazon-rss.rss',
@@ -25,12 +25,8 @@ export const RSS_FEEDS = {
   'retail': 'https://www.aboutamazon.com/news/retail.rss',
   'sustainability': 'https://www.aboutamazon.com/news/sustainability.rss',
   
-  // Marketing Strategy Feeds (keeping only reliable ones)
+  // Marketing Strategy Feeds (keeping only the most reliable ones)
   'hubspot': 'https://blog.hubspot.com/marketing/rss.xml',
-  'moz': 'https://moz.com/blog/rss',
-  'copyblogger': 'https://copyblogger.com/feed',
-  'convince-convert': 'https://www.convinceandconvert.com/feed',
-  'neil-patel': 'https://neilpatel.com/feed',
   'content-marketing-institute': 'https://contentmarketinginstitute.com/feed'
 };
 
@@ -98,14 +94,6 @@ const getCategoryFromSource = (source: string): string => {
     // Marketing Strategy categories
     case 'hubspot':
       return 'Marketing Strategy';
-    case 'moz':
-      return 'SEO & Marketing';
-    case 'copyblogger':
-      return 'Content Marketing';
-    case 'convince-convert':
-      return 'Digital Marketing';
-    case 'neil-patel':
-      return 'Digital Marketing';
     case 'content-marketing-institute':
       return 'Content Marketing';
     
