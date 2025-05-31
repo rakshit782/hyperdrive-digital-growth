@@ -1,11 +1,15 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, ArrowRight, BookOpen, RefreshCw, ExternalLink } from "lucide-react";
+import { Calendar, ArrowRight, BookOpen, RefreshCw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllRSSFeeds, formatDate, type RSSItem } from "@/utils/rssParser";
+import { useState } from "react";
+import ArticleView from "@/components/ArticleView";
 
 const Blog = () => {
+  const [selectedArticle, setSelectedArticle] = useState<RSSItem | null>(null);
+  
   const { data: rssItems = [], isLoading, error, refetch } = useQuery({
     queryKey: ['rss-feeds'],
     queryFn: fetchAllRSSFeeds,
@@ -19,8 +23,17 @@ const Blog = () => {
   }
 
   const handleArticleClick = (item: RSSItem) => {
-    window.open(item.link, '_blank', 'noopener,noreferrer');
+    setSelectedArticle(item);
   };
+
+  const handleBackToList = () => {
+    setSelectedArticle(null);
+  };
+
+  // If an article is selected, show the article view
+  if (selectedArticle) {
+    return <ArticleView article={selectedArticle} onBack={handleBackToList} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
@@ -100,8 +113,8 @@ const Blog = () => {
                     className="w-full group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white group-hover:border-transparent transition-all duration-500 py-3 font-semibold rounded-xl"
                     variant="outline"
                   >
-                    Read Full Article
-                    <ExternalLink className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                    Read Article
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </CardContent>
               </Card>
