@@ -1,4 +1,4 @@
-
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +16,28 @@ import {
   TrendingUp
 } from "lucide-react";
 
+interface ContactInfo {
+  phone: string;
+  email: string;
+  businessHours: string;
+  address: string;
+}
+
 const Contact = () => {
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({
+    phone: "+1 (555) 123-4567",
+    email: "hello@amzadscout.com",
+    businessHours: "Mon-Fri: 9AM-6PM PST",
+    address: "123 Business St, Suite 100, San Francisco, CA 94105"
+  });
+
+  useEffect(() => {
+    const savedContact = localStorage.getItem('contactData');
+    if (savedContact) {
+      setContactInfo(JSON.parse(savedContact));
+    }
+  }, []);
+
   return (
     <section className="py-32 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white relative overflow-hidden">
       {/* Enhanced background elements */}
@@ -91,6 +112,7 @@ const Contact = () => {
           
           {/* Enhanced Contact Info & Benefits */}
           <div className="space-y-8">
+            {/* Enhanced Contact Info & Benefits */}
             <div className="space-y-8">
               <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">What You'll Get:</h3>
               <div className="space-y-6">
@@ -114,16 +136,18 @@ const Contact = () => {
             <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 space-y-6 border border-white/20 hover:border-white/30 transition-all duration-300">
               <h3 className="text-2xl font-bold text-white">Contact Information</h3>
               <div className="space-y-4">
-                {[
-                  { icon: Phone, text: "+1 (555) 123-4567", color: "text-green-400" },
-                  { icon: Mail, text: "hello@amzadscout.com", color: "text-blue-400" },
-                  { icon: Clock, text: "Mon-Fri: 9AM-6PM PST", color: "text-purple-400" }
-                ].map((contact, index) => (
-                  <div key={index} className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
-                    <contact.icon className={`w-6 h-6 ${contact.color} group-hover:scale-110 transition-transform duration-300`} />
-                    <span className="text-blue-100 text-lg group-hover:text-white transition-colors duration-300">{contact.text}</span>
-                  </div>
-                ))}
+                <div className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
+                  <Phone className="w-6 h-6 text-green-400 group-hover:scale-110 transition-transform duration-300" />
+                  <span className="text-blue-100 text-lg group-hover:text-white transition-colors duration-300">{contactInfo.phone}</span>
+                </div>
+                <div className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
+                  <Mail className="w-6 h-6 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
+                  <span className="text-blue-100 text-lg group-hover:text-white transition-colors duration-300">{contactInfo.email}</span>
+                </div>
+                <div className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
+                  <Clock className="w-6 h-6 text-purple-400 group-hover:scale-110 transition-transform duration-300" />
+                  <span className="text-blue-100 text-lg group-hover:text-white transition-colors duration-300">{contactInfo.businessHours}</span>
+                </div>
               </div>
             </div>
             
