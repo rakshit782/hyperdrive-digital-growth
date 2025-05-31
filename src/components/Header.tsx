@@ -40,6 +40,12 @@ const Header = () => {
     { title: "Shopify Development", href: "/shopify-development" },
   ];
 
+  const caseStudyPages = [
+    { title: "Amazon Case Studies", href: "/amazon-case-studies" },
+    { title: "Walmart Case Studies", href: "/walmart-case-studies" },
+    { title: "Meta Case Studies", href: "/meta-case-studies" },
+  ];
+
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
       isScrolled 
@@ -93,7 +99,7 @@ const Header = () => {
               
               <NavigationMenuItem>
                 <NavigationMenuLink 
-                  href="#about"
+                  href="/about"
                   className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
                 >
                   About
@@ -101,17 +107,27 @@ const Header = () => {
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <NavigationMenuLink 
-                  href="#case-studies"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
-                >
+                <NavigationMenuTrigger className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide">
                   Case Studies
-                </NavigationMenuLink>
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid w-[300px] gap-3 p-4">
+                    {caseStudyPages.map((caseStudy) => (
+                      <NavigationMenuLink
+                        key={caseStudy.href}
+                        href={caseStudy.href}
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">{caseStudy.title}</div>
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </NavigationMenuContent>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
                 <NavigationMenuLink 
-                  href="#contact"
+                  href="/contact"
                   className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
                 >
                   Contact
@@ -122,7 +138,10 @@ const Header = () => {
           
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Button className="bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 hover:from-blue-700 hover:via-blue-800 hover:to-cyan-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5">
+            <Button 
+              className="bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 hover:from-blue-700 hover:via-blue-800 hover:to-cyan-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5"
+              onClick={() => window.location.href = '/free-audit'}
+            >
               Get Free Audit
             </Button>
           </div>
@@ -167,17 +186,46 @@ const Header = () => {
                 </div>
               </div>
               
-              {['About', 'Case Studies', 'Contact'].map((item) => (
-                <a 
-                  key={item}
-                  href={`#${item.toLowerCase().replace(' ', '-')}`} 
-                  className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item}
-                </a>
-              ))}
-              <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold w-full mt-4 rounded-xl">
+              <a 
+                href="/about"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About
+              </a>
+              
+              {/* Mobile Case Studies Dropdown */}
+              <div className="space-y-2">
+                <div className="text-slate-700 font-medium py-2 px-4">Case Studies</div>
+                <div className="pl-4 space-y-2">
+                  {caseStudyPages.map((caseStudy) => (
+                    <a 
+                      key={caseStudy.href}
+                      href={caseStudy.href}
+                      className="block text-slate-600 hover:text-blue-600 transition-colors py-1 px-4 rounded-lg hover:bg-blue-50 text-sm"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {caseStudy.title}
+                    </a>
+                  ))}
+                </div>
+              </div>
+              
+              <a 
+                href="/contact"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Contact
+              </a>
+              
+              <Button 
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold w-full mt-4 rounded-xl"
+                onClick={() => {
+                  window.location.href = '/free-audit';
+                  setIsMenuOpen(false);
+                }}
+              >
                 Get Free Audit
               </Button>
             </nav>
