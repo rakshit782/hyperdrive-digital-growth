@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Target, TrendingUp, Zap, CheckCircle, ArrowRight } from "lucide-react";
+import { ShoppingCart, Target, TrendingUp, Zap, CheckCircle, ArrowRight, BarChart3 } from "lucide-react";
 
 const WalmartAdvertising = () => {
   const features = [
