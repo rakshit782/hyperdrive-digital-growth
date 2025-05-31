@@ -13,6 +13,7 @@ import MetaAdvertising from "./pages/MetaAdvertising";
 import AccountManagement from "./pages/AccountManagement";
 import ShopifyIntegration from "./pages/ShopifyIntegration";
 import ShopifyDevelopment from "./pages/ShopifyDevelopment";
+import CaseStudies from "./pages/CaseStudies";
 import AmazonCaseStudies from "./pages/AmazonCaseStudies";
 import WalmartCaseStudies from "./pages/WalmartCaseStudies";
 import MetaCaseStudies from "./pages/MetaCaseStudies";

@@ -102,7 +102,7 @@ const Header = () => {
               
               <NavigationMenuItem>
                 <NavigationMenuLink 
-                  href="/amazon-case-studies"
+                  href="/case-studies"
                   className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
                 >
                   Case Studies
@@ -179,7 +179,7 @@ const Header = () => {
               </a>
               
               <a 
-                href="/amazon-case-studies"
+                href="/case-studies"
                 className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
                 onClick={() => setIsMenuOpen(false)}
               >
