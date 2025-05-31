@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, ExternalLink, AlertCircle, Monitor } from "lucide-react";
+import { ArrowLeft, Calendar, ExternalLink, AlertCircle, Monitor, Printer } from "lucide-react";
 import { RSSItem } from "@/utils/rssParser";
 import { useState } from "react";
 
@@ -16,6 +16,72 @@ const ArticleView = ({ article, onBack }: ArticleViewProps) => {
 
   const handleEmbedError = () => {
     setEmbedError(true);
+  };
+
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>${article.title}</title>
+          <style>
+            body { 
+              font-family: Arial, sans-serif; 
+              line-height: 1.6; 
+              max-width: 800px; 
+              margin: 0 auto; 
+              padding: 20px;
+            }
+            h1 { 
+              color: #333; 
+              border-bottom: 2px solid #eee; 
+              padding-bottom: 10px;
+            }
+            .meta { 
+              color: #666; 
+              font-size: 14px; 
+              margin-bottom: 20px;
+            }
+            .content { 
+              margin-bottom: 30px;
+            }
+            .source { 
+              border-top: 1px solid #eee; 
+              padding-top: 15px; 
+              font-size: 12px; 
+              color: #666;
+            }
+            @media print {
+              body { margin: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>${article.title}</h1>
+          <div class="meta">
+            <strong>Category:</strong> ${article.category} | 
+            <strong>Source:</strong> ${article.source} | 
+            <strong>Published:</strong> ${new Date(article.pubDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </div>
+          <div class="content">
+            ${article.description || "No preview content available for this article."}
+          </div>
+          <div class="source">
+            <strong>Original Source:</strong> ${article.link}
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    }
   };
 
   return (
@@ -74,6 +140,13 @@ const ArticleView = ({ article, onBack }: ArticleViewProps) => {
                     Open in New Tab
                     <ExternalLink className="ml-2 w-4 h-4" />
                   </Button>
+                  <Button 
+                    onClick={handlePrint}
+                    variant="outline"
+                  >
+                    <Printer className="mr-2 w-4 h-4" />
+                    Print Article
+                  </Button>
                 </div>
               </>
             ) : (
@@ -95,6 +168,14 @@ const ArticleView = ({ article, onBack }: ArticleViewProps) => {
                     >
                       <ExternalLink className="w-4 h-4 mr-2" />
                       Open Original
+                    </Button>
+                    <Button 
+                      onClick={handlePrint}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <Printer className="w-4 h-4 mr-2" />
+                      Print
                     </Button>
                   </div>
                 </div>
