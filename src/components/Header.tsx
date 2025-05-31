@@ -1,7 +1,15 @@
 
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,6 +30,15 @@ const Header = () => {
   const handleImageLoad = () => {
     console.log("Header logo loaded successfully");
   };
+
+  const servicePages = [
+    { title: "Amazon Advertising", href: "/amazon-advertising" },
+    { title: "Walmart Advertising", href: "/walmart-advertising" },
+    { title: "Meta Advertising", href: "/meta-advertising" },
+    { title: "Account Management", href: "/account-management" },
+    { title: "Shopify Integration", href: "/shopify-integration" },
+    { title: "Shopify Development", href: "/shopify-development" },
+  ];
 
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
@@ -44,18 +61,68 @@ const Header = () => {
           </div>
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-10">
-            {['Services', 'About', 'Case Studies', 'Contact'].map((item) => (
-              <a 
-                key={item}
-                href={`#${item.toLowerCase().replace(' ', '-')}`} 
-                className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group"
-              >
-                {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-            ))}
-          </nav>
+          <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList className="space-x-6">
+              <NavigationMenuItem>
+                <NavigationMenuLink 
+                  href="/"
+                  className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group px-3 py-2"
+                >
+                  Home
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-full"></span>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group">
+                  Services
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid w-[400px] gap-3 p-4">
+                    {servicePages.map((service) => (
+                      <NavigationMenuLink
+                        key={service.href}
+                        href={service.href}
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">{service.title}</div>
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink 
+                  href="#about"
+                  className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group px-3 py-2"
+                >
+                  About
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-full"></span>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink 
+                  href="#case-studies"
+                  className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group px-3 py-2"
+                >
+                  Case Studies
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-full"></span>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink 
+                  href="#contact"
+                  className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide group px-3 py-2"
+                >
+                  Contact
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-full"></span>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
           
           {/* CTA Button */}
           <div className="hidden md:block">
@@ -79,7 +146,32 @@ const Header = () => {
         }`}>
           <div className="pt-4 border-t border-gray-200/50">
             <nav className="flex flex-col space-y-4">
-              {['Services', 'About', 'Case Studies', 'Contact'].map((item) => (
+              <a 
+                href="/"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
+              </a>
+              
+              {/* Mobile Services Dropdown */}
+              <div className="space-y-2">
+                <div className="text-slate-700 font-medium py-2 px-4">Services</div>
+                <div className="pl-4 space-y-2">
+                  {servicePages.map((service) => (
+                    <a 
+                      key={service.href}
+                      href={service.href}
+                      className="block text-slate-600 hover:text-blue-600 transition-colors py-1 px-4 rounded-lg hover:bg-blue-50 text-sm"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {service.title}
+                    </a>
+                  ))}
+                </div>
+              </div>
+              
+              {['About', 'Case Studies', 'Contact'].map((item) => (
                 <a 
                   key={item}
                   href={`#${item.toLowerCase().replace(' ', '-')}`} 
