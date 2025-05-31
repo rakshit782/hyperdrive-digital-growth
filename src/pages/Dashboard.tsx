@@ -210,12 +210,21 @@ const Dashboard = () => {
 
   // Update forms when state changes
   useEffect(() => {
-    contactForm.reset(contactInfo);
-  }, [contactInfo]);
+    contactForm.reset({
+      phone: contactInfo.phone,
+      email: contactInfo.email,
+      businessHours: contactInfo.businessHours,
+      address: contactInfo.address
+    });
+  }, [contactInfo, contactForm]);
 
   useEffect(() => {
-    logoForm.reset(logoSettings);
-  }, [logoSettings]);
+    logoForm.reset({
+      logoUrl: logoSettings.logoUrl,
+      logoSize: logoSettings.logoSize,
+      logoAlt: logoSettings.logoAlt
+    });
+  }, [logoSettings, logoForm]);
 
   const savePricingData = (data: PricingTier[]) => {
     localStorage.setItem('pricingData', JSON.stringify(data));
