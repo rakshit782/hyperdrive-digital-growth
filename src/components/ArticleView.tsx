@@ -1,9 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, ExternalLink, AlertCircle, Monitor, Printer } from "lucide-react";
+import { ArrowLeft, Calendar, ExternalLink, AlertCircle, RefreshCw, Printer } from "lucide-react";
 import { RSSItem } from "@/utils/rssParser";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { scrapeArticleContent, ScrapedContent } from "@/utils/contentScraper";
 
 interface ArticleViewProps {
   article: RSSItem;
@@ -11,14 +12,35 @@ interface ArticleViewProps {
 }
 
 const ArticleView = ({ article, onBack }: ArticleViewProps) => {
-  const [showEmbedded, setShowEmbedded] = useState(false);
-  const [embedError, setEmbedError] = useState(false);
+  const [scrapedContent, setScrapedContent] = useState<ScrapedContent | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showFullContent, setShowFullContent] = useState(false);
 
-  const handleEmbedError = () => {
-    setEmbedError(true);
+  useEffect(() => {
+    // Auto-load content when component mounts
+    handleLoadFullContent();
+  }, [article.link]);
+
+  const handleLoadFullContent = async () => {
+    setIsLoading(true);
+    try {
+      const content = await scrapeArticleContent(article.link);
+      setScrapedContent(content);
+      if (content.success) {
+        setShowFullContent(true);
+      }
+    } catch (error) {
+      console.error('Failed to load content:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePrint = () => {
+    const contentToPrint = showFullContent && scrapedContent?.success 
+      ? scrapedContent.content 
+      : article.description;
+    
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       printWindow.document.write(`
@@ -46,6 +68,7 @@ const ArticleView = ({ article, onBack }: ArticleViewProps) => {
             }
             .content { 
               margin-bottom: 30px;
+              white-space: pre-wrap;
             }
             .source { 
               border-top: 1px solid #eee; 
@@ -70,7 +93,7 @@ const ArticleView = ({ article, onBack }: ArticleViewProps) => {
             })}
           </div>
           <div class="content">
-            ${article.description || "No preview content available for this article."}
+            ${contentToPrint || "No content available for this article."}
           </div>
           <div class="source">
             <strong>Original Source:</strong> ${article.link}
@@ -119,101 +142,124 @@ const ArticleView = ({ article, onBack }: ArticleViewProps) => {
             </div>
           </CardHeader>
           <CardContent className="prose max-w-none">
-            {!showEmbedded ? (
-              <>
-                <div className="text-lg text-slate-700 leading-relaxed mb-8 whitespace-pre-wrap">
-                  {article.description || "No preview content available for this article."}
-                </div>
-                
-                <div className="flex gap-4 mb-8">
-                  <Button 
-                    onClick={() => setShowEmbedded(true)}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-                  >
-                    <Monitor className="mr-2 w-4 h-4" />
-                    View Full Article (Embedded)
-                  </Button>
-                  <Button 
-                    onClick={() => window.open(article.link, '_blank', 'noopener,noreferrer')}
-                    variant="outline"
-                  >
-                    Open in New Tab
-                    <ExternalLink className="ml-2 w-4 h-4" />
-                  </Button>
-                  <Button 
-                    onClick={handlePrint}
-                    variant="outline"
-                  >
-                    <Printer className="mr-2 w-4 h-4" />
-                    Print Article
-                  </Button>
-                </div>
-              </>
+            {isLoading ? (
+              <div className="text-center py-8">
+                <RefreshCw className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+                <p className="text-slate-600">Loading full article content...</p>
+              </div>
             ) : (
               <>
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-semibold text-slate-900">Full Article</h3>
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={() => setShowEmbedded(false)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Show Preview
-                    </Button>
-                    <Button 
-                      onClick={() => window.open(article.link, '_blank', 'noopener,noreferrer')}
-                      variant="outline"
-                      size="sm"
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Open Original
-                    </Button>
-                    <Button 
-                      onClick={handlePrint}
-                      variant="outline"
-                      size="sm"
-                    >
-                      <Printer className="w-4 h-4 mr-2" />
-                      Print
-                    </Button>
-                  </div>
-                </div>
-
-                {embedError ? (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-semibold text-red-800 mb-2">Unable to Embed Content</h4>
-                        <p className="text-red-700 mb-4">
-                          This website doesn't allow embedding. This is a security feature implemented by many websites to prevent their content from being displayed in frames.
-                        </p>
-                        <Button 
-                          onClick={() => window.open(article.link, '_blank', 'noopener,noreferrer')}
-                          className="bg-red-600 hover:bg-red-700 text-white"
-                        >
-                          Open in New Tab Instead
-                          <ExternalLink className="ml-2 w-4 h-4" />
-                        </Button>
+                {showFullContent && scrapedContent?.success ? (
+                  <>
+                    <div className="text-lg text-slate-700 leading-relaxed mb-8 whitespace-pre-wrap">
+                      {scrapedContent.content}
+                    </div>
+                    
+                    <div className="flex gap-4 mb-8">
+                      <Button 
+                        onClick={() => setShowFullContent(false)}
+                        variant="outline"
+                      >
+                        Show Preview Only
+                      </Button>
+                      <Button 
+                        onClick={() => window.open(article.link, '_blank', 'noopener,noreferrer')}
+                        variant="outline"
+                      >
+                        Open Original
+                        <ExternalLink className="ml-2 w-4 h-4" />
+                      </Button>
+                      <Button 
+                        onClick={handlePrint}
+                        variant="outline"
+                      >
+                        <Printer className="mr-2 w-4 h-4" />
+                        Print Article
+                      </Button>
+                    </div>
+                  </>
+                ) : scrapedContent && !scrapedContent.success ? (
+                  <>
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-semibold text-yellow-800 mb-2">Content Extraction Failed</h4>
+                          <p className="text-yellow-700 mb-4">
+                            Unable to extract the full article content. Showing preview instead.
+                          </p>
+                          <p className="text-yellow-600 text-sm mb-4">
+                            Error: {scrapedContent.error}
+                          </p>
+                          <Button 
+                            onClick={handleLoadFullContent}
+                            variant="outline"
+                            size="sm"
+                          >
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Try Again
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                    
+                    <div className="text-lg text-slate-700 leading-relaxed mb-8 whitespace-pre-wrap">
+                      {article.description || "No preview content available for this article."}
+                    </div>
+                    
+                    <div className="flex gap-4 mb-8">
+                      <Button 
+                        onClick={() => window.open(article.link, '_blank', 'noopener,noreferrer')}
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                      >
+                        Read Full Article
+                        <ExternalLink className="ml-2 w-4 h-4" />
+                      </Button>
+                      <Button 
+                        onClick={handlePrint}
+                        variant="outline"
+                      >
+                        <Printer className="mr-2 w-4 h-4" />
+                        Print Preview
+                      </Button>
+                    </div>
+                  </>
                 ) : (
-                  <div className="border border-slate-200 rounded-lg overflow-hidden">
-                    <iframe
-                      src={article.link}
-                      className="w-full h-[800px] border-0"
-                      title={article.title}
-                      onError={handleEmbedError}
-                      sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-                    />
-                  </div>
+                  <>
+                    <div className="text-lg text-slate-700 leading-relaxed mb-8 whitespace-pre-wrap">
+                      {article.description || "No preview content available for this article."}
+                    </div>
+                    
+                    <div className="flex gap-4 mb-8">
+                      <Button 
+                        onClick={handleLoadFullContent}
+                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                        disabled={isLoading}
+                      >
+                        <RefreshCw className={`mr-2 w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                        Load Full Content
+                      </Button>
+                      <Button 
+                        onClick={() => window.open(article.link, '_blank', 'noopener,noreferrer')}
+                        variant="outline"
+                      >
+                        Open Original
+                        <ExternalLink className="ml-2 w-4 h-4" />
+                      </Button>
+                      <Button 
+                        onClick={handlePrint}
+                        variant="outline"
+                      >
+                        <Printer className="mr-2 w-4 h-4" />
+                        Print Preview
+                      </Button>
+                    </div>
+                  </>
                 )}
               </>
             )}
 
-            {article.link && !showEmbedded && (
+            {article.link && (
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                 <p className="text-sm text-slate-600 mb-2">Original Source:</p>
                 <a 
