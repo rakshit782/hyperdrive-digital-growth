@@ -19,18 +19,15 @@ const Header = () => {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center">
             <img 
-              src="/lovable-uploads/d76be5e2-f99d-4fae-aef6-a92d04f82d8e.png" 
-              alt="AMZ AD SCOUT Logo" 
-              className="h-10 w-auto object-contain bg-white p-1 rounded"
+              src="/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png" 
+              alt="AMZ AD SCOUT - The Growth Agency" 
+              className="h-8 w-auto object-contain"
               onError={handleImageError}
               onLoad={handleImageLoad}
-              style={{ maxWidth: '120px', display: 'block' }}
+              style={{ maxWidth: '160px', display: 'block' }}
             />
-            <div className="font-bold text-xl text-slate-900">
-              <span className="text-blue-600">AMZ AD</span> SCOUT
-            </div>
           </div>
           
           {/* Desktop Navigation */}

@@ -24,12 +24,12 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-8">
             <img 
-              src="/lovable-uploads/d76be5e2-f99d-4fae-aef6-a92d04f82d8e.png" 
-              alt="AMZ AD SCOUT Logo" 
-              className="h-24 w-auto object-contain bg-white/10 p-2 rounded-lg backdrop-blur-sm"
+              src="/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png" 
+              alt="AMZ AD SCOUT - The Growth Agency" 
+              className="h-16 w-auto object-contain"
               onError={handleImageError}
               onLoad={handleImageLoad}
-              style={{ maxWidth: '200px', display: 'block' }}
+              style={{ maxWidth: '240px', display: 'block' }}
             />
           </div>
           
