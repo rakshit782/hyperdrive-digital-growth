@@ -1,4 +1,3 @@
-
 export interface RSSItem {
   title: string;
   description: string;
@@ -16,7 +15,7 @@ export interface RSSFeed {
 
 // RSS feed URLs - your backend will handle fetching these
 export const RSS_FEEDS = {
-  // Amazon Feeds
+  // Amazon Feeds only
   'amazon-general': 'https://www.aboutamazon.com/about-amazon-rss.rss',
   'amazon-ai': 'https://www.aboutamazon.com/news/amazon-ai.rss',
   'aws': 'https://www.aboutamazon.com/news/aws.rss',
@@ -24,11 +23,7 @@ export const RSS_FEEDS = {
   'devices': 'https://www.aboutamazon.com/news/devices.rss',
   'innovation': 'https://www.aboutamazon.com/news/innovation-at-amazon.rss',
   'retail': 'https://www.aboutamazon.com/news/retail.rss',
-  'sustainability': 'https://www.aboutamazon.com/news/sustainability.rss',
-  
-  // Marketing Strategy Feeds
-  'hubspot': 'https://blog.hubspot.com/marketing/rss.xml',
-  'content-marketing-institute': 'https://contentmarketinginstitute.com/feed'
+  'sustainability': 'https://www.aboutamazon.com/news/sustainability.rss'
 };
 
 // Your backend API base URL - update this to match your server
@@ -69,7 +64,7 @@ export const parseRSSFeed = async (url: string, source: string): Promise<RSSItem
 
 const getCategoryFromSource = (source: string): string => {
   switch (source) {
-    // Amazon categories
+    // Amazon categories only
     case 'amazon-general':
       return 'About Amazon';
     case 'amazon-ai':
@@ -86,12 +81,6 @@ const getCategoryFromSource = (source: string): string => {
       return 'Retail';
     case 'sustainability':
       return 'Sustainability';
-    
-    // Marketing Strategy categories
-    case 'hubspot':
-      return 'Marketing Strategy';
-    case 'content-marketing-institute':
-      return 'Content Marketing';
     
     default:
       return 'General';
