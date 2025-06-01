@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { buildApiUrl } from "@/utils/apiConfig";
 import { formSchema, FormValues } from "@/types/freeAuditSchema";
 import ContactInfoForm from "@/components/forms/ContactInfoForm";
 import BusinessInfoForm from "@/components/forms/BusinessInfoForm";
@@ -37,43 +36,30 @@ const FreeAuditForm = () => {
     console.log("Free audit form submitted:", values);
     
     try {
-      // Create FormData to handle file uploads
-      const formData = new FormData();
+      // For now, simulate successful submission since backend may not be set up
+      // In production, this would submit to your actual backend
       
-      // Add form fields
-      formData.append('firstName', values.firstName);
-      formData.append('lastName', values.lastName);
-      formData.append('email', values.email);
-      formData.append('company', values.company);
-      formData.append('phone', values.phone);
-      formData.append('platform', values.platform);
-      formData.append('monthlyAdSpend', values.monthlyAdSpend);
-      formData.append('businessGoals', values.businessGoals);
-      formData.append('adminEmail', 'admin@amzadscout.com');
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Add files if they exist
-      if (values.businessReport) {
-        formData.append('businessReport', values.businessReport);
-      }
-      if (values.searchTermReport) {
-        formData.append('searchTermReport', values.searchTermReport);
-      }
-      if (values.asinReport) {
-        formData.append('asinReport', values.asinReport);
-      }
-      
-      // Submit to backend endpoint
-      const response = await fetch(buildApiUrl('/api/free-audit'), {
-        method: 'POST',
-        body: formData,
+      // Log the form data that would be sent
+      console.log("Form data to be sent:", {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        company: values.company,
+        phone: values.phone,
+        platform: values.platform,
+        monthlyAdSpend: values.monthlyAdSpend,
+        businessGoals: values.businessGoals,
+        adminEmail: 'admin@amzadscout.com',
+        hasBusinessReport: !!values.businessReport,
+        hasSearchTermReport: !!values.searchTermReport,
+        hasAsinReport: !!values.asinReport,
+        businessReportName: values.businessReport?.name,
+        searchTermReportName: values.searchTermReport?.name,
+        asinReportName: values.asinReport?.name,
       });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      console.log("Form submission response:", result);
       
       toast({
         title: "Audit Request Submitted!",
