@@ -5,7 +5,8 @@ export const API_CONFIG = {
   endpoints: {
     rss: '/api/rss',
     rssAll: '/api/rss/all',
-    scrape: '/api/scrape'
+    scrape: '/api/scrape',
+    freeAudit: '/api/free-audit'
   },
   timeout: 30000 // 30 seconds
 };

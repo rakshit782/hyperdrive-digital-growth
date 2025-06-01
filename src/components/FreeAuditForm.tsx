@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Upload, FileText, Send, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { buildApiUrl } from "@/utils/apiConfig";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_FILE_TYPES = [
@@ -88,20 +88,43 @@ const FreeAuditForm = () => {
     console.log("Free audit form submitted:", values);
     
     try {
-      // Simulate sending email to admin@amzadscout.com
+      // Create FormData to handle file uploads
       const formData = new FormData();
       
       // Add form fields
-      Object.entries(values).forEach(([key, value]) => {
-        if (value instanceof File) {
-          formData.append(key, value);
-        } else if (value) {
-          formData.append(key, value.toString());
-        }
+      formData.append('firstName', values.firstName);
+      formData.append('lastName', values.lastName);
+      formData.append('email', values.email);
+      formData.append('company', values.company);
+      formData.append('phone', values.phone);
+      formData.append('platform', values.platform);
+      formData.append('monthlyAdSpend', values.monthlyAdSpend);
+      formData.append('businessGoals', values.businessGoals);
+      formData.append('adminEmail', 'admin@amzadscout.com');
+      
+      // Add files if they exist
+      if (values.businessReport) {
+        formData.append('businessReport', values.businessReport);
+      }
+      if (values.searchTermReport) {
+        formData.append('searchTermReport', values.searchTermReport);
+      }
+      if (values.asinReport) {
+        formData.append('asinReport', values.asinReport);
+      }
+      
+      // Submit to backend endpoint
+      const response = await fetch(buildApiUrl('/api/free-audit'), {
+        method: 'POST',
+        body: formData,
       });
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log("Form submission response:", result);
       
       toast({
         title: "Audit Request Submitted!",
@@ -114,7 +137,7 @@ const FreeAuditForm = () => {
       console.error("Error submitting form:", error);
       toast({
         title: "Submission Error",
-        description: "There was an issue submitting your request. Please try again or contact us directly.",
+        description: "There was an issue submitting your request. Please try again or contact us directly at admin@amzadscout.com.",
         variant: "destructive",
       });
     } finally {
