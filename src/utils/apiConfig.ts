@@ -1,6 +1,7 @@
 
 // Configuration for your backend API
 export const API_CONFIG = {
+  // Update this URL to point to your actual backend server
   baseUrl: process.env.VITE_API_URL || 'http://localhost:3001',
   endpoints: {
     rss: '/api/rss',
@@ -8,7 +9,7 @@ export const API_CONFIG = {
     scrape: '/api/scrape',
     freeAudit: '/api/free-audit'
   },
-  timeout: 30000 // 30 seconds
+  timeout: 60000 // 60 seconds for file uploads
 };
 
 // Helper function to build API URLs
