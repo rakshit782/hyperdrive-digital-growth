@@ -10,70 +10,103 @@ interface PricingTier {
   id: string;
   name: string;
   price: string;
+  period: string;
   description: string;
   features: string[];
-  popular?: boolean;
+  popular: boolean;
   buttonText: string;
 }
 
-const Pricing = () => {
-  const [pricingData, setPricingData] = useState<PricingTier[]>([
-    {
-      id: "basic",
-      name: "Basic Package",
-      price: "$999",
-      description: "Perfect for small businesses starting their advertising journey",
-      features: [
-        "Amazon PPC Management",
-        "Basic Keyword Research",
-        "Monthly Performance Reports",
-        "Email Support",
-        "Campaign Setup & Optimization"
-      ],
-      buttonText: "Get Started"
-    },
-    {
-      id: "professional",
-      name: "Professional Package",
-      price: "$1,999",
-      description: "Comprehensive solution for growing businesses",
-      features: [
-        "Amazon + Walmart Advertising",
-        "Advanced Keyword Research",
-        "Weekly Performance Reports",
-        "Priority Support",
-        "A/B Testing",
-        "Competitor Analysis",
-        "Landing Page Optimization"
-      ],
-      popular: true,
-      buttonText: "Most Popular"
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise Package",
-      price: "$3,999",
-      description: "Full-service solution for established businesses",
-      features: [
-        "Amazon + Walmart + Meta Advertising",
-        "Complete Account Management",
-        "Daily Performance Monitoring",
-        "24/7 Dedicated Support",
-        "Custom Strategy Development",
-        "Shopify Integration",
-        "Advanced Analytics Dashboard",
-        "Monthly Strategy Calls"
-      ],
-      buttonText: "Contact Sales"
-    }
-  ]);
+const defaultPricing: PricingTier[] = [
+  {
+    id: "basic",
+    name: "Basic Package",
+    price: "$999",
+    period: "/month",
+    description: "Perfect for small businesses starting their advertising journey",
+    features: [
+      "Amazon PPC Management",
+      "Basic Keyword Research",
+      "Monthly Performance Reports",
+      "Email Support",
+      "Campaign Setup & Optimization"
+    ],
+    popular: false,
+    buttonText: "Get Started"
+  },
+  {
+    id: "professional",
+    name: "Professional Package", 
+    price: "$1,999",
+    period: "/month",
+    description: "Comprehensive solution for growing businesses",
+    features: [
+      "Amazon + Walmart Advertising",
+      "Advanced Keyword Research",
+      "Weekly Performance Reports",
+      "Priority Support",
+      "A/B Testing",
+      "Competitor Analysis",
+      "Landing Page Optimization"
+    ],
+    popular: true,
+    buttonText: "Most Popular"
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise Package",
+    price: "$3,999", 
+    period: "/month",
+    description: "Full-service solution for established businesses",
+    features: [
+      "Amazon + Walmart + Meta Advertising",
+      "Complete Account Management",
+      "Daily Performance Monitoring",
+      "24/7 Dedicated Support",
+      "Custom Strategy Development",
+      "Shopify Integration",
+      "Advanced Analytics Dashboard",
+      "Monthly Strategy Calls"
+    ],
+    popular: false,
+    buttonText: "Contact Sales"
+  }
+];
 
-  // Load pricing from localStorage if available
+const Pricing = () => {
+  const [pricingData, setPricingData] = useState<PricingTier[]>(defaultPricing);
+
+  // Load pricing from localStorage and listen for updates
   useEffect(() => {
-    const savedPricing = localStorage.getItem('pricingData');
-    if (savedPricing) {
-      setPricingData(JSON.parse(savedPricing));
-    }
+    const loadPricingData = () => {
+      const savedPricing = localStorage.getItem('pricingData');
+      if (savedPricing) {
+        try {
+          const parsed = JSON.parse(savedPricing);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setPricingData(parsed);
+          }
+        } catch (error) {
+          console.error('Failed to parse pricing data:', error);
+        }
+      }
+    };
+
+    // Load initial data
+    loadPricingData();
+
+    // Listen for pricing updates from dashboard
+    const handlePricingUpdate = (event: CustomEvent) => {
+      if (event.detail && Array.isArray(event.detail)) {
+        setPricingData(event.detail);
+      }
+    };
+
+    window.addEventListener('pricingUpdated', handlePricingUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('pricingUpdated', handlePricingUpdate as EventListener);
+    };
   }, []);
 
   return (
@@ -122,7 +155,7 @@ const Pricing = () => {
                   </CardTitle>
                   <div className="mb-4">
                     <span className="text-4xl font-bold text-slate-900">{tier.price}</span>
-                    <span className="text-slate-600">/month</span>
+                    {tier.period && <span className="text-slate-600">{tier.period}</span>}
                   </div>
                   <CardDescription className="text-slate-600 leading-relaxed">
                     {tier.description}
