@@ -1,8 +1,46 @@
 
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+
+interface CTAButtons {
+  primaryText?: string;
+  secondaryText?: string;
+}
 
 const Hero = () => {
+  const [ctaButtons, setCTAButtons] = useState<CTAButtons>({
+    primaryText: "Get Free Strategy Call",
+    secondaryText: "Watch Case Study"
+  });
+
+  useEffect(() => {
+    // Load CTA buttons from localStorage
+    const savedCTAButtons = localStorage.getItem('ctaButtonsData');
+    if (savedCTAButtons) {
+      try {
+        const parsedData = JSON.parse(savedCTAButtons);
+        if (parsedData && typeof parsedData === 'object') {
+          setCTAButtons(parsedData);
+        }
+      } catch (error) {
+        console.log("Failed to parse CTA buttons data:", error);
+      }
+    }
+
+    // Listen for CTA buttons updates
+    const handleCTAButtonsUpdate = (event: CustomEvent) => {
+      setCTAButtons(event.detail);
+    };
+
+    window.addEventListener('ctaButtonsUpdated', handleCTAButtonsUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('ctaButtonsUpdated', handleCTAButtonsUpdate as EventListener);
+    };
+  }, []);
+
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     console.log("Hero logo failed to load:", e.currentTarget.src);
   };
@@ -67,7 +105,7 @@ const Hero = () => {
               size="lg" 
               className="group bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:from-blue-600 hover:via-blue-700 hover:to-cyan-600 text-white px-10 py-6 text-xl font-semibold rounded-2xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-500 hover:scale-110 hover:-translate-y-2 border border-blue-400/30"
             >
-              Get Free Strategy Call
+              {ctaButtons.primaryText}
               <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
             
@@ -77,24 +115,24 @@ const Hero = () => {
               className="group border-2 border-cyan-400/50 bg-white/5 backdrop-blur-sm text-cyan-100 hover:bg-cyan-400/10 hover:border-cyan-400 px-10 py-6 text-xl font-semibold rounded-2xl transition-all duration-500 hover:scale-110 hover:-translate-y-2"
             >
               <Play className="mr-3 w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
-              Watch Case Study
+              {ctaButtons.secondaryText}
             </Button>
           </div>
           
-          {/* Enhanced Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          {/* Enhanced Stats Grid - Perfect Symmetry and Responsiveness */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
             {[
               { number: "500+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
               { number: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
               { number: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
               { number: "24/7", label: "Account Monitoring", color: "from-pink-400 to-blue-400" }
             ].map((stat, index) => (
-              <div key={index} className="group">
-                <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1">
-                  <div className={`text-4xl md:text-5xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
+              <div key={index} className="group w-full">
+                <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 h-full flex flex-col justify-center items-center text-center min-h-[120px] sm:min-h-[140px]">
+                  <div className={`text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
                     {stat.number}
                   </div>
-                  <div className="text-blue-200/80 text-sm md:text-base font-medium leading-tight">
+                  <div className="text-blue-200/80 text-xs sm:text-sm lg:text-base font-medium leading-tight">
                     {stat.label}
                   </div>
                 </div>

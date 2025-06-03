@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Save, Plus, Trash2, Phone, Mail, Clock, Upload, Image } from "lucide-react";
+import { Settings, Save, Plus, Trash2, Phone, Mail, Clock, Upload, Image, MousePointer } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const pricingSchema = z.object({
@@ -31,6 +31,11 @@ const logoSchema = z.object({
   logoUrl: z.string().min(1, "Logo URL is required"),
   logoSize: z.string().min(1, "Logo size is required"),
   logoAlt: z.string().min(1, "Logo alt text is required"),
+});
+
+const ctaButtonSchema = z.object({
+  primaryText: z.string().min(1, "Primary button text is required"),
+  secondaryText: z.string().min(1, "Secondary button text is required"),
 });
 
 interface PricingTier {
@@ -56,6 +61,11 @@ interface LogoSettings {
   logoAlt?: string;
 }
 
+interface CTAButtons {
+  primaryText?: string;
+  secondaryText?: string;
+}
+
 const Dashboard = () => {
   const { toast } = useToast();
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
@@ -70,6 +80,10 @@ const Dashboard = () => {
     logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
     logoSize: "h-12",
     logoAlt: "AMZ AD SCOUT - The Growth Agency"
+  });
+  const [ctaButtons, setCTAButtons] = useState<CTAButtons>({
+    primaryText: "Get Free Strategy Call",
+    secondaryText: "Watch Case Study"
   });
 
   const pricingForm = useForm<z.infer<typeof pricingSchema>>({
@@ -99,6 +113,14 @@ const Dashboard = () => {
       logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
       logoSize: "h-12",
       logoAlt: "AMZ AD SCOUT - The Growth Agency"
+    },
+  });
+
+  const ctaButtonForm = useForm<z.infer<typeof ctaButtonSchema>>({
+    resolver: zodResolver(ctaButtonSchema),
+    defaultValues: {
+      primaryText: "Get Free Strategy Call",
+      secondaryText: "Watch Case Study"
     },
   });
 
@@ -206,6 +228,24 @@ const Dashboard = () => {
         console.log("Failed to parse logo data from localStorage:", error);
       }
     }
+
+    const savedCTAButtons = localStorage.getItem('ctaButtonsData');
+    if (savedCTAButtons) {
+      try {
+        const parsedData = JSON.parse(savedCTAButtons);
+        if (parsedData && typeof parsedData === 'object' && 
+            typeof parsedData.primaryText === 'string' && 
+            typeof parsedData.secondaryText === 'string') {
+          const validatedCTAData: CTAButtons = {
+            primaryText: parsedData.primaryText,
+            secondaryText: parsedData.secondaryText
+          };
+          setCTAButtons(validatedCTAData);
+        }
+      } catch (error) {
+        console.log("Failed to parse CTA buttons data from localStorage:", error);
+      }
+    }
   }, []);
 
   // Update forms when state changes
@@ -226,6 +266,13 @@ const Dashboard = () => {
     });
   }, [logoSettings, logoForm]);
 
+  useEffect(() => {
+    ctaButtonForm.reset({
+      primaryText: ctaButtons.primaryText,
+      secondaryText: ctaButtons.secondaryText
+    });
+  }, [ctaButtons, ctaButtonForm]);
+
   const savePricingData = (data: PricingTier[]) => {
     localStorage.setItem('pricingData', JSON.stringify(data));
     setPricingTiers(data);
@@ -241,6 +288,13 @@ const Dashboard = () => {
     setLogoSettings(data);
     // Trigger a custom event to notify Header component
     window.dispatchEvent(new CustomEvent('logoUpdated', { detail: data }));
+  };
+
+  const saveCTAButtonsData = (data: CTAButtons) => {
+    localStorage.setItem('ctaButtonsData', JSON.stringify(data));
+    setCTAButtons(data);
+    // Trigger a custom event to notify Hero component
+    window.dispatchEvent(new CustomEvent('ctaButtonsUpdated', { detail: data }));
   };
 
   const onPricingSubmit = (values: z.infer<typeof pricingSchema>) => {
@@ -293,6 +347,15 @@ const Dashboard = () => {
     });
   };
 
+  const onCTAButtonSubmit = (values: z.infer<typeof ctaButtonSchema>) => {
+    saveCTAButtonsData(values);
+    
+    toast({
+      title: "CTA Buttons Updated!",
+      description: "The call-to-action buttons have been saved successfully.",
+    });
+  };
+
   const editTier = (index: number) => {
     const tier = pricingTiers[index];
     pricingForm.setValue('name', tier.name);
@@ -334,10 +397,11 @@ const Dashboard = () => {
             </div>
 
             <Tabs defaultValue="pricing" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="pricing">Pricing Management</TabsTrigger>
                 <TabsTrigger value="contact">Contact Information</TabsTrigger>
                 <TabsTrigger value="logo">Logo Settings</TabsTrigger>
+                <TabsTrigger value="cta">CTA Buttons</TabsTrigger>
               </TabsList>
               
               <TabsContent value="pricing" className="space-y-8">
@@ -736,6 +800,113 @@ const Dashboard = () => {
                           <li>Recommended: PNG with transparent background</li>
                           <li>Make sure the URL is publicly accessible</li>
                           <li>For best quality, use high-resolution images</li>
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="cta" className="space-y-8">
+                <div className="grid lg:grid-cols-2 gap-8">
+                  {/* CTA Buttons Form */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Update Call-to-Action Buttons</CardTitle>
+                      <CardDescription>
+                        Customize the main action buttons that appear in the hero section
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Form {...ctaButtonForm}>
+                        <form onSubmit={ctaButtonForm.handleSubmit(onCTAButtonSubmit)} className="space-y-6">
+                          <FormField
+                            control={ctaButtonForm.control}
+                            name="primaryText"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Primary Button Text</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Get Free Strategy Call" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={ctaButtonForm.control}
+                            name="secondaryText"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Secondary Button Text</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Watch Case Study" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <Button type="submit" className="w-full">
+                            <Save className="w-4 h-4 mr-2" />
+                            Update CTA Buttons
+                          </Button>
+                        </form>
+                      </Form>
+                    </CardContent>
+                  </Card>
+
+                  {/* CTA Buttons Preview */}
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-slate-900">Button Preview</h2>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Current CTA Buttons</CardTitle>
+                        <CardDescription>This is how your buttons appear on the homepage</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center p-6 bg-slate-900 rounded-lg">
+                          <Button 
+                            size="lg" 
+                            className="bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:from-blue-600 hover:via-blue-700 hover:to-cyan-600 text-white px-10 py-6 text-xl font-semibold rounded-2xl"
+                          >
+                            {ctaButtons.primaryText}
+                          </Button>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="lg" 
+                            className="border-2 border-cyan-400/50 bg-white/5 text-cyan-100 hover:bg-cyan-400/10 hover:border-cyan-400 px-10 py-6 text-xl font-semibold rounded-2xl"
+                          >
+                            {ctaButtons.secondaryText}
+                          </Button>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-sm text-slate-600">
+                            <strong>Primary Button:</strong> {ctaButtons.primaryText}
+                          </p>
+                          <p className="text-sm text-slate-600">
+                            <strong>Secondary Button:</strong> {ctaButtons.secondaryText}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-blue-50 border-blue-200">
+                      <CardHeader>
+                        <CardTitle className="text-blue-800 flex items-center">
+                          <MousePointer className="w-5 h-5 mr-2" />
+                          CTA Button Guidelines
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="text-blue-700">
+                        <ul className="list-disc list-inside space-y-2 text-sm">
+                          <li>Keep button text concise and action-oriented</li>
+                          <li>Primary button should be your main conversion goal</li>
+                          <li>Secondary button can be for exploration or engagement</li>
+                          <li>Use verbs that create urgency or value</li>
+                          <li>Test different variations to optimize conversions</li>
                         </ul>
                       </CardContent>
                     </Card>
