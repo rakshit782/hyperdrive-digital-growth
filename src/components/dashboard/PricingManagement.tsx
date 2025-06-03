@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,7 @@ const defaultPricing: PricingTier[] = [
 
 const PricingManagement = () => {
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>(defaultPricing);
+  const [activeTab, setActiveTab] = useState<string>("");
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
@@ -96,7 +98,7 @@ const PricingManagement = () => {
     } else if (pricingTiers.length > 0 && !activeTab) {
       setActiveTab(pricingTiers[0].id);
     }
-  }, []);
+  }, [activeTab, pricingTiers.length]);
 
   const handleSave = () => {
     localStorage.setItem('pricingData', JSON.stringify(pricingTiers));
