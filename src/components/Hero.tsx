@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 
@@ -56,7 +55,7 @@ const Hero = () => {
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
               Scale Your Business with
               <span className="block bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
-                Expert Growth
+                Growth Experts
               </span>
               <span className="block text-4xl md:text-5xl lg:text-6xl mt-4 text-slate-200">
                 Across All Platforms
