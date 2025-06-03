@@ -2,7 +2,7 @@
 // Configuration for your backend API
 export const API_CONFIG = {
   // Update this URL to point to your actual backend server
-  baseUrl: process.env.VITE_API_URL || 'http://localhost:3001',
+  baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3001',
   endpoints: {
     rss: '/api/rss',
     rssAll: '/api/rss/all',
