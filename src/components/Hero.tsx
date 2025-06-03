@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 
@@ -57,18 +58,8 @@ const Hero = () => {
               <span className="block bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
                 Growth Experts
               </span>
-              <span className="block text-4xl md:text-5xl lg:text-6xl mt-4 text-slate-200">
-                Across All Platforms
-              </span>
             </h1>
           </div>
-          
-          <p className="text-xl md:text-2xl lg:text-3xl mb-12 text-blue-100/90 max-w-4xl mx-auto leading-relaxed font-light">
-            AMZ AD SCOUT specializes in <span className="font-semibold text-cyan-300">Amazon advertising</span>, 
-            <span className="font-semibold text-cyan-300"> Walmart advertising</span>, and 
-            <span className="font-semibold text-cyan-300"> Meta advertising</span> with complete account management, 
-            Shopify development, and seamless integrations.
-          </p>
           
           {/* Enhanced CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
