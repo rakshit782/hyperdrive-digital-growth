@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -12,10 +13,22 @@ import {
   Sparkles
 } from "lucide-react";
 
+interface ServiceCard {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+  features: string[];
+  gradient: string;
+  bgGradient: string;
+  link: string;
+}
+
 const Services = () => {
-  const services = [
+  const [services, setServices] = useState<ServiceCard[]>([
     {
-      icon: ShoppingCart,
+      id: "amazon-advertising",
+      icon: "ShoppingCart",
       title: "Amazon Advertising",
       description: "Expert PPC management, keyword optimization, and campaign strategies that maximize your Amazon sales and ROI.",
       features: ["Sponsored Products", "Sponsored Brands", "Keyword Research", "Performance Analytics"],
@@ -24,7 +37,8 @@ const Services = () => {
       link: "/amazon-advertising"
     },
     {
-      icon: Store,
+      id: "walmart-advertising",
+      icon: "Store",
       title: "Walmart Advertising",
       description: "Comprehensive Walmart Connect advertising solutions to boost your visibility and sales on the growing marketplace.",
       features: ["Search Ads", "Display Campaigns", "Video Advertising", "Performance Analytics"],
@@ -33,7 +47,8 @@ const Services = () => {
       link: "/walmart-advertising"
     },
     {
-      icon: Users,
+      id: "meta-advertising",
+      icon: "Users",
       title: "Meta Advertising",
       description: "Facebook and Instagram ad campaigns that drive traffic, generate leads, and increase conversions for your business.",
       features: ["Facebook Ads", "Instagram Campaigns", "Audience Targeting", "Creative Optimization"],
@@ -42,7 +57,8 @@ const Services = () => {
       link: "/meta-advertising"
     },
     {
-      icon: Settings,
+      id: "account-management",
+      icon: "Settings",
       title: "Complete Account Management",
       description: "Full-service account management with dedicated specialists monitoring and optimizing your campaigns 24/7.",
       features: ["24/7 Monitoring", "Performance Reports", "Strategy Optimization", "Dedicated Manager"],
@@ -51,7 +67,8 @@ const Services = () => {
       link: "/account-management"
     },
     {
-      icon: Link2,
+      id: "shopify-integration",
+      icon: "Link2",
       title: "Shopify Integration",
       description: "Seamless integration of your Shopify store with Amazon and Walmart marketplaces for unified inventory management.",
       features: ["Inventory Sync", "Order Management", "Product Listing", "Multi-channel Setup"],
@@ -60,7 +77,8 @@ const Services = () => {
       link: "/shopify-integration"
     },
     {
-      icon: Code,
+      id: "shopify-development",
+      icon: "Code",
       title: "Shopify Development",
       description: "Custom Shopify store development and theme customization to create a powerful e-commerce presence.",
       features: ["Custom Themes", "App Integration", "Mobile Optimization", "Speed Enhancement"],
@@ -68,7 +86,44 @@ const Services = () => {
       bgGradient: "from-violet-50 to-purple-50",
       link: "/shopify-development"
     }
-  ];
+  ]);
+
+  useEffect(() => {
+    const savedServices = localStorage.getItem('servicesData');
+    if (savedServices) {
+      try {
+        const parsedData = JSON.parse(savedServices);
+        if (Array.isArray(parsedData)) {
+          setServices(parsedData);
+        }
+      } catch (error) {
+        console.log("Failed to parse services data:", error);
+      }
+    }
+
+    const handleServicesUpdate = (event: CustomEvent) => {
+      setServices(event.detail);
+    };
+
+    window.addEventListener('servicesUpdated', handleServicesUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('servicesUpdated', handleServicesUpdate as EventListener);
+    };
+  }, []);
+
+  const getIconComponent = (iconName: string) => {
+    const icons = {
+      ShoppingCart,
+      Store,
+      Users,
+      Settings,
+      Link2,
+      Code,
+      TrendingUp
+    };
+    return icons[iconName as keyof typeof icons] || ShoppingCart;
+  };
 
   return (
     <section className="py-32 bg-gradient-to-b from-slate-50 via-white to-blue-50/30 relative overflow-hidden">
@@ -92,42 +147,45 @@ const Services = () => {
         </div>
         
         <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8 mb-20">
-          {services.map((service, index) => (
-            <Card key={index} className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br ${service.bgGradient} backdrop-blur-sm`}>
-              {/* Gradient overlay on hover */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
-              
-              <CardHeader className="pb-6 relative z-10">
-                <div className={`w-20 h-20 bg-gradient-to-br ${service.gradient} rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
-                  <service.icon className="w-10 h-10 text-white" />
-                </div>
-                <CardTitle className="text-2xl md:text-3xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
-                  {service.title}
-                </CardTitle>
-                <CardDescription className="text-slate-600 leading-relaxed text-lg">
-                  {service.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="relative z-10">
-                <ul className="space-y-3 mb-8">
-                  {service.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center text-slate-700 text-base">
-                      <div className={`w-3 h-3 bg-gradient-to-r ${service.gradient} rounded-full mr-4 opacity-80`}></div>
-                      <span className="font-medium">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  variant="outline" 
-                  className={`w-full group-hover:bg-gradient-to-r group-hover:${service.gradient} group-hover:text-white group-hover:border-transparent transition-all duration-500 py-6 text-lg font-semibold rounded-xl border-2`}
-                  onClick={() => window.location.href = service.link}
-                >
-                  Learn More
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+          {services.map((service, index) => {
+            const IconComponent = getIconComponent(service.icon);
+            return (
+              <Card key={service.id} className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br ${service.bgGradient} backdrop-blur-sm`}>
+                {/* Gradient overlay on hover */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+                
+                <CardHeader className="pb-6 relative z-10">
+                  <div className={`w-20 h-20 bg-gradient-to-br ${service.gradient} rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
+                    <IconComponent className="w-10 h-10 text-white" />
+                  </div>
+                  <CardTitle className="text-2xl md:text-3xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
+                    {service.title}
+                  </CardTitle>
+                  <CardDescription className="text-slate-600 leading-relaxed text-lg">
+                    {service.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="relative z-10">
+                  <ul className="space-y-3 mb-8">
+                    {service.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center text-slate-700 text-base">
+                        <div className={`w-3 h-3 bg-gradient-to-r ${service.gradient} rounded-full mr-4 opacity-80`}></div>
+                        <span className="font-medium">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button 
+                    variant="outline" 
+                    className={`w-full group-hover:bg-gradient-to-r group-hover:${service.gradient} group-hover:text-white group-hover:border-transparent transition-all duration-500 py-6 text-lg font-semibold rounded-xl border-2`}
+                    onClick={() => window.location.href = service.link}
+                  >
+                    Learn More
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
         
         <div className="text-center">

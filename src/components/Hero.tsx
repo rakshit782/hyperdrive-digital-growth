@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -82,6 +81,14 @@ const Hero = () => {
     console.log("Hero logo loaded successfully");
   };
 
+  const handlePrimaryButtonClick = () => {
+    window.location.href = '/free-audit';
+  };
+
+  const handleSecondaryButtonClick = () => {
+    window.location.href = '/case-studies';
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white overflow-hidden">
       {/* Animated Background Elements */}
@@ -137,6 +144,7 @@ const Hero = () => {
             <Button 
               size="lg" 
               className="group bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:from-blue-600 hover:via-blue-700 hover:to-cyan-600 text-white px-10 py-6 text-xl font-semibold rounded-2xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-500 hover:scale-110 hover:-translate-y-2 border border-blue-400/30"
+              onClick={handlePrimaryButtonClick}
             >
               {ctaButtons.primaryText}
               <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
@@ -146,6 +154,7 @@ const Hero = () => {
               variant="outline" 
               size="lg" 
               className="group border-2 border-cyan-400/50 bg-white/5 backdrop-blur-sm text-cyan-100 hover:bg-cyan-400/10 hover:border-cyan-400 px-10 py-6 text-xl font-semibold rounded-2xl transition-all duration-500 hover:scale-110 hover:-translate-y-2"
+              onClick={handleSecondaryButtonClick}
             >
               <Play className="mr-3 w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
               {ctaButtons.secondaryText}

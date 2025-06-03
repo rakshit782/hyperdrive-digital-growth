@@ -1,7 +1,7 @@
-
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
+import Reviews from "@/components/Reviews";
 import Contact from "@/components/Contact";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ const Index = () => {
       <Header />
       <Hero />
       <Services />
+      <Reviews />
       
       {/* Blog Section Preview */}
       <section className="py-20 bg-gradient-to-br from-slate-100 via-white to-blue-50/50">

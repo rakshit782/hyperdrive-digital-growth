@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Save, Plus, Trash2, Phone, Mail, Clock, Upload, Image, MousePointer, BarChart3 } from "lucide-react";
+import { Settings, Save, Plus, Trash2, Phone, Mail, Clock, Upload, Image, MousePointer, BarChart3, Star, FileText, Download, ExternalLink, Rss } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const pricingSchema = z.object({
@@ -42,6 +42,37 @@ const statsSchema = z.object({
   number: z.string().min(1, "Number is required"),
   label: z.string().min(1, "Label is required"),
   color: z.string().min(1, "Color is required"),
+});
+
+const serviceSchema = z.object({
+  icon: z.string().min(1, "Icon is required"),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  features: z.string().min(1, "Features are required"),
+  gradient: z.string().min(1, "Gradient is required"),
+  bgGradient: z.string().min(1, "Background gradient is required"),
+  link: z.string().min(1, "Link is required"),
+});
+
+const reviewSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  company: z.string().min(1, "Company is required"),
+  rating: z.number().min(1).max(5),
+  review: z.string().min(1, "Review is required"),
+  avatar: z.string().optional(),
+});
+
+const blogSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  excerpt: z.string().min(1, "Excerpt is required"),
+  content: z.string().min(1, "Content is required"),
+  customUrl: z.string().min(1, "Custom URL is required"),
+  metaTitle: z.string().min(1, "Meta title is required"),
+  metaDescription: z.string().min(1, "Meta description is required"),
+  keywords: z.string().min(1, "Keywords are required"),
+  author: z.string().min(1, "Author is required"),
+  category: z.string().min(1, "Category is required"),
+  publishDate: z.string().min(1, "Publish date is required"),
 });
 
 interface PricingTier {
@@ -79,6 +110,41 @@ interface StatBlock {
   color: string;
 }
 
+interface ServiceCard {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+  features: string[];
+  gradient: string;
+  bgGradient: string;
+  link: string;
+}
+
+interface Review {
+  id: string;
+  name: string;
+  company: string;
+  rating: number;
+  review: string;
+  avatar?: string;
+}
+
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  customUrl: string;
+  metaTitle: string;
+  metaDescription: string;
+  keywords: string;
+  author: string;
+  category: string;
+  publishDate: string;
+  createdAt: string;
+}
+
 const Dashboard = () => {
   const { toast } = useToast();
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
@@ -100,6 +166,13 @@ const Dashboard = () => {
   });
   const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>([]);
   const [editingStatsIndex, setEditingStatsIndex] = useState<number | null>(null);
+  const [services, setServices] = useState<ServiceCard[]>([]);
+  const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [editingReviewIndex, setEditingReviewIndex] = useState<number | null>(null);
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [editingBlogIndex, setEditingBlogIndex] = useState<number | null>(null);
+  const [googleSheetUrl, setGoogleSheetUrl] = useState("");
 
   const pricingForm = useForm<z.infer<typeof pricingSchema>>({
     resolver: zodResolver(pricingSchema),
@@ -145,6 +218,46 @@ const Dashboard = () => {
       number: "",
       label: "",
       color: "from-blue-400 to-cyan-400",
+    },
+  });
+
+  const serviceForm = useForm<z.infer<typeof serviceSchema>>({
+    resolver: zodResolver(serviceSchema),
+    defaultValues: {
+      icon: "ShoppingCart",
+      title: "",
+      description: "",
+      features: "",
+      gradient: "from-blue-500 to-indigo-500",
+      bgGradient: "from-blue-50 to-indigo-50",
+      link: "",
+    },
+  });
+
+  const reviewForm = useForm<z.infer<typeof reviewSchema>>({
+    resolver: zodResolver(reviewSchema),
+    defaultValues: {
+      name: "",
+      company: "",
+      rating: 5,
+      review: "",
+      avatar: "",
+    },
+  });
+
+  const blogForm = useForm<z.infer<typeof blogSchema>>({
+    resolver: zodResolver(blogSchema),
+    defaultValues: {
+      title: "",
+      excerpt: "",
+      content: "",
+      customUrl: "",
+      metaTitle: "",
+      metaDescription: "",
+      keywords: "",
+      author: "",
+      category: "",
+      publishDate: "",
     },
   });
 
@@ -292,6 +405,82 @@ const Dashboard = () => {
       setStatsBlocks(defaultStats);
       localStorage.setItem('statsData', JSON.stringify(defaultStats));
     }
+
+    const savedServices = localStorage.getItem('servicesData');
+    if (savedServices) {
+      try {
+        const parsedData = JSON.parse(savedServices);
+        if (Array.isArray(parsedData)) {
+          setServices(parsedData);
+        }
+      } catch (error) {
+        console.log("Failed to parse services data:", error);
+      }
+    } else {
+      // Default services
+      const defaultServices: ServiceCard[] = [
+        {
+          id: "amazon-advertising",
+          icon: "ShoppingCart",
+          title: "Amazon Advertising",
+          description: "Expert PPC management, keyword optimization, and campaign strategies that maximize your Amazon sales and ROI.",
+          features: ["Sponsored Products", "Sponsored Brands", "Keyword Research", "Performance Analytics"],
+          gradient: "from-orange-500 to-red-500",
+          bgGradient: "from-orange-50 to-red-50",
+          link: "/amazon-advertising"
+        },
+        {
+          id: "walmart-advertising",
+          icon: "Store",
+          title: "Walmart Advertising",
+          description: "Comprehensive Walmart Connect advertising solutions to boost your visibility and sales on the growing marketplace.",
+          features: ["Search Ads", "Display Campaigns", "Video Advertising", "Performance Analytics"],
+          gradient: "from-blue-500 to-indigo-500",
+          bgGradient: "from-blue-50 to-indigo-50",
+          link: "/walmart-advertising"
+        }
+      ];
+      setServices(defaultServices);
+      localStorage.setItem('servicesData', JSON.stringify(defaultServices));
+    }
+
+    const savedReviews = localStorage.getItem('reviewsData');
+    if (savedReviews) {
+      try {
+        const parsedData = JSON.parse(savedReviews);
+        if (Array.isArray(parsedData)) {
+          setReviews(parsedData);
+        }
+      } catch (error) {
+        console.log("Failed to parse reviews data:", error);
+      }
+    } else {
+      // Default reviews
+      const defaultReviews: Review[] = [
+        {
+          id: "1",
+          name: "Sarah Johnson",
+          company: "E-commerce Store Owner",
+          rating: 5,
+          review: "AMZ Ad Scout transformed our Amazon business. Our sales increased by 400% in just 3 months!",
+          avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+        }
+      ];
+      setReviews(defaultReviews);
+      localStorage.setItem('reviewsData', JSON.stringify(defaultReviews));
+    }
+
+    const savedBlogs = localStorage.getItem('blogsData');
+    if (savedBlogs) {
+      try {
+        const parsedData = JSON.parse(savedBlogs);
+        if (Array.isArray(parsedData)) {
+          setBlogs(parsedData);
+        }
+      } catch (error) {
+        console.log("Failed to parse blogs data:", error);
+      }
+    }
   }, []);
 
   // Update forms when state changes
@@ -327,6 +516,43 @@ const Dashboard = () => {
     });
   }, [statsForm]);
 
+  useEffect(() => {
+    serviceForm.reset({
+      icon: services[editingServiceIndex]?.icon || "ShoppingCart",
+      title: services[editingServiceIndex]?.title || "",
+      description: services[editingServiceIndex]?.description || "",
+      features: services[editingServiceIndex]?.features?.join('\n') || "",
+      gradient: services[editingServiceIndex]?.gradient || "from-blue-500 to-indigo-500",
+      bgGradient: services[editingServiceIndex]?.bgGradient || "from-blue-50 to-indigo-50",
+      link: services[editingServiceIndex]?.link || "",
+    });
+  }, [services, editingServiceIndex, serviceForm]);
+
+  useEffect(() => {
+    reviewForm.reset({
+      name: reviews[editingReviewIndex]?.name || "",
+      company: reviews[editingReviewIndex]?.company || "",
+      rating: reviews[editingReviewIndex]?.rating || 5,
+      review: reviews[editingReviewIndex]?.review || "",
+      avatar: reviews[editingReviewIndex]?.avatar || "",
+    });
+  }, [reviews, editingReviewIndex, reviewForm]);
+
+  useEffect(() => {
+    blogForm.reset({
+      title: blogs[editingBlogIndex]?.title || "",
+      excerpt: blogs[editingBlogIndex]?.excerpt || "",
+      content: blogs[editingBlogIndex]?.content || "",
+      customUrl: blogs[editingBlogIndex]?.customUrl || "",
+      metaTitle: blogs[editingBlogIndex]?.metaTitle || "",
+      metaDescription: blogs[editingBlogIndex]?.metaDescription || "",
+      keywords: blogs[editingBlogIndex]?.keywords || "",
+      author: blogs[editingBlogIndex]?.author || "",
+      category: blogs[editingBlogIndex]?.category || "",
+      publishDate: blogs[editingBlogIndex]?.publishDate || "",
+    });
+  }, [blogs, editingBlogIndex, blogForm]);
+
   const savePricingData = (data: PricingTier[]) => {
     localStorage.setItem('pricingData', JSON.stringify(data));
     setPricingTiers(data);
@@ -356,6 +582,23 @@ const Dashboard = () => {
     setStatsBlocks(data);
     // Trigger a custom event to notify Hero component
     window.dispatchEvent(new CustomEvent('statsUpdated', { detail: data }));
+  };
+
+  const saveServicesData = (data: ServiceCard[]) => {
+    localStorage.setItem('servicesData', JSON.stringify(data));
+    setServices(data);
+    window.dispatchEvent(new CustomEvent('servicesUpdated', { detail: data }));
+  };
+
+  const saveReviewsData = (data: Review[]) => {
+    localStorage.setItem('reviewsData', JSON.stringify(data));
+    setReviews(data);
+    window.dispatchEvent(new CustomEvent('reviewsUpdated', { detail: data }));
+  };
+
+  const saveBlogsData = (data: BlogPost[]) => {
+    localStorage.setItem('blogsData', JSON.stringify(data));
+    setBlogs(data);
   };
 
   const onPricingSubmit = (values: z.infer<typeof pricingSchema>) => {
@@ -444,6 +687,103 @@ const Dashboard = () => {
     setEditingStatsIndex(null);
   };
 
+  const onServiceSubmit = (values: z.infer<typeof serviceSchema>) => {
+    const features = values.features.split('\n').filter(f => f.trim());
+    
+    const newService: ServiceCard = {
+      id: editingServiceIndex !== null ? services[editingServiceIndex].id : `service-${Date.now()}`,
+      icon: values.icon,
+      title: values.title,
+      description: values.description,
+      features,
+      gradient: values.gradient,
+      bgGradient: values.bgGradient,
+      link: values.link,
+    };
+
+    let updatedServices;
+    if (editingServiceIndex !== null) {
+      updatedServices = [...services];
+      updatedServices[editingServiceIndex] = newService;
+    } else {
+      updatedServices = [...services, newService];
+    }
+
+    saveServicesData(updatedServices);
+    
+    toast({
+      title: editingServiceIndex !== null ? "Service Updated!" : "Service Added!",
+      description: "The service has been saved successfully.",
+    });
+
+    serviceForm.reset();
+    setEditingServiceIndex(null);
+  };
+
+  const onReviewSubmit = (values: z.infer<typeof reviewSchema>) => {
+    const newReview: Review = {
+      id: editingReviewIndex !== null ? reviews[editingReviewIndex].id : `review-${Date.now()}`,
+      name: values.name,
+      company: values.company,
+      rating: values.rating,
+      review: values.review,
+      avatar: values.avatar,
+    };
+
+    let updatedReviews;
+    if (editingReviewIndex !== null) {
+      updatedReviews = [...reviews];
+      updatedReviews[editingReviewIndex] = newReview;
+    } else {
+      updatedReviews = [...reviews, newReview];
+    }
+
+    saveReviewsData(updatedReviews);
+    
+    toast({
+      title: editingReviewIndex !== null ? "Review Updated!" : "Review Added!",
+      description: "The review has been saved successfully.",
+    });
+
+    reviewForm.reset();
+    setEditingReviewIndex(null);
+  };
+
+  const onBlogSubmit = (values: z.infer<typeof blogSchema>) => {
+    const newBlog: BlogPost = {
+      id: editingBlogIndex !== null ? blogs[editingBlogIndex].id : `blog-${Date.now()}`,
+      title: values.title,
+      excerpt: values.excerpt,
+      content: values.content,
+      customUrl: values.customUrl,
+      metaTitle: values.metaTitle,
+      metaDescription: values.metaDescription,
+      keywords: values.keywords,
+      author: values.author,
+      category: values.category,
+      publishDate: values.publishDate,
+      createdAt: editingBlogIndex !== null ? blogs[editingBlogIndex].createdAt : new Date().toISOString(),
+    };
+
+    let updatedBlogs;
+    if (editingBlogIndex !== null) {
+      updatedBlogs = [...blogs];
+      updatedBlogs[editingBlogIndex] = newBlog;
+    } else {
+      updatedBlogs = [...blogs, newBlog];
+    }
+
+    saveBlogsData(updatedBlogs);
+    
+    toast({
+      title: editingBlogIndex !== null ? "Blog Updated!" : "Blog Added!",
+      description: "The blog post has been saved successfully.",
+    });
+
+    blogForm.reset();
+    setEditingBlogIndex(null);
+  };
+
   const editTier = (index: number) => {
     const tier = pricingTiers[index];
     pricingForm.setValue('name', tier.name);
@@ -490,6 +830,104 @@ const Dashboard = () => {
     });
   };
 
+  const editService = (index: number) => {
+    const service = services[index];
+    serviceForm.setValue('icon', service.icon);
+    serviceForm.setValue('title', service.title);
+    serviceForm.setValue('description', service.description);
+    serviceForm.setValue('features', service.features.join('\n'));
+    serviceForm.setValue('gradient', service.gradient);
+    serviceForm.setValue('bgGradient', service.bgGradient);
+    serviceForm.setValue('link', service.link);
+    setEditingServiceIndex(index);
+  };
+
+  const deleteService = (index: number) => {
+    const updatedServices = services.filter((_, i) => i !== index);
+    saveServicesData(updatedServices);
+    
+    toast({
+      title: "Service Deleted!",
+      description: "The service has been removed.",
+    });
+  };
+
+  const editReview = (index: number) => {
+    const review = reviews[index];
+    reviewForm.setValue('name', review.name);
+    reviewForm.setValue('company', review.company);
+    reviewForm.setValue('rating', review.rating);
+    reviewForm.setValue('review', review.review);
+    reviewForm.setValue('avatar', review.avatar || '');
+    setEditingReviewIndex(index);
+  };
+
+  const deleteReview = (index: number) => {
+    const updatedReviews = reviews.filter((_, i) => i !== index);
+    saveReviewsData(updatedReviews);
+    
+    toast({
+      title: "Review Deleted!",
+      description: "The review has been removed.",
+    });
+  };
+
+  const editBlog = (index: number) => {
+    const blog = blogs[index];
+    blogForm.setValue('title', blog.title);
+    blogForm.setValue('excerpt', blog.excerpt);
+    blogForm.setValue('content', blog.content);
+    blogForm.setValue('customUrl', blog.customUrl);
+    blogForm.setValue('metaTitle', blog.metaTitle);
+    blogForm.setValue('metaDescription', blog.metaDescription);
+    blogForm.setValue('keywords', blog.keywords);
+    blogForm.setValue('author', blog.author);
+    blogForm.setValue('category', blog.category);
+    blogForm.setValue('publishDate', blog.publishDate);
+    setEditingBlogIndex(index);
+  };
+
+  const deleteBlog = (index: number) => {
+    const updatedBlogs = blogs.filter((_, i) => i !== index);
+    saveBlogsData(updatedBlogs);
+    
+    toast({
+      title: "Blog Deleted!",
+      description: "The blog post has been removed.",
+    });
+  };
+
+  const downloadBlogTemplate = () => {
+    const csvContent = `Title,Excerpt,Content,Custom URL,Meta Title,Meta Description,Keywords,Author,Category,Publish Date
+"Sample Blog Title","This is a sample excerpt","This is the full content of the blog post","sample-blog-title","Sample Blog Title - SEO Optimized","This is a sample meta description for SEO","keyword1, keyword2, keyword3","John Doe","Technology","2024-01-01"`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'blog-template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const importFromGoogleSheet = async () => {
+    if (!googleSheetUrl) {
+      toast({
+        title: "Error",
+        description: "Please enter a Google Sheet URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // For now, just show a success message
+    // In a real implementation, you would fetch data from the Google Sheet
+    toast({
+      title: "Import Started",
+      description: "Google Sheet import functionality would be implemented here",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -503,12 +941,15 @@ const Dashboard = () => {
             </div>
 
             <Tabs defaultValue="pricing" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="pricing">Pricing Management</TabsTrigger>
-                <TabsTrigger value="contact">Contact Information</TabsTrigger>
-                <TabsTrigger value="logo">Logo Settings</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-7">
+                <TabsTrigger value="pricing">Pricing</TabsTrigger>
+                <TabsTrigger value="contact">Contact</TabsTrigger>
+                <TabsTrigger value="logo">Logo</TabsTrigger>
                 <TabsTrigger value="cta">CTA Buttons</TabsTrigger>
-                <TabsTrigger value="stats">Stats Blocks</TabsTrigger>
+                <TabsTrigger value="stats">Stats</TabsTrigger>
+                <TabsTrigger value="services">Services</TabsTrigger>
+                <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                <TabsTrigger value="blogs">Blogs</TabsTrigger>
               </TabsList>
               
               <TabsContent value="pricing" className="space-y-8">
@@ -801,7 +1242,7 @@ const Dashboard = () => {
                                 </FormControl>
                                 <FormMessage />
                                 <p className="text-sm text-slate-500 mt-1">
-                                  Enter a direct URL to your logo image (PNG, JPG, SVG supported)
+                                  Enter a direct URL to your logo image file (PNG, JPG, SVG supported)
                                 </p>
                               </FormItem>
                             )}
@@ -1157,6 +1598,557 @@ const Dashboard = () => {
                         </ul>
                       </CardContent>
                     </Card>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="services" className="space-y-8">
+                <div className="grid lg:grid-cols-2 gap-8">
+                  {/* Services Form */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{editingServiceIndex !== null ? 'Edit' : 'Add'} Service</CardTitle>
+                      <CardDescription>
+                        {editingServiceIndex !== null ? 'Update the service details' : 'Create a new service for your homepage'}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Form {...serviceForm}>
+                        <form onSubmit={serviceForm.handleSubmit(onServiceSubmit)} className="space-y-6">
+                          <FormField
+                            control={serviceForm.control}
+                            name="icon"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Icon</FormLabel>
+                                <FormControl>
+                                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                    <option value="ShoppingCart">Shopping Cart</option>
+                                    <option value="Store">Store</option>
+                                    <option value="Users">Users</option>
+                                    <option value="Settings">Settings</option>
+                                    <option value="Link2">Link</option>
+                                    <option value="Code">Code</option>
+                                    <option value="TrendingUp">Trending Up</option>
+                                  </select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={serviceForm.control}
+                            name="title"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Service Title</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="e.g., Amazon Advertising" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={serviceForm.control}
+                            name="description"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Brief description of the service" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={serviceForm.control}
+                            name="features"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Features (one per line)</FormLabel>
+                                <FormControl>
+                                  <Textarea 
+                                    placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
+                                    className="min-h-[120px]"
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={serviceForm.control}
+                            name="link"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Link URL</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="/service-page" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="flex gap-3">
+                            <Button type="submit" className="flex-1">
+                              <Save className="w-4 h-4 mr-2" />
+                              {editingServiceIndex !== null ? 'Update' : 'Add'} Service
+                            </Button>
+                            {editingServiceIndex !== null && (
+                              <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => {
+                                  serviceForm.reset();
+                                  setEditingServiceIndex(null);
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            )}
+                          </div>
+                        </form>
+                      </Form>
+                    </CardContent>
+                  </Card>
+
+                  {/* Current Services */}
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-slate-900">Current Services</h2>
+                    {services.map((service, index) => (
+                      <Card key={service.id}>
+                        <CardHeader className="pb-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <CardTitle className="text-lg">{service.title}</CardTitle>
+                              <p className="text-slate-600 text-sm">{service.description.substring(0, 100)}...</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button size="sm" variant="outline" onClick={() => editService(index)}>
+                                Edit
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => deleteService(index)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="reviews" className="space-y-8">
+                <div className="grid lg:grid-cols-2 gap-8">
+                  {/* Reviews Form */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{editingReviewIndex !== null ? 'Edit' : 'Add'} Review</CardTitle>
+                      <CardDescription>
+                        {editingReviewIndex !== null ? 'Update the review details' : 'Add a new customer review'}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Form {...reviewForm}>
+                        <form onSubmit={reviewForm.handleSubmit(onReviewSubmit)} className="space-y-6">
+                          <FormField
+                            control={reviewForm.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Customer Name</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="John Doe" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={reviewForm.control}
+                            name="company"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Company/Title</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="CEO at Company Name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={reviewForm.control}
+                            name="rating"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Rating</FormLabel>
+                                <FormControl>
+                                  <select {...field} onChange={(e) => field.onChange(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                                    <option value={5}>5 Stars</option>
+                                    <option value={4}>4 Stars</option>
+                                    <option value={3}>3 Stars</option>
+                                    <option value={2}>2 Stars</option>
+                                    <option value={1}>1 Star</option>
+                                  </select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={reviewForm.control}
+                            name="review"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Review Text</FormLabel>
+                                <FormControl>
+                                  <Textarea 
+                                    placeholder="This company provided excellent service..."
+                                    className="min-h-[120px]"
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={reviewForm.control}
+                            name="avatar"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Avatar URL (optional)</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="https://example.com/avatar.jpg" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="flex gap-3">
+                            <Button type="submit" className="flex-1">
+                              <Save className="w-4 h-4 mr-2" />
+                              {editingReviewIndex !== null ? 'Update' : 'Add'} Review
+                            </Button>
+                            {editingReviewIndex !== null && (
+                              <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => {
+                                  reviewForm.reset();
+                                  setEditingReviewIndex(null);
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            )}
+                          </div>
+                        </form>
+                      </Form>
+                    </CardContent>
+                  </Card>
+
+                  {/* Current Reviews */}
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-slate-900">Current Reviews</h2>
+                    {reviews.map((review, index) => (
+                      <Card key={review.id}>
+                        <CardHeader className="pb-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center mb-2">
+                                <div className="font-semibold">{review.name}</div>
+                                <div className="flex ml-2">
+                                  {Array.from({ length: review.rating }, (_, i) => (
+                                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                                  ))}
+                                </div>
+                              </div>
+                              <p className="text-sm text-slate-600">{review.company}</p>
+                              <p className="text-sm text-slate-700 mt-2">{review.review.substring(0, 100)}...</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button size="sm" variant="outline" onClick={() => editReview(index)}>
+                                Edit
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => deleteReview(index)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="blogs" className="space-y-8">
+                <div className="grid lg:grid-cols-2 gap-8">
+                  {/* Blog Management */}
+                  <div className="space-y-6">
+                    {/* Manual Blog Form */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>{editingBlogIndex !== null ? 'Edit' : 'Add'} Blog Post</CardTitle>
+                        <CardDescription>
+                          {editingBlogIndex !== null ? 'Update the blog post details' : 'Create a new blog post manually'}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Form {...blogForm}>
+                          <form onSubmit={blogForm.handleSubmit(onBlogSubmit)} className="space-y-6">
+                            <FormField
+                              control={blogForm.control}
+                              name="title"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Blog Title</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Your Blog Title" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={blogForm.control}
+                              name="customUrl"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Custom URL</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="your-blog-title" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={blogForm.control}
+                              name="excerpt"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Excerpt</FormLabel>
+                                  <FormControl>
+                                    <Textarea placeholder="Brief description..." {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={blogForm.control}
+                              name="content"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Content</FormLabel>
+                                  <FormControl>
+                                    <Textarea 
+                                      placeholder="Full blog content..." 
+                                      className="min-h-[200px]"
+                                      {...field} 
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={blogForm.control}
+                                name="author"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Author</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="John Doe" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={blogForm.control}
+                                name="category"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Category</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Technology" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            <FormField
+                              control={blogForm.control}
+                              name="publishDate"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Publish Date</FormLabel>
+                                  <FormControl>
+                                    <Input type="date" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={blogForm.control}
+                              name="metaTitle"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Meta Title (SEO)</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="SEO optimized title" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={blogForm.control}
+                              name="metaDescription"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Meta Description (SEO)</FormLabel>
+                                  <FormControl>
+                                    <Textarea placeholder="SEO description..." {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={blogForm.control}
+                              name="keywords"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Keywords (comma separated)</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="keyword1, keyword2, keyword3" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <div className="flex gap-3">
+                              <Button type="submit" className="flex-1">
+                                <Save className="w-4 h-4 mr-2" />
+                                {editingBlogIndex !== null ? 'Update' : 'Publish'} Blog
+                              </Button>
+                              {editingBlogIndex !== null && (
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    blogForm.reset();
+                                    setEditingBlogIndex(null);
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              )}
+                            </div>
+                          </form>
+                        </Form>
+                      </CardContent>
+                    </Card>
+
+                    {/* Bulk Import */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Bulk Import</CardTitle>
+                        <CardDescription>Import multiple blog posts from Google Sheets or Excel</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="flex gap-3">
+                          <Button onClick={downloadBlogTemplate} variant="outline" className="flex-1">
+                            <Download className="w-4 h-4 mr-2" />
+                            Download Template
+                          </Button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <Input
+                            placeholder="Google Sheet URL"
+                            value={googleSheetUrl}
+                            onChange={(e) => setGoogleSheetUrl(e.target.value)}
+                          />
+                          <Button onClick={importFromGoogleSheet} className="w-full">
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            Import from Google Sheet
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Current Blogs */}
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-slate-900">Published Blogs</h2>
+                    {blogs.map((blog, index) => (
+                      <Card key={blog.id}>
+                        <CardHeader className="pb-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <CardTitle className="text-lg">{blog.title}</CardTitle>
+                              <p className="text-sm text-slate-600 mt-1">{blog.excerpt}</p>
+                              <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                                <span>By {blog.author}</span>
+                                <span>{blog.category}</span>
+                                <span>{new Date(blog.publishDate).toLocaleDateString()}</span>
+                              </div>
+                              <p className="text-xs text-blue-600 mt-1">/{blog.customUrl}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button size="sm" variant="outline" onClick={() => editBlog(index)}>
+                                Edit
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => deleteBlog(index)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                      </Card>
+                    ))}
+                    
+                    {blogs.length === 0 && (
+                      <Card>
+                        <CardContent className="flex flex-col items-center justify-center py-12">
+                          <FileText className="w-12 h-12 text-slate-400 mb-4" />
+                          <p className="text-slate-600">No blog posts yet. Create your first blog post!</p>
+                        </CardContent>
+                      </Card>
+                    )}
                   </div>
                 </div>
               </TabsContent>
