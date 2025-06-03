@@ -12,73 +12,93 @@ interface Review {
   avatar?: string;
 }
 
+const defaultReviews: Review[] = [
+  {
+    id: "1",
+    name: "Sarah Johnson",
+    company: "E-commerce Store Owner",
+    rating: 5,
+    review: "AMZ Ad Scout transformed our Amazon business. Our sales increased by 400% in just 3 months!",
+    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+  },
+  {
+    id: "2",
+    name: "Michael Chen",
+    company: "Product Manager",
+    rating: 5,
+    review: "The team's expertise in Amazon advertising is unmatched. They delivered results beyond our expectations.",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+  },
+  {
+    id: "3",
+    name: "Emily Rodriguez",
+    company: "Brand Director",
+    rating: 5,
+    review: "Professional, results-driven, and always available. Our ROAS improved dramatically with their strategies.",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+  },
+  {
+    id: "4",
+    name: "David Thompson",
+    company: "Startup Founder",
+    rating: 5,
+    review: "From zero to hero on Amazon! Their campaign management and optimization skills are top-notch.",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+  },
+  {
+    id: "5",
+    name: "Lisa Wang",
+    company: "Brand Manager",
+    rating: 5,
+    review: "Outstanding results! Our conversion rates doubled within the first month of working with them.",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
+  },
+  {
+    id: "6",
+    name: "Robert Miller",
+    company: "Online Retailer",
+    rating: 5,
+    review: "Best investment we made for our business. Their strategic approach to Amazon advertising is phenomenal.",
+    avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66?w=150&h=150&fit=crop&crop=face"
+  }
+];
+
 const Reviews = () => {
-  const [reviews, setReviews] = useState<Review[]>([
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      company: "E-commerce Store Owner",
-      rating: 5,
-      review: "AMZ Ad Scout transformed our Amazon business. Our sales increased by 400% in just 3 months!",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
-    },
-    {
-      id: "2",
-      name: "Michael Chen",
-      company: "Product Manager",
-      rating: 5,
-      review: "The team's expertise in Amazon advertising is unmatched. They delivered results beyond our expectations.",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
-    },
-    {
-      id: "3",
-      name: "Emily Rodriguez",
-      company: "Brand Director",
-      rating: 5,
-      review: "Professional, results-driven, and always available. Our ROAS improved dramatically with their strategies.",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
-    },
-    {
-      id: "4",
-      name: "David Thompson",
-      company: "Startup Founder",
-      rating: 5,
-      review: "From zero to hero on Amazon! Their campaign management and optimization skills are top-notch.",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-    },
-    {
-      id: "5",
-      name: "Lisa Wang",
-      company: "Brand Manager",
-      rating: 5,
-      review: "Outstanding results! Our conversion rates doubled within the first month of working with them.",
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
-    },
-    {
-      id: "6",
-      name: "Robert Miller",
-      company: "Online Retailer",
-      rating: 5,
-      review: "Best investment we made for our business. Their strategic approach to Amazon advertising is phenomenal.",
-      avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66?w=150&h=150&fit=crop&crop=face"
-    }
-  ]);
+  const [reviews, setReviews] = useState<Review[]>(defaultReviews);
 
   useEffect(() => {
-    const savedReviews = localStorage.getItem('reviewsData');
-    if (savedReviews) {
-      try {
-        const parsedData = JSON.parse(savedReviews);
-        if (Array.isArray(parsedData)) {
-          setReviews(parsedData);
+    console.log("Reviews: Component mounted, initializing...");
+    
+    const loadReviews = () => {
+      const savedReviews = localStorage.getItem('reviewsData');
+      if (savedReviews) {
+        try {
+          const parsedData = JSON.parse(savedReviews);
+          if (Array.isArray(parsedData) && parsedData.length > 0) {
+            console.log("Reviews: Loaded from localStorage:", parsedData.length);
+            setReviews(parsedData);
+          } else {
+            console.log("Reviews: Invalid localStorage data, using defaults");
+            setReviews(defaultReviews);
+          }
+        } catch (error) {
+          console.error("Reviews: Failed to parse localStorage data:", error);
+          setReviews(defaultReviews);
         }
-      } catch (error) {
-        console.log("Failed to parse reviews data:", error);
+      } else {
+        console.log("Reviews: No localStorage data, using defaults");
+        setReviews(defaultReviews);
       }
-    }
+    };
+
+    // Initial load
+    loadReviews();
 
     const handleReviewsUpdate = (event: CustomEvent) => {
-      setReviews(event.detail);
+      console.log("Reviews: Received update event with data:", event.detail?.length);
+      if (event.detail && Array.isArray(event.detail)) {
+        setReviews(event.detail);
+      }
     };
 
     window.addEventListener('reviewsUpdated', handleReviewsUpdate as EventListener);
@@ -87,6 +107,11 @@ const Reviews = () => {
       window.removeEventListener('reviewsUpdated', handleReviewsUpdate as EventListener);
     };
   }, []);
+
+  // Debug: Log current reviews whenever it changes
+  useEffect(() => {
+    console.log("Reviews: Current reviews count:", reviews.length);
+  }, [reviews]);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (

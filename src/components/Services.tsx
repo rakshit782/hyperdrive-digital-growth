@@ -25,85 +25,105 @@ interface ServiceCard {
   link: string;
 }
 
+const defaultServices: ServiceCard[] = [
+  {
+    id: "amazon-advertising",
+    icon: "ShoppingCart",
+    title: "Amazon Advertising",
+    description: "Expert PPC management, keyword optimization, and campaign strategies that maximize your Amazon sales and ROI.",
+    features: ["Sponsored Products", "Sponsored Brands", "Keyword Research", "Performance Analytics"],
+    gradient: "from-orange-500 to-red-500",
+    bgGradient: "from-orange-50 to-red-50",
+    link: "/amazon-advertising"
+  },
+  {
+    id: "walmart-advertising",
+    icon: "Store",
+    title: "Walmart Advertising",
+    description: "Comprehensive Walmart Connect advertising solutions to boost your visibility and sales on the growing marketplace.",
+    features: ["Search Ads", "Display Campaigns", "Video Advertising", "Performance Analytics"],
+    gradient: "from-blue-500 to-indigo-500",
+    bgGradient: "from-blue-50 to-indigo-50",
+    link: "/walmart-advertising"
+  },
+  {
+    id: "meta-advertising",
+    icon: "Users",
+    title: "Meta Advertising",
+    description: "Facebook and Instagram ad campaigns that drive traffic, generate leads, and increase conversions for your business.",
+    features: ["Facebook Ads", "Instagram Campaigns", "Audience Targeting", "Creative Optimization"],
+    gradient: "from-purple-500 to-pink-500",
+    bgGradient: "from-purple-50 to-pink-50",
+    link: "/meta-advertising"
+  },
+  {
+    id: "account-management",
+    icon: "Settings",
+    title: "Complete Account Management",
+    description: "Full-service account management with dedicated specialists monitoring and optimizing your campaigns 24/7.",
+    features: ["24/7 Monitoring", "Performance Reports", "Strategy Optimization", "Dedicated Manager"],
+    gradient: "from-emerald-500 to-teal-500",
+    bgGradient: "from-emerald-50 to-teal-50",
+    link: "/account-management"
+  },
+  {
+    id: "shopify-integration",
+    icon: "Link2",
+    title: "Shopify Integration",
+    description: "Seamless integration of your Shopify store with Amazon and Walmart marketplaces for unified inventory management.",
+    features: ["Inventory Sync", "Order Management", "Product Listing", "Multi-channel Setup"],
+    gradient: "from-cyan-500 to-blue-500",
+    bgGradient: "from-cyan-50 to-blue-50",
+    link: "/shopify-integration"
+  },
+  {
+    id: "shopify-development",
+    icon: "Code",
+    title: "Shopify Development",
+    description: "Custom Shopify store development and theme customization to create a powerful e-commerce presence.",
+    features: ["Custom Themes", "App Integration", "Mobile Optimization", "Speed Enhancement"],
+    gradient: "from-violet-500 to-purple-500",
+    bgGradient: "from-violet-50 to-purple-50",
+    link: "/shopify-development"
+  }
+];
+
 const Services = () => {
-  const [services, setServices] = useState<ServiceCard[]>([
-    {
-      id: "amazon-advertising",
-      icon: "ShoppingCart",
-      title: "Amazon Advertising",
-      description: "Expert PPC management, keyword optimization, and campaign strategies that maximize your Amazon sales and ROI.",
-      features: ["Sponsored Products", "Sponsored Brands", "Keyword Research", "Performance Analytics"],
-      gradient: "from-orange-500 to-red-500",
-      bgGradient: "from-orange-50 to-red-50",
-      link: "/amazon-advertising"
-    },
-    {
-      id: "walmart-advertising",
-      icon: "Store",
-      title: "Walmart Advertising",
-      description: "Comprehensive Walmart Connect advertising solutions to boost your visibility and sales on the growing marketplace.",
-      features: ["Search Ads", "Display Campaigns", "Video Advertising", "Performance Analytics"],
-      gradient: "from-blue-500 to-indigo-500",
-      bgGradient: "from-blue-50 to-indigo-50",
-      link: "/walmart-advertising"
-    },
-    {
-      id: "meta-advertising",
-      icon: "Users",
-      title: "Meta Advertising",
-      description: "Facebook and Instagram ad campaigns that drive traffic, generate leads, and increase conversions for your business.",
-      features: ["Facebook Ads", "Instagram Campaigns", "Audience Targeting", "Creative Optimization"],
-      gradient: "from-purple-500 to-pink-500",
-      bgGradient: "from-purple-50 to-pink-50",
-      link: "/meta-advertising"
-    },
-    {
-      id: "account-management",
-      icon: "Settings",
-      title: "Complete Account Management",
-      description: "Full-service account management with dedicated specialists monitoring and optimizing your campaigns 24/7.",
-      features: ["24/7 Monitoring", "Performance Reports", "Strategy Optimization", "Dedicated Manager"],
-      gradient: "from-emerald-500 to-teal-500",
-      bgGradient: "from-emerald-50 to-teal-50",
-      link: "/account-management"
-    },
-    {
-      id: "shopify-integration",
-      icon: "Link2",
-      title: "Shopify Integration",
-      description: "Seamless integration of your Shopify store with Amazon and Walmart marketplaces for unified inventory management.",
-      features: ["Inventory Sync", "Order Management", "Product Listing", "Multi-channel Setup"],
-      gradient: "from-cyan-500 to-blue-500",
-      bgGradient: "from-cyan-50 to-blue-50",
-      link: "/shopify-integration"
-    },
-    {
-      id: "shopify-development",
-      icon: "Code",
-      title: "Shopify Development",
-      description: "Custom Shopify store development and theme customization to create a powerful e-commerce presence.",
-      features: ["Custom Themes", "App Integration", "Mobile Optimization", "Speed Enhancement"],
-      gradient: "from-violet-500 to-purple-500",
-      bgGradient: "from-violet-50 to-purple-50",
-      link: "/shopify-development"
-    }
-  ]);
+  const [services, setServices] = useState<ServiceCard[]>(defaultServices);
 
   useEffect(() => {
-    const savedServices = localStorage.getItem('servicesData');
-    if (savedServices) {
-      try {
-        const parsedData = JSON.parse(savedServices);
-        if (Array.isArray(parsedData)) {
-          setServices(parsedData);
+    console.log("Services: Component mounted, initializing...");
+    
+    const loadServices = () => {
+      const savedServices = localStorage.getItem('servicesData');
+      if (savedServices) {
+        try {
+          const parsedData = JSON.parse(savedServices);
+          if (Array.isArray(parsedData) && parsedData.length > 0) {
+            console.log("Services: Loaded from localStorage:", parsedData.length);
+            setServices(parsedData);
+          } else {
+            console.log("Services: Invalid localStorage data, using defaults");
+            setServices(defaultServices);
+          }
+        } catch (error) {
+          console.error("Services: Failed to parse localStorage data:", error);
+          setServices(defaultServices);
         }
-      } catch (error) {
-        console.log("Failed to parse services data:", error);
+      } else {
+        console.log("Services: No localStorage data, using defaults");
+        setServices(defaultServices);
       }
-    }
+    };
+
+    // Initial load
+    loadServices();
 
     const handleServicesUpdate = (event: CustomEvent) => {
-      setServices(event.detail);
+      console.log("Services: Received update event with data:", event.detail?.length);
+      if (event.detail && Array.isArray(event.detail)) {
+        setServices(event.detail);
+      }
     };
 
     window.addEventListener('servicesUpdated', handleServicesUpdate as EventListener);
@@ -112,6 +132,11 @@ const Services = () => {
       window.removeEventListener('servicesUpdated', handleServicesUpdate as EventListener);
     };
   }, []);
+
+  // Debug: Log current services whenever it changes
+  useEffect(() => {
+    console.log("Services: Current services count:", services.length);
+  }, [services]);
 
   const getIconComponent = (iconName: string) => {
     const icons = {
