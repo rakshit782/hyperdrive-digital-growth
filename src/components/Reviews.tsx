@@ -45,6 +45,22 @@ const Reviews = () => {
       rating: 5,
       review: "From zero to hero on Amazon! Their campaign management and optimization skills are top-notch.",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+    },
+    {
+      id: "5",
+      name: "Lisa Wang",
+      company: "Brand Manager",
+      rating: 5,
+      review: "Outstanding results! Our conversion rates doubled within the first month of working with them.",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
+    },
+    {
+      id: "6",
+      name: "Robert Miller",
+      company: "Online Retailer",
+      rating: 5,
+      review: "Best investment we made for our business. Their strategic approach to Amazon advertising is phenomenal.",
+      avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66?w=150&h=150&fit=crop&crop=face"
     }
   ]);
 
