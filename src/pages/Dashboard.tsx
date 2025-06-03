@@ -2,6 +2,7 @@
 import { useState } from "react";
 import ServicesTab from "@/components/dashboard/ServicesTab";
 import ReviewsTab from "@/components/dashboard/ReviewsTab";
+import WebsiteTab from "@/components/dashboard/WebsiteTab";
 import ServiceEditModal from "@/components/dashboard/ServiceEditModal";
 import ReviewEditModal from "@/components/dashboard/ReviewEditModal";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -11,7 +12,7 @@ const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
   const [editingService, setEditingService] = useState<ServiceCard | null>(null);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
-  const [activeTab, setActiveTab] = useState<'services' | 'reviews'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'website'>('services');
 
   const deleteService = (id: string) => {
     const newServices = services.filter(service => service.id !== id);
@@ -99,6 +100,16 @@ const Dashboard = () => {
               >
                 Reviews ({reviews.length})
               </button>
+              <button
+                onClick={() => setActiveTab('website')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'website'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Website
+              </button>
             </nav>
           </div>
         </div>
@@ -119,6 +130,10 @@ const Dashboard = () => {
             onDelete={deleteReview}
             onAdd={addNewReview}
           />
+        )}
+
+        {activeTab === 'website' && (
+          <WebsiteTab />
         )}
 
         {editingService && (
