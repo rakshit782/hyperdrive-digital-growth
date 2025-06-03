@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Save, Plus, Trash2, Phone, Mail, Clock, Upload, Image, MousePointer } from "lucide-react";
+import { Settings, Save, Plus, Trash2, Phone, Mail, Clock, Upload, Image, MousePointer, BarChart3 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const pricingSchema = z.object({
@@ -36,6 +36,12 @@ const logoSchema = z.object({
 const ctaButtonSchema = z.object({
   primaryText: z.string().min(1, "Primary button text is required"),
   secondaryText: z.string().min(1, "Secondary button text is required"),
+});
+
+const statsSchema = z.object({
+  number: z.string().min(1, "Number is required"),
+  label: z.string().min(1, "Label is required"),
+  color: z.string().min(1, "Color is required"),
 });
 
 interface PricingTier {
@@ -66,6 +72,13 @@ interface CTAButtons {
   secondaryText?: string;
 }
 
+interface StatBlock {
+  id: string;
+  number: string;
+  label: string;
+  color: string;
+}
+
 const Dashboard = () => {
   const { toast } = useToast();
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
@@ -85,6 +98,8 @@ const Dashboard = () => {
     primaryText: "Get Free Strategy Call",
     secondaryText: "Watch Case Study"
   });
+  const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>([]);
+  const [editingStatsIndex, setEditingStatsIndex] = useState<number | null>(null);
 
   const pricingForm = useForm<z.infer<typeof pricingSchema>>({
     resolver: zodResolver(pricingSchema),
@@ -121,6 +136,15 @@ const Dashboard = () => {
     defaultValues: {
       primaryText: "Get Free Strategy Call",
       secondaryText: "Watch Case Study"
+    },
+  });
+
+  const statsForm = useForm<z.infer<typeof statsSchema>>({
+    resolver: zodResolver(statsSchema),
+    defaultValues: {
+      number: "",
+      label: "",
+      color: "from-blue-400 to-cyan-400",
     },
   });
 
@@ -246,6 +270,28 @@ const Dashboard = () => {
         console.log("Failed to parse CTA buttons data from localStorage:", error);
       }
     }
+
+    const savedStats = localStorage.getItem('statsData');
+    if (savedStats) {
+      try {
+        const parsedData = JSON.parse(savedStats);
+        if (Array.isArray(parsedData)) {
+          setStatsBlocks(parsedData);
+        }
+      } catch (error) {
+        console.log("Failed to parse stats data from localStorage:", error);
+      }
+    } else {
+      // Default stats blocks
+      const defaultStats: StatBlock[] = [
+        { id: "campaigns", number: "500+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
+        { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
+        { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
+        { id: "monitoring", number: "24/7", label: "Account Monitoring", color: "from-pink-400 to-blue-400" }
+      ];
+      setStatsBlocks(defaultStats);
+      localStorage.setItem('statsData', JSON.stringify(defaultStats));
+    }
   }, []);
 
   // Update forms when state changes
@@ -273,6 +319,14 @@ const Dashboard = () => {
     });
   }, [ctaButtons, ctaButtonForm]);
 
+  useEffect(() => {
+    statsForm.reset({
+      number: "",
+      label: "",
+      color: "from-blue-400 to-cyan-400",
+    });
+  }, [statsForm]);
+
   const savePricingData = (data: PricingTier[]) => {
     localStorage.setItem('pricingData', JSON.stringify(data));
     setPricingTiers(data);
@@ -295,6 +349,13 @@ const Dashboard = () => {
     setCTAButtons(data);
     // Trigger a custom event to notify Hero component
     window.dispatchEvent(new CustomEvent('ctaButtonsUpdated', { detail: data }));
+  };
+
+  const saveStatsData = (data: StatBlock[]) => {
+    localStorage.setItem('statsData', JSON.stringify(data));
+    setStatsBlocks(data);
+    // Trigger a custom event to notify Hero component
+    window.dispatchEvent(new CustomEvent('statsUpdated', { detail: data }));
   };
 
   const onPricingSubmit = (values: z.infer<typeof pricingSchema>) => {
@@ -356,6 +417,33 @@ const Dashboard = () => {
     });
   };
 
+  const onStatsSubmit = (values: z.infer<typeof statsSchema>) => {
+    const newStat: StatBlock = {
+      id: editingStatsIndex !== null ? statsBlocks[editingStatsIndex].id : `stat-${Date.now()}`,
+      number: values.number,
+      label: values.label,
+      color: values.color,
+    };
+
+    let updatedStats;
+    if (editingStatsIndex !== null) {
+      updatedStats = [...statsBlocks];
+      updatedStats[editingStatsIndex] = newStat;
+    } else {
+      updatedStats = [...statsBlocks, newStat];
+    }
+
+    saveStatsData(updatedStats);
+    
+    toast({
+      title: editingStatsIndex !== null ? "Stat Updated!" : "Stat Added!",
+      description: "The stat block has been saved successfully.",
+    });
+
+    statsForm.reset();
+    setEditingStatsIndex(null);
+  };
+
   const editTier = (index: number) => {
     const tier = pricingTiers[index];
     pricingForm.setValue('name', tier.name);
@@ -384,6 +472,24 @@ const Dashboard = () => {
     savePricingData(updatedTiers);
   };
 
+  const editStat = (index: number) => {
+    const stat = statsBlocks[index];
+    statsForm.setValue('number', stat.number);
+    statsForm.setValue('label', stat.label);
+    statsForm.setValue('color', stat.color);
+    setEditingStatsIndex(index);
+  };
+
+  const deleteStat = (index: number) => {
+    const updatedStats = statsBlocks.filter((_, i) => i !== index);
+    saveStatsData(updatedStats);
+    
+    toast({
+      title: "Stat Deleted!",
+      description: "The stat block has been removed.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -397,11 +503,12 @@ const Dashboard = () => {
             </div>
 
             <Tabs defaultValue="pricing" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="pricing">Pricing Management</TabsTrigger>
                 <TabsTrigger value="contact">Contact Information</TabsTrigger>
                 <TabsTrigger value="logo">Logo Settings</TabsTrigger>
                 <TabsTrigger value="cta">CTA Buttons</TabsTrigger>
+                <TabsTrigger value="stats">Stats Blocks</TabsTrigger>
               </TabsList>
               
               <TabsContent value="pricing" className="space-y-8">
@@ -907,6 +1014,146 @@ const Dashboard = () => {
                           <li>Secondary button can be for exploration or engagement</li>
                           <li>Use verbs that create urgency or value</li>
                           <li>Test different variations to optimize conversions</li>
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="stats" className="space-y-8">
+                <div className="grid lg:grid-cols-2 gap-8">
+                  {/* Stats Form */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{editingStatsIndex !== null ? 'Edit' : 'Add'} Stats Block</CardTitle>
+                      <CardDescription>
+                        {editingStatsIndex !== null ? 'Update the stats block details' : 'Create a new stats block for the hero section'}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Form {...statsForm}>
+                        <form onSubmit={statsForm.handleSubmit(onStatsSubmit)} className="space-y-6">
+                          <FormField
+                            control={statsForm.control}
+                            name="number"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Number/Value</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="e.g., 500+, $50M+, 300%" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={statsForm.control}
+                            name="label"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Label</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="e.g., Campaigns Managed" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={statsForm.control}
+                            name="color"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Gradient Color</FormLabel>
+                                <FormControl>
+                                  <select {...field} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                                    <option value="from-blue-400 to-cyan-400">Blue to Cyan</option>
+                                    <option value="from-cyan-400 to-purple-400">Cyan to Purple</option>
+                                    <option value="from-purple-400 to-pink-400">Purple to Pink</option>
+                                    <option value="from-pink-400 to-blue-400">Pink to Blue</option>
+                                    <option value="from-green-400 to-blue-400">Green to Blue</option>
+                                    <option value="from-yellow-400 to-orange-400">Yellow to Orange</option>
+                                    <option value="from-red-400 to-pink-400">Red to Pink</option>
+                                    <option value="from-indigo-400 to-purple-400">Indigo to Purple</option>
+                                  </select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="flex gap-3">
+                            <Button type="submit" className="flex-1">
+                              <Save className="w-4 h-4 mr-2" />
+                              {editingStatsIndex !== null ? 'Update' : 'Add'} Stat
+                            </Button>
+                            {editingStatsIndex !== null && (
+                              <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => {
+                                  statsForm.reset();
+                                  setEditingStatsIndex(null);
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            )}
+                          </div>
+                        </form>
+                      </Form>
+                    </CardContent>
+                  </Card>
+
+                  {/* Current Stats Blocks */}
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-slate-900">Current Stats Blocks</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                      {statsBlocks.map((stat, index) => (
+                        <Card key={stat.id} className="relative">
+                          <CardHeader className="pb-4">
+                            <div className="flex justify-between items-start">
+                              <div className="text-center w-full">
+                                <div className={`text-2xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
+                                  {stat.number}
+                                </div>
+                                <div className="text-blue-600 text-sm font-medium">
+                                  {stat.label}
+                                </div>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-0">
+                            <div className="flex gap-2 justify-center">
+                              <Button size="sm" variant="outline" onClick={() => editStat(index)}>
+                                Edit
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => deleteStat(index)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    <Card className="bg-blue-50 border-blue-200">
+                      <CardHeader>
+                        <CardTitle className="text-blue-800 flex items-center">
+                          <BarChart3 className="w-5 h-5 mr-2" />
+                          Stats Block Guidelines
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="text-blue-700">
+                        <ul className="list-disc list-inside space-y-2 text-sm">
+                          <li>Keep numbers concise and impactful (e.g., 500+, $50M+)</li>
+                          <li>Use clear, descriptive labels</li>
+                          <li>Choose colors that match your brand</li>
+                          <li>Limit to 4 blocks for best visual balance</li>
+                          <li>Use metrics that showcase your success</li>
                         </ul>
                       </CardContent>
                     </Card>

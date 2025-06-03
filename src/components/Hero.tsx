@@ -1,5 +1,4 @@
 
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -9,11 +8,25 @@ interface CTAButtons {
   secondaryText?: string;
 }
 
+interface StatBlock {
+  id: string;
+  number: string;
+  label: string;
+  color: string;
+}
+
 const Hero = () => {
   const [ctaButtons, setCTAButtons] = useState<CTAButtons>({
     primaryText: "Get Free Strategy Call",
     secondaryText: "Watch Case Study"
   });
+
+  const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>([
+    { id: "campaigns", number: "500+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
+    { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
+    { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
+    { id: "monitoring", number: "24/7", label: "Account Monitoring", color: "from-pink-400 to-blue-400" }
+  ]);
 
   useEffect(() => {
     // Load CTA buttons from localStorage
@@ -29,15 +42,35 @@ const Hero = () => {
       }
     }
 
+    // Load stats blocks from localStorage
+    const savedStats = localStorage.getItem('statsData');
+    if (savedStats) {
+      try {
+        const parsedData = JSON.parse(savedStats);
+        if (Array.isArray(parsedData)) {
+          setStatsBlocks(parsedData);
+        }
+      } catch (error) {
+        console.log("Failed to parse stats data:", error);
+      }
+    }
+
     // Listen for CTA buttons updates
     const handleCTAButtonsUpdate = (event: CustomEvent) => {
       setCTAButtons(event.detail);
     };
 
+    // Listen for stats updates
+    const handleStatsUpdate = (event: CustomEvent) => {
+      setStatsBlocks(event.detail);
+    };
+
     window.addEventListener('ctaButtonsUpdated', handleCTAButtonsUpdate as EventListener);
+    window.addEventListener('statsUpdated', handleStatsUpdate as EventListener);
 
     return () => {
       window.removeEventListener('ctaButtonsUpdated', handleCTAButtonsUpdate as EventListener);
+      window.removeEventListener('statsUpdated', handleStatsUpdate as EventListener);
     };
   }, []);
 
@@ -121,13 +154,8 @@ const Hero = () => {
           
           {/* Enhanced Stats Grid - Perfect Symmetry and Responsiveness */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
-            {[
-              { number: "500+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
-              { number: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
-              { number: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
-              { number: "24/7", label: "Account Monitoring", color: "from-pink-400 to-blue-400" }
-            ].map((stat, index) => (
-              <div key={index} className="group w-full">
+            {statsBlocks.map((stat, index) => (
+              <div key={stat.id} className="group w-full">
                 <div className="relative bg-white/5 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 h-full flex flex-col justify-center items-center text-center min-h-[120px] sm:min-h-[140px]">
                   <div className={`text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
                     {stat.number}
