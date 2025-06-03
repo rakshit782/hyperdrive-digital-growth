@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Image } from "lucide-react";
+import { Image, Eye } from "lucide-react";
 
 interface LogoSettings {
   logoUrl: string;
@@ -54,70 +54,142 @@ const LogoManagement = () => {
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center">
-          <Image className="w-5 h-5 mr-2 text-blue-600" />
-          <CardTitle>Logo Management</CardTitle>
-        </div>
-        <CardDescription>Customize your website logo and display settings</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <Label htmlFor="logoUrl">Logo URL</Label>
-          <Input
-            id="logoUrl"
-            value={logoSettings.logoUrl}
-            onChange={(e) => handleInputChange('logoUrl', e.target.value)}
-            placeholder="https://example.com/logo.png"
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="logoAlt">Logo Alt Text</Label>
-          <Input
-            id="logoAlt"
-            value={logoSettings.logoAlt}
-            onChange={(e) => handleInputChange('logoAlt', e.target.value)}
-            placeholder="Your company name"
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="logoSize">Logo Size</Label>
-          <select
-            id="logoSize"
-            value={logoSettings.logoSize}
-            onChange={(e) => handleInputChange('logoSize', e.target.value)}
-            className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md text-sm"
-          >
-            {sizeOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="pt-4">
-          <Label>Preview</Label>
-          <div className="border rounded-lg p-4 bg-gray-50 flex items-center justify-center">
-            <img 
-              src={logoSettings.logoUrl}
-              alt={logoSettings.logoAlt}
-              className={`${logoSettings.logoSize} w-auto object-contain`}
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.svg";
-              }}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Settings Panel */}
+      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
+        <CardHeader>
+          <div className="flex items-center">
+            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg mr-3">
+              <Image className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-bold text-slate-900">Logo Settings</CardTitle>
+              <CardDescription>Customize your website logo and display settings</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="logoUrl" className="text-sm font-medium text-slate-700">Logo URL</Label>
+            <Input
+              id="logoUrl"
+              value={logoSettings.logoUrl}
+              onChange={(e) => handleInputChange('logoUrl', e.target.value)}
+              placeholder="https://example.com/logo.png"
+              className="bg-white/50 border-white/30 focus:border-indigo-500"
             />
           </div>
-        </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="logoAlt" className="text-sm font-medium text-slate-700">Logo Alt Text</Label>
+            <Input
+              id="logoAlt"
+              value={logoSettings.logoAlt}
+              onChange={(e) => handleInputChange('logoAlt', e.target.value)}
+              placeholder="Your company name"
+              className="bg-white/50 border-white/30 focus:border-indigo-500"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="logoSize" className="text-sm font-medium text-slate-700">Logo Size</Label>
+            <select
+              id="logoSize"
+              value={logoSettings.logoSize}
+              onChange={(e) => handleInputChange('logoSize', e.target.value)}
+              className="w-full h-10 px-3 py-2 bg-white/50 border border-white/30 rounded-md text-sm focus:border-indigo-500 focus:outline-none"
+            >
+              {sizeOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <Button onClick={handleSave} className={`w-full ${isSaved ? "bg-green-600" : ""}`}>
-          {isSaved ? "Saved!" : "Save Logo Settings"}
-        </Button>
-      </CardContent>
-    </Card>
+          <Button 
+            onClick={handleSave} 
+            className={`w-full transition-all duration-300 ${
+              isSaved 
+                ? "bg-green-600 hover:bg-green-700" 
+                : "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+            } shadow-lg`}
+          >
+            {isSaved ? "✓ Saved!" : "Save Logo Settings"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Live Preview Panel */}
+      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
+        <CardHeader>
+          <div className="flex items-center">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg mr-3">
+              <Eye className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-bold text-slate-900">Live Preview</CardTitle>
+              <CardDescription>See how your logo will appear</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {/* Header Preview */}
+            <div className="bg-gradient-to-r from-slate-900 to-blue-900 rounded-xl p-6">
+              <div className="flex items-center justify-between">
+                <img 
+                  src={logoSettings.logoUrl}
+                  alt={logoSettings.logoAlt}
+                  className={`${logoSettings.logoSize} w-auto object-contain`}
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder.svg";
+                  }}
+                />
+                <div className="text-white text-sm">Navigation Menu</div>
+              </div>
+            </div>
+
+            {/* Footer Preview */}
+            <div className="bg-slate-800 rounded-xl p-6">
+              <div className="flex items-center justify-center">
+                <img 
+                  src={logoSettings.logoUrl}
+                  alt={logoSettings.logoAlt}
+                  className={`${logoSettings.logoSize} w-auto object-contain opacity-80`}
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder.svg";
+                  }}
+                />
+              </div>
+              <p className="text-center text-slate-400 text-sm mt-4">Footer Context</p>
+            </div>
+
+            {/* Size Comparison */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h4 className="font-medium text-slate-700 mb-4">Size Comparison</h4>
+              <div className="flex items-end space-x-4">
+                {sizeOptions.map((size, index) => (
+                  <div key={size.value} className="text-center">
+                    <img 
+                      src={logoSettings.logoUrl}
+                      alt={logoSettings.logoAlt}
+                      className={`${size.value} w-auto object-contain mx-auto ${
+                        logoSettings.logoSize === size.value ? 'ring-2 ring-indigo-500 rounded' : 'opacity-50'
+                      }`}
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg";
+                      }}
+                    />
+                    <p className="text-xs text-slate-500 mt-1">{size.label.split(' ')[0]}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

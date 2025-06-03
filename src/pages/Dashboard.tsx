@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import ServicesTab from "@/components/dashboard/ServicesTab";
 import ReviewsTab from "@/components/dashboard/ReviewsTab";
@@ -11,6 +10,8 @@ import ServiceEditModal from "@/components/dashboard/ServiceEditModal";
 import ReviewEditModal from "@/components/dashboard/ReviewEditModal";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
@@ -76,126 +77,126 @@ const Dashboard = () => {
     setEditingReview(newReview);
   };
 
+  const tabs = [
+    { id: 'services', label: 'Services', count: services.length, color: 'bg-blue-500' },
+    { id: 'reviews', label: 'Reviews', count: reviews.length, color: 'bg-green-500' },
+    { id: 'website', label: 'Website', color: 'bg-purple-500' },
+    { id: 'logo', label: 'Logo', color: 'bg-indigo-500' },
+    { id: 'contact', label: 'Contact', color: 'bg-orange-500' },
+    { id: 'homepage', label: 'Homepage', color: 'bg-pink-500' },
+    { id: 'pricing', label: 'Pricing', color: 'bg-cyan-500' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
-        
-        <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              <button
-                onClick={() => setActiveTab('services')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'services'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Services ({services.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('reviews')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'reviews'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Reviews ({reviews.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('website')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'website'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Website
-              </button>
-              <button
-                onClick={() => setActiveTab('logo')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'logo'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Logo
-              </button>
-              <button
-                onClick={() => setActiveTab('contact')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'contact'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Contact
-              </button>
-              <button
-                onClick={() => setActiveTab('homepage')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'homepage'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Homepage
-              </button>
-              <button
-                onClick={() => setActiveTab('pricing')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'pricing'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Pricing
-              </button>
-            </nav>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Modern Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
+                Dashboard
+              </h1>
+              <p className="text-slate-600 mt-2">Manage your website content and settings</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Badge variant="outline" className="px-4 py-2 bg-white/50 backdrop-blur-sm">
+                Live Preview Mode
+              </Badge>
+            </div>
           </div>
         </div>
+        
+        {/* Modern Tab Navigation */}
+        <Card className="mb-8 bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
+          <div className="p-4">
+            <nav className="flex flex-wrap gap-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`group relative px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                    activeTab === tab.id
+                      ? 'bg-white text-slate-900 shadow-lg scale-105'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-2 h-2 rounded-full ${tab.color} ${
+                      activeTab === tab.id ? 'scale-100' : 'scale-75 group-hover:scale-100'
+                    } transition-transform duration-300`}></div>
+                    <span>{tab.label}</span>
+                    {tab.count !== undefined && (
+                      <Badge variant="secondary" className="ml-1 h-5 text-xs">
+                        {tab.count}
+                      </Badge>
+                    )}
+                  </div>
+                  {activeTab === tab.id && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl -z-10"></div>
+                  )}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </Card>
 
-        {activeTab === 'services' && (
-          <ServicesTab
-            services={services}
-            onEdit={setEditingService}
-            onDelete={deleteService}
-            onAdd={addNewService}
-          />
-        )}
+        {/* Tab Content with Enhanced Styling */}
+        <div className="space-y-6">
+          {activeTab === 'services' && (
+            <div className="animate-fade-in">
+              <ServicesTab
+                services={services}
+                onEdit={setEditingService}
+                onDelete={deleteService}
+                onAdd={addNewService}
+              />
+            </div>
+          )}
 
-        {activeTab === 'reviews' && (
-          <ReviewsTab
-            reviews={reviews}
-            onEdit={setEditingReview}
-            onDelete={deleteReview}
-            onAdd={addNewReview}
-          />
-        )}
+          {activeTab === 'reviews' && (
+            <div className="animate-fade-in">
+              <ReviewsTab
+                reviews={reviews}
+                onEdit={setEditingReview}
+                onDelete={deleteReview}
+                onAdd={addNewReview}
+              />
+            </div>
+          )}
 
-        {activeTab === 'website' && (
-          <WebsiteTab />
-        )}
+          {activeTab === 'website' && (
+            <div className="animate-fade-in">
+              <WebsiteTab />
+            </div>
+          )}
 
-        {activeTab === 'logo' && (
-          <LogoManagement />
-        )}
+          {activeTab === 'logo' && (
+            <div className="animate-fade-in">
+              <LogoManagement />
+            </div>
+          )}
 
-        {activeTab === 'contact' && (
-          <ContactManagement />
-        )}
+          {activeTab === 'contact' && (
+            <div className="animate-fade-in">
+              <ContactManagement />
+            </div>
+          )}
 
-        {activeTab === 'homepage' && (
-          <HomepageElements />
-        )}
+          {activeTab === 'homepage' && (
+            <div className="animate-fade-in">
+              <HomepageElements />
+            </div>
+          )}
 
-        {activeTab === 'pricing' && (
-          <PricingManagement />
-        )}
+          {activeTab === 'pricing' && (
+            <div className="animate-fade-in">
+              <PricingManagement />
+            </div>
+          )}
+        </div>
 
+        {/* Modals */}
         {editingService && (
           <ServiceEditModal
             service={editingService}
