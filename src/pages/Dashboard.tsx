@@ -8,6 +8,7 @@ import HomepageElements from "@/components/dashboard/HomepageElements";
 import PricingManagement from "@/components/dashboard/PricingManagement";
 import ServiceEditModal from "@/components/dashboard/ServiceEditModal";
 import ReviewEditModal from "@/components/dashboard/ReviewEditModal";
+import BlogManagement from "@/components/dashboard/BlogManagement";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
 import { Card } from "@/components/ui/card";
@@ -17,7 +18,7 @@ const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
   const [editingService, setEditingService] = useState<ServiceCard | null>(null);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
-  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'website' | 'logo' | 'contact' | 'homepage' | 'pricing'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'website' | 'logo' | 'contact' | 'homepage' | 'pricing' | 'blog'>('services');
 
   const deleteService = (id: string) => {
     const newServices = services.filter(service => service.id !== id);
@@ -85,6 +86,7 @@ const Dashboard = () => {
     { id: 'contact', label: 'Contact', color: 'bg-orange-500' },
     { id: 'homepage', label: 'Homepage', color: 'bg-pink-500' },
     { id: 'pricing', label: 'Pricing', color: 'bg-cyan-500' },
+    { id: 'blog', label: 'Blog', color: 'bg-emerald-500' },
   ];
 
   return (
@@ -192,6 +194,12 @@ const Dashboard = () => {
           {activeTab === 'pricing' && (
             <div className="animate-fade-in">
               <PricingManagement />
+            </div>
+          )}
+
+          {activeTab === 'blog' && (
+            <div className="animate-fade-in">
+              <BlogManagement />
             </div>
           )}
         </div>
