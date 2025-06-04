@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -109,6 +108,9 @@ const Pricing = () => {
     };
   }, []);
 
+  // Get the maximum number of features to make cards symmetrical
+  const maxFeatures = Math.max(...pricingData.map(tier => tier.features.length));
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -134,7 +136,7 @@ const Pricing = () => {
             {pricingData.map((tier) => (
               <Card 
                 key={tier.id} 
-                className={`relative ${
+                className={`relative flex flex-col h-full ${
                   tier.popular 
                     ? 'border-blue-500 shadow-2xl scale-105 bg-gradient-to-br from-blue-50 to-cyan-50' 
                     : 'border-gray-200 shadow-lg hover:shadow-xl'
@@ -157,23 +159,29 @@ const Pricing = () => {
                     <span className="text-4xl font-bold text-slate-900">{tier.price}</span>
                     {tier.period && <span className="text-slate-600">{tier.period}</span>}
                   </div>
-                  <CardDescription className="text-slate-600 leading-relaxed">
+                  <CardDescription className="text-slate-600 leading-relaxed min-h-[3rem] flex items-center justify-center">
                     {tier.description}
                   </CardDescription>
                 </CardHeader>
                 
-                <CardContent className="space-y-6">
-                  <ul className="space-y-4">
+                <CardContent className="space-y-6 flex-grow flex flex-col">
+                  <ul className="space-y-4 flex-grow">
                     {tier.features.map((feature, index) => (
                       <li key={index} className="flex items-start">
                         <Check className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                         <span className="text-slate-700">{feature}</span>
                       </li>
                     ))}
+                    {/* Add empty list items to maintain consistent height */}
+                    {Array.from({ length: maxFeatures - tier.features.length }).map((_, index) => (
+                      <li key={`spacer-${index}`} className="invisible">
+                        <span className="text-slate-700">.</span>
+                      </li>
+                    ))}
                   </ul>
                   
                   <Button 
-                    className={`w-full py-3 ${
+                    className={`w-full py-3 mt-auto ${
                       tier.popular
                         ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
                         : 'bg-slate-900 hover:bg-slate-800'
@@ -196,9 +204,9 @@ const Pricing = () => {
               variant="outline" 
               size="lg"
               className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-              onClick={() => window.location.href = '/contact'}
+              onClick={() => window.location.href = '/free-audit'}
             >
-              Contact for Custom Pricing
+              Get Free Audit for Custom Pricing
             </Button>
           </div>
         </div>
