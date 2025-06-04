@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Upload, FileSpreadsheet, Link, Eye, Trash2, Plus, Download } from "lucide-react";
+import { Upload, FileSpreadsheet, Link, Eye, Trash2, Plus, Download, Image } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface BlogPost {
@@ -42,7 +42,10 @@ const BlogManagement = () => {
           id: "1",
           title: "10 Amazon PPC Strategies That Actually Work",
           excerpt: "Discover proven Amazon PPC strategies that can boost your sales and reduce your ACoS.",
-          content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+          content: `<p>Amazon PPC can be challenging, but with the right strategies, you can achieve great results.</p>
+<img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800" alt="Amazon advertising dashboard" style="width: 100%; margin: 20px 0;">
+<h2>Key Strategies</h2>
+<p>Here are the top strategies that actually work...</p>`,
           author: "John Smith",
           category: "Amazon Advertising",
           tags: ["PPC", "Amazon", "Strategy"],
@@ -54,7 +57,9 @@ const BlogManagement = () => {
           id: "2", 
           title: "Walmart Advertising vs Amazon: Complete Comparison",
           excerpt: "A comprehensive comparison between Walmart and Amazon advertising platforms.",
-          content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+          content: `<p>When choosing between Walmart and Amazon advertising, understanding the differences is crucial.</p>
+<img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=800" alt="E-commerce comparison chart" style="width: 100%; margin: 20px 0;">
+<p>Let's dive into the complete comparison...</p>`,
           author: "Jane Doe",
           category: "Walmart Advertising",
           tags: ["Walmart", "Amazon", "Comparison"],
@@ -81,7 +86,10 @@ const BlogManagement = () => {
           id: "gs1",
           title: "Meta Advertising Best Practices for E-commerce",
           excerpt: "Learn how to optimize your Meta ads for maximum ROI in e-commerce.",
-          content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+          content: `<p>Meta advertising offers incredible opportunities for e-commerce businesses.</p>
+<img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800" alt="Social media advertising" style="width: 100%; margin: 20px 0;">
+<h2>Best Practices</h2>
+<p>Follow these proven practices to maximize your ROI...</p>`,
           author: "Marketing Team",
           category: "Meta Advertising",
           tags: ["Meta", "Facebook", "E-commerce"],
@@ -102,7 +110,24 @@ const BlogManagement = () => {
       [
         "Sample Blog Post Title",
         "This is a sample excerpt that describes the blog post content briefly.",
-        "This is the full content of the blog post. It can contain HTML or markdown formatting...",
+        `<p>This is the full content of the blog post with HTML formatting.</p>
+
+<h2>Adding Images to Your Content</h2>
+<p>You can include images in your content using HTML img tags:</p>
+<img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=800" alt="Sample image description" style="width: 100%; margin: 20px 0;">
+
+<p>Or using markdown syntax:</p>
+<p>![Alt text](https://your-image-url.com/image.jpg)</p>
+
+<h2>Image Best Practices</h2>
+<ul>
+<li>Use descriptive alt text for accessibility</li>
+<li>Optimize images for web (recommended width: 800px)</li>
+<li>Use high-quality stock photos or your own images</li>
+<li>Include proper spacing with margins</li>
+</ul>
+
+<p>Continue with your blog content here...</p>`,
         "Author Name",
         "Category Name",
         "tag1,tag2,tag3",
@@ -113,7 +138,14 @@ const BlogManagement = () => {
       [
         "Another Example Post",
         "Another sample excerpt for demonstration purposes.",
-        "More sample content here with detailed information about the topic...",
+        `<p>More sample content here with detailed information about the topic.</p>
+
+<img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800" alt="Business analytics dashboard" style="width: 100%; margin: 20px 0;">
+
+<h2>Section with Image</h2>
+<p>This section demonstrates how to include images within your blog content. The image above shows a business analytics dashboard.</p>
+
+<p>You can also use smaller images inline: <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200" alt="Small icon" style="width: 50px; height: auto; display: inline; margin: 0 5px;"> like this small icon.</p>`,
         "Another Author",
         "Different Category",
         "example,sample,demo",
@@ -125,7 +157,7 @@ const BlogManagement = () => {
 
     // Create CSV content
     const csvContent = templateData.map(row => 
-      row.map(cell => `"${cell}"`).join(",")
+      row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(",")
     ).join("\n");
 
     // Create and download file
@@ -133,7 +165,7 @@ const BlogManagement = () => {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", "blog_template.csv");
+    link.setAttribute("download", "blog_template_with_images.csv");
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -157,7 +189,7 @@ const BlogManagement = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Blog Management</h2>
-          <p className="text-slate-600 mt-1">Add and manage blog content in bulk</p>
+          <p className="text-slate-600 mt-1">Add and manage blog content with inline images</p>
         </div>
         <div className="flex items-center space-x-3">
           <Button
@@ -189,7 +221,7 @@ const BlogManagement = () => {
                 </div>
                 <div>
                   <CardTitle>Upload Excel File</CardTitle>
-                  <CardDescription>Upload an Excel file with blog post data</CardDescription>
+                  <CardDescription>Upload an Excel file with blog post data and inline images</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -230,7 +262,23 @@ const BlogManagement = () => {
                   Title, Excerpt, Content, Author, Category, Tags (comma-separated), Publish Date (YYYY-MM-DD), Status (draft/published), Slug
                 </div>
                 <div className="mt-2 text-xs font-medium text-blue-700">
-                  💡 Download the template above to get started with the correct format
+                  💡 Download the template above to get started with the correct format including image examples
+                </div>
+              </div>
+              
+              {/* New Image Guidelines Card */}
+              <div className="text-sm text-slate-600 bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
+                <div className="flex items-start space-x-2">
+                  <Image className="w-4 h-4 mt-0.5 text-green-600" />
+                  <div>
+                    <div className="font-medium text-green-800">Including Images in Content:</div>
+                    <div className="mt-1 text-xs space-y-1">
+                      <div>• HTML format: <code className="bg-white px-1 rounded">&lt;img src="url" alt="description" style="width: 100%; margin: 20px 0;"&gt;</code></div>
+                      <div>• Markdown format: <code className="bg-white px-1 rounded">![Alt text](image-url)</code></div>
+                      <div>• Use descriptive alt text for accessibility</div>
+                      <div>• Recommended image width: 800px for main images</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -246,7 +294,7 @@ const BlogManagement = () => {
                 </div>
                 <div>
                   <CardTitle>Connect Google Sheets</CardTitle>
-                  <CardDescription>Connect to a Google Sheets document with blog content</CardDescription>
+                  <CardDescription>Connect to a Google Sheets document with blog content and images</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -281,7 +329,7 @@ const BlogManagement = () => {
                 </div>
               </div>
               <div className="text-sm text-slate-600 bg-blue-50 p-3 rounded-lg">
-                <strong>Note:</strong> Make sure your Google Sheet is publicly accessible and has the same column structure as the template. Download the template to see the required format.
+                <strong>Note:</strong> Make sure your Google Sheet is publicly accessible and has the same column structure as the template. Download the template to see the required format with image examples.
               </div>
             </CardContent>
           </Card>
@@ -318,6 +366,12 @@ const BlogManagement = () => {
                         <div className="text-sm text-slate-600 truncate max-w-xs">
                           {post.excerpt}
                         </div>
+                        {post.content.includes('<img') && (
+                          <div className="flex items-center mt-1">
+                            <Image className="w-3 h-3 text-green-600 mr-1" />
+                            <span className="text-xs text-green-600">Contains images</span>
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>{post.author}</TableCell>
