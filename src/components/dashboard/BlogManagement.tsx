@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Upload, FileSpreadsheet, Link, Eye, Trash2, Plus } from "lucide-react";
+import { Upload, FileSpreadsheet, Link, Eye, Trash2, Plus, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface BlogPost {
@@ -96,6 +96,50 @@ const BlogManagement = () => {
     }, 2000);
   };
 
+  const downloadTemplate = () => {
+    const templateData = [
+      ["Title", "Excerpt", "Content", "Author", "Category", "Tags", "Publish Date", "Status", "Slug"],
+      [
+        "Sample Blog Post Title",
+        "This is a sample excerpt that describes the blog post content briefly.",
+        "This is the full content of the blog post. It can contain HTML or markdown formatting...",
+        "Author Name",
+        "Category Name",
+        "tag1,tag2,tag3",
+        "2024-01-15",
+        "draft",
+        "sample-blog-post-title"
+      ],
+      [
+        "Another Example Post",
+        "Another sample excerpt for demonstration purposes.",
+        "More sample content here with detailed information about the topic...",
+        "Another Author",
+        "Different Category",
+        "example,sample,demo",
+        "2024-01-20",
+        "published",
+        "another-example-post"
+      ]
+    ];
+
+    // Create CSV content
+    const csvContent = templateData.map(row => 
+      row.map(cell => `"${cell}"`).join(",")
+    ).join("\n");
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "blog_template.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const deleteBlogPost = (id: string) => {
     setBlogPosts(prev => prev.filter(post => post.id !== id));
   };
@@ -115,9 +159,19 @@ const BlogManagement = () => {
           <h2 className="text-2xl font-bold text-slate-900">Blog Management</h2>
           <p className="text-slate-600 mt-1">Add and manage blog content in bulk</p>
         </div>
-        <Badge variant="outline" className="px-4 py-2 bg-white/50 backdrop-blur-sm">
-          {blogPosts.length} Posts
-        </Badge>
+        <div className="flex items-center space-x-3">
+          <Button
+            onClick={downloadTemplate}
+            variant="outline"
+            className="bg-white/50 backdrop-blur-sm border-white/30"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Download Template
+          </Button>
+          <Badge variant="outline" className="px-4 py-2 bg-white/50 backdrop-blur-sm">
+            {blogPosts.length} Posts
+          </Badge>
+        </div>
       </div>
 
       <Tabs defaultValue="upload" className="w-full">
@@ -142,13 +196,13 @@ const BlogManagement = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="excel-file" className="text-sm font-medium text-slate-700">
-                  Excel File (.xlsx, .xls)
+                  Excel File (.xlsx, .xls, .csv)
                 </Label>
                 <div className="flex items-center space-x-4">
                   <Input
                     id="excel-file"
                     type="file"
-                    accept=".xlsx,.xls"
+                    accept=".xlsx,.xls,.csv"
                     onChange={handleFileUpload}
                     className="bg-white/50 border-white/30 focus:border-green-500"
                     disabled={isUploading}
@@ -169,7 +223,15 @@ const BlogManagement = () => {
                 </div>
               </div>
               <div className="text-sm text-slate-600 bg-blue-50 p-3 rounded-lg">
-                <strong>Required columns:</strong> Title, Excerpt, Content, Author, Category, Tags, Publish Date, Status, Slug
+                <div className="flex items-start space-x-2">
+                  <div className="font-medium">Required columns:</div>
+                </div>
+                <div className="mt-1 text-xs">
+                  Title, Excerpt, Content, Author, Category, Tags (comma-separated), Publish Date (YYYY-MM-DD), Status (draft/published), Slug
+                </div>
+                <div className="mt-2 text-xs font-medium text-blue-700">
+                  💡 Download the template above to get started with the correct format
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -219,7 +281,7 @@ const BlogManagement = () => {
                 </div>
               </div>
               <div className="text-sm text-slate-600 bg-blue-50 p-3 rounded-lg">
-                <strong>Note:</strong> Make sure your Google Sheet is publicly accessible and has the same column structure as the Excel template.
+                <strong>Note:</strong> Make sure your Google Sheet is publicly accessible and has the same column structure as the template. Download the template to see the required format.
               </div>
             </CardContent>
           </Card>
