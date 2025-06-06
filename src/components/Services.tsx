@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { 
   ShoppingCart, 
   Store, 
@@ -151,6 +152,46 @@ const Services = () => {
     return icons[iconName as keyof typeof icons] || ShoppingCart;
   };
 
+  const ServiceCardComponent = ({ service, index }: { service: ServiceCard, index: number }) => {
+    const IconComponent = getIconComponent(service.icon);
+    return (
+      <Card className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br ${service.bgGradient} backdrop-blur-sm h-full`}>
+        {/* Gradient overlay on hover */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+        
+        <CardHeader className="pb-6 relative z-10">
+          <div className={`w-20 h-20 bg-gradient-to-br ${service.gradient} rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
+            <IconComponent className="w-10 h-10 text-white" />
+          </div>
+          <CardTitle className="text-2xl md:text-3xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
+            {service.title}
+          </CardTitle>
+          <CardDescription className="text-slate-600 leading-relaxed text-lg">
+            {service.description}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="relative z-10">
+          <ul className="space-y-3 mb-8">
+            {service.features.map((feature, idx) => (
+              <li key={idx} className="flex items-center text-slate-700 text-base">
+                <div className={`w-3 h-3 bg-gradient-to-r ${service.gradient} rounded-full mr-4 opacity-80`}></div>
+                <span className="font-medium">{feature}</span>
+              </li>
+            ))}
+          </ul>
+          <Button 
+            variant="outline" 
+            className={`w-full group-hover:bg-gradient-to-r group-hover:${service.gradient} group-hover:text-white group-hover:border-transparent transition-all duration-500 py-6 text-lg font-semibold rounded-xl border-2`}
+            onClick={() => window.location.href = service.link}
+          >
+            Learn More
+            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <section className="py-32 bg-gradient-to-b from-slate-50 via-white to-blue-50/30 relative overflow-hidden">
       {/* Background decorations */}
@@ -172,46 +213,28 @@ const Services = () => {
           </p>
         </div>
         
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8 mb-20">
-          {services.map((service, index) => {
-            const IconComponent = getIconComponent(service.icon);
-            return (
-              <Card key={service.id} className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br ${service.bgGradient} backdrop-blur-sm`}>
-                {/* Gradient overlay on hover */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
-                
-                <CardHeader className="pb-6 relative z-10">
-                  <div className={`w-20 h-20 bg-gradient-to-br ${service.gradient} rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
-                    <IconComponent className="w-10 h-10 text-white" />
+        {/* Desktop Grid View */}
+        <div className="hidden md:grid lg:grid-cols-3 md:grid-cols-2 gap-8 mb-20">
+          {services.map((service, index) => (
+            <ServiceCardComponent key={service.id} service={service} index={index} />
+          ))}
+        </div>
+
+        {/* Mobile Carousel View */}
+        <div className="md:hidden mb-20">
+          <Carousel className="w-full max-w-sm mx-auto">
+            <CarouselContent>
+              {services.map((service, index) => (
+                <CarouselItem key={service.id}>
+                  <div className="p-1">
+                    <ServiceCardComponent service={service} index={index} />
                   </div>
-                  <CardTitle className="text-2xl md:text-3xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
-                    {service.title}
-                  </CardTitle>
-                  <CardDescription className="text-slate-600 leading-relaxed text-lg">
-                    {service.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="relative z-10">
-                  <ul className="space-y-3 mb-8">
-                    {service.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center text-slate-700 text-base">
-                        <div className={`w-3 h-3 bg-gradient-to-r ${service.gradient} rounded-full mr-4 opacity-80`}></div>
-                        <span className="font-medium">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    variant="outline" 
-                    className={`w-full group-hover:bg-gradient-to-r group-hover:${service.gradient} group-hover:text-white group-hover:border-transparent transition-all duration-500 py-6 text-lg font-semibold rounded-xl border-2`}
-                    onClick={() => window.location.href = service.link}
-                  >
-                    Learn More
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-2" />
+            <CarouselNext className="right-2" />
+          </Carousel>
         </div>
         
         <div className="text-center">

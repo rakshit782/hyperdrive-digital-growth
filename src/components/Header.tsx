@@ -76,8 +76,8 @@ const Header = () => {
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
       isScrolled 
-        ? 'bg-white/95 backdrop-blur-xl border-b border-gray-200/50 shadow-lg shadow-black/5' 
-        : 'bg-white/90 backdrop-blur-lg border-b border-gray-200/30'
+        ? 'bg-white/75 backdrop-blur-xl border-b border-gray-200/50 shadow-lg shadow-black/5' 
+        : 'bg-white/70 backdrop-blur-lg border-b border-gray-200/30'
     }`}>
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
@@ -95,8 +95,8 @@ const Header = () => {
             </a>
           </div>
           
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1 ml-8">
+          {/* Desktop Navigation - moved closer to logo */}
+          <nav className="hidden lg:flex items-center space-x-1 ml-4">
             <a 
               href="/"
               className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
@@ -117,7 +117,7 @@ const Header = () => {
               
               {isServicesOpen && (
                 <div 
-                  className="absolute top-full left-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                  className="absolute top-full left-0 mt-1 w-80 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg z-50"
                   onMouseLeave={() => setIsServicesOpen(false)}
                 >
                   <div className="py-2">
@@ -179,86 +179,88 @@ const Header = () => {
           <button 
             className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 flex-shrink-0"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-expanded={isMenuOpen}
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
         
-        {/* Mobile Navigation */}
-        <div className={`lg:hidden overflow-hidden transition-all duration-300 ${
-          isMenuOpen ? 'max-h-96 pb-6' : 'max-h-0'
-        }`}>
-          <div className="pt-4 border-t border-gray-200/50">
-            <nav className="flex flex-col space-y-2">
-              <a 
-                href="/"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </a>
-              
-              {/* Mobile Services Dropdown */}
-              <div className="space-y-2">
-                <div className="text-slate-700 font-medium py-3 px-4">Services</div>
-                <div className="pl-4 space-y-1">
-                  {servicePages.map((service) => (
-                    <a 
-                      key={service.href}
-                      href={service.href}
-                      className="block text-slate-600 hover:text-blue-600 transition-colors py-2 px-4 rounded-lg hover:bg-blue-50 text-sm"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {service.title}
-                    </a>
-                  ))}
+        {/* Mobile Navigation - Fixed */}
+        {isMenuOpen && (
+          <div className="lg:hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-sm">
+            <div className="py-4">
+              <nav className="flex flex-col space-y-2">
+                <a 
+                  href="/"
+                  className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Home
+                </a>
+                
+                {/* Mobile Services */}
+                <div className="space-y-2">
+                  <div className="text-slate-700 font-medium py-3 px-4">Services</div>
+                  <div className="pl-4 space-y-1">
+                    {servicePages.map((service) => (
+                      <a 
+                        key={service.href}
+                        href={service.href}
+                        className="block text-slate-600 hover:text-blue-600 transition-colors py-2 px-4 rounded-lg hover:bg-blue-50 text-sm"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {service.title}
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              
-              <a 
-                href="/pricing"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Pricing
-              </a>
-              
-              <a 
-                href="/about"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </a>
-              
-              <a 
-                href="/case-studies"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Case Studies
-              </a>
-              
-              <a 
-                href="/contact"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact
-              </a>
-              
-              <Button 
-                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold w-full mt-4 rounded-xl"
-                onClick={() => {
-                  window.location.href = '/free-audit';
-                  setIsMenuOpen(false);
-                }}
-              >
-                Get Free Audit
-              </Button>
-            </nav>
+                
+                <a 
+                  href="/pricing"
+                  className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Pricing
+                </a>
+                
+                <a 
+                  href="/about"
+                  className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  About
+                </a>
+                
+                <a 
+                  href="/case-studies"
+                  className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Case Studies
+                </a>
+                
+                <a 
+                  href="/contact"
+                  className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Contact
+                </a>
+                
+                <Button 
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold w-full mt-4 rounded-xl"
+                  onClick={() => {
+                    window.location.href = '/free-audit';
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Get Free Audit
+                </Button>
+              </nav>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </header>
   );
