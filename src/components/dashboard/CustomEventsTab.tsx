@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,22 +37,27 @@ const CustomEventsTab = () => {
 
   useEffect(() => {
     const savedScripts = localStorage.getItem('trackingScripts');
+    console.log('CustomEventsTab: Loading scripts from localStorage:', savedScripts);
     if (savedScripts) {
       try {
-        setScripts(JSON.parse(savedScripts));
+        const parsedScripts = JSON.parse(savedScripts);
+        setScripts(parsedScripts);
+        console.log('CustomEventsTab: Loaded scripts:', parsedScripts);
       } catch (error) {
-        console.error('Failed to parse tracking scripts:', error);
+        console.error('CustomEventsTab: Failed to parse tracking scripts:', error);
       }
     }
   }, []);
 
   const saveScripts = (newScripts: TrackingScript[]) => {
+    console.log('CustomEventsTab: Saving scripts:', newScripts);
     setScripts(newScripts);
     localStorage.setItem('trackingScripts', JSON.stringify(newScripts));
     
     // Dispatch event to update scripts on the frontend
     const event = new CustomEvent('trackingScriptsUpdated', { detail: newScripts });
     window.dispatchEvent(event);
+    console.log('CustomEventsTab: Dispatched trackingScriptsUpdated event');
   };
 
   const addNewScript = () => {
