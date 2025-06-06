@@ -46,11 +46,16 @@ const LogoManagement = () => {
   };
 
   const sizeOptions = [
+    { value: "h-6", label: "Extra Small (24px)" },
     { value: "h-8", label: "Small (32px)" },
     { value: "h-10", label: "Medium (40px)" },
     { value: "h-12", label: "Large (48px)" },
     { value: "h-14", label: "Extra Large (56px)" },
-    { value: "h-16", label: "XXL (64px)" }
+    { value: "h-16", label: "XXL (64px)" },
+    { value: "h-20", label: "XXXL (80px)" },
+    { value: "h-24", label: "Huge (96px)" },
+    { value: "h-28", label: "Massive (112px)" },
+    { value: "h-32", label: "Giant (128px)" }
   ];
 
   return (
@@ -168,7 +173,7 @@ const LogoManagement = () => {
             {/* Size Comparison */}
             <div className="bg-gray-50 rounded-xl p-6">
               <h4 className="font-medium text-slate-700 mb-4">Size Comparison</h4>
-              <div className="flex items-end space-x-4">
+              <div className="grid grid-cols-5 gap-4">
                 {sizeOptions.map((size, index) => (
                   <div key={size.value} className="text-center">
                     <img 
