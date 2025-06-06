@@ -1,5 +1,6 @@
+
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
   NavigationMenu,
@@ -37,11 +38,23 @@ const Header = () => {
     // Load logo settings from localStorage
     const savedLogo = localStorage.getItem('logoData');
     if (savedLogo) {
-      setLogoSettings(JSON.parse(savedLogo));
+      try {
+        const parsed = JSON.parse(savedLogo);
+        // Ensure all properties exist by merging with defaults
+        setLogoSettings({
+          logoUrl: parsed.logoUrl || "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
+          logoSize: parsed.logoSize || "h-12",
+          logoAlt: parsed.logoAlt || "AMZ AD SCOUT - The Growth Agency"
+        });
+        console.log('Header logo settings loaded:', parsed);
+      } catch (error) {
+        console.error('Failed to parse logo settings in header:', error);
+      }
     }
 
     // Listen for logo updates
     const handleLogoUpdate = (event: CustomEvent) => {
+      console.log('Header received logo update:', event.detail);
       setLogoSettings(event.detail);
     };
 
@@ -72,43 +85,43 @@ const Header = () => {
         ? 'bg-white/95 backdrop-blur-xl border-b border-gray-200/50 shadow-lg shadow-black/5' 
         : 'bg-white/90 backdrop-blur-lg border-b border-gray-200/30'
     }`}>
-      <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-20">
+      <div className="w-full max-w-none px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <div className="flex items-center group">
+          <div className="flex items-center group flex-shrink-0">
             <img 
               src={logoSettings.logoUrl}
               alt={logoSettings.logoAlt}
               className={`${logoSettings.logoSize} w-auto object-contain transition-transform duration-300 group-hover:scale-105`}
               onError={handleImageError}
               onLoad={handleImageLoad}
-              style={{ maxWidth: '180px', display: 'block' }}
+              style={{ maxWidth: '200px', display: 'block' }}
             />
           </div>
           
           {/* Desktop Navigation */}
-          <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList className="space-x-6">
+          <NavigationMenu className="hidden lg:flex">
+            <NavigationMenuList className="space-x-2">
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   href="/"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
                 >
                   Home
                 </NavigationMenuLink>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide bg-transparent">
+                <NavigationMenuTrigger className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide bg-transparent hover:bg-blue-50">
                   Services
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="grid w-[400px] gap-3 p-4 bg-white">
+                  <div className="grid w-[400px] gap-3 p-4 bg-white shadow-lg rounded-md border">
                     {servicePages.map((service) => (
                       <NavigationMenuLink
                         key={service.href}
                         href={service.href}
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-blue-50 hover:text-blue-600 focus:bg-blue-50 focus:text-blue-600"
                       >
                         <div className="text-sm font-medium leading-none">{service.title}</div>
                       </NavigationMenuLink>
@@ -120,7 +133,7 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   href="/pricing"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
                 >
                   Pricing
                 </NavigationMenuLink>
@@ -129,7 +142,7 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   href="/about"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
                 >
                   About
                 </NavigationMenuLink>
@@ -138,7 +151,7 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   href="/case-studies"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
                 >
                   Case Studies
                 </NavigationMenuLink>
@@ -147,7 +160,7 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   href="/contact"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2"
+                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
                 >
                   Contact
                 </NavigationMenuLink>
@@ -156,7 +169,7 @@ const Header = () => {
           </NavigationMenu>
           
           {/* CTA Button */}
-          <div className="hidden md:block">
+          <div className="hidden lg:block flex-shrink-0">
             <Button 
               className="bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 hover:from-blue-700 hover:via-blue-800 hover:to-cyan-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5"
               onClick={() => window.location.href = '/free-audit'}
@@ -167,7 +180,7 @@ const Header = () => {
           
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 flex-shrink-0"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -175,14 +188,14 @@ const Header = () => {
         </div>
         
         {/* Mobile Navigation */}
-        <div className={`md:hidden overflow-hidden transition-all duration-300 ${
+        <div className={`lg:hidden overflow-hidden transition-all duration-300 ${
           isMenuOpen ? 'max-h-96 pb-6' : 'max-h-0'
         }`}>
           <div className="pt-4 border-t border-gray-200/50">
-            <nav className="flex flex-col space-y-4">
+            <nav className="flex flex-col space-y-2">
               <a 
                 href="/"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
@@ -190,13 +203,13 @@ const Header = () => {
               
               {/* Mobile Services Dropdown */}
               <div className="space-y-2">
-                <div className="text-slate-700 font-medium py-2 px-4">Services</div>
-                <div className="pl-4 space-y-2">
+                <div className="text-slate-700 font-medium py-3 px-4">Services</div>
+                <div className="pl-4 space-y-1">
                   {servicePages.map((service) => (
                     <a 
                       key={service.href}
                       href={service.href}
-                      className="block text-slate-600 hover:text-blue-600 transition-colors py-1 px-4 rounded-lg hover:bg-blue-50 text-sm"
+                      className="block text-slate-600 hover:text-blue-600 transition-colors py-2 px-4 rounded-lg hover:bg-blue-50 text-sm"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {service.title}
@@ -207,7 +220,7 @@ const Header = () => {
               
               <a 
                 href="/pricing"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Pricing
@@ -215,7 +228,7 @@ const Header = () => {
               
               <a 
                 href="/about"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
@@ -223,7 +236,7 @@ const Header = () => {
               
               <a 
                 href="/case-studies"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Case Studies
@@ -231,7 +244,7 @@ const Header = () => {
               
               <a 
                 href="/contact"
-                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium py-3 px-4 rounded-lg hover:bg-blue-50"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact

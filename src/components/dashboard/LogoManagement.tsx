@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,12 @@ const LogoManagement = () => {
     if (savedLogo) {
       try {
         const parsed = JSON.parse(savedLogo);
-        setLogoSettings({ ...defaultLogo, ...parsed });
+        // Properly merge with default settings to ensure all fields exist
+        setLogoSettings({ 
+          logoUrl: parsed.logoUrl || defaultLogo.logoUrl,
+          logoSize: parsed.logoSize || defaultLogo.logoSize,
+          logoAlt: parsed.logoAlt || defaultLogo.logoAlt
+        });
       } catch (error) {
         console.error('Failed to parse logo settings:', error);
       }
@@ -35,10 +41,22 @@ const LogoManagement = () => {
   }, []);
 
   const handleSave = () => {
-    localStorage.setItem('logoData', JSON.stringify(logoSettings));
-    window.dispatchEvent(new CustomEvent('logoUpdated', { detail: logoSettings }));
+    // Save complete logo settings object
+    const completeSettings = {
+      logoUrl: logoSettings.logoUrl,
+      logoSize: logoSettings.logoSize,
+      logoAlt: logoSettings.logoAlt
+    };
+    
+    localStorage.setItem('logoData', JSON.stringify(completeSettings));
+    
+    // Dispatch event with complete settings
+    window.dispatchEvent(new CustomEvent('logoUpdated', { detail: completeSettings }));
+    
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
+    
+    console.log('Logo settings saved:', completeSettings);
   };
 
   const handleInputChange = (field: keyof LogoSettings, value: string) => {
