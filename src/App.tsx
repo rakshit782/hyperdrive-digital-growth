@@ -29,7 +29,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white w-full">
           <Routes>
             <Route path="/" element={<><Header /><Index /></>} />
             <Route path="/about" element={<><Header /><About /></>} />
