@@ -12,26 +12,52 @@ const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   useEffect(() => {
+    console.log("Blog: Component mounted, loading posts...");
+    
     // Load published blog posts from localStorage
     const loadBlogPosts = () => {
       const savedPosts = localStorage.getItem('blogPosts');
+      console.log("Blog: Raw localStorage data:", savedPosts);
+      
       if (savedPosts) {
-        const allPosts: BlogPost[] = JSON.parse(savedPosts);
-        const publishedPosts = allPosts.filter(post => post.status === 'published');
-        setBlogPosts(publishedPosts);
+        try {
+          const allPosts: BlogPost[] = JSON.parse(savedPosts);
+          console.log("Blog: All posts from localStorage:", allPosts);
+          
+          const publishedPosts = allPosts.filter(post => post.status === 'published');
+          console.log("Blog: Published posts:", publishedPosts);
+          
+          setBlogPosts(publishedPosts);
+        } catch (error) {
+          console.error("Blog: Error parsing localStorage data:", error);
+          setBlogPosts([]);
+        }
+      } else {
+        console.log("Blog: No localStorage data found");
+        setBlogPosts([]);
       }
     };
 
+    // Initial load
     loadBlogPosts();
 
     // Listen for blog posts updates
-    const handleBlogPostsUpdate = () => {
-      loadBlogPosts();
+    const handleBlogPostsUpdate = (event: any) => {
+      console.log("Blog: Received blogPostsUpdated event:", event.detail);
+      loadBlogPosts(); // Reload from localStorage to get fresh data
     };
 
     window.addEventListener('blogPostsUpdated', handleBlogPostsUpdate);
-    return () => window.removeEventListener('blogPostsUpdated', handleBlogPostsUpdate);
+    
+    return () => {
+      window.removeEventListener('blogPostsUpdated', handleBlogPostsUpdate);
+    };
   }, []);
+
+  // Debug effect to log state changes
+  useEffect(() => {
+    console.log("Blog: Current blogPosts state:", blogPosts);
+  }, [blogPosts]);
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -56,6 +82,18 @@ const Blog = () => {
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Stay updated with the latest trends, strategies, and insights in e-commerce advertising
           </p>
+        </div>
+
+        {/* Debug Info - Remove in production */}
+        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            Debug: Found {blogPosts.length} published posts out of total posts in storage
+          </p>
+          {blogPosts.length > 0 && (
+            <p className="text-xs text-yellow-700 mt-1">
+              Latest post: "{blogPosts[blogPosts.length - 1]?.title}"
+            </p>
+          )}
         </div>
 
         {/* Search and Filter */}
@@ -129,7 +167,7 @@ const Blog = () => {
             <p className="text-slate-500">
               {searchTerm || selectedCategory 
                 ? 'Try adjusting your search or filter criteria' 
-                : 'Check back soon for new content!'
+                : 'Check back soon for new content or visit the dashboard to publish some posts!'
               }
             </p>
           </div>
