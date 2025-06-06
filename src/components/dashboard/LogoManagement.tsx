@@ -66,29 +66,42 @@ const LogoManagement = () => {
   const convertGoogleDriveUrl = (url: string) => {
     console.log('Converting Google Drive URL:', url);
     
+    // Clean up the URL
+    const cleanUrl = url.trim();
+    
     // Handle different Google Drive URL formats
     let fileId = '';
     
     // Format 1: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
-    let match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+    let match = cleanUrl.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
     if (match) {
       fileId = match[1];
+      console.log('Found file ID from /file/d/ format:', fileId);
     } else {
       // Format 2: https://drive.google.com/open?id=FILE_ID
-      match = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+      match = cleanUrl.match(/[?&]id=([a-zA-Z0-9-_]+)/);
       if (match) {
         fileId = match[1];
+        console.log('Found file ID from ?id= format:', fileId);
+      } else {
+        // Format 3: https://drive.google.com/uc?id=FILE_ID (already direct)
+        match = cleanUrl.match(/\/uc\?.*id=([a-zA-Z0-9-_]+)/);
+        if (match) {
+          fileId = match[1];
+          console.log('Found file ID from /uc?id= format:', fileId);
+        }
       }
     }
     
     if (fileId) {
-      const directUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+      // Use the thumbnail endpoint which works better for images
+      const directUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
       console.log('Converted to direct URL:', directUrl);
       return directUrl;
     }
     
     console.log('Could not extract file ID, using original URL');
-    return url;
+    return cleanUrl;
   };
 
   const handleGoogleDriveUpload = () => {
@@ -112,6 +125,28 @@ const LogoManagement = () => {
     { value: "h-28", label: "Massive (112px)" },
     { value: "h-32", label: "Giant (128px)" }
   ];
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.error('Image failed to load:', e.currentTarget.src);
+    console.log('Trying fallback URL conversion...');
+    
+    // Try alternative URL format if the first one fails
+    const currentUrl = e.currentTarget.src;
+    if (currentUrl.includes('thumbnail')) {
+      // Try the uc?export=view format as fallback
+      const fileIdMatch = currentUrl.match(/id=([a-zA-Z0-9-_]+)/);
+      if (fileIdMatch) {
+        const fileId = fileIdMatch[1];
+        const fallbackUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+        console.log('Trying fallback URL:', fallbackUrl);
+        e.currentTarget.src = fallbackUrl;
+        return;
+      }
+    }
+    
+    // Final fallback
+    e.currentTarget.src = "/placeholder.svg";
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -165,7 +200,7 @@ const LogoManagement = () => {
               </Button>
             </div>
             <div className="text-xs text-blue-600/70 space-y-1">
-              <p>Share your image from Google Drive and paste the link above. We'll convert it to a direct image URL.</p>
+              <p>Share your image from Google Drive and paste the link above. Works with PNG, JPEG, and other formats.</p>
               <p className="font-medium">Supported formats:</p>
               <p>• https://drive.google.com/file/d/FILE_ID/view?usp=sharing</p>
               <p>• https://drive.google.com/open?id=FILE_ID</p>
@@ -234,11 +269,8 @@ const LogoManagement = () => {
                   src={logoSettings.logoUrl}
                   alt={logoSettings.logoAlt}
                   className={`${logoSettings.logoSize} w-auto object-contain`}
-                  onError={(e) => {
-                    console.log('Preview logo failed to load:', e.currentTarget.src);
-                    e.currentTarget.src = "/placeholder.svg";
-                  }}
-                  onLoad={() => console.log('Preview logo loaded successfully')}
+                  onError={handleImageError}
+                  onLoad={() => console.log('Preview logo loaded successfully:', logoSettings.logoUrl)}
                 />
                 <div className="text-white text-sm">Navigation Menu</div>
               </div>
@@ -251,9 +283,7 @@ const LogoManagement = () => {
                   src={logoSettings.logoUrl}
                   alt={logoSettings.logoAlt}
                   className={`${logoSettings.logoSize} w-auto object-contain opacity-80`}
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder.svg";
-                  }}
+                  onError={handleImageError}
                 />
               </div>
               <p className="text-center text-slate-400 text-sm mt-4">Footer Context</p>
@@ -271,9 +301,7 @@ const LogoManagement = () => {
                       className={`${size.value} w-auto object-contain mx-auto ${
                         logoSettings.logoSize === size.value ? 'ring-2 ring-indigo-500 rounded' : 'opacity-50'
                       }`}
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg";
-                      }}
+                      onError={handleImageError}
                     />
                     <p className="text-xs text-slate-500 mt-1">{size.label.split(' ')[0]}</p>
                   </div>
