@@ -35,26 +35,26 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Load logo settings from localStorage
+    // Load logo settings from localStorage on mount
     const savedLogo = localStorage.getItem('logoData');
     if (savedLogo) {
       try {
         const parsed = JSON.parse(savedLogo);
-        // Ensure all properties exist by merging with defaults
-        setLogoSettings({
+        const newSettings = {
           logoUrl: parsed.logoUrl || "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
           logoSize: parsed.logoSize || "h-12",
           logoAlt: parsed.logoAlt || "AMZ AD SCOUT - The Growth Agency"
-        });
-        console.log('Header logo settings loaded:', parsed);
+        };
+        setLogoSettings(newSettings);
+        console.log('Header: Loaded logo settings on mount:', newSettings);
       } catch (error) {
-        console.error('Failed to parse logo settings in header:', error);
+        console.error('Header: Failed to parse logo settings:', error);
       }
     }
 
-    // Listen for logo updates
-    const handleLogoUpdate = (event: CustomEvent) => {
-      console.log('Header received logo update:', event.detail);
+    // Listen for logo updates from dashboard
+    const handleLogoUpdate = (event: CustomEvent<LogoSettings>) => {
+      console.log('Header: Received logo update event:', event.detail);
       setLogoSettings(event.detail);
     };
 
@@ -63,11 +63,12 @@ const Header = () => {
   }, []);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.log("Header logo failed to load:", e.currentTarget.src);
+    console.error("Header: Logo failed to load:", e.currentTarget.src);
+    e.currentTarget.src = "/placeholder.svg";
   };
 
   const handleImageLoad = () => {
-    console.log("Header logo loaded successfully");
+    console.log("Header: Logo loaded successfully:", logoSettings.logoUrl);
   };
 
   const servicePages = [
@@ -85,18 +86,20 @@ const Header = () => {
         ? 'bg-white/95 backdrop-blur-xl border-b border-gray-200/50 shadow-lg shadow-black/5' 
         : 'bg-white/90 backdrop-blur-lg border-b border-gray-200/30'
     }`}>
-      <div className="w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
           <div className="flex items-center group flex-shrink-0">
-            <img 
-              src={logoSettings.logoUrl}
-              alt={logoSettings.logoAlt}
-              className={`${logoSettings.logoSize} w-auto object-contain transition-transform duration-300 group-hover:scale-105`}
-              onError={handleImageError}
-              onLoad={handleImageLoad}
-              style={{ maxWidth: '200px', display: 'block' }}
-            />
+            <a href="/" className="block">
+              <img 
+                src={logoSettings.logoUrl}
+                alt={logoSettings.logoAlt}
+                className={`${logoSettings.logoSize} w-auto object-contain transition-transform duration-300 group-hover:scale-105`}
+                onError={handleImageError}
+                onLoad={handleImageLoad}
+                style={{ maxWidth: '200px', display: 'block' }}
+              />
+            </a>
           </div>
           
           {/* Desktop Navigation */}

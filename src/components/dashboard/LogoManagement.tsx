@@ -28,12 +28,12 @@ const LogoManagement = () => {
     if (savedLogo) {
       try {
         const parsed = JSON.parse(savedLogo);
-        // Properly merge with default settings to ensure all fields exist
         setLogoSettings({ 
           logoUrl: parsed.logoUrl || defaultLogo.logoUrl,
           logoSize: parsed.logoSize || defaultLogo.logoSize,
           logoAlt: parsed.logoAlt || defaultLogo.logoAlt
         });
+        console.log('LogoManagement: Loaded saved settings:', parsed);
       } catch (error) {
         console.error('Failed to parse logo settings:', error);
       }
@@ -41,7 +41,6 @@ const LogoManagement = () => {
   }, []);
 
   const handleSave = () => {
-    // Save complete logo settings object
     const completeSettings = {
       logoUrl: logoSettings.logoUrl,
       logoSize: logoSettings.logoSize,
@@ -50,13 +49,14 @@ const LogoManagement = () => {
     
     localStorage.setItem('logoData', JSON.stringify(completeSettings));
     
-    // Dispatch event with complete settings
-    window.dispatchEvent(new CustomEvent('logoUpdated', { detail: completeSettings }));
+    // Dispatch custom event with complete settings
+    const event = new CustomEvent('logoUpdated', { detail: completeSettings });
+    window.dispatchEvent(event);
     
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
     
-    console.log('Logo settings saved:', completeSettings);
+    console.log('LogoManagement: Settings saved and event dispatched:', completeSettings);
   };
 
   const handleInputChange = (field: keyof LogoSettings, value: string) => {
@@ -64,18 +64,37 @@ const LogoManagement = () => {
   };
 
   const convertGoogleDriveUrl = (url: string) => {
-    // Convert Google Drive sharing URL to direct image URL
-    const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+    console.log('Converting Google Drive URL:', url);
+    
+    // Handle different Google Drive URL formats
+    let fileId = '';
+    
+    // Format 1: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+    let match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
     if (match) {
-      const fileId = match[1];
-      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+      fileId = match[1];
+    } else {
+      // Format 2: https://drive.google.com/open?id=FILE_ID
+      match = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+      if (match) {
+        fileId = match[1];
+      }
     }
+    
+    if (fileId) {
+      const directUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+      console.log('Converted to direct URL:', directUrl);
+      return directUrl;
+    }
+    
+    console.log('Could not extract file ID, using original URL');
     return url;
   };
 
   const handleGoogleDriveUpload = () => {
     if (googleDriveUrl.trim()) {
       const directUrl = convertGoogleDriveUrl(googleDriveUrl.trim());
+      console.log('Setting logo URL to:', directUrl);
       setLogoSettings(prev => ({ ...prev, logoUrl: directUrl }));
       setGoogleDriveUrl("");
     }
@@ -145,9 +164,12 @@ const LogoManagement = () => {
                 Use Google Drive Image
               </Button>
             </div>
-            <p className="text-xs text-blue-600/70">
-              Share your image from Google Drive and paste the link above. We'll convert it to a direct image URL.
-            </p>
+            <div className="text-xs text-blue-600/70 space-y-1">
+              <p>Share your image from Google Drive and paste the link above. We'll convert it to a direct image URL.</p>
+              <p className="font-medium">Supported formats:</p>
+              <p>• https://drive.google.com/file/d/FILE_ID/view?usp=sharing</p>
+              <p>• https://drive.google.com/open?id=FILE_ID</p>
+            </div>
           </div>
           
           <div className="space-y-2">
@@ -213,8 +235,10 @@ const LogoManagement = () => {
                   alt={logoSettings.logoAlt}
                   className={`${logoSettings.logoSize} w-auto object-contain`}
                   onError={(e) => {
+                    console.log('Preview logo failed to load:', e.currentTarget.src);
                     e.currentTarget.src = "/placeholder.svg";
                   }}
+                  onLoad={() => console.log('Preview logo loaded successfully')}
                 />
                 <div className="text-white text-sm">Navigation Menu</div>
               </div>
