@@ -1,14 +1,14 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Upload, FileSpreadsheet, Link, Eye, Trash2, Plus, Download, Image } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useBlogData, BlogPost } from "@/hooks/useBlogData";
+import { useToast } from "@/hooks/use-toast";
 
 interface BlogPost {
   id: string;
@@ -24,10 +24,40 @@ interface BlogPost {
 }
 
 const BlogManagement = () => {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const { blogPosts, addBlogPosts, updateBlogPost, deleteBlogPost } = useBlogData();
+  const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const [googleSheetUrl, setGoogleSheetUrl] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
+
+  const parseCSVContent = (csvText: string): Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt'>[] => {
+    const lines = csvText.split('\n').filter(line => line.trim());
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim().toLowerCase());
+    const posts: Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt'>[] = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim());
+      if (values.length < headers.length) continue;
+
+      const post = {
+        title: values[headers.indexOf('title')] || 'Untitled',
+        excerpt: values[headers.indexOf('excerpt')] || '',
+        content: values[headers.indexOf('content')] || '',
+        author: values[headers.indexOf('author')] || 'Anonymous',
+        category: values[headers.indexOf('category')] || 'General',
+        tags: (values[headers.indexOf('tags')] || '').split(',').map(t => t.trim()).filter(t => t),
+        publishDate: values[headers.indexOf('publish date')] || new Date().toISOString().split('T')[0],
+        status: (values[headers.indexOf('status')] === 'published' ? 'published' : 'draft') as 'draft' | 'published',
+        slug: values[headers.indexOf('slug')] || values[headers.indexOf('title')]?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'untitled'
+      };
+
+      posts.push(post);
+    }
+
+    return posts;
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -35,43 +65,38 @@ const BlogManagement = () => {
 
     setIsUploading(true);
     
-    // Simulate file processing
-    setTimeout(() => {
-      const samplePosts: BlogPost[] = [
-        {
-          id: "1",
-          title: "10 Amazon PPC Strategies That Actually Work",
-          excerpt: "Discover proven Amazon PPC strategies that can boost your sales and reduce your ACoS.",
-          content: `<p>Amazon PPC can be challenging, but with the right strategies, you can achieve great results.</p>
-<img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800" alt="Amazon advertising dashboard" style="width: 100%; margin: 20px 0;">
-<h2>Key Strategies</h2>
-<p>Here are the top strategies that actually work...</p>`,
-          author: "John Smith",
-          category: "Amazon Advertising",
-          tags: ["PPC", "Amazon", "Strategy"],
-          publishDate: "2024-01-15",
-          status: "draft",
-          slug: "amazon-ppc-strategies-that-work"
-        },
-        {
-          id: "2", 
-          title: "Walmart Advertising vs Amazon: Complete Comparison",
-          excerpt: "A comprehensive comparison between Walmart and Amazon advertising platforms.",
-          content: `<p>When choosing between Walmart and Amazon advertising, understanding the differences is crucial.</p>
-<img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=800" alt="E-commerce comparison chart" style="width: 100%; margin: 20px 0;">
-<p>Let's dive into the complete comparison...</p>`,
-          author: "Jane Doe",
-          category: "Walmart Advertising",
-          tags: ["Walmart", "Amazon", "Comparison"],
-          publishDate: "2024-01-20",
-          status: "published",
-          slug: "walmart-vs-amazon-advertising"
-        }
-      ];
+    try {
+      const text = await file.text();
+      const newPosts = parseCSVContent(text);
       
-      setBlogPosts(prev => [...prev, ...samplePosts]);
+      if (newPosts.length === 0) {
+        toast({
+          title: "Error",
+          description: "No valid blog posts found in the file. Please check the format.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const addedPosts = addBlogPosts(newPosts);
+      
+      toast({
+        title: "Success",
+        description: `Successfully imported ${addedPosts.length} blog posts.`
+      });
+      
+    } catch (error) {
+      console.error('File processing error:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to process the file. Please ensure it's a valid CSV format.",
+        variant: "destructive"
+      });
+    } finally {
       setIsUploading(false);
-    }, 2000);
+      // Reset the file input
+      event.target.value = '';
+    }
   };
 
   const handleGoogleSheetConnect = async () => {
@@ -79,11 +104,11 @@ const BlogManagement = () => {
     
     setIsConnecting(true);
     
-    // Simulate Google Sheets connection
-    setTimeout(() => {
-      const samplePosts: BlogPost[] = [
+    try {
+      // For demo purposes, we'll add sample posts
+      // In a real implementation, you'd parse the Google Sheets data
+      const samplePosts = [
         {
-          id: "gs1",
           title: "Meta Advertising Best Practices for E-commerce",
           excerpt: "Learn how to optimize your Meta ads for maximum ROI in e-commerce.",
           content: `<p>Meta advertising offers incredible opportunities for e-commerce businesses.</p>
@@ -94,14 +119,28 @@ const BlogManagement = () => {
           category: "Meta Advertising",
           tags: ["Meta", "Facebook", "E-commerce"],
           publishDate: "2024-01-25",
-          status: "draft",
+          status: "draft" as const,
           slug: "meta-advertising-best-practices"
         }
       ];
       
-      setBlogPosts(prev => [...prev, ...samplePosts]);
+      addBlogPosts(samplePosts);
+      
+      toast({
+        title: "Connected",
+        description: "Successfully connected to Google Sheets and imported blog posts."
+      });
+      
+    } catch (error) {
+      console.error('Google Sheets connection error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to connect to Google Sheets. Please check the URL.",
+        variant: "destructive"
+      });
+    } finally {
       setIsConnecting(false);
-    }, 2000);
+    }
   };
 
   const downloadTemplate = () => {
@@ -172,16 +211,26 @@ const BlogManagement = () => {
     document.body.removeChild(link);
   };
 
-  const deleteBlogPost = (id: string) => {
-    setBlogPosts(prev => prev.filter(post => post.id !== id));
+  const toggleStatus = (id: string) => {
+    const post = blogPosts.find(p => p.id === id);
+    if (post) {
+      updateBlogPost(id, { 
+        status: post.status === 'draft' ? 'published' : 'draft' 
+      });
+      
+      toast({
+        title: "Status Updated",
+        description: `Post ${post.status === 'draft' ? 'published' : 'unpublished'} successfully.`
+      });
+    }
   };
 
-  const toggleStatus = (id: string) => {
-    setBlogPosts(prev => prev.map(post => 
-      post.id === id 
-        ? { ...post, status: post.status === 'draft' ? 'published' : 'draft' }
-        : post
-    ));
+  const handleDeletePost = (id: string) => {
+    deleteBlogPost(id);
+    toast({
+      title: "Deleted",
+      description: "Blog post deleted successfully."
+    });
   };
 
   return (
@@ -342,7 +391,7 @@ const BlogManagement = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Eye className="w-5 h-5 mr-2" />
-              Imported Blog Posts
+              Blog Posts ({blogPosts.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -399,7 +448,7 @@ const BlogManagement = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => deleteBlogPost(post.id)}
+                          onClick={() => handleDeletePost(post.id)}
                           className="text-red-600 hover:text-red-700"
                         >
                           <Trash2 className="w-4 h-4" />

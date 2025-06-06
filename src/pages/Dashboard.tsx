@@ -9,6 +9,7 @@ import PricingManagement from "@/components/dashboard/PricingManagement";
 import ServiceEditModal from "@/components/dashboard/ServiceEditModal";
 import ReviewEditModal from "@/components/dashboard/ReviewEditModal";
 import BlogManagement from "@/components/dashboard/BlogManagement";
+import Header from "@/components/Header";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
 import { Card } from "@/components/ui/card";
@@ -90,142 +91,145 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="max-w-7xl mx-auto p-6">
-        {/* Modern Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-                Dashboard
-              </h1>
-              <p className="text-slate-600 mt-2">Manage your website content and settings</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="px-4 py-2 bg-white/50 backdrop-blur-sm">
-                Live Preview Mode
-              </Badge>
+    <>
+      <Header />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-20">
+        <div className="max-w-7xl mx-auto p-6">
+          {/* Modern Header */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
+                  Dashboard
+                </h1>
+                <p className="text-slate-600 mt-2">Manage your website content and settings</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Badge variant="outline" className="px-4 py-2 bg-white/50 backdrop-blur-sm">
+                  Live Preview Mode
+                </Badge>
+              </div>
             </div>
           </div>
-        </div>
-        
-        {/* Modern Tab Navigation */}
-        <Card className="mb-8 bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
-          <div className="p-4">
-            <nav className="flex flex-wrap gap-2">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`group relative px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
-                    activeTab === tab.id
-                      ? 'bg-white text-slate-900 shadow-lg scale-105'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-                  }`}
-                >
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${tab.color} ${
-                      activeTab === tab.id ? 'scale-100' : 'scale-75 group-hover:scale-100'
-                    } transition-transform duration-300`}></div>
-                    <span>{tab.label}</span>
-                    {tab.count !== undefined && (
-                      <Badge variant="secondary" className="ml-1 h-5 text-xs">
-                        {tab.count}
-                      </Badge>
+          
+          {/* Modern Tab Navigation */}
+          <Card className="mb-8 bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
+            <div className="p-4">
+              <nav className="flex flex-wrap gap-2">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`group relative px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                      activeTab === tab.id
+                        ? 'bg-white text-slate-900 shadow-lg scale-105'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-2 h-2 rounded-full ${tab.color} ${
+                        activeTab === tab.id ? 'scale-100' : 'scale-75 group-hover:scale-100'
+                      } transition-transform duration-300`}></div>
+                      <span>{tab.label}</span>
+                      {tab.count !== undefined && (
+                        <Badge variant="secondary" className="ml-1 h-5 text-xs">
+                          {tab.count}
+                        </Badge>
+                      )}
+                    </div>
+                    {activeTab === tab.id && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl -z-10"></div>
                     )}
-                  </div>
-                  {activeTab === tab.id && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl -z-10"></div>
-                  )}
-                </button>
-              ))}
-            </nav>
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </Card>
+
+          {/* Tab Content with Enhanced Styling */}
+          <div className="space-y-6">
+            {activeTab === 'services' && (
+              <div className="animate-fade-in">
+                <ServicesTab
+                  services={services}
+                  onEdit={setEditingService}
+                  onDelete={deleteService}
+                  onAdd={addNewService}
+                />
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className="animate-fade-in">
+                <ReviewsTab
+                  reviews={reviews}
+                  onEdit={setEditingReview}
+                  onDelete={deleteReview}
+                  onAdd={addNewReview}
+                />
+              </div>
+            )}
+
+            {activeTab === 'website' && (
+              <div className="animate-fade-in">
+                <WebsiteTab />
+              </div>
+            )}
+
+            {activeTab === 'logo' && (
+              <div className="animate-fade-in">
+                <LogoManagement />
+              </div>
+            )}
+
+            {activeTab === 'contact' && (
+              <div className="animate-fade-in">
+                <ContactManagement />
+              </div>
+            )}
+
+            {activeTab === 'homepage' && (
+              <div className="animate-fade-in">
+                <HomepageElements />
+              </div>
+            )}
+
+            {activeTab === 'pricing' && (
+              <div className="animate-fade-in">
+                <PricingManagement />
+              </div>
+            )}
+
+            {activeTab === 'blog' && (
+              <div className="animate-fade-in">
+                <BlogManagement />
+              </div>
+            )}
           </div>
-        </Card>
 
-        {/* Tab Content with Enhanced Styling */}
-        <div className="space-y-6">
-          {activeTab === 'services' && (
-            <div className="animate-fade-in">
-              <ServicesTab
-                services={services}
-                onEdit={setEditingService}
-                onDelete={deleteService}
-                onAdd={addNewService}
-              />
-            </div>
+          {/* Modals */}
+          {editingService && (
+            <ServiceEditModal
+              service={editingService}
+              isNew={!services.find(s => s.id === editingService.id)}
+              onSave={saveService}
+              onCancel={() => setEditingService(null)}
+              onChange={setEditingService}
+            />
           )}
 
-          {activeTab === 'reviews' && (
-            <div className="animate-fade-in">
-              <ReviewsTab
-                reviews={reviews}
-                onEdit={setEditingReview}
-                onDelete={deleteReview}
-                onAdd={addNewReview}
-              />
-            </div>
-          )}
-
-          {activeTab === 'website' && (
-            <div className="animate-fade-in">
-              <WebsiteTab />
-            </div>
-          )}
-
-          {activeTab === 'logo' && (
-            <div className="animate-fade-in">
-              <LogoManagement />
-            </div>
-          )}
-
-          {activeTab === 'contact' && (
-            <div className="animate-fade-in">
-              <ContactManagement />
-            </div>
-          )}
-
-          {activeTab === 'homepage' && (
-            <div className="animate-fade-in">
-              <HomepageElements />
-            </div>
-          )}
-
-          {activeTab === 'pricing' && (
-            <div className="animate-fade-in">
-              <PricingManagement />
-            </div>
-          )}
-
-          {activeTab === 'blog' && (
-            <div className="animate-fade-in">
-              <BlogManagement />
-            </div>
+          {editingReview && (
+            <ReviewEditModal
+              review={editingReview}
+              isNew={!reviews.find(r => r.id === editingReview.id)}
+              onSave={saveReview}
+              onCancel={() => setEditingReview(null)}
+              onChange={setEditingReview}
+            />
           )}
         </div>
-
-        {/* Modals */}
-        {editingService && (
-          <ServiceEditModal
-            service={editingService}
-            isNew={!services.find(s => s.id === editingService.id)}
-            onSave={saveService}
-            onCancel={() => setEditingService(null)}
-            onChange={setEditingService}
-          />
-        )}
-
-        {editingReview && (
-          <ReviewEditModal
-            review={editingReview}
-            isNew={!reviews.find(r => r.id === editingReview.id)}
-            onSave={saveReview}
-            onCancel={() => setEditingReview(null)}
-            onChange={setEditingReview}
-          />
-        )}
       </div>
-    </div>
+    </>
   );
 };
 
