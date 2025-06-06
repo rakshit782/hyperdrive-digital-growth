@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -73,14 +74,6 @@ const Hero = () => {
     };
   }, []);
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.log("Hero logo failed to load:", e.currentTarget.src);
-  };
-
-  const handleImageLoad = () => {
-    console.log("Hero logo loaded successfully");
-  };
-
   const handlePrimaryButtonClick = () => {
     window.location.href = '/free-audit';
   };
@@ -107,24 +100,7 @@ const Hero = () => {
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-5xl mx-auto text-center">
-          {/* Logo with enhanced styling */}
-          <div className="flex justify-center mb-12 group">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
-              <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <img 
-                  src="/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png" 
-                  alt="AMZ AD SCOUT - The Growth Agency" 
-                  className="h-14 w-auto object-contain mx-auto"
-                  onError={handleImageError}
-                  onLoad={handleImageLoad}
-                  style={{ maxWidth: '180px', display: 'block' }}
-                />
-              </div>
-            </div>
-          </div>
-          
-          {/* Enhanced Typography */}
+          {/* Enhanced Typography - Logo section removed */}
           <div className="mb-8 space-y-4">
             <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 backdrop-blur-sm rounded-full border border-blue-400/30 mb-6">
               <Sparkles className="w-4 h-4 mr-2 text-cyan-400" />

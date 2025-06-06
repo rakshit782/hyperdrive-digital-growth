@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Image, Eye } from "lucide-react";
+import { Image, Eye, Upload, Link } from "lucide-react";
 
 interface LogoSettings {
   logoUrl: string;
@@ -21,6 +20,7 @@ const defaultLogo: LogoSettings = {
 const LogoManagement = () => {
   const [logoSettings, setLogoSettings] = useState<LogoSettings>(defaultLogo);
   const [isSaved, setIsSaved] = useState(false);
+  const [googleDriveUrl, setGoogleDriveUrl] = useState("");
 
   useEffect(() => {
     const savedLogo = localStorage.getItem('logoData');
@@ -43,6 +43,24 @@ const LogoManagement = () => {
 
   const handleInputChange = (field: keyof LogoSettings, value: string) => {
     setLogoSettings(prev => ({ ...prev, [field]: value }));
+  };
+
+  const convertGoogleDriveUrl = (url: string) => {
+    // Convert Google Drive sharing URL to direct image URL
+    const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+    if (match) {
+      const fileId = match[1];
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+    return url;
+  };
+
+  const handleGoogleDriveUpload = () => {
+    if (googleDriveUrl.trim()) {
+      const directUrl = convertGoogleDriveUrl(googleDriveUrl.trim());
+      setLogoSettings(prev => ({ ...prev, logoUrl: directUrl }));
+      setGoogleDriveUrl("");
+    }
   };
 
   const sizeOptions = [
@@ -83,6 +101,35 @@ const LogoManagement = () => {
               placeholder="https://example.com/logo.png"
               className="bg-white/50 border-white/30 focus:border-indigo-500"
             />
+          </div>
+
+          {/* Google Drive Upload Section */}
+          <div className="space-y-3 p-4 bg-blue-50/50 rounded-lg border border-blue-200/30">
+            <div className="flex items-center">
+              <Upload className="w-4 h-4 mr-2 text-blue-600" />
+              <Label className="text-sm font-medium text-blue-700">Upload from Google Drive</Label>
+            </div>
+            <div className="space-y-2">
+              <Input
+                value={googleDriveUrl}
+                onChange={(e) => setGoogleDriveUrl(e.target.value)}
+                placeholder="Paste Google Drive sharing link here..."
+                className="bg-white/70 border-blue-200/50 focus:border-blue-500"
+              />
+              <Button 
+                onClick={handleGoogleDriveUpload}
+                variant="outline"
+                size="sm"
+                className="w-full bg-blue-100/50 border-blue-200 text-blue-700 hover:bg-blue-200/50"
+                disabled={!googleDriveUrl.trim()}
+              >
+                <Link className="w-4 h-4 mr-2" />
+                Use Google Drive Image
+              </Button>
+            </div>
+            <p className="text-xs text-blue-600/70">
+              Share your image from Google Drive and paste the link above. We'll convert it to a direct image URL.
+            </p>
           </div>
           
           <div className="space-y-2">
