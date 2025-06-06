@@ -1,15 +1,7 @@
 
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 
 interface LogoSettings {
   logoUrl: string;
@@ -20,6 +12,7 @@ interface LogoSettings {
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [logoSettings, setLogoSettings] = useState<LogoSettings>({
     logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
     logoSize: "h-12",
@@ -103,73 +96,74 @@ const Header = () => {
           </div>
           
           {/* Desktop Navigation */}
-          <NavigationMenu className="hidden lg:flex">
-            <NavigationMenuList className="space-x-2">
-              <NavigationMenuItem>
-                <NavigationMenuLink 
-                  href="/"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
-                >
-                  Home
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+          <nav className="hidden lg:flex items-center space-x-1 ml-8">
+            <a 
+              href="/"
+              className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
+            >
+              Home
+            </a>
+            
+            {/* Services Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setIsServicesOpen(!isServicesOpen)}
+                onMouseEnter={() => setIsServicesOpen(true)}
+                className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50 flex items-center"
+              >
+                Services
+                <ChevronDown className={`ml-1 h-3 w-3 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`} />
+              </button>
               
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide bg-transparent hover:bg-blue-50">
-                  Services
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="grid w-[400px] gap-3 p-4 bg-white shadow-lg rounded-md border">
+              {isServicesOpen && (
+                <div 
+                  className="absolute top-full left-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                  onMouseLeave={() => setIsServicesOpen(false)}
+                >
+                  <div className="py-2">
                     {servicePages.map((service) => (
-                      <NavigationMenuLink
+                      <a
                         key={service.href}
                         href={service.href}
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-blue-50 hover:text-blue-600 focus:bg-blue-50 focus:text-blue-600"
+                        className="block px-4 py-3 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                        onClick={() => setIsServicesOpen(false)}
                       >
-                        <div className="text-sm font-medium leading-none">{service.title}</div>
-                      </NavigationMenuLink>
+                        {service.title}
+                      </a>
                     ))}
                   </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuLink 
-                  href="/pricing"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
-                >
-                  Pricing
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuLink 
-                  href="/about"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
-                >
-                  About
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuLink 
-                  href="/case-studies"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
-                >
-                  Case Studies
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuLink 
-                  href="/contact"
-                  className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
-                >
-                  Contact
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+                </div>
+              )}
+            </div>
+            
+            <a 
+              href="/pricing"
+              className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
+            >
+              Pricing
+            </a>
+            
+            <a 
+              href="/about"
+              className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
+            >
+              About
+            </a>
+            
+            <a 
+              href="/case-studies"
+              className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
+            >
+              Case Studies
+            </a>
+            
+            <a 
+              href="/contact"
+              className="text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2 rounded-md hover:bg-blue-50"
+            >
+              Contact
+            </a>
+          </nav>
           
           {/* CTA Button */}
           <div className="hidden lg:block flex-shrink-0">
