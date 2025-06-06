@@ -49,9 +49,9 @@ export const useTrackingScripts = () => {
               document.body.appendChild(scriptElement);
               break;
             case 'footer':
-              let footer = document.querySelector('footer:last-of-type');
+              let footer = document.querySelector('footer:last-of-type') as HTMLElement;
               if (!footer) {
-                footer = document.createElement('footer');
+                footer = document.createElement('footer') as HTMLElement;
                 footer.style.display = 'none';
                 document.body.appendChild(footer);
               }

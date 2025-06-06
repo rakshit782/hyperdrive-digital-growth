@@ -53,9 +53,9 @@ const TrackingScriptInjector = () => {
               break;
             case 'footer':
               // Create footer if it doesn't exist
-              let footer = document.querySelector('footer');
+              let footer = document.querySelector('footer') as HTMLElement;
               if (!footer) {
-                footer = document.createElement('footer');
+                footer = document.createElement('footer') as HTMLElement;
                 footer.style.display = 'none'; // Hidden footer for scripts only
                 document.body.appendChild(footer);
               }
