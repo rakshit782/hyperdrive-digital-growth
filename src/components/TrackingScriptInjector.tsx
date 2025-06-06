@@ -1,5 +1,6 @@
 
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 interface TrackingScript {
   id: string;
@@ -12,10 +13,11 @@ interface TrackingScript {
 }
 
 const TrackingScriptInjector = () => {
+  const location = useLocation();
+
   useEffect(() => {
-    const loadAndInjectScripts = () => {
-      // Get current page path
-      const currentPath = window.location.pathname;
+    const injectScripts = () => {
+      const currentPath = location.pathname;
       
       // Load scripts from localStorage
       const savedScripts = localStorage.getItem('trackingScripts');
@@ -63,36 +65,28 @@ const TrackingScriptInjector = () => {
               break;
           }
 
-          console.log(`Injected tracking script: ${scriptConfig.name} into ${scriptConfig.location}`);
+          console.log(`Injected tracking script: ${scriptConfig.name} into ${scriptConfig.location} for ${currentPath}`);
         });
       } catch (error) {
         console.error('Failed to load and inject tracking scripts:', error);
       }
     };
 
-    // Initial load
-    loadAndInjectScripts();
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(injectScripts, 50);
 
     // Listen for script updates
     const handleScriptsUpdate = () => {
-      loadAndInjectScripts();
+      setTimeout(injectScripts, 50);
     };
 
     window.addEventListener('trackingScriptsUpdated', handleScriptsUpdate);
 
-    // Listen for route changes (for SPA navigation)
-    const handleRouteChange = () => {
-      // Small delay to ensure route has changed
-      setTimeout(loadAndInjectScripts, 100);
-    };
-
-    window.addEventListener('popstate', handleRouteChange);
-
     return () => {
+      clearTimeout(timeoutId);
       window.removeEventListener('trackingScriptsUpdated', handleScriptsUpdate);
-      window.removeEventListener('popstate', handleRouteChange);
     };
-  }, []);
+  }, [location.pathname]);
 
   return null; // This component doesn't render anything
 };

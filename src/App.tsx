@@ -20,6 +20,7 @@ import Dashboard from "@/pages/Dashboard";
 import Blog from "@/pages/Blog";
 import NotFound from "@/pages/NotFound";
 import Header from "@/components/Header";
+import TrackingScriptInjector from "@/components/TrackingScriptInjector";
 import { Toaster } from "@/components/ui/toaster";
 import "./App.css";
 
@@ -30,6 +31,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <div className="min-h-screen bg-white w-full">
+          <TrackingScriptInjector />
           <Routes>
             <Route path="/" element={<><Header /><Index /></>} />
             <Route path="/about" element={<><Header /><About /></>} />

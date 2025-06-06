@@ -4,7 +4,6 @@ import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import Reviews from "@/components/Reviews";
 import Contact from "@/components/Contact";
-import TrackingScriptInjector from "@/components/TrackingScriptInjector";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, ArrowRight } from "lucide-react";
@@ -25,7 +24,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <TrackingScriptInjector />
       <Header />
       <Hero />
       <Services />
