@@ -83,8 +83,8 @@ const Header = () => {
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
       isScrolled 
-        ? 'bg-white/90 backdrop-blur-xl border-b border-gray-200/60 shadow-lg shadow-black/5' 
-        : 'bg-white/80 backdrop-blur-lg border-b border-gray-200/40'
+        ? 'bg-white/60 backdrop-blur-xl border-b border-gray-200/40 shadow-lg shadow-black/5' 
+        : 'bg-white/50 backdrop-blur-lg border-b border-gray-200/30'
     }`}>
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
@@ -103,7 +103,7 @@ const Header = () => {
           </div>
           
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-2 ml-8">
+          <nav className="hidden lg:flex items-center space-x-2 ml-4">
             {navItems.map((item) => (
               <a 
                 key={item.href}
