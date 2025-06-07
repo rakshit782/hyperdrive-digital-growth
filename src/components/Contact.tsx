@@ -1,8 +1,10 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Phone, 
   Mail, 
@@ -24,11 +26,21 @@ interface ContactInfo {
 }
 
 const Contact = () => {
+  const { toast } = useToast();
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
     phone: "+1 (555) 123-4567",
     email: "hello@amzadscout.com",
     businessHours: "Mon-Fri: 9AM-6PM PST",
     address: "123 Business St, Suite 100, San Francisco, CA 94105"
+  });
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    budget: "",
+    message: ""
   });
 
   useEffect(() => {
@@ -37,6 +49,23 @@ const Contact = () => {
       setContactInfo(JSON.parse(savedContact));
     }
   }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    toast({
+      title: "Backend Required",
+      description: "Form submission requires a backend server. Please connect to Supabase to enable form submissions and email functionality.",
+      variant: "destructive",
+    });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   return (
     <section className="py-32 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white relative overflow-hidden">
@@ -74,39 +103,62 @@ const Contact = () => {
               <p className="text-blue-100/80 text-lg">Fill out the form and we'll get back to you within 24 hours</p>
             </CardHeader>
             <CardContent className="space-y-6 relative z-10">
-              <div className="grid md:grid-cols-2 gap-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <Input 
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    placeholder="First Name" 
+                    className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 h-14 rounded-xl text-lg backdrop-blur-sm"
+                  />
+                  <Input 
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    placeholder="Last Name" 
+                    className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 h-14 rounded-xl text-lg backdrop-blur-sm"
+                  />
+                </div>
                 <Input 
-                  placeholder="First Name" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Email Address" 
+                  type="email"
                   className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 h-14 rounded-xl text-lg backdrop-blur-sm"
                 />
                 <Input 
-                  placeholder="Last Name" 
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="Phone Number" 
+                  type="tel"
                   className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 h-14 rounded-xl text-lg backdrop-blur-sm"
                 />
-              </div>
-              <Input 
-                placeholder="Email Address" 
-                type="email"
-                className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 h-14 rounded-xl text-lg backdrop-blur-sm"
-              />
-              <Input 
-                placeholder="Phone Number" 
-                type="tel"
-                className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 h-14 rounded-xl text-lg backdrop-blur-sm"
-              />
-              <Input 
-                placeholder="Monthly Ad Spend Budget" 
-                className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 h-14 rounded-xl text-lg backdrop-blur-sm"
-              />
-              <Textarea 
-                placeholder="Tell us about your business and goals..."
-                rows={5}
-                className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 rounded-xl text-lg backdrop-blur-sm resize-none"
-              />
-              <Button className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 hover:from-cyan-600 hover:via-blue-600 hover:to-purple-600 text-white py-6 text-xl font-semibold rounded-xl shadow-2xl shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-500 hover:scale-105 hover:-translate-y-1">
-                Book Free Strategy Call
-                <ArrowRight className="ml-3 w-6 h-6" />
-              </Button>
+                <Input 
+                  name="budget"
+                  value={formData.budget}
+                  onChange={handleInputChange}
+                  placeholder="Monthly Ad Spend Budget" 
+                  className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 h-14 rounded-xl text-lg backdrop-blur-sm"
+                />
+                <Textarea 
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  placeholder="Tell us about your business and goals..."
+                  rows={5}
+                  className="bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-cyan-400 focus:ring-cyan-400/20 rounded-xl text-lg backdrop-blur-sm resize-none"
+                />
+                <Button 
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 hover:from-cyan-600 hover:via-blue-600 hover:to-purple-600 text-white py-6 text-xl font-semibold rounded-xl shadow-2xl shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-500 hover:scale-105 hover:-translate-y-1"
+                >
+                  Book Free Strategy Call
+                  <ArrowRight className="ml-3 w-6 h-6" />
+                </Button>
+              </form>
             </CardContent>
           </Card>
           

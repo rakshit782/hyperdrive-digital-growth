@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -102,13 +103,13 @@ const Header = () => {
             </a>
           </div>
           
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-2 ml-4">
+          {/* Desktop Navigation - Reduced gap to ml-2 */}
+          <nav className="hidden lg:flex items-center space-x-1 ml-2">
             {navItems.map((item) => (
               <a 
                 key={item.href}
                 href={item.href}
-                className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-4 py-2.5 rounded-lg hover:bg-blue-50/80 group"
+                className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2.5 rounded-lg hover:bg-blue-50/80 group"
               >
                 {item.title}
                 <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300 group-hover:w-8 group-hover:left-1/2 group-hover:-translate-x-1/2"></span>
@@ -120,7 +121,7 @@ const Header = () => {
               <button
                 onClick={() => setIsServicesOpen(!isServicesOpen)}
                 onMouseEnter={() => setIsServicesOpen(true)}
-                className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-4 py-2.5 rounded-lg hover:bg-blue-50/80 flex items-center group"
+                className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2.5 rounded-lg hover:bg-blue-50/80 flex items-center group"
               >
                 Services
                 <ChevronDown className={`ml-1.5 h-4 w-4 transition-all duration-300 ${isServicesOpen ? 'rotate-180 text-blue-600' : 'group-hover:text-blue-600'}`} />
@@ -154,10 +155,10 @@ const Header = () => {
             </div>
           </nav>
           
-          {/* Enhanced CTA Button */}
-          <div className="hidden lg:block flex-shrink-0">
+          {/* Enhanced CTA Button - Reduced gap to ml-2 */}
+          <div className="hidden lg:block flex-shrink-0 ml-2">
             <Button 
-              className="bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 hover:from-blue-700 hover:via-blue-800 hover:to-cyan-700 text-white font-semibold px-8 py-3 rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 border-0 text-sm tracking-wide"
+              className="bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 hover:from-blue-700 hover:via-blue-800 hover:to-cyan-700 text-white font-semibold px-6 py-3 rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 border-0 text-sm tracking-wide"
               onClick={() => window.location.href = '/free-audit'}
             >
               Get Free Audit
