@@ -67,36 +67,61 @@ const TrackingScriptInjector = () => {
           // Handle both inline scripts and external scripts
           if (scriptConfig.script.trim().startsWith('http')) {
             scriptElement.src = scriptConfig.script.trim();
+            scriptElement.async = true;
           } else {
-            scriptElement.innerHTML = scriptConfig.script;
+            // For inline scripts, we need to handle them properly
+            try {
+              scriptElement.text = scriptConfig.script;
+            } catch (e) {
+              // Fallback for older browsers
+              scriptElement.innerHTML = scriptConfig.script;
+            }
           }
 
           // Inject into appropriate location
-          switch (scriptConfig.location) {
-            case 'head':
-              document.head.appendChild(scriptElement);
-              console.log('TrackingScriptInjector: Injected into HEAD:', scriptConfig.name);
-              break;
-            case 'body':
-              document.body.appendChild(scriptElement);
-              console.log('TrackingScriptInjector: Injected into BODY:', scriptConfig.name);
-              break;
-            case 'footer':
-              // Create footer if it doesn't exist
-              let footer = document.querySelector('footer') as HTMLElement;
-              if (!footer) {
-                footer = document.createElement('footer') as HTMLElement;
-                footer.style.display = 'none'; // Hidden footer for scripts only
-                footer.setAttribute('data-tracking-footer', 'true');
-                document.body.appendChild(footer);
-                console.log('TrackingScriptInjector: Created hidden footer for scripts');
-              }
-              footer.appendChild(scriptElement);
-              console.log('TrackingScriptInjector: Injected into FOOTER:', scriptConfig.name);
-              break;
-          }
+          try {
+            switch (scriptConfig.location) {
+              case 'head':
+                document.head.appendChild(scriptElement);
+                console.log('TrackingScriptInjector: Injected into HEAD:', scriptConfig.name);
+                break;
+              case 'body':
+                document.body.appendChild(scriptElement);
+                console.log('TrackingScriptInjector: Injected into BODY:', scriptConfig.name);
+                break;
+              case 'footer':
+                // Create footer if it doesn't exist
+                let footer = document.querySelector('footer[data-tracking-footer="true"]') as HTMLElement;
+                if (!footer) {
+                  footer = document.createElement('footer') as HTMLElement;
+                  footer.style.display = 'none'; // Hidden footer for scripts only
+                  footer.setAttribute('data-tracking-footer', 'true');
+                  document.body.appendChild(footer);
+                  console.log('TrackingScriptInjector: Created hidden footer for scripts');
+                }
+                footer.appendChild(scriptElement);
+                console.log('TrackingScriptInjector: Injected into FOOTER:', scriptConfig.name);
+                break;
+            }
 
-          console.log(`TrackingScriptInjector: Successfully injected script: ${scriptConfig.name} into ${scriptConfig.location} for ${currentPath}`);
+            // Execute script if it's inline and not already executed
+            if (!scriptConfig.script.trim().startsWith('http') && scriptElement.text) {
+              try {
+                // Create a new script element to force execution
+                const execScript = document.createElement('script');
+                execScript.text = scriptElement.text;
+                execScript.setAttribute('data-tracking-script-exec', scriptConfig.id);
+                document.head.appendChild(execScript);
+                console.log('TrackingScriptInjector: Executed inline script:', scriptConfig.name);
+              } catch (execError) {
+                console.error('TrackingScriptInjector: Failed to execute script:', scriptConfig.name, execError);
+              }
+            }
+
+            console.log(`TrackingScriptInjector: Successfully processed script: ${scriptConfig.name} into ${scriptConfig.location} for ${currentPath}`);
+          } catch (injectionError) {
+            console.error('TrackingScriptInjector: Failed to inject script:', scriptConfig.name, injectionError);
+          }
         });
         
         console.log('TrackingScriptInjector: Injection complete');

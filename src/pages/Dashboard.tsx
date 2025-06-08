@@ -8,6 +8,7 @@ import HomepageElements from "@/components/dashboard/HomepageElements";
 import PricingManagement from "@/components/dashboard/PricingManagement";
 import CustomEventsTab from "@/components/dashboard/CustomEventsTab";
 import WebsiteSEOTab from "@/components/dashboard/WebsiteSEOTab";
+import HeaderCustomizationTab from "@/components/dashboard/HeaderCustomizationTab";
 import ServiceEditModal from "@/components/dashboard/ServiceEditModal";
 import ReviewEditModal from "@/components/dashboard/ReviewEditModal";
 import BlogManagement from "@/components/dashboard/BlogManagement";
@@ -21,7 +22,7 @@ const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
   const [editingService, setEditingService] = useState<ServiceCard | null>(null);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
-  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'website' | 'logo' | 'contact' | 'homepage' | 'pricing' | 'blog' | 'custom-events' | 'seo'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'website' | 'logo' | 'contact' | 'homepage' | 'pricing' | 'blog' | 'custom-events' | 'seo' | 'header'>('services');
 
   const deleteService = (id: string) => {
     const newServices = services.filter(service => service.id !== id);
@@ -90,6 +91,7 @@ const Dashboard = () => {
     { id: 'homepage', label: 'Homepage', color: 'bg-pink-500' },
     { id: 'pricing', label: 'Pricing', color: 'bg-cyan-500' },
     { id: 'blog', label: 'Blog', color: 'bg-emerald-500' },
+    { id: 'header', label: 'Header Menu', color: 'bg-indigo-600' },
     { id: 'custom-events', label: 'Custom Events', color: 'bg-purple-600' },
     { id: 'seo', label: 'Website SEO', color: 'bg-green-600' },
   ];
@@ -207,6 +209,12 @@ const Dashboard = () => {
             {activeTab === 'blog' && (
               <div className="animate-fade-in">
                 <BlogManagement />
+              </div>
+            )}
+
+            {activeTab === 'header' && (
+              <div className="animate-fade-in">
+                <HeaderCustomizationTab />
               </div>
             )}
 
