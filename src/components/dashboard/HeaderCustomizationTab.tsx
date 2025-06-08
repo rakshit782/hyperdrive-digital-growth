@@ -8,18 +8,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Menu, Save, RotateCcw } from "lucide-react";
+import { Menu, Save, RotateCcw, Palette } from "lucide-react";
 
 interface HeaderSettings {
   logoSize: string;
   logoAlt: string;
   menuGap: number;
+  logoMenuGap: number;
+  ctaMenuGap: number;
   ctaButtonText: string;
   ctaButtonStyle: string;
   mobileMenuEnabled: boolean;
   servicesDropdownEnabled: boolean;
   headerBackground: string;
   headerOpacity: number;
+  headerBarColor: string;
+  headerCustomColor: string;
   menuItems: Array<{
     title: string;
     href: string;
@@ -31,12 +35,16 @@ const defaultSettings: HeaderSettings = {
   logoSize: "h-12",
   logoAlt: "AMZ AD SCOUT - The Growth Agency",
   menuGap: 1,
+  logoMenuGap: 2,
+  ctaMenuGap: 2,
   ctaButtonText: "Get Free Audit",
   ctaButtonStyle: "gradient",
   mobileMenuEnabled: true,
   servicesDropdownEnabled: true,
   headerBackground: "blur",
   headerOpacity: 80,
+  headerBarColor: "white",
+  headerCustomColor: "#ffffff",
   menuItems: [
     { title: "Home", href: "/", enabled: true },
     { title: "Pricing", href: "/pricing", enabled: true },
@@ -133,10 +141,19 @@ const HeaderCustomizationTab = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="h-8">Small (h-8)</SelectItem>
-                    <SelectItem value="h-10">Medium (h-10)</SelectItem>
-                    <SelectItem value="h-12">Large (h-12)</SelectItem>
-                    <SelectItem value="h-16">Extra Large (h-16)</SelectItem>
+                    <SelectItem value="h-8">Small (32px)</SelectItem>
+                    <SelectItem value="h-10">Medium (40px)</SelectItem>
+                    <SelectItem value="h-12">Large (48px)</SelectItem>
+                    <SelectItem value="h-16">Extra Large (64px)</SelectItem>
+                    <SelectItem value="h-20">XXL (80px)</SelectItem>
+                    <SelectItem value="h-24">XXXL (96px)</SelectItem>
+                    <SelectItem value="h-32">Huge (128px)</SelectItem>
+                    <SelectItem value="h-40">Maximum (160px)</SelectItem>
+                    <SelectItem value="h-48">Ultra (192px)</SelectItem>
+                    <SelectItem value="h-56">Mega (224px)</SelectItem>
+                    <SelectItem value="h-64">Super (256px)</SelectItem>
+                    <SelectItem value="h-72">Giant (288px)</SelectItem>
+                    <SelectItem value="h-80">Colossal (320px)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -152,12 +169,77 @@ const HeaderCustomizationTab = () => {
             </div>
           </div>
 
-          {/* Navigation Settings */}
+          {/* Header Bar Color */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">Navigation Settings</h3>
+            <div className="flex items-center space-x-2">
+              <Palette className="w-5 h-5 text-slate-700" />
+              <h3 className="text-lg font-semibold text-slate-900">Header Bar Color</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="headerBarColor">Color Preset</Label>
+                <Select
+                  value={settings.headerBarColor}
+                  onValueChange={(value) => updateSettings({ headerBarColor: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="white">White</SelectItem>
+                    <SelectItem value="gray">Light Gray</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="blue">Blue</SelectItem>
+                    <SelectItem value="green">Green</SelectItem>
+                    <SelectItem value="purple">Purple</SelectItem>
+                    <SelectItem value="red">Red</SelectItem>
+                    <SelectItem value="yellow">Yellow</SelectItem>
+                    <SelectItem value="custom">Custom Color</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {settings.headerBarColor === 'custom' && (
+                <div className="space-y-2">
+                  <Label htmlFor="customColor">Custom Hex Color</Label>
+                  <div className="flex space-x-2">
+                    <Input
+                      id="customColor"
+                      type="color"
+                      value={settings.headerCustomColor}
+                      onChange={(e) => updateSettings({ headerCustomColor: e.target.value })}
+                      className="w-16 h-10 p-1 border rounded"
+                    />
+                    <Input
+                      value={settings.headerCustomColor}
+                      onChange={(e) => updateSettings({ headerCustomColor: e.target.value })}
+                      placeholder="#ffffff"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Spacing Controls */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-900">Element Spacing</h3>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Menu Items Gap: {settings.menuGap}</Label>
+                <Label>Gap Between Logo and Menu: {settings.logoMenuGap * 0.25}rem</Label>
+                <Slider
+                  value={[settings.logoMenuGap]}
+                  onValueChange={(value) => updateSettings({ logoMenuGap: value[0] })}
+                  max={20}
+                  min={0}
+                  step={1}
+                  className="w-full"
+                />
+                <p className="text-xs text-gray-500">Controls spacing between logo and navigation menu</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Gap Between Menu Items: {settings.menuGap * 0.25}rem</Label>
                 <Slider
                   value={[settings.menuGap]}
                   onValueChange={(value) => updateSettings({ menuGap: value[0] })}
@@ -166,9 +248,28 @@ const HeaderCustomizationTab = () => {
                   step={1}
                   className="w-full"
                 />
-                <p className="text-xs text-gray-500">Controls spacing between navigation items</p>
+                <p className="text-xs text-gray-500">Controls spacing between individual navigation items</p>
               </div>
 
+              <div className="space-y-2">
+                <Label>Gap Between Menu and CTA Button: {settings.ctaMenuGap * 0.25}rem</Label>
+                <Slider
+                  value={[settings.ctaMenuGap]}
+                  onValueChange={(value) => updateSettings({ ctaMenuGap: value[0] })}
+                  max={20}
+                  min={0}
+                  step={1}
+                  className="w-full"
+                />
+                <p className="text-xs text-gray-500">Controls spacing between navigation menu and CTA button</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Settings */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-900">Navigation Settings</h3>
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="servicesDropdown">Services Dropdown</Label>
                 <Switch
@@ -263,10 +364,10 @@ const HeaderCustomizationTab = () => {
 
           {/* Header Appearance */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">Header Appearance</h3>
+            <h3 className="text-lg font-semibold text-slate-900">Header Background Style</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="headerBg">Background Style</Label>
+                <Label htmlFor="headerBg">Background Effect</Label>
                 <Select
                   value={settings.headerBackground}
                   onValueChange={(value) => updateSettings({ headerBackground: value })}

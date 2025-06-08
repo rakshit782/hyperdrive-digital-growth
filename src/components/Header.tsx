@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -19,12 +20,16 @@ interface HeaderSettings {
   logoSize: string;
   logoAlt: string;
   menuGap: number;
+  logoMenuGap: number;
+  ctaMenuGap: number;
   ctaButtonText: string;
   ctaButtonStyle: string;
   mobileMenuEnabled: boolean;
   servicesDropdownEnabled: boolean;
   headerBackground: string;
   headerOpacity: number;
+  headerBarColor: string;
+  headerCustomColor: string;
   menuItems: Array<{
     title: string;
     href: string;
@@ -36,12 +41,16 @@ const defaultHeaderSettings: HeaderSettings = {
   logoSize: "h-12",
   logoAlt: "AMZ AD SCOUT - The Growth Agency",
   menuGap: 1,
+  logoMenuGap: 2,
+  ctaMenuGap: 2,
   ctaButtonText: "Get Free Audit",
   ctaButtonStyle: "gradient",
   mobileMenuEnabled: true,
   servicesDropdownEnabled: true,
   headerBackground: "blur",
   headerOpacity: 80,
+  headerBarColor: "white",
+  headerCustomColor: "#ffffff",
   menuItems: [
     { title: "Home", href: "/", enabled: true },
     { title: "Pricing", href: "/pricing", enabled: true },
@@ -149,17 +158,62 @@ const Header = () => {
   // Use custom menu items if available
   const navItems = headerSettings.menuItems.filter(item => item.enabled);
 
+  // Get header bar color
+  const getHeaderBarColor = () => {
+    const colorMap = {
+      white: 'white',
+      gray: 'gray-100',
+      dark: 'gray-900',
+      blue: 'blue-600',
+      green: 'green-600',
+      purple: 'purple-600',
+      red: 'red-600',
+      yellow: 'yellow-400',
+      custom: null
+    };
+
+    const colorClass = colorMap[headerSettings.headerBarColor as keyof typeof colorMap];
+    
+    if (headerSettings.headerBarColor === 'custom') {
+      return { backgroundColor: headerSettings.headerCustomColor };
+    }
+    
+    return colorClass ? `bg-${colorClass}` : 'bg-white';
+  };
+
   // Dynamic header background styles
   const getHeaderBackgroundStyle = () => {
     const opacity = headerSettings.headerOpacity / 100;
+    const colorStyle = getHeaderBarColor();
+    
+    if (typeof colorStyle === 'object') {
+      // Custom color
+      const customStyle = {
+        ...colorStyle,
+        opacity: opacity,
+        backdropFilter: headerSettings.headerBackground === 'blur' ? 'blur(12px)' : 'none'
+      };
+      return { style: customStyle, className: 'border-b border-gray-200/40 shadow-lg shadow-black/5' };
+    }
+    
+    // Predefined color classes
     switch (headerSettings.headerBackground) {
       case 'solid':
-        return `bg-white/${Math.round(opacity * 100)} border-b border-gray-200/40 shadow-lg shadow-black/5`;
+        return { 
+          className: `${colorStyle}/${Math.round(opacity * 100)} border-b border-gray-200/40 shadow-lg shadow-black/5`,
+          style: {}
+        };
       case 'transparent':
-        return `bg-transparent border-b border-gray-200/20`;
+        return { 
+          className: 'bg-transparent border-b border-gray-200/20',
+          style: {}
+        };
       case 'blur':
       default:
-        return `bg-white/${Math.round(opacity * 60)} backdrop-blur-xl border-b border-gray-200/40 shadow-lg shadow-black/5`;
+        return { 
+          className: `${colorStyle}/${Math.round(opacity * 60)} backdrop-blur-xl border-b border-gray-200/40 shadow-lg shadow-black/5`,
+          style: {}
+        };
     }
   };
 
@@ -178,12 +232,13 @@ const Header = () => {
     }
   };
 
+  const headerBgStyle = getHeaderBackgroundStyle();
+
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-      isScrolled 
-        ? getHeaderBackgroundStyle()
-        : getHeaderBackgroundStyle()
-    }`}>
+    <header 
+      className={`fixed top-0 w-full z-50 transition-all duration-500 ${headerBgStyle.className}`}
+      style={headerBgStyle.style}
+    >
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
@@ -195,13 +250,19 @@ const Header = () => {
                 className={`${headerSettings.logoSize || logoSettings.logoSize} w-auto object-contain transition-all duration-300 group-hover:scale-105 group-hover:brightness-110`}
                 onError={handleImageError}
                 onLoad={handleImageLoad}
-                style={{ maxWidth: '200px', display: 'block' }}
+                style={{ maxWidth: '300px', display: 'block' }}
               />
             </a>
           </div>
           
           {/* Desktop Navigation */}
-          <nav className={`hidden lg:flex items-center ml-2`} style={{ gap: `${headerSettings.menuGap * 0.25}rem` }}>
+          <nav 
+            className="hidden lg:flex items-center" 
+            style={{ 
+              marginLeft: `${headerSettings.logoMenuGap * 0.25}rem`,
+              gap: `${headerSettings.menuGap * 0.25}rem` 
+            }}
+          >
             {navItems.map((item) => (
               <a 
                 key={item.href}
@@ -255,7 +316,10 @@ const Header = () => {
           </nav>
           
           {/* Auth Section */}
-          <div className="hidden lg:flex items-center space-x-4 ml-2">
+          <div 
+            className="hidden lg:flex items-center space-x-4"
+            style={{ marginLeft: `${headerSettings.ctaMenuGap * 0.25}rem` }}
+          >
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
