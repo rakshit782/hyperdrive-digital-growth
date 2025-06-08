@@ -1,62 +1,64 @@
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Index from "@/pages/Index";
-import About from "@/pages/About";
-import Contact from "@/pages/Contact";
-import CaseStudies from "@/pages/CaseStudies";
-import AmazonCaseStudies from "@/pages/AmazonCaseStudies";
-import WalmartCaseStudies from "@/pages/WalmartCaseStudies";
-import MetaCaseStudies from "@/pages/MetaCaseStudies";
-import AmazonAdvertising from "@/pages/AmazonAdvertising";
-import WalmartAdvertising from "@/pages/WalmartAdvertising";
-import MetaAdvertising from "@/pages/MetaAdvertising";
-import AccountManagement from "@/pages/AccountManagement";
-import ShopifyIntegration from "@/pages/ShopifyIntegration";
-import ShopifyDevelopment from "@/pages/ShopifyDevelopment";
-import Pricing from "@/pages/Pricing";
-import FreeAudit from "@/pages/FreeAudit";
-import Dashboard from "@/pages/Dashboard";
-import Blog from "@/pages/Blog";
-import NotFound from "@/pages/NotFound";
-import Header from "@/components/Header";
-import TrackingScriptInjector from "@/components/TrackingScriptInjector";
 import { Toaster } from "@/components/ui/toaster";
-import "./App.css";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import Index from "./pages/Index";
+import About from "./pages/About";
+import Pricing from "./pages/Pricing";
+import Contact from "./pages/Contact";
+import FreeAudit from "./pages/FreeAudit";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import Blog from "./pages/Blog";
+import CaseStudies from "./pages/CaseStudies";
+import AmazonAdvertising from "./pages/AmazonAdvertising";
+import WalmartAdvertising from "./pages/WalmartAdvertising";
+import MetaAdvertising from "./pages/MetaAdvertising";
+import AccountManagement from "./pages/AccountManagement";
+import ShopifyIntegration from "./pages/ShopifyIntegration";
+import ShopifyDevelopment from "./pages/ShopifyDevelopment";
+import AmazonCaseStudies from "./pages/AmazonCaseStudies";
+import WalmartCaseStudies from "./pages/WalmartCaseStudies";
+import MetaCaseStudies from "./pages/MetaCaseStudies";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <div className="min-h-screen bg-white w-full">
-          <TrackingScriptInjector />
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
           <Routes>
-            <Route path="/" element={<><Header /><Index /></>} />
-            <Route path="/about" element={<><Header /><About /></>} />
-            <Route path="/contact" element={<><Header /><Contact /></>} />
-            <Route path="/case-studies" element={<><Header /><CaseStudies /></>} />
-            <Route path="/amazon-case-studies" element={<><Header /><AmazonCaseStudies /></>} />
-            <Route path="/walmart-case-studies" element={<><Header /><WalmartCaseStudies /></>} />
-            <Route path="/meta-case-studies" element={<><Header /><MetaCaseStudies /></>} />
-            <Route path="/amazon-advertising" element={<><Header /><AmazonAdvertising /></>} />
-            <Route path="/walmart-advertising" element={<><Header /><WalmartAdvertising /></>} />
-            <Route path="/meta-advertising" element={<><Header /><MetaAdvertising /></>} />
-            <Route path="/account-management" element={<><Header /><AccountManagement /></>} />
-            <Route path="/shopify-integration" element={<><Header /><ShopifyIntegration /></>} />
-            <Route path="/shopify-development" element={<><Header /><ShopifyDevelopment /></>} />
-            <Route path="/pricing" element={<><Header /><Pricing /></>} />
-            <Route path="/free-audit" element={<><Header /><FreeAudit /></>} />
-            <Route path="/blog" element={<><Header /><Blog /></>} />
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/free-audit" element={<FreeAudit />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="*" element={<><Header /><NotFound /></>} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/case-studies" element={<CaseStudies />} />
+            <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
+            <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
+            <Route path="/meta-advertising" element={<MetaAdvertising />} />
+            <Route path="/account-management" element={<AccountManagement />} />
+            <Route path="/shopify-integration" element={<ShopifyIntegration />} />
+            <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+            <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
+            <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
+            <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
-          <Toaster />
-        </div>
-      </Router>
-    </QueryClientProvider>
-  );
-}
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
+  </QueryClientProvider>
+);
 
 export default App;
