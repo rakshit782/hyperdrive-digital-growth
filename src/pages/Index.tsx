@@ -4,6 +4,7 @@ import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import Reviews from "@/components/Reviews";
 import Contact from "@/components/Contact";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, ArrowRight } from "lucide-react";
@@ -79,6 +80,7 @@ const Index = () => {
       </section>
       
       <Contact />
+      <Footer />
     </div>
   );
 };

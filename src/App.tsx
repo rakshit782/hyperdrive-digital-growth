@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import SEOHead from "@/components/SEOHead";
 import TrackingScriptInjector from "@/components/TrackingScriptInjector";
+import Footer from "@/components/Footer";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Pricing from "./pages/Pricing";
@@ -38,27 +39,31 @@ const App = () => (
         <BrowserRouter>
           <SEOHead />
           <TrackingScriptInjector />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/free-audit" element={<FreeAudit />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/case-studies" element={<CaseStudies />} />
-            <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
-            <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
-            <Route path="/meta-advertising" element={<MetaAdvertising />} />
-            <Route path="/account-management" element={<AccountManagement />} />
-            <Route path="/shopify-integration" element={<ShopifyIntegration />} />
-            <Route path="/shopify-development" element={<ShopifyDevelopment />} />
-            <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
-            <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
-            <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="min-h-screen flex flex-col">
+            <div className="flex-1">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/about" element={<><About /><Footer /></>} />
+                <Route path="/pricing" element={<><Pricing /><Footer /></>} />
+                <Route path="/contact" element={<><Contact /><Footer /></>} />
+                <Route path="/free-audit" element={<><FreeAudit /><Footer /></>} />
+                <Route path="/auth" element={<><Auth /><Footer /></>} />
+                <Route path="/dashboard" element={<><Dashboard /><Footer /></>} />
+                <Route path="/blog" element={<><Blog /><Footer /></>} />
+                <Route path="/case-studies" element={<><CaseStudies /><Footer /></>} />
+                <Route path="/amazon-advertising" element={<><AmazonAdvertising /><Footer /></>} />
+                <Route path="/walmart-advertising" element={<><WalmartAdvertising /><Footer /></>} />
+                <Route path="/meta-advertising" element={<><MetaAdvertising /><Footer /></>} />
+                <Route path="/account-management" element={<><AccountManagement /><Footer /></>} />
+                <Route path="/shopify-integration" element={<><ShopifyIntegration /><Footer /></>} />
+                <Route path="/shopify-development" element={<><ShopifyDevelopment /><Footer /></>} />
+                <Route path="/amazon-case-studies" element={<><AmazonCaseStudies /><Footer /></>} />
+                <Route path="/walmart-case-studies" element={<><WalmartCaseStudies /><Footer /></>} />
+                <Route path="/meta-case-studies" element={<><MetaCaseStudies /><Footer /></>} />
+                <Route path="*" element={<><NotFound /><Footer /></>} />
+              </Routes>
+            </div>
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
