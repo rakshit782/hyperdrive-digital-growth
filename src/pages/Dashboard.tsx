@@ -12,18 +12,23 @@ import HeaderCustomizationTab from "@/components/dashboard/HeaderCustomizationTa
 import ServiceEditModal from "@/components/dashboard/ServiceEditModal";
 import ReviewEditModal from "@/components/dashboard/ReviewEditModal";
 import BlogManagement from "@/components/dashboard/BlogManagement";
+import FacebookPixelTab from "@/components/dashboard/FacebookPixelTab";
+import ClerkTab from "@/components/dashboard/ClerkTab";
+import Auth0Tab from "@/components/dashboard/Auth0Tab";
+import GoogleAnalyticsTab from "@/components/dashboard/GoogleAnalyticsTab";
+import EmailJSTab from "@/components/dashboard/EmailJSTab";
+import FormspreeTab from "@/components/dashboard/FormspreeTab";
 import Header from "@/components/Header";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import FacebookPixelTab from "@/components/dashboard/FacebookPixelTab";
 
 const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
   const [editingService, setEditingService] = useState<ServiceCard | null>(null);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
-  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'website' | 'logo' | 'contact' | 'homepage' | 'pricing' | 'blog' | 'custom-events' | 'seo' | 'header' | 'facebook-pixel'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'website' | 'logo' | 'contact' | 'homepage' | 'pricing' | 'blog' | 'custom-events' | 'seo' | 'header' | 'facebook-pixel' | 'clerk' | 'auth0' | 'google-analytics' | 'emailjs' | 'formspree'>('services');
 
   const deleteService = (id: string) => {
     const newServices = services.filter(service => service.id !== id);
@@ -94,6 +99,11 @@ const Dashboard = () => {
     { id: 'blog', label: 'Blog', color: 'bg-emerald-500' },
     { id: 'header', label: 'Header Menu', color: 'bg-indigo-600' },
     { id: 'facebook-pixel', label: 'Facebook Pixel', color: 'bg-blue-600' },
+    { id: 'clerk', label: 'Clerk Auth', color: 'bg-purple-600' },
+    { id: 'auth0', label: 'Auth0', color: 'bg-orange-600' },
+    { id: 'google-analytics', label: 'Google Analytics', color: 'bg-green-600' },
+    { id: 'emailjs', label: 'EmailJS', color: 'bg-red-600' },
+    { id: 'formspree', label: 'Formspree', color: 'bg-teal-600' },
     { id: 'custom-events', label: 'Custom Events', color: 'bg-purple-600' },
     { id: 'seo', label: 'Website SEO', color: 'bg-green-600' },
   ];
@@ -110,7 +120,7 @@ const Dashboard = () => {
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
                   Dashboard
                 </h1>
-                <p className="text-slate-600 mt-2">Manage your website content and settings</p>
+                <p className="text-slate-600 mt-2">Manage your website content and integrations</p>
               </div>
               <div className="flex items-center space-x-4">
                 <Badge variant="outline" className="px-4 py-2 bg-white/50 backdrop-blur-sm">
@@ -223,6 +233,36 @@ const Dashboard = () => {
             {activeTab === 'facebook-pixel' && (
               <div className="animate-fade-in">
                 <FacebookPixelTab />
+              </div>
+            )}
+
+            {activeTab === 'clerk' && (
+              <div className="animate-fade-in">
+                <ClerkTab />
+              </div>
+            )}
+
+            {activeTab === 'auth0' && (
+              <div className="animate-fade-in">
+                <Auth0Tab />
+              </div>
+            )}
+
+            {activeTab === 'google-analytics' && (
+              <div className="animate-fade-in">
+                <GoogleAnalyticsTab />
+              </div>
+            )}
+
+            {activeTab === 'emailjs' && (
+              <div className="animate-fade-in">
+                <EmailJSTab />
+              </div>
+            )}
+
+            {activeTab === 'formspree' && (
+              <div className="animate-fade-in">
+                <FormspreeTab />
               </div>
             )}
 

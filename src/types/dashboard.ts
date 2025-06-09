@@ -18,3 +18,22 @@ export interface Review {
   review: string;
   avatar?: string;
 }
+
+export type DashboardTab = 
+  | 'services' 
+  | 'reviews' 
+  | 'website' 
+  | 'logo' 
+  | 'contact' 
+  | 'homepage' 
+  | 'pricing' 
+  | 'blog' 
+  | 'custom-events' 
+  | 'seo' 
+  | 'header' 
+  | 'facebook-pixel' 
+  | 'clerk' 
+  | 'auth0' 
+  | 'google-analytics' 
+  | 'emailjs' 
+  | 'formspree';
