@@ -17,12 +17,13 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import FacebookPixelTab from "@/components/dashboard/FacebookPixelTab";
 
 const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
   const [editingService, setEditingService] = useState<ServiceCard | null>(null);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
-  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'website' | 'logo' | 'contact' | 'homepage' | 'pricing' | 'blog' | 'custom-events' | 'seo' | 'header'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'website' | 'logo' | 'contact' | 'homepage' | 'pricing' | 'blog' | 'custom-events' | 'seo' | 'header' | 'facebook-pixel'>('services');
 
   const deleteService = (id: string) => {
     const newServices = services.filter(service => service.id !== id);
@@ -92,6 +93,7 @@ const Dashboard = () => {
     { id: 'pricing', label: 'Pricing', color: 'bg-cyan-500' },
     { id: 'blog', label: 'Blog', color: 'bg-emerald-500' },
     { id: 'header', label: 'Header Menu', color: 'bg-indigo-600' },
+    { id: 'facebook-pixel', label: 'Facebook Pixel', color: 'bg-blue-600' },
     { id: 'custom-events', label: 'Custom Events', color: 'bg-purple-600' },
     { id: 'seo', label: 'Website SEO', color: 'bg-green-600' },
   ];
@@ -215,6 +217,12 @@ const Dashboard = () => {
             {activeTab === 'header' && (
               <div className="animate-fade-in">
                 <HeaderCustomizationTab />
+              </div>
+            )}
+
+            {activeTab === 'facebook-pixel' && (
+              <div className="animate-fade-in">
+                <FacebookPixelTab />
               </div>
             )}
 
