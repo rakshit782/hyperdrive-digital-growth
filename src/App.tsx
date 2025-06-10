@@ -28,12 +28,19 @@ import WalmartCaseStudies from "./pages/WalmartCaseStudies";
 import MetaCaseStudies from "./pages/MetaCaseStudies";
 import NotFound from "./pages/NotFound";
 import { useFacebookPixel } from "@/hooks/useFacebookPixel";
+import { integrationManager } from "@/utils/integrationManager";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   // Initialize Facebook Pixel
   useFacebookPixel();
+
+  useEffect(() => {
+    // Initialize all integrations when app starts
+    integrationManager.initializeAllIntegrations();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

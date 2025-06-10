@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServicesTab from "@/components/dashboard/ServicesTab";
 import ReviewsTab from "@/components/dashboard/ReviewsTab";
@@ -22,8 +22,11 @@ import DynamoDBTab from "@/components/dashboard/DynamoDBTab";
 import S3Tab from "@/components/dashboard/S3Tab";
 import SESTab from "@/components/dashboard/SESTab";
 import CloudflareTab from "@/components/dashboard/CloudflareTab";
+import UserManagementTab from "@/components/dashboard/UserManagementTab";
+import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 import Header from "@/components/Header";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { integrationManager } from "@/utils/integrationManager";
 import { ServiceCard, Review, DashboardTab } from "@/types/dashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +36,11 @@ const Dashboard = () => {
   const [editingService, setEditingService] = useState<ServiceCard | null>(null);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [activeTab, setActiveTab] = useState<DashboardTab>('services');
+
+  useEffect(() => {
+    // Initialize all integrations on dashboard load
+    integrationManager.initializeAllIntegrations();
+  }, []);
 
   const deleteService = (id: string) => {
     const newServices = services.filter(service => service.id !== id);
@@ -124,6 +132,10 @@ const Dashboard = () => {
         return <SESTab />;
       case 'cloudflare':
         return <CloudflareTab />;
+      case 'user-management':
+        return <UserManagementTab />;
+      case 'integration-status':
+        return <IntegrationStatusTab />;
       case 'facebook-pixel':
         return <FacebookPixelTab />;
       case 'google-analytics':
@@ -229,6 +241,20 @@ const Dashboard = () => {
                       </AccordionContent>
                     </AccordionItem>
 
+                    <AccordionItem value="user-management">
+                      <AccordionTrigger className="text-sm font-medium">User Management</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => setActiveTab('user-management')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'user-management' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            User Management
+                          </button>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
                     <AccordionItem value="aws-services">
                       <AccordionTrigger className="text-sm font-medium">AWS Services</AccordionTrigger>
                       <AccordionContent>
@@ -316,6 +342,20 @@ const Dashboard = () => {
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'seo' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
                             Website SEO
+                          </button>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="monitoring">
+                      <AccordionTrigger className="text-sm font-medium">System Monitoring</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => setActiveTab('integration-status')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'integration-status' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Integration Status
                           </button>
                         </div>
                       </AccordionContent>

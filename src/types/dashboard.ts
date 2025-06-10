@@ -38,4 +38,6 @@ export type DashboardTab =
   | 'dynamodb'
   | 's3'
   | 'ses'
-  | 'cloudflare';
+  | 'cloudflare'
+  | 'user-management'
+  | 'integration-status';
