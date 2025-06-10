@@ -7,7 +7,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { dynamoDBManager } from "@/utils/dynamoDBManager";
+import { sesManager } from "@/utils/sesManager";
 import { formSchema, FormValues } from "@/types/freeAuditSchema";
 import ContactInfoForm from "@/components/forms/ContactInfoForm";
 import BusinessInfoForm from "@/components/forms/BusinessInfoForm";
@@ -37,26 +38,45 @@ const FreeAuditForm = () => {
     console.log("Free audit form submitted:", values);
     
     try {
-      // Submit to Supabase contact_submissions table
-      const { error } = await supabase
-        .from('contact_submissions')
-        .insert({
+      // Submit to DynamoDB if configured
+      if (dynamoDBManager.isActive()) {
+        const submissionData = {
+          id: `audit-${Date.now()}`,
           name: `${values.firstName} ${values.lastName}`,
           email: values.email,
           company: values.company,
           phone: values.phone,
-          message: `Platform: ${values.platform}\nMonthly Ad Spend: ${values.monthlyAdSpend}\nBusiness Goals: ${values.businessGoals}`,
-          form_type: 'free_audit'
-        });
+          platform: values.platform,
+          monthlyAdSpend: values.monthlyAdSpend,
+          businessGoals: values.businessGoals,
+          submittedAt: new Date().toISOString(),
+          formType: 'free_audit'
+        };
 
-      if (error) {
-        console.error('Error submitting form:', error);
-        toast({
-          title: "Submission Failed",
-          description: "There was an error submitting your audit request. Please try again.",
-          variant: "destructive",
-        });
-        return;
+        await dynamoDBManager.putItem('contact_submissions', submissionData);
+        console.log('Form data saved to DynamoDB');
+      }
+
+      // Send email notification if SES is configured
+      if (sesManager.isActive()) {
+        const emailBody = `
+          <h2>New Free Audit Request</h2>
+          <p><strong>Name:</strong> ${values.firstName} ${values.lastName}</p>
+          <p><strong>Company:</strong> ${values.company}</p>
+          <p><strong>Email:</strong> ${values.email}</p>
+          <p><strong>Phone:</strong> ${values.phone}</p>
+          <p><strong>Platform:</strong> ${values.platform}</p>
+          <p><strong>Monthly Ad Spend:</strong> ${values.monthlyAdSpend}</p>
+          <p><strong>Business Goals:</strong> ${values.businessGoals}</p>
+        `;
+
+        await sesManager.sendEmail(
+          [values.email],
+          'Free Audit Request Received',
+          emailBody,
+          `New Free Audit Request from ${values.firstName} ${values.lastName}`
+        );
+        console.log('Email notification sent via SES');
       }
 
       toast({

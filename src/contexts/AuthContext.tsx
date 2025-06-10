@@ -1,7 +1,8 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { clerkManager } from '@/utils/clerkManager';
-import { auth0Manager } from '@/utils/auth0Manager';
+import { amplifyManager } from '@/utils/amplifyManager';
+import { cognitoManager } from '@/utils/cognitoManager';
+import { signUp, signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 
 interface User {
   id: string;
@@ -39,17 +40,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check which auth provider is active and initialize accordingly
+    // Load saved configurations and initialize auth providers
     const initializeAuth = async () => {
       try {
-        if (clerkManager.isActive()) {
-          // Initialize Clerk if active
-          console.log('Initializing Clerk authentication...');
-          // Clerk initialization would happen here
-        } else if (auth0Manager.isActive()) {
-          // Initialize Auth0 if active
-          console.log('Initializing Auth0 authentication...');
-          // Auth0 initialization would happen here
+        amplifyManager.loadSavedConfig();
+        cognitoManager.loadSavedConfig();
+
+        // Check for current user if Amplify is configured
+        if (amplifyManager.isActive()) {
+          try {
+            const currentUser = await getCurrentUser();
+            if (currentUser) {
+              setUser({
+                id: currentUser.userId,
+                email: currentUser.signInDetails?.loginId || '',
+                fullName: currentUser.signInDetails?.loginId || '',
+              });
+            }
+          } catch (error) {
+            console.log('No current user found');
+          }
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
@@ -61,50 +71,82 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     initializeAuth();
   }, []);
 
-  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const handleSignIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      if (clerkManager.isActive()) {
-        // Implement Clerk sign in
-        console.log('Signing in with Clerk...');
-        return { success: true };
-      } else if (auth0Manager.isActive()) {
-        // Implement Auth0 sign in
-        console.log('Signing in with Auth0...');
-        return { success: true };
+      if (amplifyManager.isActive()) {
+        const result = await signIn({ username: email, password });
+        if (result.isSignedIn) {
+          const currentUser = await getCurrentUser();
+          setUser({
+            id: currentUser.userId,
+            email: email,
+            fullName: email,
+          });
+          return { success: true };
+        }
+        return { success: false, error: 'Sign in not completed' };
+      } else if (cognitoManager.isActive()) {
+        const result = await cognitoManager.signIn(email, password);
+        const accessToken = result.getAccessToken();
+        if (accessToken) {
+          setUser({
+            id: accessToken.payload.sub,
+            email: email,
+            fullName: accessToken.payload.given_name || email,
+          });
+          return { success: true };
+        }
+        return { success: false, error: 'Authentication failed' };
       } else {
-        return { success: false, error: 'No authentication provider is active' };
+        return { success: false, error: 'No authentication provider is configured' };
       }
     } catch (error) {
       return { success: false, error: String(error) };
     }
   };
 
-  const signUp = async (email: string, password: string, fullName?: string): Promise<{ success: boolean; error?: string }> => {
+  const handleSignUp = async (email: string, password: string, fullName?: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      if (clerkManager.isActive()) {
-        // Implement Clerk sign up
-        console.log('Signing up with Clerk...');
-        return { success: true };
-      } else if (auth0Manager.isActive()) {
-        // Implement Auth0 sign up
-        console.log('Signing up with Auth0...');
-        return { success: true };
+      if (amplifyManager.isActive()) {
+        const result = await signUp({
+          username: email,
+          password,
+          options: {
+            userAttributes: {
+              email,
+              given_name: fullName || '',
+            },
+          },
+        });
+        
+        if (result.userId) {
+          return { success: true };
+        }
+        return { success: false, error: 'Sign up failed' };
+      } else if (cognitoManager.isActive()) {
+        const result = await cognitoManager.signUp(email, password, {
+          given_name: fullName || '',
+          email: email,
+        });
+        
+        if (result.user) {
+          return { success: true };
+        }
+        return { success: false, error: 'Sign up failed' };
       } else {
-        return { success: false, error: 'No authentication provider is active' };
+        return { success: false, error: 'No authentication provider is configured' };
       }
     } catch (error) {
       return { success: false, error: String(error) };
     }
   };
 
-  const signOut = async () => {
+  const handleSignOut = async () => {
     try {
-      if (clerkManager.isActive()) {
-        // Implement Clerk sign out
-        console.log('Signing out with Clerk...');
-      } else if (auth0Manager.isActive()) {
-        // Implement Auth0 sign out
-        console.log('Signing out with Auth0...');
+      if (amplifyManager.isActive()) {
+        await signOut();
+      } else if (cognitoManager.isActive()) {
+        cognitoManager.signOut();
       }
       setUser(null);
     } catch (error) {
@@ -115,9 +157,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const value = {
     user,
     loading,
-    signOut,
-    signIn,
-    signUp,
+    signOut: handleSignOut,
+    signIn: handleSignIn,
+    signUp: handleSignUp,
   };
 
   return (

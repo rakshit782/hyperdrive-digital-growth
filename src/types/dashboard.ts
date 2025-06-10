@@ -32,8 +32,9 @@ export type DashboardTab =
   | 'seo' 
   | 'header' 
   | 'facebook-pixel' 
-  | 'clerk' 
-  | 'auth0' 
   | 'google-analytics' 
-  | 'emailjs' 
-  | 'formspree';
+  | 'amplify'
+  | 'cognito'
+  | 'dynamodb'
+  | 's3'
+  | 'ses';
