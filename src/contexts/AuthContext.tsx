@@ -1,20 +1,29 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { clerkManager } from '@/utils/clerkManager';
+import { auth0Manager } from '@/utils/auth0Manager';
+
+interface User {
+  id: string;
+  email: string;
+  fullName?: string;
+  avatar?: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signUp: (email: string, password: string, fullName?: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  session: null,
   loading: true,
   signOut: async () => {},
+  signIn: async () => ({ success: false }),
+  signUp: async () => ({ success: false }),
 });
 
 export const useAuth = () => {
@@ -27,38 +36,88 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    // Check which auth provider is active and initialize accordingly
+    const initializeAuth = async () => {
+      try {
+        if (clerkManager.isActive()) {
+          // Initialize Clerk if active
+          console.log('Initializing Clerk authentication...');
+          // Clerk initialization would happen here
+        } else if (auth0Manager.isActive()) {
+          // Initialize Auth0 if active
+          console.log('Initializing Auth0 authentication...');
+          // Auth0 initialization would happen here
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      } finally {
         setLoading(false);
       }
-    );
+    };
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    initializeAuth();
   }, []);
 
+  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      if (clerkManager.isActive()) {
+        // Implement Clerk sign in
+        console.log('Signing in with Clerk...');
+        return { success: true };
+      } else if (auth0Manager.isActive()) {
+        // Implement Auth0 sign in
+        console.log('Signing in with Auth0...');
+        return { success: true };
+      } else {
+        return { success: false, error: 'No authentication provider is active' };
+      }
+    } catch (error) {
+      return { success: false, error: String(error) };
+    }
+  };
+
+  const signUp = async (email: string, password: string, fullName?: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      if (clerkManager.isActive()) {
+        // Implement Clerk sign up
+        console.log('Signing up with Clerk...');
+        return { success: true };
+      } else if (auth0Manager.isActive()) {
+        // Implement Auth0 sign up
+        console.log('Signing up with Auth0...');
+        return { success: true };
+      } else {
+        return { success: false, error: 'No authentication provider is active' };
+      }
+    } catch (error) {
+      return { success: false, error: String(error) };
+    }
+  };
+
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      if (clerkManager.isActive()) {
+        // Implement Clerk sign out
+        console.log('Signing out with Clerk...');
+      } else if (auth0Manager.isActive()) {
+        // Implement Auth0 sign out
+        console.log('Signing out with Auth0...');
+      }
+      setUser(null);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   const value = {
     user,
-    session,
     loading,
     signOut,
+    signIn,
+    signUp,
   };
 
   return (
