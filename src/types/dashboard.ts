@@ -40,4 +40,6 @@ export type DashboardTab =
   | 'ses'
   | 'cloudflare'
   | 'user-management'
-  | 'integration-status';
+  | 'integration-status'
+  | 'social-media'
+  | 'chatgpt';

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServicesTab from "@/components/dashboard/ServicesTab";
@@ -24,9 +23,12 @@ import SESTab from "@/components/dashboard/SESTab";
 import CloudflareTab from "@/components/dashboard/CloudflareTab";
 import UserManagementTab from "@/components/dashboard/UserManagementTab";
 import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
+import SocialMediaTab from "@/components/dashboard/SocialMediaTab";
+import ChatGPTTab from "@/components/dashboard/ChatGPTTab";
 import Header from "@/components/Header";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { integrationManager } from "@/utils/integrationManager";
+import { chatGPTManager } from "@/utils/chatGPTManager";
 import { ServiceCard, Review, DashboardTab } from "@/types/dashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +42,7 @@ const Dashboard = () => {
   useEffect(() => {
     // Initialize all integrations on dashboard load
     integrationManager.initializeAllIntegrations();
+    chatGPTManager.loadSavedConfig();
   }, []);
 
   const deleteService = (id: string) => {
@@ -120,6 +123,8 @@ const Dashboard = () => {
         return <BlogManagement />;
       case 'header':
         return <HeaderCustomizationTab />;
+      case 'social-media':
+        return <SocialMediaTab />;
       case 'amplify':
         return <AmplifyTab />;
       case 'cognito':
@@ -140,6 +145,8 @@ const Dashboard = () => {
         return <FacebookPixelTab />;
       case 'google-analytics':
         return <GoogleAnalyticsTab />;
+      case 'chatgpt':
+        return <ChatGPTTab />;
       case 'custom-events':
         return <CustomEventsTab />;
       case 'seo':
@@ -236,6 +243,26 @@ const Dashboard = () => {
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'header' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
                             Header Menu
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('social-media')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'social-media' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Social Media
+                          </button>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="ai-optimization">
+                      <AccordionTrigger className="text-sm font-medium">AI & Optimization</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => setActiveTab('chatgpt')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'chatgpt' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            ChatGPT Integration
                           </button>
                         </div>
                       </AccordionContent>

@@ -1,9 +1,9 @@
-
 import { facebookPixel } from './facebookPixel';
 import { googleAnalyticsManager } from './googleAnalyticsManager';
 import { cloudflareManager } from './cloudflareManager';
 import { amplifyManager } from './amplifyManager';
 import { cognitoManager } from './cognitoManager';
+import { chatGPTManager } from './chatGPTManager';
 
 export interface IntegrationStatus {
   name: string;
@@ -29,6 +29,7 @@ class IntegrationManager {
     amplifyManager.loadSavedConfig();
     cognitoManager.loadSavedConfig();
     cloudflareManager.loadSavedConfig();
+    chatGPTManager.loadSavedConfig();
     
     console.log('Integration Manager: All integrations initialized');
   }
@@ -50,6 +51,14 @@ class IntegrationManager {
         lastChecked: new Date(),
         features: ['Page Views', 'Events', 'Conversions'],
         errors: this.getGoogleAnalyticsErrors()
+      },
+      {
+        name: 'ChatGPT AI',
+        isActive: chatGPTManager.isActive(),
+        hasConfig: !!chatGPTManager.getConfig(),
+        lastChecked: new Date(),
+        features: ['Content Optimization', 'Review Enhancement', 'SEO Improvement'],
+        errors: this.getChatGPTErrors()
       },
       {
         name: 'Cloudflare CDN',
@@ -123,6 +132,18 @@ class IntegrationManager {
     return errors;
   }
 
+  private getChatGPTErrors(): string[] {
+    const errors: string[] = [];
+    const config = chatGPTManager.getConfig();
+    if (!config) {
+      errors.push('No configuration found');
+    } else {
+      if (!config.apiKey) errors.push('Missing API Key');
+      if (!config.isActive) errors.push('Integration disabled');
+    }
+    return errors;
+  }
+
   private getCloudflareErrors(): string[] {
     const errors: string[] = [];
     const config = cloudflareManager.getConfig();
@@ -163,6 +184,9 @@ class IntegrationManager {
   async testIntegration(integrationName: string): Promise<boolean> {
     try {
       switch (integrationName) {
+        case 'ChatGPT AI':
+          return await chatGPTManager.testConnection();
+        
         case 'Cloudflare CDN':
           if (!cloudflareManager.isActive()) return false;
           // You could add a test API call here

@@ -1,9 +1,62 @@
-
-import { Facebook, Instagram, Linkedin, Twitter, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Facebook, Instagram, Linkedin, Twitter, Youtube, Mail, Phone, MapPin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+interface SocialMediaLink {
+  id: string;
+  platform: string;
+  url: string;
+  isActive: boolean;
+  icon: string;
+}
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [socialLinks, setSocialLinks] = useState<SocialMediaLink[]>([]);
+
+  useEffect(() => {
+    const loadSocialLinks = () => {
+      const savedLinks = localStorage.getItem('socialMediaLinks');
+      if (savedLinks) {
+        try {
+          const parsed = JSON.parse(savedLinks);
+          setSocialLinks(parsed.filter((link: SocialMediaLink) => link.isActive));
+        } catch (error) {
+          console.error('Failed to parse social media links:', error);
+          // Fallback to default links
+          setSocialLinks([
+            { id: "facebook", platform: "Facebook", url: "#", isActive: true, icon: "Facebook" },
+            { id: "instagram", platform: "Instagram", url: "#", isActive: true, icon: "Instagram" },
+            { id: "linkedin", platform: "LinkedIn", url: "#", isActive: true, icon: "Linkedin" },
+            { id: "twitter", platform: "Twitter", url: "#", isActive: true, icon: "Twitter" },
+            { id: "youtube", platform: "YouTube", url: "#", isActive: true, icon: "Youtube" }
+          ]);
+        }
+      }
+    };
+
+    // Initial load
+    loadSocialLinks();
+
+    // Listen for updates
+    const handleSocialMediaUpdate = () => {
+      loadSocialLinks();
+    };
+
+    window.addEventListener('socialMediaUpdated', handleSocialMediaUpdate);
+    return () => window.removeEventListener('socialMediaUpdated', handleSocialMediaUpdate);
+  }, []);
+
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case "Facebook": return Facebook;
+      case "Instagram": return Instagram;
+      case "Linkedin": return Linkedin;
+      case "Twitter": return Twitter;
+      case "Youtube": return Youtube;
+      default: return Share2;
+    }
+  };
 
   const services = [
     { name: "Amazon Advertising", href: "/amazon-advertising" },
@@ -24,14 +77,6 @@ const Footer = () => {
     { name: "Pricing", href: "/pricing" },
     { name: "Shopify Integration", href: "/shopify-integration" },
     { name: "Shopify Development", href: "/shopify-development" },
-  ];
-
-  const socialLinks = [
-    { icon: Facebook, href: "#", name: "Facebook" },
-    { icon: Instagram, href: "#", name: "Instagram" },
-    { icon: Linkedin, href: "#", name: "LinkedIn" },
-    { icon: Twitter, href: "#", name: "Twitter" },
-    { icon: Youtube, href: "#", name: "YouTube" },
   ];
 
   return (
@@ -150,18 +195,23 @@ const Footer = () => {
               © {currentYear} Your Agency. All rights reserved.
             </div>
 
-            {/* Social Links */}
+            {/* Dynamic Social Links */}
             <div className="flex items-center space-x-4">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all duration-200"
-                  aria-label={social.name}
-                >
-                  <social.icon className="w-5 h-5" />
-                </a>
-              ))}
+              {socialLinks.map((social) => {
+                const IconComponent = getIcon(social.icon);
+                return (
+                  <a
+                    key={social.id}
+                    href={social.url}
+                    className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-blue-600 transition-all duration-200"
+                    aria-label={social.platform}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <IconComponent className="w-5 h-5" />
+                  </a>
+                );
+              })}
             </div>
 
             {/* Legal Links */}
