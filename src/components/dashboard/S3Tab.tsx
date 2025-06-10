@@ -22,7 +22,13 @@ const S3Tab = () => {
   useEffect(() => {
     const savedConfig = s3Manager.getConfig();
     if (savedConfig) {
-      setConfig(savedConfig);
+      setConfig({
+        region: savedConfig.region || '',
+        accessKeyId: savedConfig.accessKeyId || '',
+        secretAccessKey: savedConfig.secretAccessKey || '',
+        sessionToken: savedConfig.sessionToken || '',
+        bucketName: savedConfig.bucketName || '',
+      });
       setIsEnabled(s3Manager.isActive());
     }
   }, []);
@@ -37,7 +43,13 @@ const S3Tab = () => {
       return;
     }
 
-    s3Manager.configure(config);
+    s3Manager.configure({
+      region: config.region,
+      accessKeyId: config.accessKeyId,
+      secretAccessKey: config.secretAccessKey,
+      sessionToken: config.sessionToken || undefined,
+      bucketName: config.bucketName,
+    });
     setIsEnabled(true);
     toast({
       title: "AWS S3 Configured",

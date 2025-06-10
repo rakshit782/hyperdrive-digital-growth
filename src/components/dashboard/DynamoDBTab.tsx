@@ -21,7 +21,12 @@ const DynamoDBTab = () => {
   useEffect(() => {
     const savedConfig = dynamoDBManager.getConfig();
     if (savedConfig) {
-      setConfig(savedConfig);
+      setConfig({
+        region: savedConfig.region || '',
+        accessKeyId: savedConfig.accessKeyId || '',
+        secretAccessKey: savedConfig.secretAccessKey || '',
+        sessionToken: savedConfig.sessionToken || '',
+      });
       setIsEnabled(dynamoDBManager.isActive());
     }
   }, []);
@@ -36,7 +41,12 @@ const DynamoDBTab = () => {
       return;
     }
 
-    dynamoDBManager.configure(config);
+    dynamoDBManager.configure({
+      region: config.region,
+      accessKeyId: config.accessKeyId,
+      secretAccessKey: config.secretAccessKey,
+      sessionToken: config.sessionToken || undefined,
+    });
     setIsEnabled(true);
     toast({
       title: "DynamoDB Configured",
@@ -120,13 +130,13 @@ const DynamoDBTab = () => {
           )}
         </div>
 
-        <div className="bg-green-50 p-4 rounded-lg">
-          <h4 className="font-medium text-green-900 mb-2">Setup Instructions:</h4>
-          <ul className="text-sm text-green-700 space-y-1">
-            <li>1. Create an IAM user with DynamoDB permissions</li>
-            <li>2. Generate access keys for the IAM user</li>
-            <li>3. Create DynamoDB tables for your application</li>
-            <li>4. Configure appropriate read/write capacity</li>
+        <div className="bg-orange-50 p-4 rounded-lg">
+          <h4 className="font-medium text-orange-900 mb-2">Setup Instructions:</h4>
+          <ul className="text-sm text-orange-700 space-y-1">
+            <li>1. Create DynamoDB tables in AWS console</li>
+            <li>2. Configure table schemas and indexes</li>
+            <li>3. Create an IAM user with DynamoDB permissions</li>
+            <li>4. Generate access keys for the IAM user</li>
           </ul>
         </div>
       </CardContent>

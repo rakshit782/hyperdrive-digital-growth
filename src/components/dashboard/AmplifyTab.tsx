@@ -23,7 +23,14 @@ const AmplifyTab = () => {
   useEffect(() => {
     const savedConfig = amplifyManager.getConfig();
     if (savedConfig) {
-      setConfig(savedConfig);
+      setConfig({
+        region: savedConfig.region || '',
+        userPoolId: savedConfig.userPoolId || '',
+        userPoolWebClientId: savedConfig.userPoolWebClientId || '',
+        identityPoolId: savedConfig.identityPoolId || '',
+        apiGatewayUrl: savedConfig.apiGatewayUrl || '',
+        s3BucketName: savedConfig.s3BucketName || '',
+      });
       setIsEnabled(amplifyManager.isActive());
     }
   }, []);
@@ -32,13 +39,20 @@ const AmplifyTab = () => {
     if (!config.region || !config.userPoolId || !config.userPoolWebClientId) {
       toast({
         title: "Configuration Error",
-        description: "Please fill in all required fields (Region, User Pool ID, Client ID).",
+        description: "Please fill in all required fields.",
         variant: "destructive",
       });
       return;
     }
 
-    amplifyManager.configure(config);
+    amplifyManager.configure({
+      region: config.region,
+      userPoolId: config.userPoolId,
+      userPoolWebClientId: config.userPoolWebClientId,
+      identityPoolId: config.identityPoolId || undefined,
+      apiGatewayUrl: config.apiGatewayUrl || undefined,
+      s3BucketName: config.s3BucketName || undefined,
+    });
     setIsEnabled(true);
     toast({
       title: "AWS Amplify Configured",
@@ -62,7 +76,7 @@ const AmplifyTab = () => {
           <div>
             <CardTitle>AWS Amplify Configuration</CardTitle>
             <CardDescription>
-              Configure AWS Amplify for authentication, API Gateway, and S3 storage
+              Configure AWS Amplify for authentication and API integration
             </CardDescription>
           </div>
           <Switch checked={isEnabled} onCheckedChange={setIsEnabled} />
@@ -71,9 +85,9 @@ const AmplifyTab = () => {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="region">AWS Region *</Label>
+            <Label htmlFor="amplifyRegion">AWS Region *</Label>
             <Input
-              id="region"
+              id="amplifyRegion"
               value={config.region}
               onChange={(e) => setConfig({ ...config, region: e.target.value })}
               placeholder="us-east-1"
@@ -85,16 +99,16 @@ const AmplifyTab = () => {
               id="userPoolId"
               value={config.userPoolId}
               onChange={(e) => setConfig({ ...config, userPoolId: e.target.value })}
-              placeholder="us-east-1_xxxxxxxxx"
+              placeholder="us-east-1_XXXXXXXXX"
             />
           </div>
           <div>
-            <Label htmlFor="userPoolWebClientId">User Pool Client ID *</Label>
+            <Label htmlFor="userPoolWebClientId">User Pool Web Client ID *</Label>
             <Input
               id="userPoolWebClientId"
               value={config.userPoolWebClientId}
               onChange={(e) => setConfig({ ...config, userPoolWebClientId: e.target.value })}
-              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxx"
+              placeholder="1234567890abcdefghijklmnop"
             />
           </div>
           <div>
@@ -103,7 +117,7 @@ const AmplifyTab = () => {
               id="identityPoolId"
               value={config.identityPoolId}
               onChange={(e) => setConfig({ ...config, identityPoolId: e.target.value })}
-              placeholder="us-east-1:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+              placeholder="us-east-1:12345678-1234-1234-1234-123456789012"
             />
           </div>
           <div>
@@ -112,7 +126,7 @@ const AmplifyTab = () => {
               id="apiGatewayUrl"
               value={config.apiGatewayUrl}
               onChange={(e) => setConfig({ ...config, apiGatewayUrl: e.target.value })}
-              placeholder="https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com"
+              placeholder="https://api.example.com"
             />
           </div>
           <div>
@@ -121,7 +135,7 @@ const AmplifyTab = () => {
               id="s3BucketName"
               value={config.s3BucketName}
               onChange={(e) => setConfig({ ...config, s3BucketName: e.target.value })}
-              placeholder="my-app-storage-bucket"
+              placeholder="my-app-storage"
             />
           </div>
         </div>
@@ -140,10 +154,10 @@ const AmplifyTab = () => {
         <div className="bg-blue-50 p-4 rounded-lg">
           <h4 className="font-medium text-blue-900 mb-2">Setup Instructions:</h4>
           <ul className="text-sm text-blue-700 space-y-1">
-            <li>1. Create a User Pool in AWS Cognito</li>
-            <li>2. Create an App Client in your User Pool</li>
-            <li>3. Optionally create an Identity Pool for federated identities</li>
-            <li>4. Set up API Gateway and S3 bucket if needed</li>
+            <li>1. Create a Cognito User Pool in AWS console</li>
+            <li>2. Configure authentication flow and app client</li>
+            <li>3. Set up Identity Pool for AWS resource access</li>
+            <li>4. Configure API Gateway and S3 bucket if needed</li>
           </ul>
         </div>
       </CardContent>

@@ -22,7 +22,13 @@ const SESTab = () => {
   useEffect(() => {
     const savedConfig = sesManager.getConfig();
     if (savedConfig) {
-      setConfig(savedConfig);
+      setConfig({
+        region: savedConfig.region || '',
+        accessKeyId: savedConfig.accessKeyId || '',
+        secretAccessKey: savedConfig.secretAccessKey || '',
+        sessionToken: savedConfig.sessionToken || '',
+        fromEmail: savedConfig.fromEmail || '',
+      });
       setIsEnabled(sesManager.isActive());
     }
   }, []);
@@ -37,7 +43,13 @@ const SESTab = () => {
       return;
     }
 
-    sesManager.configure(config);
+    sesManager.configure({
+      region: config.region,
+      accessKeyId: config.accessKeyId,
+      secretAccessKey: config.secretAccessKey,
+      sessionToken: config.sessionToken || undefined,
+      fromEmail: config.fromEmail,
+    });
     setIsEnabled(true);
     toast({
       title: "Amazon SES Configured",
