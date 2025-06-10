@@ -21,9 +21,10 @@ import CognitoTab from "@/components/dashboard/CognitoTab";
 import DynamoDBTab from "@/components/dashboard/DynamoDBTab";
 import S3Tab from "@/components/dashboard/S3Tab";
 import SESTab from "@/components/dashboard/SESTab";
+import CloudflareTab from "@/components/dashboard/CloudflareTab";
 import Header from "@/components/Header";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { ServiceCard, Review } from "@/types/dashboard";
+import { ServiceCard, Review, DashboardTab } from "@/types/dashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
   const [editingService, setEditingService] = useState<ServiceCard | null>(null);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [activeTab, setActiveTab] = useState<DashboardTab>('services');
 
   const deleteService = (id: string) => {
     const newServices = services.filter(service => service.id !== id);
@@ -90,6 +92,51 @@ const Dashboard = () => {
     setEditingReview(newReview);
   };
 
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case 'services':
+        return <ServicesTab services={services} onEdit={setEditingService} onDelete={deleteService} onAdd={addNewService} />;
+      case 'reviews':
+        return <ReviewsTab reviews={reviews} onEdit={setEditingReview} onDelete={deleteReview} onAdd={addNewReview} />;
+      case 'website':
+        return <WebsiteTab />;
+      case 'logo':
+        return <LogoManagement />;
+      case 'contact':
+        return <ContactManagement />;
+      case 'homepage':
+        return <HomepageElements />;
+      case 'pricing':
+        return <PricingManagement />;
+      case 'blog':
+        return <BlogManagement />;
+      case 'header':
+        return <HeaderCustomizationTab />;
+      case 'amplify':
+        return <AmplifyTab />;
+      case 'cognito':
+        return <CognitoTab />;
+      case 'dynamodb':
+        return <DynamoDBTab />;
+      case 's3':
+        return <S3Tab />;
+      case 'ses':
+        return <SESTab />;
+      case 'cloudflare':
+        return <CloudflareTab />;
+      case 'facebook-pixel':
+        return <FacebookPixelTab />;
+      case 'google-analytics':
+        return <GoogleAnalyticsTab />;
+      case 'custom-events':
+        return <CustomEventsTab />;
+      case 'seo':
+        return <WebsiteSEOTab />;
+      default:
+        return <ServicesTab services={services} onEdit={setEditingService} onDelete={deleteService} onAdd={addNewService} />;
+    }
+  };
+
   return (
     <>
       <Header />
@@ -110,7 +157,7 @@ const Dashboard = () => {
             </div>
           </div>
           
-          {/* Vertical Accordion Layout */}
+          {/* Dynamic Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Left Sidebar - Accordion Navigation */}
             <div className="lg:col-span-1">
@@ -124,31 +171,58 @@ const Dashboard = () => {
                       <AccordionTrigger className="text-sm font-medium">Content Management</AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-2">
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('services')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'services' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Services ({services.length})
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('reviews')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'reviews' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Reviews ({reviews.length})
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('website')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'website' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Website
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('logo')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'logo' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Logo
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('contact')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'contact' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Contact
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('homepage')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'homepage' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Homepage
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('pricing')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'pricing' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Pricing
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('blog')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'blog' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Blog
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('header')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'header' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Header Menu
                           </button>
                         </div>
@@ -159,20 +233,49 @@ const Dashboard = () => {
                       <AccordionTrigger className="text-sm font-medium">AWS Services</AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-2">
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('amplify')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'amplify' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             AWS Amplify
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('cognito')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'cognito' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Amazon Cognito
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('dynamodb')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'dynamodb' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             DynamoDB
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('s3')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 's3' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Amazon S3
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('ses')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'ses' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Amazon SES
+                          </button>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="cdn-services">
+                      <AccordionTrigger className="text-sm font-medium">CDN & Security</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => setActiveTab('cloudflare')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'cloudflare' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Cloudflare
                           </button>
                         </div>
                       </AccordionContent>
@@ -182,13 +285,22 @@ const Dashboard = () => {
                       <AccordionTrigger className="text-sm font-medium">Analytics & Tracking</AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-2">
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('facebook-pixel')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'facebook-pixel' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Facebook Pixel
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('google-analytics')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'google-analytics' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Google Analytics
                           </button>
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('custom-events')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'custom-events' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Custom Events
                           </button>
                         </div>
@@ -199,7 +311,10 @@ const Dashboard = () => {
                       <AccordionTrigger className="text-sm font-medium">SEO & Optimization</AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-2">
-                          <button className="w-full text-left p-2 rounded hover:bg-slate-100 text-sm">
+                          <button 
+                            onClick={() => setActiveTab('seo')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'seo' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
                             Website SEO
                           </button>
                         </div>
@@ -210,33 +325,10 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            {/* Main Content Area */}
+            {/* Main Content Area - Dynamic Tab Rendering */}
             <div className="lg:col-span-3">
-              <div className="space-y-6">
-                {/* Default view - show services */}
-                <div className="animate-fade-in">
-                  <ServicesTab
-                    services={services}
-                    onEdit={setEditingService}
-                    onDelete={deleteService}
-                    onAdd={addNewService}
-                  />
-                </div>
-
-                {/* AWS Services Section */}
-                <div className="grid grid-cols-1 gap-6">
-                  <AmplifyTab />
-                  <CognitoTab />
-                  <DynamoDBTab />
-                  <S3Tab />
-                  <SESTab />
-                </div>
-
-                {/* Analytics Section */}
-                <div className="grid grid-cols-1 gap-6">
-                  <FacebookPixelTab />
-                  <GoogleAnalyticsTab />
-                </div>
+              <div className="animate-fade-in">
+                {renderActiveTab()}
               </div>
             </div>
           </div>

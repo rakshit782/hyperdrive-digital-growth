@@ -37,4 +37,5 @@ export type DashboardTab =
   | 'cognito'
   | 'dynamodb'
   | 's3'
-  | 'ses';
+  | 'ses'
+  | 'cloudflare';
