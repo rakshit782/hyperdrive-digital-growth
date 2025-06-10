@@ -15,28 +15,43 @@ class AmplifyManager {
 
   configure(config: AmplifyConfig) {
     try {
-      Amplify.configure({
+      const amplifyConfig: any = {
         Auth: {
           Cognito: {
-            region: config.region,
             userPoolId: config.userPoolId,
             userPoolClientId: config.userPoolWebClientId,
-            identityPoolId: config.identityPoolId,
           },
         },
-        API: {
-          REST: config.apiGatewayUrl ? {
-            endpoint: config.apiGatewayUrl,
-            region: config.region,
-          } : undefined,
-        },
-        Storage: {
-          S3: config.s3BucketName ? {
+      };
+
+      // Add identity pool if provided
+      if (config.identityPoolId) {
+        amplifyConfig.Auth.Cognito.identityPoolId = config.identityPoolId;
+      }
+
+      // Add API Gateway configuration if provided
+      if (config.apiGatewayUrl) {
+        amplifyConfig.API = {
+          REST: {
+            [config.apiGatewayUrl]: {
+              endpoint: config.apiGatewayUrl,
+              region: config.region,
+            },
+          },
+        };
+      }
+
+      // Add S3 Storage configuration if provided
+      if (config.s3BucketName) {
+        amplifyConfig.Storage = {
+          S3: {
             bucket: config.s3BucketName,
             region: config.region,
-          } : undefined,
-        },
-      });
+          },
+        };
+      }
+      
+      Amplify.configure(amplifyConfig);
       
       this.isConfigured = true;
       console.log('AWS Amplify configured successfully');
