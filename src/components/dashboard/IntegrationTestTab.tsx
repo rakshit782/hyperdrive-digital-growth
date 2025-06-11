@@ -297,8 +297,11 @@ const IntegrationTestTab = () => {
         description: "Sending test content for optimization...",
       });
 
-      // Fixed: Use only one parameter
-      const optimizedContent = await chatGPTManager.optimizeContent(testInput);
+      // Fixed: Use the correct OptimizationRequest structure
+      const optimizedContent = await chatGPTManager.optimizeContent({
+        type: 'content',
+        content: testInput
+      });
       
       if (optimizedContent) {
         toast({
