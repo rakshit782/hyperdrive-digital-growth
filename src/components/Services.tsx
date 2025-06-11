@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingCart, TrendingUp, Target, Users, Zap, BarChart3 } from "lucide-react";
+import { ArrowRight, ShoppingCart, TrendingUp, Target, Users, Settings, Monitor } from "lucide-react";
 
 interface ServiceCard {
   id: string;
@@ -20,8 +20,8 @@ const iconMap = {
   TrendingUp,
   Target,
   Users,
-  Zap,
-  BarChart3,
+  Settings,
+  Monitor,
 };
 
 const defaultServices: ServiceCard[] = [
@@ -67,7 +67,7 @@ const defaultServices: ServiceCard[] = [
   },
   {
     id: "shopify-integration",
-    icon: "Zap",
+    icon: "Settings",
     title: "Shopify Integration",
     description: "Seamlessly integrate your Shopify store with various marketing platforms and tools.",
     features: ["Platform Integration", "Data Synchronization", "Automated Workflows", "Custom Solutions"],
@@ -77,7 +77,7 @@ const defaultServices: ServiceCard[] = [
   },
   {
     id: "shopify-development",
-    icon: "BarChart3",
+    icon: "Monitor",
     title: "Shopify Development",
     description: "Custom Shopify development and optimization for enhanced performance and conversions.",
     features: ["Custom Development", "Theme Optimization", "App Integration", "Performance Tuning"],

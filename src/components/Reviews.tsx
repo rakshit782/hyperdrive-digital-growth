@@ -100,6 +100,18 @@ const Reviews = () => {
     };
   }, []);
 
+  // Auto-scroll functionality with looping
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const maxIndex = Math.max(0, reviews.length - 3);
+        return prev >= maxIndex ? 0 : prev + 1;
+      });
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [reviews.length]);
+
   const renderStars = (rating: number) => {
     return [...Array(5)].map((_, i) => (
       <Star
@@ -112,12 +124,22 @@ const Reviews = () => {
   };
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % Math.max(1, reviews.length - 2));
+    setCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, reviews.length - 3);
+      return prev >= maxIndex ? 0 : prev + 1;
+    });
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + Math.max(1, reviews.length - 2)) % Math.max(1, reviews.length - 2));
+    setCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, reviews.length - 3);
+      return prev <= 0 ? maxIndex : prev - 1;
+    });
   };
+
+  if (reviews.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -155,7 +177,7 @@ const Reviews = () => {
           {/* Scrolling Cards Container */}
           <div className="overflow-hidden">
             <div 
-              className="flex transition-transform duration-500 ease-in-out gap-6"
+              className="flex transition-transform duration-700 ease-in-out gap-6"
               style={{ 
                 transform: `translateX(-${currentIndex * (100 / 3)}%)`,
                 width: `${(reviews.length * 100) / 3}%`

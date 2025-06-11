@@ -143,23 +143,23 @@ const Hero = () => {
             </Button>
           </div>
           
-          {/* Enhanced Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
+          {/* Smaller and More Symmetrical Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
             {statsBlocks.map((stat, index) => (
               <div key={stat.id} className="group w-full">
                 <div 
-                  className="relative bg-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white/20 hover:border-white/40 transition-all duration-500 hover:scale-110 hover:-translate-y-4 h-full flex flex-col justify-center items-center text-center min-h-[160px] sm:min-h-[180px] hover:bg-white/15"
+                  className="relative bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-white/20 hover:border-white/40 transition-all duration-500 hover:scale-105 hover:-translate-y-2 h-full flex flex-col justify-center items-center text-center min-h-[120px] sm:min-h-[140px] hover:bg-white/15"
                   style={{
                     animationDelay: `${index * 200}ms`
                   }}
                 >
                   {/* Glow effect on hover */}
-                  <div className={`absolute inset-0 rounded-3xl bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`} />
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`} />
                   
-                  <div className={`text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`text-2xl sm:text-3xl lg:text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300`}>
                     {stat.number}
                   </div>
-                  <div className="text-blue-200/90 text-sm sm:text-base lg:text-lg font-semibold leading-tight px-2">
+                  <div className="text-blue-200/90 text-xs sm:text-sm lg:text-base font-semibold leading-tight px-1">
                     {stat.label}
                   </div>
                 </div>
