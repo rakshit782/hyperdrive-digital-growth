@@ -4,86 +4,69 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
-import { AuthProvider } from "@/contexts/AuthContext";
-import SEOHead from "@/components/SEOHead";
-import TrackingScriptInjector from "@/components/TrackingScriptInjector";
-import Footer from "@/components/Footer";
+import { HelmetProvider } from 'react-helmet-async';
 import Index from "./pages/Index";
 import About from "./pages/About";
-import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
-import FreeAudit from "./pages/FreeAudit";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import Blog from "./pages/Blog";
 import CaseStudies from "./pages/CaseStudies";
+import AmazonCaseStudies from "./pages/AmazonCaseStudies";
+import WalmartCaseStudies from "./pages/WalmartCaseStudies";
+import MetaCaseStudies from "./pages/MetaCaseStudies";
+import FreeAudit from "./pages/FreeAudit";
+import Pricing from "./pages/Pricing";
 import AmazonAdvertising from "./pages/AmazonAdvertising";
 import WalmartAdvertising from "./pages/WalmartAdvertising";
 import MetaAdvertising from "./pages/MetaAdvertising";
 import AccountManagement from "./pages/AccountManagement";
 import ShopifyIntegration from "./pages/ShopifyIntegration";
 import ShopifyDevelopment from "./pages/ShopifyDevelopment";
-import AmazonCaseStudies from "./pages/AmazonCaseStudies";
-import WalmartCaseStudies from "./pages/WalmartCaseStudies";
-import MetaCaseStudies from "./pages/MetaCaseStudies";
+import Blog from "./pages/Blog";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import TermsConditions from "./pages/TermsConditions";
 import NotFound from "./pages/NotFound";
-import { useFacebookPixel } from "@/hooks/useFacebookPixel";
-import { integrationManager } from "@/utils/integrationManager";
-import { useEffect } from "react";
+import TrackingScriptInjector from "./components/TrackingScriptInjector";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  // Initialize Facebook Pixel
-  useFacebookPixel();
-
-  useEffect(() => {
-    // Initialize all integrations when app starts
-    integrationManager.initializeAllIntegrations();
-  }, []);
-
-  return (
+const App = () => (
+  <HelmetProvider>
     <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <SEOHead />
-              <TrackingScriptInjector />
-              <div className="min-h-screen flex flex-col">
-                <div className="flex-1">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/about" element={<><About /><Footer /></>} />
-                    <Route path="/pricing" element={<><Pricing /><Footer /></>} />
-                    <Route path="/contact" element={<><Contact /><Footer /></>} />
-                    <Route path="/free-audit" element={<><FreeAudit /><Footer /></>} />
-                    <Route path="/auth" element={<><Auth /><Footer /></>} />
-                    <Route path="/dashboard" element={<><Dashboard /><Footer /></>} />
-                    <Route path="/blog" element={<><Blog /><Footer /></>} />
-                    <Route path="/case-studies" element={<><CaseStudies /><Footer /></>} />
-                    <Route path="/amazon-advertising" element={<><AmazonAdvertising /><Footer /></>} />
-                    <Route path="/walmart-advertising" element={<><WalmartAdvertising /><Footer /></>} />
-                    <Route path="/meta-advertising" element={<><MetaAdvertising /><Footer /></>} />
-                    <Route path="/account-management" element={<><AccountManagement /><Footer /></>} />
-                    <Route path="/shopify-integration" element={<><ShopifyIntegration /><Footer /></>} />
-                    <Route path="/shopify-development" element={<><ShopifyDevelopment /><Footer /></>} />
-                    <Route path="/amazon-case-studies" element={<><AmazonCaseStudies /><Footer /></>} />
-                    <Route path="/walmart-case-studies" element={<><WalmartCaseStudies /><Footer /></>} />
-                    <Route path="/meta-case-studies" element={<><MetaCaseStudies /><Footer /></>} />
-                    <Route path="*" element={<><NotFound /><Footer /></>} />
-                  </Routes>
-                </div>
-              </div>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AuthProvider>
-      </HelmetProvider>
+      <TooltipProvider>
+        <TrackingScriptInjector />
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/case-studies" element={<CaseStudies />} />
+            <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
+            <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
+            <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
+            <Route path="/free-audit" element={<FreeAudit />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
+            <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
+            <Route path="/meta-advertising" element={<MetaAdvertising />} />
+            <Route path="/account-management" element={<AccountManagement />} />
+            <Route path="/shopify-integration" element={<ShopifyIntegration />} />
+            <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/terms-conditions" element={<TermsConditions />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
     </QueryClientProvider>
-  );
-};
+  </HelmetProvider>
+);
 
 export default App;

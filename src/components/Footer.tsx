@@ -18,6 +18,13 @@ interface ContactInfo {
   hours: string;
 }
 
+interface PartnerImage {
+  id: string;
+  name: string;
+  imageUrl: string;
+  isActive: boolean;
+}
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [socialLinks, setSocialLinks] = useState<SocialMediaLink[]>([]);
@@ -27,6 +34,7 @@ const Footer = () => {
     address: "123 Business Ave, Suite 100, City, State 12345",
     hours: "Monday - Friday: 9AM - 6PM EST"
   });
+  const [partnerImages, setPartnerImages] = useState<PartnerImage[]>([]);
 
   useEffect(() => {
     console.log("Footer: Component mounted, loading data...");
@@ -65,9 +73,23 @@ const Footer = () => {
       }
     };
 
+    const loadPartnerImages = () => {
+      const savedPartners = localStorage.getItem('partnerImages');
+      if (savedPartners) {
+        try {
+          const parsed = JSON.parse(savedPartners);
+          setPartnerImages(parsed.filter((partner: PartnerImage) => partner.isActive));
+          console.log("Footer: Loaded partner images:", parsed.length);
+        } catch (error) {
+          console.error('Footer: Failed to parse partner images:', error);
+        }
+      }
+    };
+
     // Initial load
     loadSocialLinks();
     loadContactInfo();
+    loadPartnerImages();
 
     // Listen for updates
     const handleSocialMediaUpdate = () => {
@@ -80,12 +102,19 @@ const Footer = () => {
       loadContactInfo();
     };
 
+    const handlePartnerImagesUpdate = () => {
+      console.log("Footer: Received partner images update");
+      loadPartnerImages();
+    };
+
     window.addEventListener('socialMediaUpdated', handleSocialMediaUpdate);
     window.addEventListener('contactUpdated', handleContactUpdate);
+    window.addEventListener('partnerImagesUpdated', handlePartnerImagesUpdate);
     
     return () => {
       window.removeEventListener('socialMediaUpdated', handleSocialMediaUpdate);
       window.removeEventListener('contactUpdated', handleContactUpdate);
+      window.removeEventListener('partnerImagesUpdated', handlePartnerImagesUpdate);
     };
   }, []);
 
@@ -105,6 +134,8 @@ const Footer = () => {
     { name: "Walmart Advertising", href: "/walmart-advertising" },
     { name: "Meta Advertising", href: "/meta-advertising" },
     { name: "Account Management", href: "/account-management" },
+    { name: "Shopify Integration", href: "/shopify-integration" },
+    { name: "Shopify Development", href: "/shopify-development" },
   ];
 
   const company = [
@@ -117,12 +148,33 @@ const Footer = () => {
   const resources = [
     { name: "Free Audit", href: "/free-audit" },
     { name: "Pricing", href: "/pricing" },
-    { name: "Shopify Integration", href: "/shopify-integration" },
-    { name: "Shopify Development", href: "/shopify-development" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms of Service", href: "/terms-of-service" },
+    { name: "Terms & Conditions", href: "/terms-conditions" },
   ];
 
   return (
     <footer className="bg-slate-900 text-white">
+      {/* Partner Images Section */}
+      {partnerImages.length > 0 && (
+        <div className="border-b border-slate-700">
+          <div className="container mx-auto px-6 py-8">
+            <h4 className="text-center text-lg font-semibold mb-6 text-white">Trusted Partners</h4>
+            <div className="flex flex-wrap justify-center items-center gap-8">
+              {partnerImages.map((partner) => (
+                <div key={partner.id} className="flex-shrink-0">
+                  <img
+                    src={partner.imageUrl}
+                    alt={partner.name}
+                    className="h-12 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Footer Content */}
       <div className="container mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -258,10 +310,10 @@ const Footer = () => {
 
             {/* Legal Links */}
             <div className="flex items-center space-x-6 text-sm text-slate-400 mt-4 md:mt-0">
-              <a href="#" className="hover:text-blue-400 transition-colors">
+              <a href="/privacy-policy" className="hover:text-blue-400 transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="hover:text-blue-400 transition-colors">
+              <a href="/terms-of-service" className="hover:text-blue-400 transition-colors">
                 Terms of Service
               </a>
             </div>

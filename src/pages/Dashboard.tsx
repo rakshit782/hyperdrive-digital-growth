@@ -27,6 +27,10 @@ import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 import IntegrationTestTab from "@/components/dashboard/IntegrationTestTab";
 import SocialMediaTab from "@/components/dashboard/SocialMediaTab";
 import ChatGPTTab from "@/components/dashboard/ChatGPTTab";
+import StatsManagement from "@/components/dashboard/StatsManagement";
+import PartnerImagesTab from "@/components/dashboard/PartnerImagesTab";
+import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
+import GoogleSheetsTab from "@/components/dashboard/GoogleSheetsTab";
 import Header from "@/components/Header";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { integrationManager } from "@/utils/integrationManager";
@@ -127,6 +131,14 @@ const Dashboard = () => {
         return <HeaderCustomizationTab />;
       case 'social-media':
         return <SocialMediaTab />;
+      case 'stats':
+        return <StatsManagement />;
+      case 'partner-images':
+        return <PartnerImagesTab />;
+      case 'policy-pages':
+        return <PolicyPagesTab />;
+      case 'google-sheets':
+        return <GoogleSheetsTab />;
       case 'amplify':
         return <AmplifyTab />;
       case 'cognito':
@@ -207,6 +219,12 @@ const Dashboard = () => {
                             Reviews ({reviews.length})
                           </button>
                           <button 
+                            onClick={() => setActiveTab('stats')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'stats' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Statistics
+                          </button>
+                          <button 
                             onClick={() => setActiveTab('website')}
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'website' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
@@ -242,6 +260,18 @@ const Dashboard = () => {
                           >
                             Header
                           </button>
+                          <button 
+                            onClick={() => setActiveTab('partner-images')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'partner-images' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Partner Images
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('policy-pages')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'policy-pages' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Policy Pages
+                          </button>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -261,6 +291,12 @@ const Dashboard = () => {
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'integration-test' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
                             Test All Integrations
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('google-sheets')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'google-sheets' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Google Sheets
                           </button>
                           <button 
                             onClick={() => setActiveTab('facebook-pixel')}

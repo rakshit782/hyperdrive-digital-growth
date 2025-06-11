@@ -102,43 +102,43 @@ const Hero = () => {
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-6xl mx-auto text-center">
-          {/* Enhanced Typography */}
+          {/* Enhanced Typography with smaller fonts */}
           <div className="mb-12 space-y-6">
             <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 backdrop-blur-sm rounded-full border border-blue-400/30 mb-8">
               <Sparkles className="w-5 h-5 mr-3 text-cyan-400" />
-              <span className="text-lg font-medium text-cyan-100">Trusted by 500+ Businesses</span>
+              <span className="text-base font-medium text-cyan-100">Trusted by 500+ Businesses</span>
             </div>
             
-            <h1 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-none">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-none">
               <span className="block mb-4">Ready to Scale</span>
               <span className="block bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
                 Your Business?
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed mt-8">
+            <p className="text-lg md:text-xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed mt-8">
               Join hundreds of successful brands that have scaled their revenue with our data-driven advertising strategies across Amazon, Walmart, and Meta platforms.
             </p>
           </div>
           
-          {/* Enhanced CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mb-20">
+          {/* Enhanced CTA Buttons with smaller sizes */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
             <Button 
               size="lg" 
-              className="group bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:from-blue-600 hover:via-blue-700 hover:to-cyan-600 text-white px-12 py-8 text-2xl font-bold rounded-3xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-500 hover:scale-110 hover:-translate-y-3 border border-blue-400/30"
+              className="group bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:from-blue-600 hover:via-blue-700 hover:to-cyan-600 text-white px-10 py-6 text-xl font-bold rounded-3xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-500 hover:scale-110 hover:-translate-y-3 border border-blue-400/30"
               onClick={handlePrimaryButtonClick}
             >
               {ctaButtons.primaryText}
-              <ArrowRight className="ml-4 w-7 h-7 group-hover:translate-x-2 transition-transform duration-300" />
+              <ArrowRight className="ml-4 w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
             </Button>
             
             <Button 
               variant="outline" 
               size="lg" 
-              className="group border-2 border-cyan-400/50 bg-white/10 backdrop-blur-sm text-cyan-100 hover:bg-cyan-400/20 hover:border-cyan-400 px-12 py-8 text-2xl font-bold rounded-3xl transition-all duration-500 hover:scale-110 hover:-translate-y-3"
+              className="group border-2 border-cyan-400/50 bg-white/10 backdrop-blur-sm text-cyan-100 hover:bg-cyan-400/20 hover:border-cyan-400 px-10 py-6 text-xl font-bold rounded-3xl transition-all duration-500 hover:scale-110 hover:-translate-y-3"
               onClick={handleSecondaryButtonClick}
             >
-              <Play className="mr-4 w-7 h-7 group-hover:scale-125 transition-transform duration-300" />
+              <Play className="mr-4 w-6 h-6 group-hover:scale-125 transition-transform duration-300" />
               {ctaButtons.secondaryText}
             </Button>
           </div>
