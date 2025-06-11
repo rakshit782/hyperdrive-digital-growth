@@ -18,6 +18,7 @@ import AuditBenefits from "@/components/forms/AuditBenefits";
 const FreeAuditForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -33,11 +34,46 @@ const FreeAuditForm = () => {
     },
   });
 
+  const validateFormData = (values: FormValues): string | null => {
+    // Backend-side validation matching frontend Zod schema
+    if (!values.firstName.trim() || values.firstName.length < 2) {
+      return "First name must be at least 2 characters";
+    }
+    if (!values.lastName.trim() || values.lastName.length < 2) {
+      return "Last name must be at least 2 characters";
+    }
+    if (!values.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+      return "Please enter a valid email address";
+    }
+    if (!values.company.trim() || values.company.length < 2) {
+      return "Company name must be at least 2 characters";
+    }
+    if (!values.phone.trim() || values.phone.length < 10) {
+      return "Phone number must be at least 10 characters";
+    }
+    if (!values.monthlyAdSpend.trim()) {
+      return "Monthly ad spend is required";
+    }
+    if (!values.businessGoals.trim() || values.businessGoals.length < 10) {
+      return "Business goals must be at least 10 characters";
+    }
+    return null;
+  };
+
   const onSubmit = async (values: FormValues) => {
+    if (isSubmitting) return; // Prevent duplicate submissions
+    
     setIsSubmitting(true);
+    setSubmitError(null);
     console.log("Free audit form submitted:", values);
     
     try {
+      // Backend-side validation
+      const validationError = validateFormData(values);
+      if (validationError) {
+        throw new Error(validationError);
+      }
+
       // Submit to DynamoDB if configured
       if (dynamoDBManager.isActive()) {
         const submissionData = {
@@ -50,7 +86,9 @@ const FreeAuditForm = () => {
           monthlyAdSpend: values.monthlyAdSpend,
           businessGoals: values.businessGoals,
           submittedAt: new Date().toISOString(),
-          formType: 'free_audit'
+          formType: 'free_audit',
+          ipAddress: 'unknown', // Could be enhanced with IP detection
+          userAgent: navigator.userAgent,
         };
 
         await dynamoDBManager.putItem('contact_submissions', submissionData);
@@ -68,6 +106,7 @@ const FreeAuditForm = () => {
           <p><strong>Platform:</strong> ${values.platform}</p>
           <p><strong>Monthly Ad Spend:</strong> ${values.monthlyAdSpend}</p>
           <p><strong>Business Goals:</strong> ${values.businessGoals}</p>
+          <p><strong>Submitted At:</strong> ${new Date().toLocaleString()}</p>
         `;
 
         await sesManager.sendEmail(
@@ -80,7 +119,7 @@ const FreeAuditForm = () => {
       }
 
       toast({
-        title: "Audit Request Submitted!",
+        title: "Audit Request Submitted Successfully!",
         description: "Thank you! We've received your free audit request and will analyze your data within 24-48 hours. You'll receive a detailed report at the email address provided.",
       });
       
@@ -88,9 +127,14 @@ const FreeAuditForm = () => {
       
     } catch (error) {
       console.error("Error submitting form:", error);
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      setSubmitError(errorMessage);
+      
       toast({
         title: "Submission Error",
-        description: "An unexpected error occurred. Please try again or contact us directly at admin@amzadscout.com.",
+        description: errorMessage.includes("validation") 
+          ? errorMessage 
+          : "An unexpected error occurred. Please try again or contact us directly at admin@amzadscout.com.",
         variant: "destructive",
       });
     } finally {
@@ -115,14 +159,23 @@ const FreeAuditForm = () => {
             <FileUploadForm form={form} />
             <AuditBenefits />
 
+            {submitError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm font-medium">{submitError}</p>
+              </div>
+            )}
+
             <Button 
               type="submit" 
               size="lg" 
-              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-4 text-lg rounded-xl"
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-4 text-lg rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                "Submitting Your Audit Request..."
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Submitting Your Audit Request...
+                </>
               ) : (
                 <>
                   Get My Free Audit
