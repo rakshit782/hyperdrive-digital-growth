@@ -10,7 +10,7 @@ export const useFacebookPixel = () => {
       try {
         const config = JSON.parse(pixelConfig);
         if (config.isActive && config.pixelId) {
-          facebookPixel.initialize(config.pixelId);
+          facebookPixel.configure(config);
         }
       } catch (error) {
         console.error('Failed to load Facebook Pixel config:', error);

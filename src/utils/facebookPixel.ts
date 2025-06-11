@@ -47,32 +47,10 @@ class FacebookPixelManager {
     console.log('Facebook Pixel configured:', { pixelId: config.pixelId, active: config.isActive });
   }
 
-  private saveConfig() {
-    if (this.config) {
-      const encrypted = this.encrypt(JSON.stringify(this.config));
-      localStorage.setItem('facebookPixel_config', encrypted);
-    }
-  }
-
-  loadSavedConfig() {
-    try {
-      const saved = localStorage.getItem('facebookPixel_config');
-      if (saved) {
-        const decrypted = this.decrypt(saved);
-        this.config = JSON.parse(decrypted);
-        if (this.config?.isActive) {
-          this.initialize();
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load Facebook Pixel config:', error);
-      // Clear corrupted config
-      localStorage.removeItem('facebookPixel_config');
-    }
-  }
-
-  private initialize() {
-    if (this.isInitialized || !this.config?.pixelId) return;
+  // Make initialize method public to fix the errors
+  initialize(pixelId?: string) {
+    const idToUse = pixelId || this.config?.pixelId;
+    if (this.isInitialized || !idToUse) return;
 
     try {
       // Initialize Facebook Pixel
@@ -94,11 +72,11 @@ class FacebookPixelManager {
       })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
       // Initialize with Pixel ID
-      (window as any).fbq('init', this.config.pixelId);
+      (window as any).fbq('init', idToUse);
       
       // Add test event code if provided
-      if (this.config.testEventCode) {
-        (window as any).fbq('init', this.config.pixelId, {}, {
+      if (this.config?.testEventCode) {
+        (window as any).fbq('init', idToUse, {}, {
           test_event_code: this.config.testEventCode
         });
       }
@@ -110,6 +88,30 @@ class FacebookPixelManager {
       console.log('Facebook Pixel initialized successfully');
     } catch (error) {
       console.error('Facebook Pixel initialization failed:', error);
+    }
+  }
+
+  private saveConfig() {
+    if (this.config) {
+      const encrypted = this.encrypt(JSON.stringify(this.config));
+      localStorage.setItem('facebookPixel_config', encrypted);
+    }
+  }
+
+  loadSavedConfig() {
+    try {
+      const saved = localStorage.getItem('facebookPixel_config');
+      if (saved) {
+        const decrypted = this.decrypt(saved);
+        this.config = JSON.parse(decrypted);
+        if (this.config?.isActive) {
+          this.initialize();
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load Facebook Pixel config:', error);
+      // Clear corrupted config
+      localStorage.removeItem('facebookPixel_config');
     }
   }
 
@@ -198,6 +200,32 @@ class FacebookPixelManager {
       value,
       currency,
       content_category: 'lead_generation'
+    });
+  }
+
+  // Add missing tracking methods
+  trackCompleteRegistration(value?: number, currency: string = 'USD') {
+    this.trackEvent('CompleteRegistration', {
+      value,
+      currency,
+      content_category: 'registration'
+    });
+  }
+
+  trackContact(value?: number, currency: string = 'USD') {
+    this.trackEvent('Contact', {
+      value,
+      currency,
+      content_category: 'contact'
+    });
+  }
+
+  trackViewContent(contentId?: string, contentType?: string, value?: number, currency: string = 'USD') {
+    this.trackEvent('ViewContent', {
+      content_ids: contentId ? [contentId] : undefined,
+      content_type: contentType || 'product',
+      value,
+      currency
     });
   }
 

@@ -44,9 +44,12 @@ const FacebookPixelTab = () => {
       // Save to localStorage
       localStorage.setItem('facebookPixelConfig', JSON.stringify(config));
       
-      // Initialize pixel if active
+      // Configure pixel if active
       if (config.isActive && config.pixelId) {
-        facebookPixel.initialize(config.pixelId);
+        facebookPixel.configure({
+          pixelId: config.pixelId,
+          isActive: config.isActive
+        });
         
         // Dispatch event to notify other components
         const event = new CustomEvent('facebookPixelConfigUpdated', { detail: config });
