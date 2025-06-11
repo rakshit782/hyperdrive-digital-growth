@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -158,63 +157,21 @@ const Header = () => {
   // Use custom menu items if available
   const navItems = headerSettings.menuItems.filter(item => item.enabled);
 
-  // Get header bar color
+  // Force white background for header bar
   const getHeaderBarColor = () => {
-    const colorMap = {
-      white: 'white',
-      gray: 'gray-100',
-      dark: 'gray-900',
-      blue: 'blue-600',
-      green: 'green-600',
-      purple: 'purple-600',
-      red: 'red-600',
-      yellow: 'yellow-400',
-      custom: null
-    };
-
-    const colorClass = colorMap[headerSettings.headerBarColor as keyof typeof colorMap];
-    
-    if (headerSettings.headerBarColor === 'custom') {
-      return { backgroundColor: headerSettings.headerCustomColor };
-    }
-    
-    return colorClass ? `bg-${colorClass}` : 'bg-white';
+    // Always return white background regardless of settings
+    return 'bg-white';
   };
 
-  // Dynamic header background styles
+  // Dynamic header background styles - force white background
   const getHeaderBackgroundStyle = () => {
     const opacity = headerSettings.headerOpacity / 100;
-    const colorStyle = getHeaderBarColor();
     
-    if (typeof colorStyle === 'object') {
-      // Custom color
-      const customStyle = {
-        ...colorStyle,
-        opacity: opacity,
-        backdropFilter: headerSettings.headerBackground === 'blur' ? 'blur(12px)' : 'none'
-      };
-      return { style: customStyle, className: 'border-b border-gray-200/40 shadow-lg shadow-black/5' };
-    }
-    
-    // Predefined color classes
-    switch (headerSettings.headerBackground) {
-      case 'solid':
-        return { 
-          className: `${colorStyle}/${Math.round(opacity * 100)} border-b border-gray-200/40 shadow-lg shadow-black/5`,
-          style: {}
-        };
-      case 'transparent':
-        return { 
-          className: 'bg-transparent border-b border-gray-200/20',
-          style: {}
-        };
-      case 'blur':
-      default:
-        return { 
-          className: `${colorStyle}/${Math.round(opacity * 60)} backdrop-blur-xl border-b border-gray-200/40 shadow-lg shadow-black/5`,
-          style: {}
-        };
-    }
+    // Force white background with blur effect
+    return { 
+      className: `bg-white/${Math.round(opacity * 100)} backdrop-blur-xl border-b border-gray-200/40 shadow-lg shadow-black/5`,
+      style: {}
+    };
   };
 
   // Dynamic CTA button styles

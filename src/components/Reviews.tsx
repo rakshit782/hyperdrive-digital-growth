@@ -82,99 +82,83 @@ const Reviews = () => {
             setReviews(defaultReviews);
           }
         } catch (error) {
-          console.error("Reviews: Failed to parse localStorage data:", error);
+          console.error("Reviews: Error parsing saved reviews:", error);
           setReviews(defaultReviews);
         }
-      } else {
-        console.log("Reviews: No localStorage data, using defaults");
-        setReviews(defaultReviews);
       }
     };
 
-    // Initial load
+    // Load reviews on mount
     loadReviews();
 
+    // Listen for updates from dashboard
     const handleReviewsUpdate = (event: CustomEvent) => {
-      console.log("Reviews: Received update event with data:", event.detail?.length);
+      console.log("Reviews: Received update event:", event.detail);
       if (event.detail && Array.isArray(event.detail)) {
         setReviews(event.detail);
       }
     };
 
     window.addEventListener('reviewsUpdated', handleReviewsUpdate as EventListener);
-
+    
     return () => {
       window.removeEventListener('reviewsUpdated', handleReviewsUpdate as EventListener);
     };
   }, []);
 
-  // Debug: Log current reviews whenever it changes
-  useEffect(() => {
-    console.log("Reviews: Current reviews count:", reviews.length);
-  }, [reviews]);
-
   const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
+    return [...Array(5)].map((_, i) => (
       <Star
         key={i}
-        className={`w-5 h-5 ${
-          i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+        className={`w-4 h-4 ${
+          i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
         }`}
       />
     ));
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden">
-      <div className="container mx-auto px-6">
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 backdrop-blur-sm rounded-full border border-yellow-200/50 mb-8">
-            <Star className="w-5 h-5 mr-2 text-yellow-600 fill-current" />
-            <span className="text-sm font-semibold text-yellow-600 tracking-wide">CLIENT TESTIMONIALS</span>
-          </div>
-          
-          <h2 className="text-5xl md:text-6xl font-bold mb-8 text-slate-900 leading-tight">
-            What Our <span className="bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 bg-clip-text text-transparent">Clients Say</span>
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
+            What Our Clients Say
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Don't just take our word for it. See what our satisfied clients have to say about their success stories.
+            Don't just take our word for it. Here's what successful Amazon sellers and e-commerce brands have to say about working with us.
           </p>
         </div>
-        
-        {/* Scrolling Reviews */}
-        <div className="relative">
-          <div className="flex animate-scroll space-x-8 w-max">
-            {[...reviews, ...reviews].map((review, index) => (
-              <Card key={`${review.id}-${index}`} className="w-96 flex-shrink-0 bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-8">
-                  <div className="flex items-center mb-6">
-                    <img
-                      src={review.avatar || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face`}
-                      alt={review.name}
-                      className="w-16 h-16 rounded-full object-cover mr-4"
-                      onError={(e) => {
-                        e.currentTarget.src = `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face`;
-                      }}
-                    />
-                    <div>
-                      <h4 className="font-bold text-slate-900">{review.name}</h4>
-                      <p className="text-slate-600 text-sm">{review.company}</p>
-                      <div className="flex mt-2">
-                        {renderStars(review.rating)}
-                      </div>
-                    </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {reviews.map((review) => (
+            <Card key={review.id} className="group hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm border-white/20 hover:-translate-y-2">
+              <CardContent className="p-8">
+                <div className="flex items-center mb-6">
+                  <Quote className="w-8 h-8 text-blue-600 mb-4" />
+                </div>
+                
+                <p className="text-slate-700 mb-6 leading-relaxed">
+                  "{review.review}"
+                </p>
+                
+                <div className="flex items-center mb-4">
+                  {renderStars(review.rating)}
+                </div>
+                
+                <div className="flex items-center">
+                  <img
+                    src={review.avatar}
+                    alt={review.name}
+                    className="w-12 h-12 rounded-full mr-4 object-cover"
+                  />
+                  <div>
+                    <h4 className="font-semibold text-slate-900">{review.name}</h4>
+                    <p className="text-slate-600 text-sm">{review.company}</p>
                   </div>
-                  
-                  <div className="relative">
-                    <Quote className="absolute -top-2 -left-2 w-8 h-8 text-blue-200" />
-                    <p className="text-slate-700 leading-relaxed pl-6">
-                      {review.review}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>
