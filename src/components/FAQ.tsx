@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown, HelpCircle, MessageCircle, Sparkles } from "lucide-react";
 
 interface FAQItem {
   id: string;
@@ -76,10 +76,8 @@ const FAQ = () => {
       }
     };
 
-    // Load FAQs on mount
     loadFAQs();
 
-    // Listen for updates from dashboard
     const handleFAQUpdate = (event: CustomEvent) => {
       console.log("FAQ: Received update event:", event.detail);
       if (event.detail && Array.isArray(event.detail)) {
@@ -102,39 +100,59 @@ const FAQ = () => {
   };
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-6">
-            <HelpCircle className="w-8 h-8 text-white" />
+    <section className="py-24 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full border border-blue-200/50 mb-6">
+            <MessageCircle className="w-4 h-4 mr-2 text-blue-600" />
+            <span className="text-sm font-medium text-blue-700">FAQ</span>
           </div>
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
+          <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
             Frequently Asked Questions
           </h2>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Get answers to the most common questions about our services and how we can help grow your business.
           </p>
         </div>
 
-        <div className="space-y-4">
-          {faqs.map((faq) => (
-            <Card key={faq.id} className="border border-slate-200 hover:border-blue-300 transition-all duration-300">
+        <div className="space-y-6">
+          {faqs.map((faq, index) => (
+            <Card 
+              key={faq.id} 
+              className="group border border-slate-200/60 hover:border-blue-300/60 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:shadow-xl"
+              style={{
+                animationDelay: `${index * 100}ms`
+              }}
+            >
               <Collapsible open={openItems[faq.id]} onOpenChange={() => toggleItem(faq.id)}>
                 <CollapsibleTrigger asChild>
-                  <CardHeader className="cursor-pointer hover:bg-slate-50 transition-colors duration-200">
+                  <CardHeader className="cursor-pointer hover:bg-blue-50/50 transition-colors duration-300 py-8">
                     <CardTitle className="flex items-center justify-between text-left">
-                      <span className="text-slate-900 font-semibold">{faq.question}</span>
-                      <ChevronDown 
-                        className={`w-5 h-5 text-blue-600 transition-transform duration-200 flex-shrink-0 ml-4 ${
-                          openItems[faq.id] ? 'rotate-180' : ''
-                        }`} 
-                      />
+                      <div className="flex items-start">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mr-4 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                          <HelpCircle className="w-6 h-6 text-white" />
+                        </div>
+                        <span className="text-slate-900 font-bold text-xl leading-tight pr-4">{faq.question}</span>
+                      </div>
+                      <div className="flex-shrink-0 ml-4">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
+                          <ChevronDown 
+                            className={`w-5 h-5 text-blue-600 transition-transform duration-300 ${
+                              openItems[faq.id] ? 'rotate-180' : ''
+                            }`} 
+                          />
+                        </div>
+                      </div>
                     </CardTitle>
                   </CardHeader>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <CardContent className="pt-0">
-                    <p className="text-slate-600 leading-relaxed">{faq.answer}</p>
+                  <CardContent className="pt-0 pb-8">
+                    <div className="ml-16 pr-14">
+                      <div className="p-6 bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl border border-blue-100/50">
+                        <p className="text-slate-700 leading-relaxed text-lg">{faq.answer}</p>
+                      </div>
+                    </div>
                   </CardContent>
                 </CollapsibleContent>
               </Collapsible>
@@ -142,16 +160,20 @@ const FAQ = () => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <p className="text-slate-600 mb-6">
-            Still have questions? We're here to help!
-          </p>
-          <a
-            href="/contact"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-xl"
-          >
-            Contact Us
-          </a>
+        <div className="text-center mt-16">
+          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-200/50 mb-8">
+            <Sparkles className="w-5 h-5 mr-2 text-blue-600" />
+            <span className="text-slate-700 font-medium">Still have questions? We're here to help!</span>
+          </div>
+          <div>
+            <a
+              href="/contact"
+              className="inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-lg rounded-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-xl hover:shadow-2xl"
+            >
+              Contact Us
+              <MessageCircle className="w-5 h-5 ml-3" />
+            </a>
+          </div>
         </div>
       </div>
     </section>

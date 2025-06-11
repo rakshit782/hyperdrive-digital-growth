@@ -112,10 +112,8 @@ const Services = () => {
       }
     };
 
-    // Load services on mount
     loadServices();
 
-    // Listen for updates from dashboard
     const handleServicesUpdate = (event: CustomEvent) => {
       console.log("Services: Received update event:", event.detail);
       if (event.detail && Array.isArray(event.detail)) {
@@ -136,48 +134,60 @@ const Services = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <section className="py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full border border-blue-200/50 mb-6">
+            <span className="text-sm font-medium text-blue-700">Our Expertise</span>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
             Our Services
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Comprehensive e-commerce advertising solutions designed to maximize your ROI and accelerate growth across all major platforms.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service) => {
+          {services.map((service, index) => {
             const IconComponent = getIcon(service.icon);
             return (
-              <Card key={service.id} className={`group hover:shadow-xl transition-all duration-300 bg-gradient-to-br ${service.bgGradient} hover:-translate-y-2 border-white/40`}>
-                <CardHeader className="pb-4">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="w-8 h-8 text-white" />
+              <Card 
+                key={service.id} 
+                className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 bg-gradient-to-br ${service.bgGradient} hover:-translate-y-3 border-white/60 hover:border-white/80`}
+                style={{
+                  animationDelay: `${index * 100}ms`
+                }}
+              >
+                {/* Gradient overlay on hover */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                
+                <CardHeader className="pb-6 relative z-10">
+                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
+                    <IconComponent className="w-10 h-10 text-white" />
                   </div>
-                  <CardTitle className="text-xl font-bold text-slate-900 group-hover:text-blue-900 transition-colors">
+                  <CardTitle className="text-2xl font-bold text-slate-900 group-hover:text-blue-900 transition-colors mb-3">
                     {service.title}
                   </CardTitle>
-                  <CardDescription className="text-slate-600">
+                  <CardDescription className="text-slate-600 text-base leading-relaxed">
                     {service.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <ul className="space-y-2 mb-6">
-                    {service.features.map((feature, index) => (
-                      <li key={index} className="flex items-center text-sm text-slate-700">
-                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${service.gradient} mr-3`}></div>
-                        {feature}
-                      </li>
+                <CardContent className="pt-0 relative z-10">
+                  <div className="space-y-3 mb-8">
+                    {service.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-center text-slate-700">
+                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${service.gradient} mr-4 group-hover:scale-125 transition-transform duration-300`} style={{ animationDelay: `${idx * 50}ms` }} />
+                        <span className="font-medium">{feature}</span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                   <Button 
-                    className={`w-full bg-gradient-to-r ${service.gradient} hover:opacity-90 text-white font-semibold py-3 rounded-xl transition-all duration-300 group-hover:shadow-lg`}
+                    className={`w-full bg-gradient-to-r ${service.gradient} hover:scale-105 hover:shadow-xl text-white font-semibold py-4 rounded-2xl transition-all duration-500 group-hover:shadow-2xl border-0`}
                     onClick={() => window.location.href = service.link}
                   >
                     Learn More
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300" />
                   </Button>
                 </CardContent>
               </Card>
