@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -298,7 +297,8 @@ const IntegrationTestTab = () => {
         description: "Sending test content for optimization...",
       });
 
-      const optimizedContent = await chatGPTManager.optimizeContent(testInput, 'general');
+      // Fixed: Use only one parameter
+      const optimizedContent = await chatGPTManager.optimizeContent(testInput);
       
       if (optimizedContent) {
         toast({
