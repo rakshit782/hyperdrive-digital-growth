@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServicesTab from "@/components/dashboard/ServicesTab";
@@ -23,6 +24,7 @@ import SESTab from "@/components/dashboard/SESTab";
 import CloudflareTab from "@/components/dashboard/CloudflareTab";
 import UserManagementTab from "@/components/dashboard/UserManagementTab";
 import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
+import IntegrationTestTab from "@/components/dashboard/IntegrationTestTab";
 import SocialMediaTab from "@/components/dashboard/SocialMediaTab";
 import ChatGPTTab from "@/components/dashboard/ChatGPTTab";
 import Header from "@/components/Header";
@@ -141,6 +143,8 @@ const Dashboard = () => {
         return <UserManagementTab />;
       case 'integration-status':
         return <IntegrationStatusTab />;
+      case 'integration-test':
+        return <IntegrationTestTab />;
       case 'facebook-pixel':
         return <FacebookPixelTab />;
       case 'google-analytics':
@@ -227,117 +231,37 @@ const Dashboard = () => {
                             Homepage
                           </button>
                           <button 
-                            onClick={() => setActiveTab('pricing')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'pricing' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Pricing
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('blog')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'blog' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Blog
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('header')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'header' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Header Menu
-                          </button>
-                          <button 
                             onClick={() => setActiveTab('social-media')}
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'social-media' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
                             Social Media
                           </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="ai-optimization">
-                      <AccordionTrigger className="text-sm font-medium">AI & Optimization</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
                           <button 
-                            onClick={() => setActiveTab('chatgpt')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'chatgpt' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                            onClick={() => setActiveTab('header')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'header' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
-                            ChatGPT Integration
+                            Header
                           </button>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
 
-                    <AccordionItem value="user-management">
-                      <AccordionTrigger className="text-sm font-medium">User Management</AccordionTrigger>
+                    <AccordionItem value="integrations">
+                      <AccordionTrigger className="text-sm font-medium">Integrations</AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-2">
                           <button 
-                            onClick={() => setActiveTab('user-management')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'user-management' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                            onClick={() => setActiveTab('integration-status')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'integration-status' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
-                            User Management
-                          </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="aws-services">
-                      <AccordionTrigger className="text-sm font-medium">AWS Services</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
-                          <button 
-                            onClick={() => setActiveTab('amplify')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'amplify' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            AWS Amplify
+                            Status Overview
                           </button>
                           <button 
-                            onClick={() => setActiveTab('cognito')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'cognito' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                            onClick={() => setActiveTab('integration-test')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'integration-test' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
-                            Amazon Cognito
+                            Test All Integrations
                           </button>
-                          <button 
-                            onClick={() => setActiveTab('dynamodb')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'dynamodb' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            DynamoDB
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('s3')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 's3' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Amazon S3
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('ses')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'ses' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Amazon SES
-                          </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="cdn-services">
-                      <AccordionTrigger className="text-sm font-medium">CDN & Security</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
-                          <button 
-                            onClick={() => setActiveTab('cloudflare')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'cloudflare' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Cloudflare
-                          </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="analytics">
-                      <AccordionTrigger className="text-sm font-medium">Analytics & Tracking</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
                           <button 
                             onClick={() => setActiveTab('facebook-pixel')}
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'facebook-pixel' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
@@ -351,38 +275,92 @@ const Dashboard = () => {
                             Google Analytics
                           </button>
                           <button 
+                            onClick={() => setActiveTab('chatgpt')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'chatgpt' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            ChatGPT AI
+                          </button>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="aws">
+                      <AccordionTrigger className="text-sm font-medium">AWS Services</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => setActiveTab('amplify')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'amplify' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Amplify
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('cognito')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'cognito' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Cognito
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('dynamodb')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'dynamodb' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            DynamoDB
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('s3')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 's3' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            S3
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('ses')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'ses' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            SES
+                          </button>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="other">
+                      <AccordionTrigger className="text-sm font-medium">Other Tools</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => setActiveTab('cloudflare')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'cloudflare' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Cloudflare
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('user-management')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'user-management' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            User Management
+                          </button>
+                          <button 
                             onClick={() => setActiveTab('custom-events')}
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'custom-events' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
                             Custom Events
                           </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="seo">
-                      <AccordionTrigger className="text-sm font-medium">SEO & Optimization</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
                           <button 
                             onClick={() => setActiveTab('seo')}
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'seo' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
-                            Website SEO
+                            SEO
                           </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="monitoring">
-                      <AccordionTrigger className="text-sm font-medium">System Monitoring</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
                           <button 
-                            onClick={() => setActiveTab('integration-status')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'integration-status' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                            onClick={() => setActiveTab('pricing')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'pricing' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
-                            Integration Status
+                            Pricing
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('blog')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'blog' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Blog
                           </button>
                         </div>
                       </AccordionContent>
@@ -392,36 +370,30 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            {/* Main Content Area - Dynamic Tab Rendering */}
+            {/* Main Content Area */}
             <div className="lg:col-span-3">
-              <div className="animate-fade-in">
-                {renderActiveTab()}
-              </div>
+              {renderActiveTab()}
             </div>
           </div>
-
-          {/* Modals */}
-          {editingService && (
-            <ServiceEditModal
-              service={editingService}
-              isNew={!services.find(s => s.id === editingService.id)}
-              onSave={saveService}
-              onCancel={() => setEditingService(null)}
-              onChange={setEditingService}
-            />
-          )}
-
-          {editingReview && (
-            <ReviewEditModal
-              review={editingReview}
-              isNew={!reviews.find(r => r.id === editingReview.id)}
-              onSave={saveReview}
-              onCancel={() => setEditingReview(null)}
-              onChange={setEditingReview}
-            />
-          )}
         </div>
       </div>
+
+      {/* Modals */}
+      {editingService && (
+        <ServiceEditModal
+          service={editingService}
+          onSave={saveService}
+          onClose={() => setEditingService(null)}
+        />
+      )}
+
+      {editingReview && (
+        <ReviewEditModal
+          review={editingReview}
+          onSave={saveReview}
+          onClose={() => setEditingReview(null)}
+        />
+      )}
     </>
   );
 };

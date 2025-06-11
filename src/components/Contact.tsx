@@ -15,13 +15,14 @@ import {
   Sparkles,
   Shield,
   Zap,
-  TrendingUp
+  TrendingUp,
+  MapPin
 } from "lucide-react";
 
 interface ContactInfo {
   phone: string;
   email: string;
-  businessHours: string;
+  hours: string;
   address: string;
 }
 
@@ -30,7 +31,7 @@ const Contact = () => {
   const [contactInfo, setContactInfo] = useState<ContactInfo>({
     phone: "+1 (555) 123-4567",
     email: "hello@amzadscout.com",
-    businessHours: "Mon-Fri: 9AM-6PM PST",
+    hours: "Mon-Fri: 9AM-6PM PST",
     address: "123 Business St, Suite 100, San Francisco, CA 94105"
   });
 
@@ -44,10 +45,37 @@ const Contact = () => {
   });
 
   useEffect(() => {
-    const savedContact = localStorage.getItem('contactData');
-    if (savedContact) {
-      setContactInfo(JSON.parse(savedContact));
-    }
+    console.log("Contact: Component mounted, loading contact data...");
+    
+    const loadContactInfo = () => {
+      const savedContact = localStorage.getItem('contactData');
+      if (savedContact) {
+        try {
+          const parsed = JSON.parse(savedContact);
+          setContactInfo(prev => ({ ...prev, ...parsed }));
+          console.log("Contact: Loaded contact info:", parsed);
+        } catch (error) {
+          console.error('Contact: Failed to parse contact data:', error);
+        }
+      }
+    };
+
+    // Initial load
+    loadContactInfo();
+
+    // Listen for updates from dashboard
+    const handleContactUpdate = (event: any) => {
+      console.log("Contact: Received contact update event:", event.detail);
+      if (event.detail && typeof event.detail === 'object') {
+        setContactInfo(prev => ({ ...prev, ...event.detail }));
+      }
+    };
+
+    window.addEventListener('contactUpdated', handleContactUpdate);
+    
+    return () => {
+      window.removeEventListener('contactUpdated', handleContactUpdate);
+    };
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -164,7 +192,7 @@ const Contact = () => {
           
           {/* Enhanced Contact Info & Benefits */}
           <div className="space-y-8">
-            {/* Enhanced Contact Info & Benefits */}
+            {/* Benefits */}
             <div className="space-y-8">
               <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">What You'll Get:</h3>
               <div className="space-y-6">
@@ -185,6 +213,7 @@ const Contact = () => {
               </div>
             </div>
             
+            {/* Dynamic Contact Information */}
             <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 space-y-6 border border-white/20 hover:border-white/30 transition-all duration-300">
               <h3 className="text-2xl font-bold text-white">Contact Information</h3>
               <div className="space-y-4">
@@ -198,7 +227,11 @@ const Contact = () => {
                 </div>
                 <div className="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
                   <Clock className="w-6 h-6 text-purple-400 group-hover:scale-110 transition-transform duration-300" />
-                  <span className="text-blue-100 text-lg group-hover:text-white transition-colors duration-300">{contactInfo.businessHours}</span>
+                  <span className="text-blue-100 text-lg group-hover:text-white transition-colors duration-300">{contactInfo.hours}</span>
+                </div>
+                <div className="flex items-start space-x-4 group hover:translate-x-2 transition-transform duration-300">
+                  <MapPin className="w-6 h-6 text-orange-400 group-hover:scale-110 transition-transform duration-300 mt-0.5" />
+                  <span className="text-blue-100 text-lg group-hover:text-white transition-colors duration-300">{contactInfo.address}</span>
                 </div>
               </div>
             </div>

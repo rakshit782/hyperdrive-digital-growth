@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,13 @@ import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+interface ContactInfo {
+  phone: string;
+  email: string;
+  address: string;
+  hours: string;
+}
+
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
@@ -22,6 +30,12 @@ const formSchema = z.object({
 
 const Contact = () => {
   const { toast } = useToast();
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({
+    phone: "+1 (555) 987-6543",
+    email: "hello@amzadscout.com",
+    address: "456 Growth Street, Suite 200, Los Angeles, CA 90210",
+    hours: "Mon-Fri 8AM-7PM PST"
+  });
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,6 +47,40 @@ const Contact = () => {
       message: "",
     },
   });
+
+  useEffect(() => {
+    console.log("Contact Page: Component mounted, loading contact data...");
+    
+    const loadContactInfo = () => {
+      const savedContact = localStorage.getItem('contactData');
+      if (savedContact) {
+        try {
+          const parsed = JSON.parse(savedContact);
+          setContactInfo(prev => ({ ...prev, ...parsed }));
+          console.log("Contact Page: Loaded contact info:", parsed);
+        } catch (error) {
+          console.error('Contact Page: Failed to parse contact data:', error);
+        }
+      }
+    };
+
+    // Initial load
+    loadContactInfo();
+
+    // Listen for updates from dashboard
+    const handleContactUpdate = (event: any) => {
+      console.log("Contact Page: Received contact update event:", event.detail);
+      if (event.detail && typeof event.detail === 'object') {
+        setContactInfo(prev => ({ ...prev, ...event.detail }));
+      }
+    };
+
+    window.addEventListener('contactUpdated', handleContactUpdate);
+    
+    return () => {
+      window.removeEventListener('contactUpdated', handleContactUpdate);
+    };
+  }, []);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log("Contact form submitted:", values);
@@ -75,29 +123,29 @@ const Contact = () => {
     }
   };
 
-  const contactInfo = [
+  const contactInfoItems = [
     {
       icon: Mail,
       title: "Email",
-      value: "hello@amzadscout.com",
+      value: contactInfo.email,
       description: "Send us an email anytime"
     },
     {
       icon: Phone,
       title: "Phone",
-      value: "+1 (555) 987-6543",
+      value: contactInfo.phone,
       description: "Call us during business hours"
     },
     {
       icon: MapPin,
       title: "Office",
-      value: "456 Growth Street, Suite 200",
-      description: "Los Angeles, CA 90210"
+      value: contactInfo.address,
+      description: "Visit our office"
     },
     {
       icon: Clock,
       title: "Hours",
-      value: "Mon-Fri 8AM-7PM PST",
+      value: contactInfo.hours,
       description: "We're here to help"
     }
   ];
@@ -121,11 +169,11 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Contact Info Cards */}
+      {/* Dynamic Contact Info Cards */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-            {contactInfo.map((info, index) => (
+            {contactInfoItems.map((info, index) => (
               <Card key={index} className="bg-white border shadow-lg hover:shadow-xl transition-all duration-300 text-center">
                 <CardHeader>
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">

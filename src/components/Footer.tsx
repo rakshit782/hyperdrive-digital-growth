@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Facebook, Instagram, Linkedin, Twitter, Youtube, Mail, Phone, MapPin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,19 +11,35 @@ interface SocialMediaLink {
   icon: string;
 }
 
+interface ContactInfo {
+  phone: string;
+  email: string;
+  address: string;
+  hours: string;
+}
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [socialLinks, setSocialLinks] = useState<SocialMediaLink[]>([]);
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({
+    phone: "+1 (555) 123-4567",
+    email: "hello@amzadscout.com",
+    address: "123 Business Ave, Suite 100, City, State 12345",
+    hours: "Monday - Friday: 9AM - 6PM EST"
+  });
 
   useEffect(() => {
+    console.log("Footer: Component mounted, loading data...");
+    
     const loadSocialLinks = () => {
       const savedLinks = localStorage.getItem('socialMediaLinks');
       if (savedLinks) {
         try {
           const parsed = JSON.parse(savedLinks);
           setSocialLinks(parsed.filter((link: SocialMediaLink) => link.isActive));
+          console.log("Footer: Loaded social links:", parsed.length);
         } catch (error) {
-          console.error('Failed to parse social media links:', error);
+          console.error('Footer: Failed to parse social media links:', error);
           // Fallback to default links
           setSocialLinks([
             { id: "facebook", platform: "Facebook", url: "#", isActive: true, icon: "Facebook" },
@@ -35,16 +52,41 @@ const Footer = () => {
       }
     };
 
+    const loadContactInfo = () => {
+      const savedContact = localStorage.getItem('contactData');
+      if (savedContact) {
+        try {
+          const parsed = JSON.parse(savedContact);
+          setContactInfo(prev => ({ ...prev, ...parsed }));
+          console.log("Footer: Loaded contact info:", parsed);
+        } catch (error) {
+          console.error('Footer: Failed to parse contact info:', error);
+        }
+      }
+    };
+
     // Initial load
     loadSocialLinks();
+    loadContactInfo();
 
     // Listen for updates
     const handleSocialMediaUpdate = () => {
+      console.log("Footer: Received social media update");
       loadSocialLinks();
     };
 
+    const handleContactUpdate = () => {
+      console.log("Footer: Received contact update");
+      loadContactInfo();
+    };
+
     window.addEventListener('socialMediaUpdated', handleSocialMediaUpdate);
-    return () => window.removeEventListener('socialMediaUpdated', handleSocialMediaUpdate);
+    window.addEventListener('contactUpdated', handleContactUpdate);
+    
+    return () => {
+      window.removeEventListener('socialMediaUpdated', handleSocialMediaUpdate);
+      window.removeEventListener('contactUpdated', handleContactUpdate);
+    };
   }, []);
 
   const getIcon = (iconName: string) => {
@@ -96,19 +138,19 @@ const Footer = () => {
               </p>
             </div>
             
-            {/* Contact Info */}
+            {/* Dynamic Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center text-slate-300">
                 <Mail className="w-5 h-5 mr-3 text-blue-400" />
-                <span>hello@youragency.com</span>
+                <span>{contactInfo.email}</span>
               </div>
               <div className="flex items-center text-slate-300">
                 <Phone className="w-5 h-5 mr-3 text-blue-400" />
-                <span>+1 (555) 123-4567</span>
+                <span>{contactInfo.phone}</span>
               </div>
               <div className="flex items-center text-slate-300">
                 <MapPin className="w-5 h-5 mr-3 text-blue-400" />
-                <span>New York, NY</span>
+                <span>{contactInfo.address}</span>
               </div>
             </div>
           </div>
