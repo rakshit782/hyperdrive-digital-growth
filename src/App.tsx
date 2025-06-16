@@ -35,10 +35,10 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <TrackingScriptInjector />
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <TrackingScriptInjector />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
