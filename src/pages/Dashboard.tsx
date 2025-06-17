@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServicesTab from "@/components/dashboard/ServicesTab";
@@ -40,7 +41,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { SEOHead } from "@/components/SEOHead";
+import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import toast from "sonner";
 
