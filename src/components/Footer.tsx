@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Facebook, Instagram, Linkedin, Twitter, Youtube, Mail, Phone, MapPin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -259,23 +258,44 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
+        {/* Newsletter Signup and Partner Logos Row */}
         <div className="mt-16 pt-8 border-t border-slate-700">
-          <div className="max-w-2xl mx-auto text-center">
-            <h4 className="text-xl font-semibold mb-4">Stay Updated</h4>
-            <p className="text-slate-300 mb-6">
-              Get the latest insights, tips, and strategies delivered to your inbox.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3">
-                Subscribe
-              </Button>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Newsletter Signup */}
+            <div className="text-center md:text-left">
+              <h4 className="text-xl font-semibold mb-4">Stay Updated</h4>
+              <p className="text-slate-300 mb-6">
+                Get the latest insights, tips, and strategies delivered to your inbox.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3">
+                  Subscribe
+                </Button>
+              </div>
             </div>
+
+            {/* Authorized Partners Section */}
+            {partnerImages.length > 0 && (
+              <div className="text-center md:text-right">
+                <h4 className="text-xl font-semibold mb-4">Authorized Partners</h4>
+                <div className="flex flex-wrap justify-center md:justify-end items-center gap-6">
+                  {partnerImages.slice(0, 4).map((partner) => (
+                    <div key={partner.id} className="flex-shrink-0">
+                      <img
+                        src={partner.imageUrl}
+                        alt={partner.name}
+                        className="h-10 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity duration-200 filter grayscale hover:grayscale-0"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

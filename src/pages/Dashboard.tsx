@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServicesTab from "@/components/dashboard/ServicesTab";
@@ -31,6 +30,7 @@ import StatsManagement from "@/components/dashboard/StatsManagement";
 import PartnerImagesTab from "@/components/dashboard/PartnerImagesTab";
 import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
 import GoogleSheetsTab from "@/components/dashboard/GoogleSheetsTab";
+import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
 import Header from "@/components/Header";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { integrationManager } from "@/utils/integrationManager";
@@ -129,6 +129,8 @@ const Dashboard = () => {
         return <BlogManagement />;
       case 'header':
         return <HeaderCustomizationTab />;
+      case 'footer':
+        return <FooterManagementTab />;
       case 'social-media':
         return <SocialMediaTab />;
       case 'stats':
@@ -259,6 +261,12 @@ const Dashboard = () => {
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'header' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
                             Header
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('footer')}
+                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'footer' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
+                          >
+                            Footer
                           </button>
                           <button 
                             onClick={() => setActiveTab('partner-images')}

@@ -47,4 +47,5 @@ export type DashboardTab =
   | 'google-analytics'
   | 'chatgpt'
   | 'custom-events'
-  | 'seo';
+  | 'seo'
+  | 'footer';

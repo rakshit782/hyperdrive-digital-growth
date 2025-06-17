@@ -61,6 +61,7 @@ const defaultReviews: Review[] = [
 const Reviews = () => {
   const [reviews, setReviews] = useState<Review[]>(defaultReviews);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     console.log("Reviews: Component mounted, initializing...");
@@ -100,14 +101,17 @@ const Reviews = () => {
     };
   }, []);
 
-  // Auto-scroll functionality with looping
+  // Auto-scroll functionality with smooth looping
   useEffect(() => {
+    if (reviews.length === 0) return;
+    
     const interval = setInterval(() => {
       setCurrentIndex((prev) => {
-        const maxIndex = Math.max(0, reviews.length - 3);
-        return prev >= maxIndex ? 0 : prev + 1;
+        const nextIndex = prev + 1;
+        // Create seamless loop by going back to 0 when reaching the end
+        return nextIndex >= reviews.length ? 0 : nextIndex;
       });
-    }, 4000); // Change slide every 4 seconds
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [reviews.length]);
@@ -124,22 +128,35 @@ const Reviews = () => {
   };
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => {
-      const maxIndex = Math.max(0, reviews.length - 3);
-      return prev >= maxIndex ? 0 : prev + 1;
-    });
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => (prev + 1) % reviews.length);
+    setTimeout(() => setIsTransitioning(false), 300);
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => {
-      const maxIndex = Math.max(0, reviews.length - 3);
-      return prev <= 0 ? maxIndex : prev - 1;
-    });
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
+
+  const getVisibleReviews = () => {
+    if (reviews.length === 0) return [];
+    
+    const visibleReviews = [];
+    for (let i = 0; i < 3; i++) {
+      const index = (currentIndex + i) % reviews.length;
+      visibleReviews.push(reviews[index]);
+    }
+    return visibleReviews;
   };
 
   if (reviews.length === 0) {
     return null;
   }
+
+  const visibleReviews = getVisibleReviews();
 
   return (
     <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -161,6 +178,7 @@ const Reviews = () => {
               variant="outline"
               size="sm"
               className="h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white hover:scale-105 transition-all duration-300"
+              disabled={isTransitioning}
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
@@ -169,50 +187,46 @@ const Reviews = () => {
               variant="outline"
               size="sm"
               className="h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white hover:scale-105 transition-all duration-300"
+              disabled={isTransitioning}
             >
               <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
 
-          {/* Scrolling Cards Container */}
-          <div className="overflow-hidden">
-            <div 
-              className="flex transition-transform duration-700 ease-in-out gap-6"
-              style={{ 
-                transform: `translateX(-${currentIndex * (100 / 3)}%)`,
-                width: `${(reviews.length * 100) / 3}%`
-              }}
-            >
-              {reviews.map((review) => (
-                <div key={review.id} className="flex-shrink-0" style={{ width: `${100 / reviews.length}%` }}>
-                  <Card className="group hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm border-white/20 hover:-translate-y-2 h-full">
-                    <CardContent className="p-8 h-full flex flex-col">
-                      <div className="flex items-center mb-6">
-                        <Quote className="w-8 h-8 text-blue-600 mb-4" />
-                      </div>
-                      
-                      <p className="text-slate-700 mb-6 leading-relaxed flex-grow">
-                        "{review.review}"
-                      </p>
-                      
-                      <div className="flex items-center mb-4">
-                        {renderStars(review.rating)}
-                      </div>
-                      
-                      <div className="mt-auto">
-                        <h4 className="font-semibold text-slate-900 text-lg">{review.name}</h4>
-                        <p className="text-blue-600 font-medium">{review.company}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))}
-            </div>
+          {/* Reviews Grid */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {visibleReviews.map((review, index) => (
+              <div 
+                key={`${review.id}-${currentIndex}-${index}`}
+                className="transform transition-all duration-500 ease-in-out"
+              >
+                <Card className="group hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm border-white/20 hover:-translate-y-2 h-full">
+                  <CardContent className="p-8 h-full flex flex-col">
+                    <div className="flex items-center mb-6">
+                      <Quote className="w-8 h-8 text-blue-600 mb-4" />
+                    </div>
+                    
+                    <p className="text-slate-700 mb-6 leading-relaxed flex-grow">
+                      "{review.review}"
+                    </p>
+                    
+                    <div className="flex items-center mb-4">
+                      {renderStars(review.rating)}
+                    </div>
+                    
+                    <div className="mt-auto">
+                      <h4 className="font-semibold text-slate-900 text-lg">{review.name}</h4>
+                      <p className="text-blue-600 font-medium">{review.company}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
           </div>
 
           {/* Dots Indicator */}
           <div className="flex justify-center mt-8 gap-2">
-            {Array.from({ length: Math.max(1, reviews.length - 2) }).map((_, index) => (
+            {reviews.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentIndex(index)}
