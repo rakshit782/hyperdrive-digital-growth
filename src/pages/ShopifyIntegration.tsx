@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Link, BarChart3, Zap, CheckCircle, ArrowRight, Code } from "lucide-react";
@@ -158,6 +159,8 @@ const ShopifyIntegration = () => {
           </Button>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };

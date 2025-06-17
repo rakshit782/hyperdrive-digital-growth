@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, Users, BarChart3, Zap, CheckCircle, ArrowRight, TrendingUp } from "lucide-react";
@@ -167,6 +168,8 @@ const AccountManagement = () => {
           </Button>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };

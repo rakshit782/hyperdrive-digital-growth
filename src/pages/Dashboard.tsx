@@ -36,8 +36,13 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { integrationManager } from "@/utils/integrationManager";
 import { chatGPTManager } from "@/utils/chatGPTManager";
 import { ServiceCard, Review, DashboardTab } from "@/types/dashboard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { SEOHead } from "@/components/SEOHead";
+import Footer from "@/components/Footer";
+import toast from "sonner";
 
 const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
@@ -176,8 +181,11 @@ const Dashboard = () => {
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-20">
+      <SEOHead 
+        title="Dashboard - Manage Your Website"
+        description="Complete dashboard to manage your website content, services, and settings"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="max-w-7xl mx-auto p-6">
           {/* Header */}
           <div className="mb-8">
