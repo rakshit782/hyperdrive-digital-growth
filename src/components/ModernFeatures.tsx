@@ -80,10 +80,14 @@ const ModernFeatures = () => {
     >
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full border border-blue-200/50 mb-6">
+            <Star className="w-4 h-4 mr-2 text-blue-600" />
+            <span className="text-sm font-medium text-blue-700">Why Choose Us</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
             Why Leading Brands Choose Us
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Cutting-edge technology meets proven strategies to deliver exceptional results for your business
           </p>
         </div>
@@ -92,7 +96,7 @@ const ModernFeatures = () => {
           {features.map((feature, index) => (
             <Card 
               key={feature.title}
-              className={`group hover:shadow-2xl transition-all duration-500 bg-white/80 backdrop-blur-sm border-white/20 ${
+              className={`group hover:shadow-2xl transition-all duration-500 bg-white/90 backdrop-blur-sm border-white/20 hover:scale-105 hover:-translate-y-2 ${
                 isVisible ? 'animate-in slide-in-from-bottom-4' : 'opacity-0'
               }`}
               style={{
@@ -125,7 +129,7 @@ const ModernFeatures = () => {
 
         {/* Trust Indicators */}
         <div className="mt-16 pt-12 border-t border-slate-200">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-60">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-70">
             <div className="text-center">
               <div className="text-3xl font-bold text-slate-700">500+</div>
               <div className="text-sm text-slate-500">Happy Clients</div>
