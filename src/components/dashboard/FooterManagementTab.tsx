@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Trash2, Plus, Edit, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
 interface FooterSettings {
@@ -19,6 +20,13 @@ interface FooterSettings {
   partnersTitle: string;
   showPartners: boolean;
   showNewsletter: boolean;
+}
+
+interface PartnerImage {
+  id: string;
+  name: string;
+  imageUrl: string;
+  isActive: boolean;
 }
 
 const FooterManagementTab = () => {
@@ -33,8 +41,17 @@ const FooterManagementTab = () => {
     showNewsletter: true,
   });
 
+  const [partnerImages, setPartnerImages] = useState<PartnerImage[]>([]);
+  const [editingPartner, setEditingPartner] = useState<PartnerImage | null>(null);
+  const [partnerFormData, setPartnerFormData] = useState({
+    name: "",
+    imageUrl: "",
+    isActive: true
+  });
+
   useEffect(() => {
     loadFooterSettings();
+    loadPartnerImages();
   }, []);
 
   const loadFooterSettings = () => {
@@ -45,6 +62,18 @@ const FooterManagementTab = () => {
         setFooterSettings(prev => ({ ...prev, ...parsed }));
       } catch (error) {
         console.error('Failed to parse footer settings:', error);
+      }
+    }
+  };
+
+  const loadPartnerImages = () => {
+    const saved = localStorage.getItem('partnerImages');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setPartnerImages(parsed);
+      } catch (error) {
+        console.error('Failed to parse partner images:', error);
       }
     }
   };
@@ -60,6 +89,16 @@ const FooterManagementTab = () => {
     toast.success("Footer settings updated successfully");
   };
 
+  const savePartnerImages = (images: PartnerImage[]) => {
+    localStorage.setItem('partnerImages', JSON.stringify(images));
+    setPartnerImages(images);
+    
+    // Dispatch event for footer component
+    window.dispatchEvent(new CustomEvent('partnerImagesUpdated', { 
+      detail: images 
+    }));
+  };
+
   const handleInputChange = (field: keyof FooterSettings, value: string | boolean) => {
     setFooterSettings(prev => ({
       ...prev,
@@ -67,16 +106,79 @@ const FooterManagementTab = () => {
     }));
   };
 
+  const handlePartnerSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!partnerFormData.name.trim() || !partnerFormData.imageUrl.trim()) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (editingPartner) {
+      // Update existing partner
+      const updatedImages = partnerImages.map(img => 
+        img.id === editingPartner.id 
+          ? { ...editingPartner, ...partnerFormData }
+          : img
+      );
+      savePartnerImages(updatedImages);
+      toast.success("Partner image updated successfully");
+    } else {
+      // Add new partner
+      const newPartner: PartnerImage = {
+        id: `partner-${Date.now()}`,
+        ...partnerFormData
+      };
+      savePartnerImages([...partnerImages, newPartner]);
+      toast.success("Partner image added successfully");
+    }
+
+    resetPartnerForm();
+  };
+
+  const resetPartnerForm = () => {
+    setPartnerFormData({
+      name: "",
+      imageUrl: "",
+      isActive: true
+    });
+    setEditingPartner(null);
+  };
+
+  const handleEditPartner = (partner: PartnerImage) => {
+    setEditingPartner(partner);
+    setPartnerFormData({
+      name: partner.name,
+      imageUrl: partner.imageUrl,
+      isActive: partner.isActive
+    });
+  };
+
+  const handleDeletePartner = (id: string) => {
+    const updatedImages = partnerImages.filter(img => img.id !== id);
+    savePartnerImages(updatedImages);
+    toast.success("Partner image deleted successfully");
+  };
+
+  const togglePartnerActive = (id: string) => {
+    const updatedImages = partnerImages.map(img => 
+      img.id === id ? { ...img, isActive: !img.isActive } : img
+    );
+    savePartnerImages(updatedImages);
+    toast.success("Partner image status updated");
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">Footer Management</h2>
-        <p className="text-gray-600">Customize your website footer content and appearance</p>
+        <p className="text-gray-600">Customize your website footer content, appearance, and partner logos</p>
       </div>
 
       <Tabs defaultValue="content" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="content">Content</TabsTrigger>
+          <TabsTrigger value="partners">Partner Logos</TabsTrigger>
           <TabsTrigger value="sections">Sections</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
         </TabsList>
@@ -178,6 +280,127 @@ const FooterManagementTab = () => {
           </Card>
         </TabsContent>
 
+        <TabsContent value="partners" className="space-y-6">
+          {/* Add/Edit Partner Form */}
+          <Card>
+            <CardHeader>
+              <CardTitle>{editingPartner ? 'Edit Partner Logo' : 'Add Partner Logo'}</CardTitle>
+              <CardDescription>
+                Add logos or images of your authorized partners
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handlePartnerSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="partnerName">Partner Name *</Label>
+                    <Input
+                      id="partnerName"
+                      value={partnerFormData.name}
+                      onChange={(e) => setPartnerFormData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Partner company name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="partnerImageUrl">Image URL *</Label>
+                    <Input
+                      id="partnerImageUrl"
+                      value={partnerFormData.imageUrl}
+                      onChange={(e) => setPartnerFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
+                      placeholder="https://example.com/logo.png"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="partnerIsActive"
+                    checked={partnerFormData.isActive}
+                    onCheckedChange={(checked) => setPartnerFormData(prev => ({ ...prev, isActive: checked }))}
+                  />
+                  <Label htmlFor="partnerIsActive">Display on website</Label>
+                </div>
+
+                <div className="flex space-x-2">
+                  <Button type="submit">
+                    {editingPartner ? 'Update Partner' : 'Add Partner'}
+                  </Button>
+                  {editingPartner && (
+                    <Button type="button" variant="outline" onClick={resetPartnerForm}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Partner Images List */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Current Partner Logos ({partnerImages.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {partnerImages.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No partner logos added yet</p>
+              ) : (
+                <div className="grid gap-4">
+                  {partnerImages.map((partner) => (
+                    <div key={partner.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <img 
+                          src={partner.imageUrl} 
+                          alt={partner.name}
+                          className="h-12 w-auto object-contain bg-gray-50 rounded p-1"
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder.svg';
+                          }}
+                        />
+                        <div>
+                          <h3 className="font-medium">{partner.name}</h3>
+                          <p className="text-sm text-gray-500 truncate max-w-xs">
+                            {partner.imageUrl}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => togglePartnerActive(partner.id)}
+                        >
+                          {partner.isActive ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditPartner(partner)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeletePartner(partner.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="sections" className="space-y-6">
           <Card>
             <CardHeader>
@@ -268,15 +491,27 @@ const FooterManagementTab = () => {
                   <div className="mt-8 pt-8 border-t border-slate-700">
                     <h4 className="text-center text-lg font-semibold mb-4">{footerSettings.partnersTitle}</h4>
                     <div className="flex justify-center items-center gap-6">
-                      <div className="w-16 h-8 bg-slate-700 rounded flex items-center justify-center text-xs">
-                        Logo 1
-                      </div>
-                      <div className="w-16 h-8 bg-slate-700 rounded flex items-center justify-center text-xs">
-                        Logo 2
-                      </div>
-                      <div className="w-16 h-8 bg-slate-700 rounded flex items-center justify-center text-xs">
-                        Logo 3
-                      </div>
+                      {partnerImages.filter(p => p.isActive).slice(0, 4).map((partner) => (
+                        <img
+                          key={partner.id}
+                          src={partner.imageUrl}
+                          alt={partner.name}
+                          className="h-8 w-auto object-contain opacity-70"
+                        />
+                      ))}
+                      {partnerImages.filter(p => p.isActive).length === 0 && (
+                        <>
+                          <div className="w-16 h-8 bg-slate-700 rounded flex items-center justify-center text-xs">
+                            Logo 1
+                          </div>
+                          <div className="w-16 h-8 bg-slate-700 rounded flex items-center justify-center text-xs">
+                            Logo 2
+                          </div>
+                          <div className="w-16 h-8 bg-slate-700 rounded flex items-center justify-center text-xs">
+                            Logo 3
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}

@@ -29,9 +29,9 @@ export type DashboardTab =
   | 'pricing'
   | 'blog'
   | 'header'
+  | 'footer'
   | 'social-media'
   | 'stats'
-  | 'partner-images'
   | 'policy-pages'
   | 'google-sheets'
   | 'amplify'
@@ -47,5 +47,4 @@ export type DashboardTab =
   | 'google-analytics'
   | 'chatgpt'
   | 'custom-events'
-  | 'seo'
-  | 'footer';
+  | 'seo';

@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServicesTab from "@/components/dashboard/ServicesTab";
@@ -28,7 +29,6 @@ import IntegrationTestTab from "@/components/dashboard/IntegrationTestTab";
 import SocialMediaTab from "@/components/dashboard/SocialMediaTab";
 import ChatGPTTab from "@/components/dashboard/ChatGPTTab";
 import StatsManagement from "@/components/dashboard/StatsManagement";
-import PartnerImagesTab from "@/components/dashboard/PartnerImagesTab";
 import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
 import GoogleSheetsTab from "@/components/dashboard/GoogleSheetsTab";
 import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
@@ -141,8 +141,6 @@ const Dashboard = () => {
         return <SocialMediaTab />;
       case 'stats':
         return <StatsManagement />;
-      case 'partner-images':
-        return <PartnerImagesTab />;
       case 'policy-pages':
         return <PolicyPagesTab />;
       case 'google-sheets':
@@ -275,13 +273,7 @@ const Dashboard = () => {
                             onClick={() => setActiveTab('footer')}
                             className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'footer' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
                           >
-                            Footer
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('partner-images')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'partner-images' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Partner Images
+                            Footer & Partners
                           </button>
                           <button 
                             onClick={() => setActiveTab('policy-pages')}
@@ -430,6 +422,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <Footer />
 
       {/* Modals */}
       {editingService && (
