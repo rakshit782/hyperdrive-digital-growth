@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServicesTab from "@/components/dashboard/ServicesTab";
@@ -44,6 +42,7 @@ import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import toast from "sonner";
+import ModernFeaturesTab from "@/components/dashboard/ModernFeaturesTab";
 
 const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
@@ -115,7 +114,7 @@ const Dashboard = () => {
     setEditingReview(newReview);
   };
 
-  const renderActiveTab = () => {
+  const renderTabContent = () => {
     switch (activeTab) {
       case 'services':
         return <ServicesTab services={services} onEdit={setEditingService} onDelete={deleteService} onAdd={addNewService} />;
@@ -169,8 +168,8 @@ const Dashboard = () => {
         return <GoogleAnalyticsTab />;
       case 'chatgpt':
         return <ChatGPTTab />;
-      case 'custom-events':
-        return <CustomEventsTab />;
+      case 'modern-features':
+        return <ModernFeaturesTab />;
       case 'seo':
         return <WebsiteSEOTab />;
       default:
@@ -181,243 +180,186 @@ const Dashboard = () => {
   return (
     <>
       <SEOHead 
-        title="Dashboard - Manage Your Website"
-        description="Complete dashboard to manage your website content, services, and settings"
+        title="Dashboard - Manage Your Website Content"
+        description="Admin dashboard to manage website content, services, reviews, and settings"
       />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <div className="max-w-7xl mx-auto p-6">
-          {/* Header */}
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-                  Dashboard
-                </h1>
-                <p className="text-slate-600 mt-2">Manage your website content and integrations</p>
-              </div>
-              <Badge variant="outline" className="px-4 py-2 bg-white/50 backdrop-blur-sm">
-                Live Preview Mode
-              </Badge>
-            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              Dashboard
+            </h1>
+            <p className="text-slate-600">Manage your website content and settings</p>
           </div>
-          
-          {/* Dynamic Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Left Sidebar - Accordion Navigation */}
-            <div className="lg:col-span-1">
-              <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
+
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="lg:w-64 flex-shrink-0">
+              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl sticky top-6">
                 <CardHeader>
-                  <CardTitle className="text-lg">Dashboard Sections</CardTitle>
+                  <CardTitle className="text-lg font-bold text-slate-900">Navigation</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <Accordion type="multiple" className="w-full">
-                    <AccordionItem value="content">
-                      <AccordionTrigger className="text-sm font-medium">Content Management</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
-                          <button 
-                            onClick={() => setActiveTab('services')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'services' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Services ({services.length})
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('reviews')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'reviews' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Reviews ({reviews.length})
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('stats')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'stats' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Statistics
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('website')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'website' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Website
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('logo')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'logo' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Logo
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('contact')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'contact' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Contact
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('homepage')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'homepage' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Homepage
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('social-media')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'social-media' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Social Media
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('header')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'header' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Header
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('footer')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'footer' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Footer & Partners
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('policy-pages')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'policy-pages' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Policy Pages
-                          </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
+                <CardContent className="p-0">
+                  <nav className="space-y-1">
+                    {/* Content Management */}
+                    <div className="px-4 py-2">
+                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Content</h3>
+                      <div className="space-y-1">
+                        <button
+                          onClick={() => setActiveTab('services')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                            activeTab === 'services' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          Services
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('reviews')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                            activeTab === 'reviews' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          Reviews
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('modern-features')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                            activeTab === 'modern-features' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          Modern Features
+                        </button>
+                      </div>
+                    </div>
 
-                    <AccordionItem value="integrations">
-                      <AccordionTrigger className="text-sm font-medium">Integrations</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
-                          <button 
-                            onClick={() => setActiveTab('integration-status')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'integration-status' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Status Overview
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('integration-test')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'integration-test' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Test All Integrations
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('google-sheets')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'google-sheets' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Google Sheets
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('facebook-pixel')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'facebook-pixel' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Facebook Pixel
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('google-analytics')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'google-analytics' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Google Analytics
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('chatgpt')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'chatgpt' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            ChatGPT AI
-                          </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
+                    {/* Integrations */}
+                    <div className="px-4 py-2">
+                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Integrations</h3>
+                      <div className="space-y-1">
+                        <button 
+                          onClick={() => setActiveTab('integration-status')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-status' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Status Overview
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('integration-test')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-test' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Test All Integrations
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('google-sheets')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-sheets' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Google Sheets
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('facebook-pixel')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'facebook-pixel' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Facebook Pixel
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('google-analytics')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-analytics' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Google Analytics
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('chatgpt')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'chatgpt' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          ChatGPT AI
+                        </button>
+                      </div>
+                    </div>
 
-                    <AccordionItem value="aws">
-                      <AccordionTrigger className="text-sm font-medium">AWS Services</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
-                          <button 
-                            onClick={() => setActiveTab('amplify')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'amplify' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Amplify
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('cognito')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'cognito' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Cognito
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('dynamodb')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'dynamodb' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            DynamoDB
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('s3')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 's3' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            S3
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('ses')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'ses' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            SES
-                          </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
+                    {/* AWS Services */}
+                    <div className="px-4 py-2">
+                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">AWS Services</h3>
+                      <div className="space-y-1">
+                        <button 
+                          onClick={() => setActiveTab('amplify')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'amplify' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Amplify
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('cognito')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cognito' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Cognito
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('dynamodb')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'dynamodb' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          DynamoDB
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('s3')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 's3' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          S3
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('ses')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'ses' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          SES
+                        </button>
+                      </div>
+                    </div>
 
-                    <AccordionItem value="other">
-                      <AccordionTrigger className="text-sm font-medium">Other Tools</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
-                          <button 
-                            onClick={() => setActiveTab('cloudflare')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'cloudflare' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Cloudflare
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('user-management')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'user-management' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            User Management
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('custom-events')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'custom-events' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Custom Events
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('seo')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'seo' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            SEO
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('pricing')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'pricing' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Pricing
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('blog')}
-                            className={`w-full text-left p-2 rounded text-sm transition-colors ${activeTab === 'blog' ? 'bg-blue-100 text-blue-900' : 'hover:bg-slate-100'}`}
-                          >
-                            Blog
-                          </button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
+                    {/* Other Tools */}
+                    <div className="px-4 py-2">
+                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Other Tools</h3>
+                      <div className="space-y-1">
+                        <button 
+                          onClick={() => setActiveTab('cloudflare')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cloudflare' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Cloudflare
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('user-management')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'user-management' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          User Management
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('custom-events')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'custom-events' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Custom Events
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('seo')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'seo' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          SEO
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('pricing')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'pricing' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Pricing
+                        </button>
+                        <button 
+                          onClick={() => setActiveTab('blog')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'blog' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                        >
+                          Blog
+                        </button>
+                      </div>
+                    </div>
+                  </nav>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Main Content Area */}
-            <div className="lg:col-span-3">
-              {renderActiveTab()}
+            <div className="flex-1">
+              {renderTabContent()}
             </div>
           </div>
         </div>

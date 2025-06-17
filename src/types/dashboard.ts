@@ -1,4 +1,3 @@
-
 export interface ServiceCard {
   id: string;
   icon: string;
@@ -26,6 +25,7 @@ export type DashboardTab =
   | 'logo'
   | 'contact'
   | 'homepage'
+  | 'modern-features'
   | 'pricing'
   | 'blog'
   | 'header'
