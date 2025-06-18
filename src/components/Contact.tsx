@@ -1,75 +1,144 @@
 
-import { CheckCircle, TrendingUp, Users, Award } from "lucide-react";
+import { CheckCircle, TrendingUp, Users, Award, Star, ArrowRight } from "lucide-react";
 
 const Contact = () => {
   const benefits = [
     {
       icon: TrendingUp,
       title: "Proven ROI Growth",
-      description: "Average 300% increase in ROAS within 90 days"
+      description: "Average 300% increase in ROAS within 90 days",
+      metric: "300%"
     },
     {
       icon: Users,
       title: "Expert Team",
-      description: "15+ years combined experience in digital advertising"
+      description: "15+ years combined experience in digital advertising",
+      metric: "15+"
     },
     {
       icon: Award,
       title: "Certified Partners",
-      description: "Official partners with Amazon, Meta, and Walmart"
+      description: "Official partners with Amazon, Meta, and Walmart",
+      metric: "3"
     },
     {
       icon: CheckCircle,
       title: "Guaranteed Results",
-      description: "30-day money-back guarantee on all services"
+      description: "30-day money-back guarantee on all services",
+      metric: "30d"
     }
   ];
 
   return (
-    <section id="contact" className="py-16 bg-gradient-to-br from-blue-50 via-cyan-50 to-indigo-100 relative overflow-hidden">
-      {/* Background decoration elements */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-blue-200/30 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-200/20 rounded-full blur-3xl"></div>
+    <section id="contact" className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+      {/* Enhanced background decoration elements */}
+      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute top-1/2 left-0 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl"></div>
       
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            Why Choose Our Agency
+        {/* Modern header section */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-6">
+            <Star className="w-4 h-4 mr-2 text-yellow-400 fill-yellow-400" />
+            <span className="text-sm font-medium text-white/90">Trusted by 500+ Brands</span>
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            Why Leading Brands
+            <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Choose Us
+            </span>
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Join hundreds of successful brands that trust us to scale their advertising performance.
+          <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+            Join hundreds of successful companies that trust us to scale their advertising performance 
+            and drive exceptional growth.
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Modern benefits grid */}
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {benefits.map((benefit, index) => {
               const IconComponent = benefit.icon;
               return (
-                <div key={index} className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md hover:bg-white/90 transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="w-6 h-6 text-blue-600" />
+                <div 
+                  key={index} 
+                  className="group relative"
+                  style={{
+                    animationDelay: `${index * 100}ms`
+                  }}
+                >
+                  {/* Gradient border effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/50 via-blue-500/50 to-purple-500/50 rounded-2xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <div className="relative p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
+                    {/* Icon and metric */}
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="w-14 h-14 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <IconComponent className="w-7 h-7 text-white" />
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                          {benefit.metric}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">
+                      {benefit.title}
+                    </h3>
+                    <p className="text-white/70 leading-relaxed">
+                      {benefit.description}
+                    </p>
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">{benefit.title}</h3>
-                  <p className="text-slate-600">{benefit.description}</p>
                 </div>
               );
             })}
           </div>
 
-          <div className="mt-12 text-center">
-            <div className="bg-gradient-to-r from-blue-100/70 to-cyan-100/70 backdrop-blur-sm rounded-xl p-8 max-w-3xl mx-auto border border-white/30">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Ready to Get Started?</h3>
-              <p className="text-slate-600 mb-6">
-                Get your free advertising audit and discover how we can boost your revenue.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl">
-                  Get Free Audit
-                </button>
-                <button className="border-2 border-slate-300 bg-white/60 backdrop-blur-sm text-slate-700 px-8 py-3 rounded-lg font-semibold hover:border-slate-400 hover:bg-white/80 transition-all">
-                  View Case Studies
-                </button>
+          {/* Modern CTA section */}
+          <div className="text-center">
+            <div className="relative max-w-4xl mx-auto">
+              {/* Glassmorphism card */}
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-10 md:p-12 border border-white/20 shadow-2xl">
+                <div className="mb-8">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                    Ready to Scale Your Business?
+                  </h3>
+                  <p className="text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
+                    Get your free advertising audit and discover how we can boost your revenue 
+                    with our proven strategies.
+                  </p>
+                </div>
+
+                {/* Enhanced buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <button className="group relative bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-10 py-4 rounded-xl font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center">
+                    Get Free Audit
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                  <button className="group border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white px-10 py-4 rounded-xl font-semibold hover:border-white/50 hover:bg-white/20 transition-all duration-300 flex items-center">
+                    View Case Studies
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+
+                {/* Trust indicators */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mt-8 pt-8 border-t border-white/20">
+                  <div className="flex items-center text-white/70">
+                    <CheckCircle className="w-5 h-5 mr-2 text-green-400" />
+                    <span>30-Day Money Back Guarantee</span>
+                  </div>
+                  <div className="flex items-center text-white/70">
+                    <div className="flex mr-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <span>4.9/5 Client Satisfaction</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
