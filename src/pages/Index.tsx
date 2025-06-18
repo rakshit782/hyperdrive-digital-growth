@@ -5,7 +5,6 @@ import Services from "@/components/Services";
 import Reviews from "@/components/Reviews";
 import ModernFeatures from "@/components/ModernFeatures";
 import FAQ from "@/components/FAQ";
-import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 
@@ -24,7 +23,6 @@ const Index = () => {
         <ModernFeatures />
         <Reviews />
         <FAQ />
-        <Contact />
         <Footer />
       </div>
     </>
