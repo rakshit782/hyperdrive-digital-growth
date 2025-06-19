@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Play, Sparkles, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface CTAButtons {
@@ -83,83 +83,77 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white overflow-hidden">
-      {/* Enhanced Animated Background Elements */}
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden">
+      {/* Modern Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-48 h-48 bg-cyan-500/20 rounded-full blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
-        <div className="absolute top-1/4 right-1/4 w-24 h-24 bg-pink-500/15 rounded-full blur-lg animate-pulse delay-2000"></div>
-        <div className="absolute bottom-1/3 left-1/4 w-40 h-40 bg-indigo-500/15 rounded-full blur-xl animate-pulse delay-1500"></div>
+        <div className="absolute inset-0 bg-mesh opacity-40"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/8 w-64 h-64 bg-gradient-to-r from-cyan-400/20 to-blue-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
       
-      {/* Enhanced Grid Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="w-full h-full" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}></div>
-      </div>
-      
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container-modern relative z-10">
         <div className="max-w-6xl mx-auto text-center">
-          {/* Enhanced Typography with smaller fonts */}
-          <div className="mb-12 space-y-6">
-            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 backdrop-blur-sm rounded-full border border-blue-400/30 mb-8">
-              <Sparkles className="w-5 h-5 mr-3 text-cyan-400" />
-              <span className="text-base font-medium text-cyan-100">Trusted by 500+ Businesses</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-none">
-              <span className="block mb-4">Ready to Scale</span>
-              <span className="block bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
-                Your Business?
+          {/* Trust Badge */}
+          <div className="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200/50 mb-8 animate-fade-in shadow-modern">
+            <Sparkles className="w-5 h-5 mr-3 text-blue-600" />
+            <span className="text-sm font-medium text-gray-700">Trusted by 500+ Leading Brands</span>
+            <TrendingUp className="w-5 h-5 ml-3 text-green-600" />
+          </div>
+          
+          {/* Main Heading */}
+          <div className="mb-12 space-y-6 animate-slide-up">
+            <h1 className="heading-modern text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-gray-900 leading-[0.9] max-w-5xl mx-auto">
+              <span className="block">Scale Your Business</span>
+              <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                With Precision
               </span>
             </h1>
             
-            <p className="text-lg md:text-xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed mt-8">
-              Join hundreds of successful brands that have scaled their revenue with our data-driven advertising strategies across Amazon, Walmart, and Meta platforms.
+            <p className="text-modern text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto font-light">
+              Transform your advertising performance with our data-driven strategies across 
+              <span className="font-medium text-gray-900"> Amazon, Walmart, and Meta platforms</span>
             </p>
           </div>
           
-          {/* Enhanced CTA Buttons with smaller sizes */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 animate-scale-in">
             <Button 
               size="lg" 
-              className="group bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:from-blue-600 hover:via-blue-700 hover:to-cyan-600 text-white px-10 py-6 text-xl font-bold rounded-3xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-500 hover:scale-110 hover:-translate-y-3 border border-blue-400/30"
+              className="group btn-primary text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300"
               onClick={handlePrimaryButtonClick}
             >
               {ctaButtons.primaryText}
-              <ArrowRight className="ml-4 w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
+              <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
             
             <Button 
               variant="outline" 
               size="lg" 
-              className="group border-2 border-cyan-400/50 bg-white/10 backdrop-blur-sm text-cyan-100 hover:bg-cyan-400/20 hover:border-cyan-400 px-10 py-6 text-xl font-bold rounded-3xl transition-all duration-500 hover:scale-110 hover:-translate-y-3"
+              className="group btn-secondary text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300"
               onClick={handleSecondaryButtonClick}
             >
-              <Play className="mr-4 w-6 h-6 group-hover:scale-125 transition-transform duration-300" />
+              <Play className="mr-3 w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
               {ctaButtons.secondaryText}
             </Button>
           </div>
           
-          {/* Smaller and More Symmetrical Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto animate-fade-in" style={{ animationDelay: '0.3s' }}>
             {statsBlocks.map((stat, index) => (
-              <div key={stat.id} className="group w-full">
-                <div 
-                  className="relative bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-white/20 hover:border-white/40 transition-all duration-500 hover:scale-105 hover:-translate-y-2 h-full flex flex-col justify-center items-center text-center min-h-[120px] sm:min-h-[140px] hover:bg-white/15"
-                  style={{
-                    animationDelay: `${index * 200}ms`
-                  }}
-                >
-                  {/* Glow effect on hover */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500`} />
+              <div 
+                key={stat.id} 
+                className="group relative"
+                style={{ animationDelay: `${index * 100 + 400}ms` }}
+              >
+                <div className="card-modern p-8 text-center min-h-[140px] flex flex-col justify-center relative overflow-hidden">
+                  {/* Background gradient on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
                   
-                  <div className={`text-2xl sm:text-3xl lg:text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`text-3xl lg:text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300`}>
                     {stat.number}
                   </div>
-                  <div className="text-blue-200/90 text-xs sm:text-sm lg:text-base font-semibold leading-tight px-1">
+                  <div className="text-sm lg:text-base text-gray-600 font-medium leading-tight">
                     {stat.label}
                   </div>
                 </div>
@@ -169,12 +163,12 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Floating particles effect */}
+      {/* Floating Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse"
+            className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20 animate-pulse-modern"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
