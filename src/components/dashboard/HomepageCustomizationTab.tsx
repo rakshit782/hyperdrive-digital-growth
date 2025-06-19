@@ -5,652 +5,471 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Slider } from "@/components/ui/slider";
-import { 
-  Save, 
-  Palette, 
-  Type, 
-  Layout, 
-  Sparkles, 
-  Monitor,
-  Smartphone,
-  Tablet,
-  Eye,
-  RefreshCw
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Eye, Palette, Type, Layout, Star, ShoppingCart, Users } from "lucide-react";
+import { toast } from "sonner";
 
-interface HomepageSettings {
+interface HomepageConfig {
   theme: {
     primaryColor: string;
     secondaryColor: string;
     accentColor: string;
     backgroundColor: string;
-    textColor: string;
+    ctaColor: string;
   };
   typography: {
     headingFont: string;
     bodyFont: string;
-    fontSize: number;
-    lineHeight: number;
+    fontSize: string;
   };
   layout: {
-    containerMaxWidth: string;
-    sectionSpacing: number;
-    borderRadius: number;
-    shadowIntensity: number;
+    maxWidth: string;
+    spacing: string;
+    borderRadius: string;
   };
   hero: {
-    backgroundType: 'gradient' | 'solid' | 'image';
-    backgroundValue: string;
-    showParticles: boolean;
-    animationSpeed: number;
+    title: string;
+    subtitle: string;
+    primaryCta: string;
+    secondaryCta: string;
+    showStats: boolean;
   };
   sections: {
-    showHero: boolean;
-    showServices: boolean;
-    showFeatures: boolean;
-    showReviews: boolean;
-    showFAQ: boolean;
+    services: boolean;
+    reviews: boolean;
+    features: boolean;
+    faq: boolean;
+    cta: boolean;
   };
 }
 
-const HomepageCustomizationTab = () => {
-  const [settings, setSettings] = useState<HomepageSettings>({
-    theme: {
-      primaryColor: '#3b82f6',
-      secondaryColor: '#8b5cf6',
-      accentColor: '#06b6d4',
-      backgroundColor: '#ffffff',
-      textColor: '#1f2937'
-    },
-    typography: {
-      headingFont: 'Space Grotesk',
-      bodyFont: 'Inter',
-      fontSize: 16,
-      lineHeight: 1.6
-    },
-    layout: {
-      containerMaxWidth: '1280px',
-      sectionSpacing: 80,
-      borderRadius: 12,
-      shadowIntensity: 20
-    },
-    hero: {
-      backgroundType: 'gradient',
-      backgroundValue: 'from-gray-50 via-white to-gray-100',
-      showParticles: true,
-      animationSpeed: 6
-    },
-    sections: {
-      showHero: true,
-      showServices: true,
-      showFeatures: true,
-      showReviews: true,
-      showFAQ: true
-    }
-  });
+const defaultConfig: HomepageConfig = {
+  theme: {
+    primaryColor: "#2563EB",
+    secondaryColor: "#1E1E2F", 
+    accentColor: "#00E5FF",
+    backgroundColor: "#F9FAFB",
+    ctaColor: "#A3E635"
+  },
+  typography: {
+    headingFont: "Space Grotesk",
+    bodyFont: "Inter",
+    fontSize: "base"
+  },
+  layout: {
+    maxWidth: "7xl",
+    spacing: "normal",
+    borderRadius: "lg"
+  },
+  hero: {
+    title: "Scale Your Business With Precision",
+    subtitle: "Transform your advertising performance with our data-driven strategies",
+    primaryCta: "Get Free Strategy Call",
+    secondaryCta: "Watch Case Study",
+    showStats: true
+  },
+  sections: {
+    services: true,
+    reviews: true,
+    features: true,
+    faq: true,
+    cta: true
+  }
+};
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const { toast } = useToast();
+const HomepageCustomizationTab = () => {
+  const [config, setConfig] = useState<HomepageConfig>(defaultConfig);
+  const [activePreview, setActivePreview] = useState<'hero' | 'services' | 'reviews' | 'features'>('hero');
 
   useEffect(() => {
-    const savedSettings = localStorage.getItem('homepageSettings');
-    if (savedSettings) {
-      try {
-        const parsedSettings = JSON.parse(savedSettings);
-        setSettings({ ...settings, ...parsedSettings });
-      } catch (error) {
-        console.error('Failed to load homepage settings:', error);
-      }
-    }
+    loadConfig();
   }, []);
 
-  const saveSettings = () => {
-    setIsLoading(true);
-    
-    try {
-      localStorage.setItem('homepageSettings', JSON.stringify(settings));
-      
-      // Apply settings to document
-      applySettingsToDocument();
-      
-      // Dispatch event for components to listen
-      window.dispatchEvent(new CustomEvent('homepageSettingsUpdated', { detail: settings }));
-      
-      toast({
-        title: "Homepage Settings Saved",
-        description: "Your customizations have been applied successfully.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save homepage settings.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+  const loadConfig = () => {
+    const saved = localStorage.getItem('homepageConfig');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setConfig({ ...defaultConfig, ...parsed });
+      } catch (error) {
+        console.error('Failed to parse homepage config:', error);
+      }
     }
   };
 
-  const applySettingsToDocument = () => {
-    const root = document.documentElement;
+  const saveConfig = () => {
+    localStorage.setItem('homepageConfig', JSON.stringify(config));
     
-    // Apply CSS custom properties
-    root.style.setProperty('--primary-color', settings.theme.primaryColor);
-    root.style.setProperty('--secondary-color', settings.theme.secondaryColor);
-    root.style.setProperty('--accent-color', settings.theme.accentColor);
-    root.style.setProperty('--background-color', settings.theme.backgroundColor);
-    root.style.setProperty('--text-color', settings.theme.textColor);
-    root.style.setProperty('--font-size', `${settings.typography.fontSize}px`);
-    root.style.setProperty('--line-height', settings.typography.lineHeight.toString());
-    root.style.setProperty('--border-radius', `${settings.layout.borderRadius}px`);
-    root.style.setProperty('--section-spacing', `${settings.layout.sectionSpacing}px`);
+    // Dispatch events for different components
+    window.dispatchEvent(new CustomEvent('homepageConfigUpdated', { detail: config }));
+    
+    toast.success("Homepage configuration saved successfully!");
   };
 
-  const resetToDefaults = () => {
-    setSettings({
-      theme: {
-        primaryColor: '#3b82f6',
-        secondaryColor: '#8b5cf6',
-        accentColor: '#06b6d4',
-        backgroundColor: '#ffffff',
-        textColor: '#1f2937'
-      },
-      typography: {
-        headingFont: 'Space Grotesk',
-        bodyFont: 'Inter',
-        fontSize: 16,
-        lineHeight: 1.6
-      },
-      layout: {
-        containerMaxWidth: '1280px',
-        sectionSpacing: 80,
-        borderRadius: 12,
-        shadowIntensity: 20
-      },
-      hero: {
-        backgroundType: 'gradient',
-        backgroundValue: 'from-gray-50 via-white to-gray-100',
-        showParticles: true,
-        animationSpeed: 6
-      },
-      sections: {
-        showHero: true,
-        showServices: true,
-        showFeatures: true,
-        showReviews: true,
-        showFAQ: true
-      }
-    });
-    
-    toast({
-      title: "Settings Reset",
-      description: "All settings have been reset to defaults.",
-    });
+  const updateTheme = (key: keyof typeof config.theme, value: string) => {
+    setConfig(prev => ({
+      ...prev,
+      theme: { ...prev.theme, [key]: value }
+    }));
+  };
+
+  const updateHero = (key: keyof typeof config.hero, value: string | boolean) => {
+    setConfig(prev => ({
+      ...prev,
+      hero: { ...prev.hero, [key]: value }
+    }));
+  };
+
+  const updateSection = (key: keyof typeof config.sections, value: boolean) => {
+    setConfig(prev => ({
+      ...prev,
+      sections: { ...prev.sections, [key]: value }
+    }));
+  };
+
+  const renderPreview = () => {
+    switch (activePreview) {
+      case 'hero':
+        return (
+          <div className="bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl space-y-6">
+            <div className="text-center space-y-4">
+              <h1 className="text-3xl font-bold leading-tight" style={{ color: config.theme.primaryColor, fontFamily: config.typography.headingFont }}>
+                {config.hero.title}
+              </h1>
+              <p className="text-gray-600" style={{ fontFamily: config.typography.bodyFont }}>
+                {config.hero.subtitle}
+              </p>
+              <div className="flex gap-3 justify-center">
+                <button 
+                  className="px-6 py-3 rounded-lg text-white font-semibold"
+                  style={{ backgroundColor: config.theme.ctaColor, color: config.theme.secondaryColor }}
+                >
+                  {config.hero.primaryCta}
+                </button>
+                <button 
+                  className="px-6 py-3 rounded-lg border font-semibold"
+                  style={{ 
+                    borderColor: config.theme.primaryColor, 
+                    color: config.theme.primaryColor,
+                    fontFamily: config.typography.bodyFont 
+                  }}
+                >
+                  {config.hero.secondaryCta}
+                </button>
+              </div>
+              {config.hero.showStats && (
+                <div className="grid grid-cols-2 gap-4 mt-8">
+                  <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                    <div className="text-2xl font-bold" style={{ color: config.theme.primaryColor }}>500+</div>
+                    <div className="text-sm text-gray-600">Campaigns</div>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                    <div className="text-2xl font-bold" style={{ color: config.theme.accentColor }}>$50M+</div>
+                    <div className="text-sm text-gray-600">Ad Spend</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      case 'services':
+        return (
+          <div className="space-y-4 p-6">
+            <h3 className="text-xl font-bold text-center" style={{ color: config.theme.primaryColor }}>Our Services</h3>
+            <div className="grid grid-cols-1 gap-4">
+              {[
+                { title: "Amazon Advertising", icon: "🛒" },
+                { title: "Walmart Marketing", icon: "🏪" },
+                { title: "Meta Advertising", icon: "📱" }
+              ].map((service, index) => (
+                <div key={index} className="p-4 bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-2xl">{service.icon}</span>
+                    <div>
+                      <h4 className="font-semibold" style={{ color: config.theme.secondaryColor }}>{service.title}</h4>
+                      <p className="text-sm text-gray-600">Expert management and optimization</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'reviews':
+        return (
+          <div className="space-y-4 p-6">
+            <h3 className="text-xl font-bold text-center" style={{ color: config.theme.primaryColor }}>Client Reviews</h3>
+            <div className="space-y-4">
+              {[
+                { name: "John Smith", company: "Tech Corp", rating: 5 },
+                { name: "Sarah Johnson", company: "E-commerce Plus", rating: 5 }
+              ].map((review, index) => (
+                <div key={index} className="p-4 bg-white rounded-lg shadow-sm">
+                  <div className="flex items-center space-x-1 mb-2">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-current" style={{ color: config.theme.ctaColor }} />
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">"Amazing results and professional service!"</p>
+                  <div className="text-sm">
+                    <span className="font-semibold" style={{ color: config.theme.secondaryColor }}>{review.name}</span>
+                    <span className="text-gray-500"> - {review.company}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'features':
+        return (
+          <div className="space-y-4 p-6">
+            <h3 className="text-xl font-bold text-center" style={{ color: config.theme.primaryColor }}>Key Features</h3>
+            <div className="grid grid-cols-1 gap-4">
+              {[
+                { title: "24/7 Monitoring", icon: "👁️" },
+                { title: "Data Analytics", icon: "📊" },
+                { title: "Campaign Optimization", icon: "⚡" }
+              ].map((feature, index) => (
+                <div key={index} className="p-4 bg-white rounded-lg shadow-sm border">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-2xl">{feature.icon}</span>
+                    <div>
+                      <h4 className="font-semibold" style={{ color: config.theme.secondaryColor }}>{feature.title}</h4>
+                      <p className="text-sm text-gray-600">Advanced feature description</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-modern">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="p-2 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg mr-3">
-                <Palette className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-xl font-bold text-slate-900">Homepage Customization</CardTitle>
-                <CardDescription>Customize every aspect of your homepage design and layout</CardDescription>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={resetToDefaults}>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Reset
-              </Button>
-              <Badge variant="default">Live Preview</Badge>
-            </div>
-          </div>
-        </CardHeader>
-        
-        <CardContent>
-          <Tabs defaultValue="theme" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold text-charcoal mb-2">Homepage Customization</h2>
+          <p className="text-gray-600">Customize your homepage appearance and content</p>
+        </div>
+        <Button onClick={saveConfig} className="btn-primary">
+          Save Changes
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        {/* Settings Panel */}
+        <div className="xl:col-span-2 space-y-6">
+          <Tabs defaultValue="theme" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="theme">Theme</TabsTrigger>
-              <TabsTrigger value="typography">Typography</TabsTrigger>
-              <TabsTrigger value="layout">Layout</TabsTrigger>
               <TabsTrigger value="hero">Hero Section</TabsTrigger>
               <TabsTrigger value="sections">Sections</TabsTrigger>
+              <TabsTrigger value="layout">Layout</TabsTrigger>
             </TabsList>
 
-            {/* Theme Tab */}
-            <TabsContent value="theme" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <Label className="text-base font-semibold flex items-center">
-                    <Palette className="w-4 h-4 mr-2" />
-                    Color Palette
-                  </Label>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <Label htmlFor="primaryColor">Primary Color</Label>
-                      <div className="flex items-center gap-3 mt-1">
+            <TabsContent value="theme">
+              <Card className="card-modern">
+                <CardHeader>
+                  <div className="flex items-center">
+                    <Palette className="w-5 h-5 mr-2 text-electric" />
+                    <CardTitle>Color Theme</CardTitle>
+                  </div>
+                  <CardDescription>Customize your brand colors</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {Object.entries(config.theme).map(([key, value]) => (
+                    <div key={key} className="space-y-2">
+                      <Label className="capitalize">{key.replace(/([A-Z])/g, ' $1')}</Label>
+                      <div className="flex items-center space-x-3">
                         <Input
-                          id="primaryColor"
                           type="color"
-                          value={settings.theme.primaryColor}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            theme: { ...settings.theme, primaryColor: e.target.value }
-                          })}
-                          className="w-16 h-10 p-1 rounded-lg"
+                          value={value}
+                          onChange={(e) => updateTheme(key as keyof typeof config.theme, e.target.value)}
+                          className="w-16 h-10 p-1 rounded border"
                         />
                         <Input
-                          value={settings.theme.primaryColor}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            theme: { ...settings.theme, primaryColor: e.target.value }
-                          })}
-                          className="flex-1"
+                          value={value}
+                          onChange={(e) => updateTheme(key as keyof typeof config.theme, e.target.value)}
+                          className="flex-1 input-modern"
                         />
                       </div>
                     </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                    <div>
-                      <Label htmlFor="secondaryColor">Secondary Color</Label>
-                      <div className="flex items-center gap-3 mt-1">
-                        <Input
-                          id="secondaryColor"
-                          type="color"
-                          value={settings.theme.secondaryColor}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            theme: { ...settings.theme, secondaryColor: e.target.value }
-                          })}
-                          className="w-16 h-10 p-1 rounded-lg"
-                        />
-                        <Input
-                          value={settings.theme.secondaryColor}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            theme: { ...settings.theme, secondaryColor: e.target.value }
-                          })}
-                          className="flex-1"
-                        />
+            <TabsContent value="hero">
+              <Card className="card-modern">
+                <CardHeader>
+                  <div className="flex items-center">
+                    <Type className="w-5 h-5 mr-2 text-electric" />
+                    <CardTitle>Hero Section</CardTitle>
+                  </div>
+                  <CardDescription>Configure your hero section content</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Main Title</Label>
+                    <Input
+                      value={config.hero.title}
+                      onChange={(e) => updateHero('title', e.target.value)}
+                      className="input-modern"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Subtitle</Label>
+                    <Input
+                      value={config.hero.subtitle}
+                      onChange={(e) => updateHero('subtitle', e.target.value)}
+                      className="input-modern"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Primary CTA</Label>
+                      <Input
+                        value={config.hero.primaryCta}
+                        onChange={(e) => updateHero('primaryCta', e.target.value)}
+                        className="input-modern"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Secondary CTA</Label>
+                      <Input
+                        value={config.hero.secondaryCta}
+                        onChange={(e) => updateHero('secondaryCta', e.target.value)}
+                        className="input-modern"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={config.hero.showStats}
+                      onCheckedChange={(checked) => updateHero('showStats', checked)}
+                    />
+                    <Label>Show Statistics</Label>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="sections">
+              <Card className="card-modern">
+                <CardHeader>
+                  <div className="flex items-center">
+                    <Layout className="w-5 h-5 mr-2 text-electric" />
+                    <CardTitle>Page Sections</CardTitle>
+                  </div>
+                  <CardDescription>Enable or disable sections on your homepage</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {Object.entries(config.sections).map(([key, value]) => (
+                    <div key={key} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-electric/10 rounded-lg">
+                          {key === 'services' && <ShoppingCart className="w-4 h-4 text-electric" />}
+                          {key === 'reviews' && <Star className="w-4 h-4 text-electric" />}
+                          {key === 'features' && <Eye className="w-4 h-4 text-electric" />}
+                          {key === 'faq' && <Users className="w-4 h-4 text-electric" />}
+                          {key === 'cta' && <Type className="w-4 h-4 text-electric" />}
+                        </div>
+                        <Label className="capitalize font-medium">{key} Section</Label>
                       </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="accentColor">Accent Color</Label>
-                      <div className="flex items-center gap-3 mt-1">
-                        <Input
-                          id="accentColor"
-                          type="color"
-                          value={settings.theme.accentColor}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            theme: { ...settings.theme, accentColor: e.target.value }
-                          })}
-                          className="w-16 h-10 p-1 rounded-lg"
-                        />
-                        <Input
-                          value={settings.theme.accentColor}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            theme: { ...settings.theme, accentColor: e.target.value }
-                          })}
-                          className="flex-1"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <Label className="text-base font-semibold">Color Preview</Label>
-                  <div className="space-y-3">
-                    <div 
-                      className="h-16 rounded-lg flex items-center justify-center text-white font-semibold"
-                      style={{ backgroundColor: settings.theme.primaryColor }}
-                    >
-                      Primary
-                    </div>
-                    <div 
-                      className="h-16 rounded-lg flex items-center justify-center text-white font-semibold"
-                      style={{ backgroundColor: settings.theme.secondaryColor }}
-                    >
-                      Secondary
-                    </div>
-                    <div 
-                      className="h-16 rounded-lg flex items-center justify-center text-white font-semibold"
-                      style={{ backgroundColor: settings.theme.accentColor }}
-                    >
-                      Accent
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Typography Tab */}
-            <TabsContent value="typography" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <Label className="text-base font-semibold flex items-center">
-                    <Type className="w-4 h-4 mr-2" />
-                    Font Settings
-                  </Label>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <Label htmlFor="headingFont">Heading Font</Label>
-                      <Input
-                        id="headingFont"
-                        value={settings.typography.headingFont}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          typography: { ...settings.typography, headingFont: e.target.value }
-                        })}
-                        placeholder="Space Grotesk"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="bodyFont">Body Font</Label>
-                      <Input
-                        id="bodyFont"
-                        value={settings.typography.bodyFont}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          typography: { ...settings.typography, bodyFont: e.target.value }
-                        })}
-                        placeholder="Inter"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="fontSize">Base Font Size: {settings.typography.fontSize}px</Label>
-                      <Slider
-                        value={[settings.typography.fontSize]}
-                        onValueChange={(value) => setSettings({
-                          ...settings,
-                          typography: { ...settings.typography, fontSize: value[0] }
-                        })}
-                        max={24}
-                        min={12}
-                        step={1}
-                        className="mt-2"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="lineHeight">Line Height: {settings.typography.lineHeight}</Label>
-                      <Slider
-                        value={[settings.typography.lineHeight]}
-                        onValueChange={(value) => setSettings({
-                          ...settings,
-                          typography: { ...settings.typography, lineHeight: value[0] }
-                        })}
-                        max={2}
-                        min={1}
-                        step={0.1}
-                        className="mt-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <Label className="text-base font-semibold">Typography Preview</Label>
-                  <div 
-                    className="p-6 border rounded-lg"
-                    style={{
-                      fontFamily: settings.typography.bodyFont,
-                      fontSize: `${settings.typography.fontSize}px`,
-                      lineHeight: settings.typography.lineHeight
-                    }}
-                  >
-                    <h3 
-                      className="text-2xl font-bold mb-3"
-                      style={{ fontFamily: settings.typography.headingFont }}
-                    >
-                      Sample Heading
-                    </h3>
-                    <p>
-                      This is a sample paragraph to preview your typography settings. 
-                      You can see how the font family, size, and line height affect readability.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Layout Tab */}
-            <TabsContent value="layout" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <Label className="text-base font-semibold flex items-center">
-                    <Layout className="w-4 h-4 mr-2" />
-                    Layout Settings
-                  </Label>
-                  
-                  <div className="space-y-3">
-                    <div>
-                      <Label htmlFor="containerMaxWidth">Container Max Width</Label>
-                      <Input
-                        id="containerMaxWidth"
-                        value={settings.layout.containerMaxWidth}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          layout: { ...settings.layout, containerMaxWidth: e.target.value }
-                        })}
-                        placeholder="1280px"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="sectionSpacing">Section Spacing: {settings.layout.sectionSpacing}px</Label>
-                      <Slider
-                        value={[settings.layout.sectionSpacing]}
-                        onValueChange={(value) => setSettings({
-                          ...settings,
-                          layout: { ...settings.layout, sectionSpacing: value[0] }
-                        })}
-                        max={160}
-                        min={40}
-                        step={8}
-                        className="mt-2"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="borderRadius">Border Radius: {settings.layout.borderRadius}px</Label>
-                      <Slider
-                        value={[settings.layout.borderRadius]}
-                        onValueChange={(value) => setSettings({
-                          ...settings,
-                          layout: { ...settings.layout, borderRadius: value[0] }
-                        })}
-                        max={32}
-                        min={0}
-                        step={2}
-                        className="mt-2"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="shadowIntensity">Shadow Intensity: {settings.layout.shadowIntensity}%</Label>
-                      <Slider
-                        value={[settings.layout.shadowIntensity]}
-                        onValueChange={(value) => setSettings({
-                          ...settings,
-                          layout: { ...settings.layout, shadowIntensity: value[0] }
-                        })}
-                        max={100}
-                        min={0}
-                        step={5}
-                        className="mt-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <Label className="text-base font-semibold">Preview Modes</Label>
-                  <div className="flex gap-2">
-                    <Button
-                      variant={previewMode === 'desktop' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setPreviewMode('desktop')}
-                    >
-                      <Monitor className="w-4 h-4 mr-2" />
-                      Desktop
-                    </Button>
-                    <Button
-                      variant={previewMode === 'tablet' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setPreviewMode('tablet')}
-                    >
-                      <Tablet className="w-4 h-4 mr-2" />
-                      Tablet
-                    </Button>
-                    <Button
-                      variant={previewMode === 'mobile' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setPreviewMode('mobile')}
-                    >
-                      <Smartphone className="w-4 h-4 mr-2" />
-                      Mobile
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Hero Section Tab */}
-            <TabsContent value="hero" className="space-y-6">
-              <div className="space-y-4">
-                <Label className="text-base font-semibold flex items-center">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Hero Section Settings
-                </Label>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <div>
-                      <Label htmlFor="backgroundType">Background Type</Label>
-                      <select
-                        id="backgroundType"
-                        value={settings.hero.backgroundType}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          hero: { ...settings.hero, backgroundType: e.target.value as 'gradient' | 'solid' | 'image' }
-                        })}
-                        className="w-full p-2 border rounded-lg"
-                      >
-                        <option value="gradient">Gradient</option>
-                        <option value="solid">Solid Color</option>
-                        <option value="image">Background Image</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="backgroundValue">Background Value</Label>
-                      <Input
-                        id="backgroundValue"
-                        value={settings.hero.backgroundValue}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          hero: { ...settings.hero, backgroundValue: e.target.value }
-                        })}
-                        placeholder="from-gray-50 via-white to-gray-100"
-                      />
-                    </div>
-
-                    <div className="flex items-center space-x-2">
                       <Switch
-                        id="showParticles"
-                        checked={settings.hero.showParticles}
-                        onCheckedChange={(checked) => setSettings({
-                          ...settings,
-                          hero: { ...settings.hero, showParticles: checked }
-                        })}
-                      />
-                      <Label htmlFor="showParticles">Show Animated Particles</Label>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="animationSpeed">Animation Speed: {settings.hero.animationSpeed}s</Label>
-                      <Slider
-                        value={[settings.hero.animationSpeed]}
-                        onValueChange={(value) => setSettings({
-                          ...settings,
-                          hero: { ...settings.hero, animationSpeed: value[0] }
-                        })}
-                        max={12}
-                        min={2}
-                        step={1}
-                        className="mt-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Sections Tab */}
-            <TabsContent value="sections" className="space-y-6">
-              <div className="space-y-4">
-                <Label className="text-base font-semibold flex items-center">
-                  <Eye className="w-4 h-4 mr-2" />
-                  Section Visibility
-                </Label>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(settings.sections).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between p-4 border rounded-lg">
-                      <Label htmlFor={key} className="capitalize">
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </Label>
-                      <Switch
-                        id={key}
                         checked={value}
-                        onCheckedChange={(checked) => setSettings({
-                          ...settings,
-                          sections: { ...settings.sections, [key]: checked }
-                        })}
+                        onCheckedChange={(checked) => updateSection(key as keyof typeof config.sections, checked)}
                       />
                     </div>
                   ))}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="layout">
+              <Card className="card-modern">
+                <CardHeader>
+                  <div className="flex items-center">
+                    <Layout className="w-5 h-5 mr-2 text-electric" />
+                    <CardTitle>Layout Settings</CardTitle>
+                  </div>
+                  <CardDescription>Adjust spacing and layout properties</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Maximum Width</Label>
+                    <select 
+                      value={config.layout.maxWidth}
+                      onChange={(e) => setConfig(prev => ({ ...prev, layout: { ...prev.layout, maxWidth: e.target.value } }))}
+                      className="input-modern"
+                    >
+                      <option value="6xl">6xl (1152px)</option>
+                      <option value="7xl">7xl (1280px)</option>
+                      <option value="full">Full Width</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Section Spacing</Label>
+                    <select 
+                      value={config.layout.spacing}
+                      onChange={(e) => setConfig(prev => ({ ...prev, layout: { ...prev.layout, spacing: e.target.value } }))}
+                      className="input-modern"
+                    >
+                      <option value="tight">Tight</option>
+                      <option value="normal">Normal</option>
+                      <option value="loose">Loose</option>
+                    </select>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
+        </div>
 
-          <Separator className="my-6" />
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-500">
-              Changes are applied in real-time to the preview
-            </div>
-            <Button 
-              onClick={saveSettings} 
-              disabled={isLoading}
-              className="bg-gradient-to-r from-purple-600 to-purple-700"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {isLoading ? 'Saving...' : 'Save Settings'}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Live Preview Panel */}
+        <div className="xl:col-span-1">
+          <Card className="card-modern sticky top-6">
+            <CardHeader>
+              <div className="flex items-center">
+                <Eye className="w-5 h-5 mr-2 text-electric" />
+                <CardTitle>Live Preview</CardTitle>
+              </div>
+              <CardDescription>Preview your changes in real-time</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {/* Preview Tabs */}
+              <div className="mb-4">
+                <div className="grid grid-cols-2 gap-2">
+                  {(['hero', 'services', 'reviews', 'features'] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActivePreview(tab)}
+                      className={`px-3 py-2 text-xs rounded-lg transition-colors ${
+                        activePreview === tab 
+                          ? 'bg-electric/10 text-electric border border-electric/20' 
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Preview Content */}
+              <div className="bg-gray-50 rounded-lg min-h-[400px] overflow-hidden">
+                {renderPreview()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };

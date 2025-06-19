@@ -5,7 +5,7 @@ import ReviewsTab from "@/components/dashboard/ReviewsTab";
 import WebsiteTab from "@/components/dashboard/WebsiteTab";
 import LogoManagement from "@/components/dashboard/LogoManagement";
 import ContactManagement from "@/components/dashboard/ContactManagement";
-import HomepageElements from "@/components/dashboard/HomepageElements";
+import HomepageCustomizationTab from "@/components/dashboard/HomepageCustomizationTab";
 import PricingManagement from "@/components/dashboard/PricingManagement";
 import CustomEventsTab from "@/components/dashboard/CustomEventsTab";
 import WebsiteSEOTab from "@/components/dashboard/WebsiteSEOTab";
@@ -122,12 +122,12 @@ const Dashboard = () => {
         return <ReviewsTab reviews={reviews} onEdit={setEditingReview} onDelete={deleteReview} onAdd={addNewReview} />;
       case 'website':
         return <WebsiteTab />;
+      case 'homepage':
+        return <HomepageCustomizationTab />;
       case 'logo':
         return <LogoManagement />;
       case 'contact':
         return <ContactManagement />;
-      case 'homepage':
-        return <HomepageElements />;
       case 'pricing':
         return <PricingManagement />;
       case 'blog':
@@ -183,31 +183,39 @@ const Dashboard = () => {
         title="Dashboard - Manage Your Website Content"
         description="Admin dashboard to manage website content, services, reviews, and settings"
       />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="min-h-screen bg-gradient-to-br from-offwhite via-white to-gray-50">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-electric to-neon bg-clip-text text-transparent mb-2">
               Dashboard
             </h1>
-            <p className="text-slate-600">Manage your website content and settings</p>
+            <p className="text-gray-600">Manage your website content and settings</p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8 h-[calc(100vh-200px)]">
             <div className="lg:w-64 flex-shrink-0">
-              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl sticky top-6">
+              <Card className="bg-white/80 backdrop-blur-sm border-electric/20 shadow-modern sticky top-6 h-full">
                 <CardHeader>
-                  <CardTitle className="text-lg font-bold text-slate-900">Navigation</CardTitle>
+                  <CardTitle className="text-lg font-bold text-charcoal">Navigation</CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent className="p-0 h-[calc(100%-80px)] overflow-y-auto">
                   <nav className="space-y-1">
                     {/* Content Management */}
                     <div className="px-4 py-2">
-                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Content</h3>
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Content</h3>
                       <div className="space-y-1">
+                        <button
+                          onClick={() => setActiveTab('homepage')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                            activeTab === 'homepage' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'
+                          }`}
+                        >
+                          Homepage
+                        </button>
                         <button
                           onClick={() => setActiveTab('services')}
                           className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            activeTab === 'services' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                            activeTab === 'services' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'
                           }`}
                         >
                           Services
@@ -215,7 +223,7 @@ const Dashboard = () => {
                         <button
                           onClick={() => setActiveTab('reviews')}
                           className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            activeTab === 'reviews' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                            activeTab === 'reviews' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'
                           }`}
                         >
                           Reviews
@@ -223,7 +231,7 @@ const Dashboard = () => {
                         <button
                           onClick={() => setActiveTab('modern-features')}
                           className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            activeTab === 'modern-features' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                            activeTab === 'modern-features' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'
                           }`}
                         >
                           Modern Features
@@ -233,41 +241,41 @@ const Dashboard = () => {
 
                     {/* Integrations */}
                     <div className="px-4 py-2">
-                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Integrations</h3>
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Integrations</h3>
                       <div className="space-y-1">
                         <button 
                           onClick={() => setActiveTab('integration-status')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-status' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-status' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Status Overview
                         </button>
                         <button 
                           onClick={() => setActiveTab('integration-test')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-test' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-test' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Test All Integrations
                         </button>
                         <button 
                           onClick={() => setActiveTab('google-sheets')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-sheets' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-sheets' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Google Sheets
                         </button>
                         <button 
                           onClick={() => setActiveTab('facebook-pixel')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'facebook-pixel' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'facebook-pixel' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Facebook Pixel
                         </button>
                         <button 
                           onClick={() => setActiveTab('google-analytics')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-analytics' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-analytics' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Google Analytics
                         </button>
                         <button 
                           onClick={() => setActiveTab('chatgpt')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'chatgpt' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'chatgpt' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           ChatGPT AI
                         </button>
@@ -276,35 +284,35 @@ const Dashboard = () => {
 
                     {/* AWS Services */}
                     <div className="px-4 py-2">
-                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">AWS Services</h3>
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">AWS Services</h3>
                       <div className="space-y-1">
                         <button 
                           onClick={() => setActiveTab('amplify')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'amplify' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'amplify' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Amplify
                         </button>
                         <button 
                           onClick={() => setActiveTab('cognito')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cognito' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cognito' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Cognito
                         </button>
                         <button 
                           onClick={() => setActiveTab('dynamodb')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'dynamodb' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'dynamodb' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           DynamoDB
                         </button>
                         <button 
                           onClick={() => setActiveTab('s3')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 's3' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 's3' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           S3
                         </button>
                         <button 
                           onClick={() => setActiveTab('ses')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'ses' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'ses' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           SES
                         </button>
@@ -313,41 +321,41 @@ const Dashboard = () => {
 
                     {/* Other Tools */}
                     <div className="px-4 py-2">
-                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Other Tools</h3>
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Other Tools</h3>
                       <div className="space-y-1">
                         <button 
                           onClick={() => setActiveTab('cloudflare')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cloudflare' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cloudflare' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Cloudflare
                         </button>
                         <button 
                           onClick={() => setActiveTab('user-management')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'user-management' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'user-management' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           User Management
                         </button>
                         <button 
                           onClick={() => setActiveTab('custom-events')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'custom-events' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'custom-events' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Custom Events
                         </button>
                         <button 
                           onClick={() => setActiveTab('seo')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'seo' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'seo' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           SEO
                         </button>
                         <button 
                           onClick={() => setActiveTab('pricing')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'pricing' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'pricing' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Pricing
                         </button>
                         <button 
                           onClick={() => setActiveTab('blog')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'blog' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'blog' ? 'bg-electric/10 text-electric font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
                         >
                           Blog
                         </button>
@@ -358,8 +366,10 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            <div className="flex-1">
-              {renderTabContent()}
+            <div className="flex-1 overflow-hidden">
+              <div className="h-full overflow-y-auto">
+                {renderTabContent()}
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -26,12 +25,12 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#2563EB', // Electric Blue
+					foreground: '#FFFFFF'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#1E1E2F', // Charcoal
+					foreground: '#FFFFFF'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -42,8 +41,8 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: '#00E5FF', // Neon Cyan
+					foreground: '#1E1E2F'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -63,9 +62,15 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// New theme colors
+				electric: '#2563EB',
+				charcoal: '#1E1E2F',
+				neon: '#00E5FF',
+				offwhite: '#F9FAFB',
+				lime: '#A3E635',
 				// Modern color palette
 				gray: {
-					50: '#f9fafb',
+					50: '#F9FAFB', // Off-White
 					100: '#f3f4f6',
 					200: '#e5e7eb',
 					300: '#d1d5db',
@@ -83,25 +88,38 @@ export default {
 					200: '#bfdbfe',
 					300: '#93c5fd',
 					400: '#60a5fa',
-					500: '#3b82f6',
+					500: '#2563EB', // Electric Blue
 					600: '#2563eb',
 					700: '#1d4ed8',
 					800: '#1e40af',
 					900: '#1e3a8a',
 					950: '#172554'
 				},
-				purple: {
-					50: '#faf5ff',
-					100: '#f3e8ff',
-					200: '#e9d5ff',
-					300: '#d8b4fe',
-					400: '#c084fc',
-					500: '#a855f7',
-					600: '#9333ea',
-					700: '#7c3aed',
-					800: '#6b21a8',
-					900: '#581c87',
-					950: '#3b0764'
+				cyan: {
+					50: '#ecfeff',
+					100: '#cffafe',
+					200: '#a5f3fc',
+					300: '#67e8f9',
+					400: '#22d3ee',
+					500: '#00E5FF', // Neon Cyan
+					600: '#0891b2',
+					700: '#0e7490',
+					800: '#155e75',
+					900: '#164e63',
+					950: '#083344'
+				},
+				green: {
+					50: '#f0fdf4',
+					100: '#dcfce7',
+					200: '#bbf7d0',
+					300: '#86efac',
+					400: '#A3E635', // Lime Green
+					500: '#22c55e',
+					600: '#16a34a',
+					700: '#15803d',
+					800: '#166534',
+					900: '#14532d',
+					950: '#052e16'
 				}
 			},
 			fontFamily: {
@@ -219,8 +237,8 @@ export default {
 				'modern-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
 				'modern-xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
 				'modern-2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-				'glow': '0 0 20px rgba(59, 130, 246, 0.15)',
-				'glow-lg': '0 0 40px rgba(59, 130, 246, 0.15)'
+				'glow': '0 0 20px rgba(37, 99, 235, 0.15)',
+				'glow-lg': '0 0 40px rgba(37, 99, 235, 0.15)'
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
