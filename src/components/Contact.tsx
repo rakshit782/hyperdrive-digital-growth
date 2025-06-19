@@ -30,7 +30,7 @@ const Contact = () => {
   ];
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-navy relative overflow-hidden">
+    <section id="contact" className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
       {/* Enhanced background decoration elements */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]"></div>
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -41,7 +41,7 @@ const Contact = () => {
         {/* Modern header section */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-6">
-            <Star className="w-4 h-4 mr-2 text-cyan-400 fill-cyan-400" />
+            <Star className="w-4 h-4 mr-2 text-yellow-400 fill-yellow-400" />
             <span className="text-sm font-medium text-white/90">Trusted by 500+ Brands</span>
           </div>
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
@@ -127,13 +127,13 @@ const Contact = () => {
                 {/* Trust indicators */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mt-8 pt-8 border-t border-white/20">
                   <div className="flex items-center text-white/70">
-                    <CheckCircle className="w-5 h-5 mr-2 text-cyan-400" />
+                    <CheckCircle className="w-5 h-5 mr-2 text-green-400" />
                     <span>30-Day Money Back Guarantee</span>
                   </div>
                   <div className="flex items-center text-white/70">
                     <div className="flex mr-2">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-cyan-400 text-cyan-400" />
+                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
                     <span>4.9/5 Client Satisfaction</span>

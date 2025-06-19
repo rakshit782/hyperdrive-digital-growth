@@ -1,7 +1,13 @@
-
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface LogoSettings {
   logoUrl: string;
@@ -63,6 +69,8 @@ const Header = () => {
     logoAlt: "AMZ AD SCOUT - The Growth Agency"
   });
   const [headerSettings, setHeaderSettings] = useState<HeaderSettings>(defaultHeaderSettings);
+  
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -132,6 +140,11 @@ const Header = () => {
     console.log("Header: Logo loaded successfully:", logoSettings.logoUrl);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = '/';
+  };
+
   const servicePages = [
     { title: "Amazon Advertising", href: "/amazon-advertising", description: "Scale your Amazon presence" },
     { title: "Walmart Advertising", href: "/walmart-advertising", description: "Grow on Walmart marketplace" },
@@ -161,7 +174,7 @@ const Header = () => {
     };
   };
 
-  // Dynamic CTA button styles - Updated for new color scheme
+  // Dynamic CTA button styles
   const getCTAButtonClass = () => {
     const baseClass = "font-semibold px-6 py-3 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:-translate-y-1 border-0 text-sm tracking-wide";
     
@@ -259,11 +272,39 @@ const Header = () => {
             )}
           </nav>
           
-          {/* CTA Button */}
+          {/* Auth Section */}
           <div 
             className="hidden lg:flex items-center space-x-4"
             style={{ marginLeft: `${headerSettings.ctaMenuGap * 0.25}rem` }}
           >
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center space-x-2">
+                    <User className="h-4 w-4" />
+                    <span className="text-sm">{user.email}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => window.location.href = '/dashboard'}>
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.href = '/auth'}
+                className="mr-2"
+              >
+                Sign In
+              </Button>
+            )}
+            
             <Button 
               className={getCTAButtonClass()}
               onClick={() => window.location.href = '/free-audit'}
@@ -331,8 +372,46 @@ const Header = () => {
                   </div>
                 )}
                 
-                {/* Mobile CTA */}
+                {/* Mobile Auth */}
                 <div className="px-6 pt-6 space-y-3">
+                  {user ? (
+                    <>
+                      <div className="text-sm text-slate-600 mb-2">Signed in as {user.email}</div>
+                      <Button 
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          window.location.href = '/dashboard';
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        Dashboard
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          handleSignOut();
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <Button 
+                      variant="outline"
+                      className="w-full mb-3"
+                      onClick={() => {
+                        window.location.href = '/auth';
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                  )}
+                  
                   <Button 
                     className={getCTAButtonClass() + " w-full py-4"}
                     onClick={() => {

@@ -26,12 +26,12 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#1E293B', // Deep Navy
-					foreground: '#FFFFFF'
+					DEFAULT: 'hsl(var(--primary))',
+					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
-					DEFAULT: '#64748B', // Cool Gray
-					foreground: '#FFFFFF'
+					DEFAULT: 'hsl(var(--secondary))',
+					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -42,8 +42,8 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: '#3B82F6', // Bright Blue
-					foreground: '#FFFFFF'
+					DEFAULT: 'hsl(var(--accent))',
+					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -63,75 +63,45 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Modern Digital Marketing Agency Colors - No Orange/Yellow/Green/Red
-				navy: '#1E293B',        // Deep Navy - Primary
-				blue: '#3B82F6',        // Bright Blue - Accent
-				cyan: '#06B6D4',        // Cyan - CTA
-				purple: '#8B5CF6',      // Purple - Accent
+				// Modern color palette
 				gray: {
-					50: '#F8FAFC',      // Pure White
-					100: '#F1F5F9',
-					200: '#E2E8F0',
-					300: '#CBD5E1',
-					400: '#94A3B8',
-					500: '#64748B',     // Cool Gray
-					600: '#475569',
-					700: '#334155',
-					800: '#1E293B',
-					900: '#0F172A',
-					950: '#020617'
-				},
-				slate: {
-					50: '#F8FAFC',
-					100: '#F1F5F9',
-					200: '#E2E8F0',
-					300: '#CBD5E1',
-					400: '#94A3B8',
-					500: '#64748B',
-					600: '#475569',
-					700: '#334155',
-					800: '#1E293B',
-					900: '#0F172A',
-					950: '#020617'
+					50: '#f9fafb',
+					100: '#f3f4f6',
+					200: '#e5e7eb',
+					300: '#d1d5db',
+					400: '#9ca3af',
+					500: '#6b7280',
+					600: '#4b5563',
+					700: '#374151',
+					800: '#1f2937',
+					900: '#111827',
+					950: '#030712'
 				},
 				blue: {
-					50: '#EFF6FF',
-					100: '#DBEAFE',
-					200: '#BFDBFE',
-					300: '#93C5FD',
-					400: '#60A5FA',
-					500: '#3B82F6',     // Bright Blue
-					600: '#2563EB',
-					700: '#1D4ED8',
-					800: '#1E40AF',
-					900: '#1E3A8A',
+					50: '#eff6ff',
+					100: '#dbeafe',
+					200: '#bfdbfe',
+					300: '#93c5fd',
+					400: '#60a5fa',
+					500: '#3b82f6',
+					600: '#2563eb',
+					700: '#1d4ed8',
+					800: '#1e40af',
+					900: '#1e3a8a',
 					950: '#172554'
 				},
-				cyan: {
-					50: '#ECFEFF',
-					100: '#CFFAFE',
-					200: '#A5F3FC',
-					300: '#67E8F9',
-					400: '#22D3EE',
-					500: '#06B6D4',     // Cyan CTA
-					600: '#0891B2',
-					700: '#0E7490',
-					800: '#155E75',
-					900: '#164E63',
-					950: '#083344'
-				},
 				purple: {
-					50: '#FAF5FF',
-					100: '#F3E8FF',
-					200: '#E9D5FF',
-					300: '#D8B4FE',
-					400: '#C084FC',
-					500: '#A855F7',     // Purple Accent
-					600: '#9333EA',
-					700: '#7C3AED',
-					800: '#6B21A8',
-					900: '#581C87',
-					950: '#3B0764'
+					50: '#faf5ff',
+					100: '#f3e8ff',
+					200: '#e9d5ff',
+					300: '#d8b4fe',
+					400: '#c084fc',
+					500: '#a855f7',
+					600: '#9333ea',
+					700: '#7c3aed',
+					800: '#6b21a8',
+					900: '#581c87',
+					950: '#3b0764'
 				}
 			},
 			fontFamily: {

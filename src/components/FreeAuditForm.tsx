@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -19,7 +19,6 @@ const FreeAuditForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [googleSheetsConfig, setGoogleSheetsConfig] = useState<any>(null);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -34,79 +33,6 @@ const FreeAuditForm = () => {
       businessGoals: "",
     },
   });
-
-  useEffect(() => {
-    // Load Google Sheets configuration
-    const loadGoogleSheetsConfig = () => {
-      const savedConfig = localStorage.getItem('googleSheetsConfig');
-      if (savedConfig) {
-        try {
-          const config = JSON.parse(savedConfig);
-          setGoogleSheetsConfig(config);
-        } catch (error) {
-          console.error('Failed to parse Google Sheets config:', error);
-        }
-      }
-    };
-
-    loadGoogleSheetsConfig();
-
-    // Listen for Google Sheets config updates
-    const handleConfigUpdate = (event: CustomEvent) => {
-      setGoogleSheetsConfig(event.detail);
-    };
-
-    window.addEventListener('googleSheetsConfigUpdated', handleConfigUpdate as EventListener);
-
-    return () => {
-      window.removeEventListener('googleSheetsConfigUpdated', handleConfigUpdate as EventListener);
-    };
-  }, []);
-
-  const submitToGoogleSheets = async (values: FormValues) => {
-    if (!googleSheetsConfig?.isEnabled || !googleSheetsConfig.sheets.freeAuditForm) {
-      return;
-    }
-
-    try {
-      // Extract sheet ID from URL
-      const sheetId = googleSheetsConfig.sheets.freeAuditForm.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-      
-      if (!sheetId) {
-        console.error('Invalid Google Sheet URL');
-        return;
-      }
-
-      // Prepare data for Google Sheets
-      const rowData = [
-        values.firstName,
-        values.lastName,
-        values.email,
-        values.company,
-        values.phone,
-        values.platform,
-        values.monthlyAdSpend,
-        values.businessGoals,
-        new Date().toISOString()
-      ];
-
-      // In a real implementation, this would use the Google Sheets API
-      // For now, we'll just log the data and show success
-      console.log('Submitting to Google Sheets:', {
-        sheetId,
-        data: rowData,
-        config: googleSheetsConfig
-      });
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log('Successfully submitted to Google Sheets');
-    } catch (error) {
-      console.error('Error submitting to Google Sheets:', error);
-      throw error;
-    }
-  };
 
   const validateFormData = (values: FormValues): string | null => {
     // Backend-side validation matching frontend Zod schema
@@ -146,11 +72,6 @@ const FreeAuditForm = () => {
       const validationError = validateFormData(values);
       if (validationError) {
         throw new Error(validationError);
-      }
-
-      // Submit to Google Sheets if configured
-      if (googleSheetsConfig?.isEnabled) {
-        await submitToGoogleSheets(values);
       }
 
       // Submit to DynamoDB if configured
@@ -222,8 +143,8 @@ const FreeAuditForm = () => {
   };
 
   return (
-    <Card className="max-w-4xl mx-auto bg-white border shadow-modern">
-      <CardHeader className="text-center bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-t-lg">
+    <Card className="max-w-4xl mx-auto bg-white border shadow-xl">
+      <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-t-lg">
         <CardTitle className="text-3xl font-bold">Free Advertising Audit</CardTitle>
         <CardDescription className="text-blue-100 text-lg">
           Get a comprehensive analysis of your advertising performance and actionable recommendations for growth
@@ -239,15 +160,15 @@ const FreeAuditForm = () => {
             <AuditBenefits />
 
             {submitError && (
-              <div className="p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
-                <p className="text-cyan-600 text-sm font-medium">{submitError}</p>
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm font-medium">{submitError}</p>
               </div>
             )}
 
             <Button 
               type="submit" 
               size="lg" 
-              className="w-full bg-cyan-500 text-white hover:bg-cyan-600 font-semibold py-4 text-lg rounded-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-modern hover:shadow-modern-lg"
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-4 text-lg rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

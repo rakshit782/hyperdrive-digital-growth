@@ -17,11 +17,11 @@ const ModernCTA = () => {
   };
 
   return (
-    <section className="py-12 bg-gradient-to-br from-navy via-blue-900 to-slate-900 relative overflow-hidden">
+    <section className="py-12 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-grid-white/5"></div>
       <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl"></div>
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-3xl mx-auto text-center text-white">
@@ -29,7 +29,7 @@ const ModernCTA = () => {
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-cyan-400 text-cyan-400" />
+                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
               ))}
             </div>
             <span className="text-white/80 text-sm">4.9/5 from 500+ reviews</span>
@@ -56,7 +56,7 @@ const ModernCTA = () => {
               />
               <Button 
                 type="submit" 
-                className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 px-6 py-2 text-white font-semibold"
+                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-6 py-2 text-white font-semibold"
                 disabled={isSubmitted}
               >
                 {isSubmitted ? (

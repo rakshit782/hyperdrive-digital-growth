@@ -7,61 +7,32 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, TestTube, CheckCircle, XCircle, Sheet, FileSpreadsheet } from "lucide-react";
+import { ExternalLink, TestTube, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 interface GoogleSheetsConfig {
   isEnabled: boolean;
+  newsletterSheetUrl: string;
+  auditFormSheetUrl: string;
   apiKey: string;
-  sheets: {
-    newsletter: string;
-    auditForm: string;
-    contactForm: string;
-    freeAuditForm: string;
-    generalForms: string;
-  };
 }
 
 const GoogleSheetsTab = () => {
   const [config, setConfig] = useState<GoogleSheetsConfig>({
     isEnabled: false,
-    apiKey: "",
-    sheets: {
-      newsletter: "",
-      auditForm: "",
-      contactForm: "",
-      freeAuditForm: "",
-      generalForms: ""
-    }
+    newsletterSheetUrl: "",
+    auditFormSheetUrl: "",
+    apiKey: ""
   });
-  
   const [testResults, setTestResults] = useState<{
     newsletter: boolean | null;
     auditForm: boolean | null;
-    contactForm: boolean | null;
-    freeAuditForm: boolean | null;
-    generalForms: boolean | null;
   }>({
     newsletter: null,
-    auditForm: null,
-    contactForm: null,
-    freeAuditForm: null,
-    generalForms: null
+    auditForm: null
   });
-  
-  const [testing, setTesting] = useState<{
-    newsletter: boolean;
-    auditForm: boolean;
-    contactForm: boolean;
-    freeAuditForm: boolean;
-    generalForms: boolean;
-  }>({
-    newsletter: false,
-    auditForm: false,
-    contactForm: false,
-    freeAuditForm: false,
-    generalForms: false
-  });
+  const [isTestingNewsletter, setIsTestingNewsletter] = useState(false);
+  const [isTestingAudit, setIsTestingAudit] = useState(false);
 
   useEffect(() => {
     loadConfig();
@@ -90,23 +61,43 @@ const GoogleSheetsTab = () => {
     toast.success("Google Sheets configuration saved successfully");
   };
 
-  const testConnection = async (formType: keyof typeof config.sheets) => {
-    if (!config.sheets[formType]) {
-      toast.error(`Please enter a ${formType} sheet URL first`);
+  const testNewsletterConnection = async () => {
+    if (!config.newsletterSheetUrl) {
+      toast.error("Please enter a newsletter sheet URL first");
       return;
     }
 
-    setTesting(prev => ({ ...prev, [formType]: true }));
+    setIsTestingNewsletter(true);
     try {
       // Simulate API test - in real implementation, this would call Google Sheets API
       await new Promise(resolve => setTimeout(resolve, 2000));
-      setTestResults(prev => ({ ...prev, [formType]: true }));
-      toast.success(`${formType} sheet connection successful`);
+      setTestResults(prev => ({ ...prev, newsletter: true }));
+      toast.success("Newsletter sheet connection successful");
     } catch (error) {
-      setTestResults(prev => ({ ...prev, [formType]: false }));
-      toast.error(`${formType} sheet connection failed`);
+      setTestResults(prev => ({ ...prev, newsletter: false }));
+      toast.error("Newsletter sheet connection failed");
     } finally {
-      setTesting(prev => ({ ...prev, [formType]: false }));
+      setIsTestingNewsletter(false);
+    }
+  };
+
+  const testAuditFormConnection = async () => {
+    if (!config.auditFormSheetUrl) {
+      toast.error("Please enter an audit form sheet URL first");
+      return;
+    }
+
+    setIsTestingAudit(true);
+    try {
+      // Simulate API test - in real implementation, this would call Google Sheets API
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setTestResults(prev => ({ ...prev, auditForm: true }));
+      toast.success("Audit form sheet connection successful");
+    } catch (error) {
+      setTestResults(prev => ({ ...prev, auditForm: false }));
+      toast.error("Audit form sheet connection failed");
+    } finally {
+      setIsTestingAudit(false);
     }
   };
 
@@ -115,72 +106,24 @@ const GoogleSheetsTab = () => {
     return match ? match[1] : '';
   };
 
-  const updateSheetUrl = (formType: keyof typeof config.sheets, url: string) => {
-    setConfig(prev => ({
-      ...prev,
-      sheets: {
-        ...prev.sheets,
-        [formType]: url
-      }
-    }));
-  };
-
-  const formConfigs = [
-    {
-      key: 'newsletter' as const,
-      title: 'Newsletter Subscriptions',
-      description: 'Connect newsletter subscription forms',
-      icon: <Sheet className="w-5 h-5" />,
-      structure: ['Email', 'Timestamp', 'Source']
-    },
-    {
-      key: 'auditForm' as const,
-      title: 'Audit Request Forms',
-      description: 'Connect audit request forms',
-      icon: <FileSpreadsheet className="w-5 h-5" />,
-      structure: ['Name', 'Email', 'Company', 'Phone', 'Message', 'Timestamp']
-    },
-    {
-      key: 'contactForm' as const,
-      title: 'Contact Forms',
-      description: 'Connect general contact forms',
-      icon: <Sheet className="w-5 h-5" />,
-      structure: ['Name', 'Email', 'Subject', 'Message', 'Timestamp']
-    },
-    {
-      key: 'freeAuditForm' as const,
-      title: 'Free Audit Forms',
-      description: 'Connect free audit submission forms',
-      icon: <FileSpreadsheet className="w-5 h-5" />,
-      structure: ['First Name', 'Last Name', 'Email', 'Company', 'Phone', 'Platform', 'Monthly Ad Spend', 'Business Goals', 'Timestamp']
-    },
-    {
-      key: 'generalForms' as const,
-      title: 'General Forms',
-      description: 'Connect any other custom forms',
-      icon: <Sheet className="w-5 h-5" />,
-      structure: ['Form Type', 'Data (JSON)', 'Timestamp']
-    }
-  ];
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-charcoal mb-2">Google Sheets Integration</h2>
-          <p className="text-gray-600">Connect all forms to Google Sheets for centralized data collection</p>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Google Sheets Integration</h2>
+          <p className="text-gray-600">Connect your forms to Google Sheets for data collection</p>
         </div>
-        <Badge variant={config.isEnabled ? "default" : "secondary"} className={config.isEnabled ? "bg-lime text-charcoal" : ""}>
+        <Badge variant={config.isEnabled ? "default" : "secondary"}>
           {config.isEnabled ? "Enabled" : "Disabled"}
         </Badge>
       </div>
 
       {/* Main Configuration */}
-      <Card className="card-modern">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-electric">Configuration</CardTitle>
+          <CardTitle>Configuration</CardTitle>
           <CardDescription>
-            Configure Google Sheets integration to automatically store all form submissions
+            Configure Google Sheets integration to automatically store form submissions
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -202,80 +145,72 @@ const GoogleSheetsTab = () => {
               onChange={(e) => setConfig(prev => ({ ...prev, apiKey: e.target.value }))}
               placeholder="Enter your Google Sheets API key"
               disabled={!config.isEnabled}
-              className="input-modern"
             />
             <p className="text-sm text-gray-500 mt-1">
               Get your API key from the Google Cloud Console
             </p>
           </div>
 
-          <Button 
-            onClick={saveConfig} 
-            disabled={!config.isEnabled}
-            className="btn-primary"
-          >
+          <Button onClick={saveConfig} disabled={!config.isEnabled}>
             Save Configuration
           </Button>
         </CardContent>
       </Card>
 
-      {/* Form Connections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {formConfigs.map((formConfig) => (
-          <Card key={formConfig.key} className="card-modern">
+      {/* Sheet URLs Configuration */}
+      <Tabs defaultValue="newsletter" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="newsletter">Newsletter Subscriptions</TabsTrigger>
+          <TabsTrigger value="audit">Free Audit Forms</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="newsletter">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between text-charcoal">
-                <div className="flex items-center space-x-2">
-                  <div className="p-2 bg-electric/10 rounded-lg text-electric">
-                    {formConfig.icon}
-                  </div>
-                  <span>{formConfig.title}</span>
-                </div>
-                {testResults[formConfig.key] !== null && (
-                  testResults[formConfig.key] ? (
-                    <CheckCircle className="w-5 h-5 text-lime" />
+              <CardTitle className="flex items-center justify-between">
+                Newsletter Subscriptions
+                {testResults.newsletter !== null && (
+                  testResults.newsletter ? (
+                    <CheckCircle className="w-5 h-5 text-green-500" />
                   ) : (
                     <XCircle className="w-5 h-5 text-red-500" />
                   )
                 )}
               </CardTitle>
               <CardDescription>
-                {formConfig.description}
+                Connect newsletter subscription form to Google Sheets
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor={`${formConfig.key}Url`}>Google Sheet URL</Label>
+                <Label htmlFor="newsletterUrl">Google Sheet URL</Label>
                 <Input
-                  id={`${formConfig.key}Url`}
-                  value={config.sheets[formConfig.key]}
-                  onChange={(e) => updateSheetUrl(formConfig.key, e.target.value)}
+                  id="newsletterUrl"
+                  value={config.newsletterSheetUrl}
+                  onChange={(e) => setConfig(prev => ({ ...prev, newsletterSheetUrl: e.target.value }))}
                   placeholder="https://docs.google.com/spreadsheets/d/your-sheet-id/edit"
                   disabled={!config.isEnabled}
-                  className="input-modern"
                 />
-                {config.sheets[formConfig.key] && (
+                {config.newsletterSheetUrl && (
                   <p className="text-sm text-gray-500 mt-1">
-                    Sheet ID: {getSheetIdFromUrl(config.sheets[formConfig.key]) || 'Invalid URL'}
+                    Sheet ID: {getSheetIdFromUrl(config.newsletterSheetUrl) || 'Invalid URL'}
                   </p>
                 )}
               </div>
 
               <div className="flex space-x-2">
                 <Button
-                  onClick={() => testConnection(formConfig.key)}
-                  disabled={!config.isEnabled || !config.sheets[formConfig.key] || testing[formConfig.key]}
+                  onClick={testNewsletterConnection}
+                  disabled={!config.isEnabled || !config.newsletterSheetUrl || isTestingNewsletter}
                   variant="outline"
-                  className="border-electric text-electric hover:bg-electric hover:text-white"
                 >
                   <TestTube className="w-4 h-4 mr-2" />
-                  {testing[formConfig.key] ? 'Testing...' : 'Test Connection'}
+                  {isTestingNewsletter ? 'Testing...' : 'Test Connection'}
                 </Button>
-                {config.sheets[formConfig.key] && (
+                {config.newsletterSheetUrl && (
                   <Button
                     variant="outline"
-                    onClick={() => window.open(config.sheets[formConfig.key], '_blank')}
-                    className="border-neon text-neon hover:bg-neon hover:text-charcoal"
+                    onClick={() => window.open(config.newsletterSheetUrl, '_blank')}
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
                     Open Sheet
@@ -283,32 +218,100 @@ const GoogleSheetsTab = () => {
                 )}
               </div>
 
-              <div className="bg-offwhite p-4 rounded-lg border border-gray-200">
-                <h4 className="font-medium mb-2 text-charcoal">Expected Sheet Structure:</h4>
-                <div className="text-sm text-gray-600 space-y-1">
-                  {formConfig.structure.map((column, index) => (
-                    <p key={index}>Column {String.fromCharCode(65 + index)}: {column}</p>
-                  ))}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium mb-2">Expected Sheet Structure:</h4>
+                <div className="text-sm text-gray-600">
+                  <p>Column A: Email</p>
+                  <p>Column B: Timestamp</p>
+                  <p>Column C: Source (Newsletter)</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+        </TabsContent>
+
+        <TabsContent value="audit">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                Free Audit Forms
+                {testResults.auditForm !== null && (
+                  testResults.auditForm ? (
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <XCircle className="w-5 h-5 text-red-500" />
+                  )
+                )}
+              </CardTitle>
+              <CardDescription>
+                Connect free audit form submissions to Google Sheets
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="auditUrl">Google Sheet URL</Label>
+                <Input
+                  id="auditUrl"
+                  value={config.auditFormSheetUrl}
+                  onChange={(e) => setConfig(prev => ({ ...prev, auditFormSheetUrl: e.target.value }))}
+                  placeholder="https://docs.google.com/spreadsheets/d/your-sheet-id/edit"
+                  disabled={!config.isEnabled}
+                />
+                {config.auditFormSheetUrl && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Sheet ID: {getSheetIdFromUrl(config.auditFormSheetUrl) || 'Invalid URL'}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex space-x-2">
+                <Button
+                  onClick={testAuditFormConnection}
+                  disabled={!config.isEnabled || !config.auditFormSheetUrl || isTestingAudit}
+                  variant="outline"
+                >
+                  <TestTube className="w-4 h-4 mr-2" />
+                  {isTestingAudit ? 'Testing...' : 'Test Connection'}
+                </Button>
+                {config.auditFormSheetUrl && (
+                  <Button
+                    variant="outline"
+                    onClick={() => window.open(config.auditFormSheetUrl, '_blank')}
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Open Sheet
+                  </Button>
+                )}
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium mb-2">Expected Sheet Structure:</h4>
+                <div className="text-sm text-gray-600">
+                  <p>Column A: Name</p>
+                  <p>Column B: Email</p>
+                  <p>Column C: Company</p>
+                  <p>Column D: Phone</p>
+                  <p>Column E: Message</p>
+                  <p>Column F: Timestamp</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Setup Instructions */}
-      <Card className="card-modern">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-charcoal">Setup Instructions</CardTitle>
+          <CardTitle>Setup Instructions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="text-sm text-gray-600 space-y-2">
-            <p><strong className="text-electric">1.</strong> Create Google Sheets with the expected column structures above</p>
-            <p><strong className="text-electric">2.</strong> Get the Google Sheets API key from Google Cloud Console</p>
-            <p><strong className="text-electric">3.</strong> Share your Google Sheets with the service account email</p>
-            <p><strong className="text-electric">4.</strong> Copy the sheet URLs and paste them in the configuration above</p>
-            <p><strong className="text-electric">5.</strong> Test each connection to ensure everything works</p>
-            <p><strong className="text-lime">6.</strong> All forms will now automatically save data to their respective sheets</p>
+            <p><strong>1.</strong> Create a Google Sheet with the expected column structure</p>
+            <p><strong>2.</strong> Get the Google Sheets API key from Google Cloud Console</p>
+            <p><strong>3.</strong> Share your Google Sheet with the service account email</p>
+            <p><strong>4.</strong> Copy the sheet URL and paste it in the configuration above</p>
+            <p><strong>5.</strong> Test the connection to ensure everything works</p>
           </div>
         </CardContent>
       </Card>
