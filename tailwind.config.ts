@@ -63,10 +63,11 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Modern Digital Marketing Agency Colors
+				// Modern Digital Marketing Agency Colors - No Orange/Yellow/Green/Red
 				navy: '#1E293B',        // Deep Navy - Primary
-				orange: '#F97316',      // Vibrant Orange - CTA
 				blue: '#3B82F6',        // Bright Blue - Accent
+				cyan: '#06B6D4',        // Cyan - CTA
+				purple: '#8B5CF6',      // Purple - Accent
 				gray: {
 					50: '#F8FAFC',      // Pure White
 					100: '#F1F5F9',
@@ -93,19 +94,6 @@ export default {
 					900: '#0F172A',
 					950: '#020617'
 				},
-				orange: {
-					50: '#FFF7ED',
-					100: '#FFEDD5',
-					200: '#FED7AA',
-					300: '#FDBA74',
-					400: '#FB923C',
-					500: '#F97316',     // Vibrant Orange
-					600: '#EA580C',
-					700: '#C2410C',
-					800: '#9A3412',
-					900: '#7C2D12',
-					950: '#431407'
-				},
 				blue: {
 					50: '#EFF6FF',
 					100: '#DBEAFE',
@@ -118,6 +106,19 @@ export default {
 					800: '#1E40AF',
 					900: '#1E3A8A',
 					950: '#172554'
+				},
+				cyan: {
+					50: '#ECFEFF',
+					100: '#CFFAFE',
+					200: '#A5F3FC',
+					300: '#67E8F9',
+					400: '#22D3EE',
+					500: '#06B6D4',     // Cyan CTA
+					600: '#0891B2',
+					700: '#0E7490',
+					800: '#155E75',
+					900: '#164E63',
+					950: '#083344'
 				},
 				purple: {
 					50: '#FAF5FF',

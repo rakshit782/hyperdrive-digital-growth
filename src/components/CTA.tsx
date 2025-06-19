@@ -78,7 +78,7 @@ const CTA = () => {
         return 'bg-blue-900';
       case 'gradient':
       default:
-        return 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900';
+        return 'bg-gradient-to-br from-slate-900 via-blue-900 to-navy';
     }
   };
 
@@ -87,8 +87,8 @@ const CTA = () => {
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-10 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-48 h-48 bg-purple-500/20 rounded-full blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute bottom-10 right-10 w-48 h-48 bg-cyan-500/20 rounded-full blur-xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       {/* Grid Pattern */}
@@ -101,12 +101,12 @@ const CTA = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center">
           {/* Icon */}
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-3xl mb-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-3xl mb-8">
             <Sparkles className="w-10 h-10 text-white" />
           </div>
 
           {/* Subtitle */}
-          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-full border border-blue-400/30 mb-6">
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 backdrop-blur-sm rounded-full border border-blue-400/30 mb-6">
             <TrendingUp className="w-4 h-4 mr-2 text-cyan-400" />
             <span className="text-sm font-medium text-cyan-100">{ctaData.subtitle}</span>
           </div>
@@ -125,7 +125,7 @@ const CTA = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Button 
               size="lg" 
-              className="group bg-gradient-to-r from-blue-500 via-blue-600 to-purple-500 hover:from-blue-600 hover:via-blue-700 hover:to-purple-600 text-white px-10 py-6 text-xl font-semibold rounded-2xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-500 hover:scale-110 hover:-translate-y-2 border border-blue-400/30"
+              className="group bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:from-blue-600 hover:via-blue-700 hover:to-cyan-600 text-white px-10 py-6 text-xl font-semibold rounded-2xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-500 hover:scale-110 hover:-translate-y-2 border border-blue-400/30"
               onClick={() => window.location.href = ctaData.primaryButtonLink}
             >
               <Target className="mr-3 w-6 h-6" />
@@ -152,11 +152,11 @@ const CTA = () => {
               <div className="text-slate-400 text-sm">Happy Clients</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-purple-400 mb-2">$50M+</div>
+              <div className="text-2xl sm:text-3xl font-bold text-cyan-400 mb-2">$50M+</div>
               <div className="text-slate-400 text-sm">Ad Spend Managed</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-cyan-400 mb-2">300%</div>
+              <div className="text-2xl sm:text-3xl font-bold text-purple-400 mb-2">300%</div>
               <div className="text-slate-400 text-sm">Avg ROI Increase</div>
             </div>
           </div>

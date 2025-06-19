@@ -23,8 +23,8 @@ const Hero = () => {
 
   const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>([
     { id: "campaigns", number: "500+", label: "Campaigns Managed", color: "from-navy to-blue-500" },
-    { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-blue-500 to-orange-500" },
-    { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-orange-500 to-purple-500" },
+    { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-blue-500 to-cyan-500" },
+    { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-cyan-500 to-purple-500" },
     { id: "monitoring", number: "24/7", label: "Account Monitoring", color: "from-purple-500 to-navy" }
   ]);
 
@@ -88,8 +88,8 @@ const Hero = () => {
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-mesh opacity-40"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-navy/20 to-blue-500/20 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-blue-500/20 to-orange-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/8 w-64 h-64 bg-gradient-to-r from-orange-500/20 to-purple-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/8 w-64 h-64 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
       
       <div className="container-modern relative z-10">
@@ -98,14 +98,14 @@ const Hero = () => {
           <div className="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-blue-500/20 mb-8 animate-fade-in shadow-modern">
             <Sparkles className="w-5 h-5 mr-3 text-blue-500" />
             <span className="text-sm font-medium text-navy">Trusted by 500+ Leading Brands</span>
-            <TrendingUp className="w-5 h-5 ml-3 text-orange-500" />
+            <TrendingUp className="w-5 h-5 ml-3 text-cyan-500" />
           </div>
           
           {/* Main Heading */}
           <div className="mb-12 space-y-6 animate-slide-up">
             <h1 className="heading-modern text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[0.9] max-w-5xl mx-auto">
               <span className="block">Scale Your Business</span>
-              <span className="block bg-gradient-to-r from-navy via-blue-500 to-orange-500 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-navy via-blue-500 to-cyan-500 bg-clip-text text-transparent">
                 With Precision
               </span>
             </h1>
@@ -120,7 +120,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 animate-scale-in">
             <Button 
               size="lg" 
-              className="group bg-orange-500 text-white hover:bg-orange-600 text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300 shadow-modern hover:shadow-modern-lg"
+              className="group bg-cyan-500 text-white hover:bg-cyan-600 text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300 shadow-modern hover:shadow-modern-lg"
               onClick={handlePrimaryButtonClick}
             >
               {ctaButtons.primaryText}
@@ -168,7 +168,7 @@ const Hero = () => {
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full opacity-20 animate-pulse-modern"
+            className="absolute w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full opacity-20 animate-pulse-modern"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,

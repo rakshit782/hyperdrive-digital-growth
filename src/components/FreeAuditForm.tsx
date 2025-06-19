@@ -223,7 +223,7 @@ const FreeAuditForm = () => {
 
   return (
     <Card className="max-w-4xl mx-auto bg-white border shadow-modern">
-      <CardHeader className="text-center bg-gradient-to-r from-electric to-neon text-white rounded-t-lg">
+      <CardHeader className="text-center bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-t-lg">
         <CardTitle className="text-3xl font-bold">Free Advertising Audit</CardTitle>
         <CardDescription className="text-blue-100 text-lg">
           Get a comprehensive analysis of your advertising performance and actionable recommendations for growth
@@ -239,20 +239,20 @@ const FreeAuditForm = () => {
             <AuditBenefits />
 
             {submitError && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 text-sm font-medium">{submitError}</p>
+              <div className="p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
+                <p className="text-cyan-600 text-sm font-medium">{submitError}</p>
               </div>
             )}
 
             <Button 
               type="submit" 
               size="lg" 
-              className="w-full bg-lime text-charcoal hover:bg-lime/90 font-semibold py-4 text-lg rounded-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-modern hover:shadow-modern-lg"
+              className="w-full bg-cyan-500 text-white hover:bg-cyan-600 font-semibold py-4 text-lg rounded-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-modern hover:shadow-modern-lg"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-charcoal mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                   Submitting Your Audit Request...
                 </>
               ) : (
