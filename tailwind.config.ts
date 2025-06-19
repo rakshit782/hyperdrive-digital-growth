@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -25,11 +26,11 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#2563EB', // Electric Blue
+					DEFAULT: '#1E293B', // Deep Navy
 					foreground: '#FFFFFF'
 				},
 				secondary: {
-					DEFAULT: '#1E1E2F', // Charcoal
+					DEFAULT: '#64748B', // Cool Gray
 					foreground: '#FFFFFF'
 				},
 				destructive: {
@@ -41,8 +42,8 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: '#00E5FF', // Neon Cyan
-					foreground: '#1E1E2F'
+					DEFAULT: '#3B82F6', // Bright Blue
+					foreground: '#FFFFFF'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -62,64 +63,74 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// New theme colors
-				electric: '#2563EB',
-				charcoal: '#1E1E2F',
-				neon: '#00E5FF',
-				offwhite: '#F9FAFB',
-				lime: '#A3E635',
-				// Modern color palette
+				// Modern Digital Marketing Agency Colors
+				navy: '#1E293B',        // Deep Navy - Primary
+				orange: '#F97316',      // Vibrant Orange - CTA
+				blue: '#3B82F6',        // Bright Blue - Accent
 				gray: {
-					50: '#F9FAFB', // Off-White
-					100: '#f3f4f6',
-					200: '#e5e7eb',
-					300: '#d1d5db',
-					400: '#9ca3af',
-					500: '#6b7280',
-					600: '#4b5563',
-					700: '#374151',
-					800: '#1f2937',
-					900: '#111827',
-					950: '#030712'
+					50: '#F8FAFC',      // Pure White
+					100: '#F1F5F9',
+					200: '#E2E8F0',
+					300: '#CBD5E1',
+					400: '#94A3B8',
+					500: '#64748B',     // Cool Gray
+					600: '#475569',
+					700: '#334155',
+					800: '#1E293B',
+					900: '#0F172A',
+					950: '#020617'
+				},
+				slate: {
+					50: '#F8FAFC',
+					100: '#F1F5F9',
+					200: '#E2E8F0',
+					300: '#CBD5E1',
+					400: '#94A3B8',
+					500: '#64748B',
+					600: '#475569',
+					700: '#334155',
+					800: '#1E293B',
+					900: '#0F172A',
+					950: '#020617'
+				},
+				orange: {
+					50: '#FFF7ED',
+					100: '#FFEDD5',
+					200: '#FED7AA',
+					300: '#FDBA74',
+					400: '#FB923C',
+					500: '#F97316',     // Vibrant Orange
+					600: '#EA580C',
+					700: '#C2410C',
+					800: '#9A3412',
+					900: '#7C2D12',
+					950: '#431407'
 				},
 				blue: {
-					50: '#eff6ff',
-					100: '#dbeafe',
-					200: '#bfdbfe',
-					300: '#93c5fd',
-					400: '#60a5fa',
-					500: '#2563EB', // Electric Blue
-					600: '#2563eb',
-					700: '#1d4ed8',
-					800: '#1e40af',
-					900: '#1e3a8a',
+					50: '#EFF6FF',
+					100: '#DBEAFE',
+					200: '#BFDBFE',
+					300: '#93C5FD',
+					400: '#60A5FA',
+					500: '#3B82F6',     // Bright Blue
+					600: '#2563EB',
+					700: '#1D4ED8',
+					800: '#1E40AF',
+					900: '#1E3A8A',
 					950: '#172554'
 				},
-				cyan: {
-					50: '#ecfeff',
-					100: '#cffafe',
-					200: '#a5f3fc',
-					300: '#67e8f9',
-					400: '#22d3ee',
-					500: '#00E5FF', // Neon Cyan
-					600: '#0891b2',
-					700: '#0e7490',
-					800: '#155e75',
-					900: '#164e63',
-					950: '#083344'
-				},
-				green: {
-					50: '#f0fdf4',
-					100: '#dcfce7',
-					200: '#bbf7d0',
-					300: '#86efac',
-					400: '#A3E635', // Lime Green
-					500: '#22c55e',
-					600: '#16a34a',
-					700: '#15803d',
-					800: '#166534',
-					900: '#14532d',
-					950: '#052e16'
+				purple: {
+					50: '#FAF5FF',
+					100: '#F3E8FF',
+					200: '#E9D5FF',
+					300: '#D8B4FE',
+					400: '#C084FC',
+					500: '#A855F7',     // Purple Accent
+					600: '#9333EA',
+					700: '#7C3AED',
+					800: '#6B21A8',
+					900: '#581C87',
+					950: '#3B0764'
 				}
 			},
 			fontFamily: {
@@ -237,8 +248,8 @@ export default {
 				'modern-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
 				'modern-xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
 				'modern-2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-				'glow': '0 0 20px rgba(37, 99, 235, 0.15)',
-				'glow-lg': '0 0 40px rgba(37, 99, 235, 0.15)'
+				'glow': '0 0 20px rgba(59, 130, 246, 0.15)',
+				'glow-lg': '0 0 40px rgba(59, 130, 246, 0.15)'
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

@@ -22,10 +22,10 @@ const Hero = () => {
   });
 
   const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>([
-    { id: "campaigns", number: "500+", label: "Campaigns Managed", color: "from-electric to-neon" },
-    { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-neon to-lime" },
-    { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-lime to-electric" },
-    { id: "monitoring", number: "24/7", label: "Account Monitoring", color: "from-electric to-charcoal" }
+    { id: "campaigns", number: "500+", label: "Campaigns Managed", color: "from-navy to-blue-500" },
+    { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-blue-500 to-orange-500" },
+    { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-orange-500 to-purple-500" },
+    { id: "monitoring", number: "24/7", label: "Account Monitoring", color: "from-purple-500 to-navy" }
   ]);
 
   useEffect(() => {
@@ -83,36 +83,36 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-offwhite via-white to-gray-50 overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-slate-100 overflow-hidden">
       {/* Modern Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-mesh opacity-40"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-electric/20 to-neon/20 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-neon/20 to-lime/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/8 w-64 h-64 bg-gradient-to-r from-lime/20 to-electric/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-navy/20 to-blue-500/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-blue-500/20 to-orange-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/8 w-64 h-64 bg-gradient-to-r from-orange-500/20 to-purple-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
       
       <div className="container-modern relative z-10">
         <div className="max-w-6xl mx-auto text-center">
           {/* Trust Badge */}
-          <div className="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-electric/20 mb-8 animate-fade-in shadow-modern">
-            <Sparkles className="w-5 h-5 mr-3 text-electric" />
-            <span className="text-sm font-medium text-charcoal">Trusted by 500+ Leading Brands</span>
-            <TrendingUp className="w-5 h-5 ml-3 text-lime" />
+          <div className="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-blue-500/20 mb-8 animate-fade-in shadow-modern">
+            <Sparkles className="w-5 h-5 mr-3 text-blue-500" />
+            <span className="text-sm font-medium text-navy">Trusted by 500+ Leading Brands</span>
+            <TrendingUp className="w-5 h-5 ml-3 text-orange-500" />
           </div>
           
           {/* Main Heading */}
           <div className="mb-12 space-y-6 animate-slide-up">
             <h1 className="heading-modern text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[0.9] max-w-5xl mx-auto">
               <span className="block">Scale Your Business</span>
-              <span className="block bg-gradient-to-r from-electric via-neon to-lime bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-navy via-blue-500 to-orange-500 bg-clip-text text-transparent">
                 With Precision
               </span>
             </h1>
             
             <p className="text-modern text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto font-light">
               Transform your advertising performance with our data-driven strategies across 
-              <span className="font-medium text-charcoal"> Amazon, Walmart, and Meta platforms</span>
+              <span className="font-medium text-navy"> Amazon, Walmart, and Meta platforms</span>
             </p>
           </div>
           
@@ -120,7 +120,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 animate-scale-in">
             <Button 
               size="lg" 
-              className="group bg-lime text-charcoal hover:bg-lime/90 text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300 shadow-modern hover:shadow-modern-lg"
+              className="group bg-orange-500 text-white hover:bg-orange-600 text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300 shadow-modern hover:shadow-modern-lg"
               onClick={handlePrimaryButtonClick}
             >
               {ctaButtons.primaryText}
@@ -130,7 +130,7 @@ const Hero = () => {
             <Button 
               variant="outline" 
               size="lg" 
-              className="group border-electric text-electric hover:bg-electric hover:text-white text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300 shadow-modern hover:shadow-modern-lg"
+              className="group border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300 shadow-modern hover:shadow-modern-lg"
               onClick={handleSecondaryButtonClick}
             >
               <Play className="mr-3 w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
@@ -168,7 +168,7 @@ const Hero = () => {
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 bg-gradient-to-r from-electric to-neon rounded-full opacity-20 animate-pulse-modern"
+            className="absolute w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full opacity-20 animate-pulse-modern"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,

@@ -47,11 +47,11 @@ interface HomepageConfig {
 
 const defaultConfig: HomepageConfig = {
   theme: {
-    primaryColor: "#2563EB",
-    secondaryColor: "#1E1E2F", 
-    accentColor: "#00E5FF",
-    backgroundColor: "#F9FAFB",
-    ctaColor: "#A3E635"
+    primaryColor: "#1E293B",
+    secondaryColor: "#64748B", 
+    accentColor: "#3B82F6",
+    backgroundColor: "#F8FAFC",
+    ctaColor: "#F97316"
   },
   typography: {
     headingFont: "Space Grotesk",
@@ -144,15 +144,15 @@ const HomepageCustomizationTab = () => {
               <div className="flex gap-3 justify-center">
                 <button 
                   className="px-6 py-3 rounded-lg text-white font-semibold"
-                  style={{ backgroundColor: config.theme.ctaColor, color: config.theme.secondaryColor }}
+                  style={{ backgroundColor: config.theme.ctaColor }}
                 >
                   {config.hero.primaryCta}
                 </button>
                 <button 
                   className="px-6 py-3 rounded-lg border font-semibold"
                   style={{ 
-                    borderColor: config.theme.primaryColor, 
-                    color: config.theme.primaryColor,
+                    borderColor: config.theme.accentColor, 
+                    color: config.theme.accentColor,
                     fontFamily: config.typography.bodyFont 
                   }}
                 >
@@ -188,7 +188,7 @@ const HomepageCustomizationTab = () => {
                   <div className="flex items-center space-x-3">
                     <span className="text-2xl">{service.icon}</span>
                     <div>
-                      <h4 className="font-semibold" style={{ color: config.theme.secondaryColor }}>{service.title}</h4>
+                      <h4 className="font-semibold" style={{ color: config.theme.primaryColor }}>{service.title}</h4>
                       <p className="text-sm text-gray-600">Expert management and optimization</p>
                     </div>
                   </div>
@@ -214,7 +214,7 @@ const HomepageCustomizationTab = () => {
                   </div>
                   <p className="text-sm text-gray-600 mb-2">"Amazing results and professional service!"</p>
                   <div className="text-sm">
-                    <span className="font-semibold" style={{ color: config.theme.secondaryColor }}>{review.name}</span>
+                    <span className="font-semibold" style={{ color: config.theme.primaryColor }}>{review.name}</span>
                     <span className="text-gray-500"> - {review.company}</span>
                   </div>
                 </div>
@@ -236,7 +236,7 @@ const HomepageCustomizationTab = () => {
                   <div className="flex items-center space-x-3">
                     <span className="text-2xl">{feature.icon}</span>
                     <div>
-                      <h4 className="font-semibold" style={{ color: config.theme.secondaryColor }}>{feature.title}</h4>
+                      <h4 className="font-semibold" style={{ color: config.theme.primaryColor }}>{feature.title}</h4>
                       <p className="text-sm text-gray-600">Advanced feature description</p>
                     </div>
                   </div>
@@ -254,7 +254,7 @@ const HomepageCustomizationTab = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-charcoal mb-2">Homepage Customization</h2>
+          <h2 className="text-2xl font-semibold text-navy mb-2">Homepage Customization</h2>
           <p className="text-gray-600">Customize your homepage appearance and content</p>
         </div>
         <Button onClick={saveConfig} className="btn-primary">
@@ -277,7 +277,7 @@ const HomepageCustomizationTab = () => {
               <Card className="card-modern">
                 <CardHeader>
                   <div className="flex items-center">
-                    <Palette className="w-5 h-5 mr-2 text-electric" />
+                    <Palette className="w-5 h-5 mr-2 text-blue-500" />
                     <CardTitle>Color Theme</CardTitle>
                   </div>
                   <CardDescription>Customize your brand colors</CardDescription>
@@ -309,7 +309,7 @@ const HomepageCustomizationTab = () => {
               <Card className="card-modern">
                 <CardHeader>
                   <div className="flex items-center">
-                    <Type className="w-5 h-5 mr-2 text-electric" />
+                    <Type className="w-5 h-5 mr-2 text-blue-500" />
                     <CardTitle>Hero Section</CardTitle>
                   </div>
                   <CardDescription>Configure your hero section content</CardDescription>
@@ -364,7 +364,7 @@ const HomepageCustomizationTab = () => {
               <Card className="card-modern">
                 <CardHeader>
                   <div className="flex items-center">
-                    <Layout className="w-5 h-5 mr-2 text-electric" />
+                    <Layout className="w-5 h-5 mr-2 text-blue-500" />
                     <CardTitle>Page Sections</CardTitle>
                   </div>
                   <CardDescription>Enable or disable sections on your homepage</CardDescription>
@@ -373,12 +373,12 @@ const HomepageCustomizationTab = () => {
                   {Object.entries(config.sections).map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-electric/10 rounded-lg">
-                          {key === 'services' && <ShoppingCart className="w-4 h-4 text-electric" />}
-                          {key === 'reviews' && <Star className="w-4 h-4 text-electric" />}
-                          {key === 'features' && <Eye className="w-4 h-4 text-electric" />}
-                          {key === 'faq' && <Users className="w-4 h-4 text-electric" />}
-                          {key === 'cta' && <Type className="w-4 h-4 text-electric" />}
+                        <div className="p-2 bg-blue-500/10 rounded-lg">
+                          {key === 'services' && <ShoppingCart className="w-4 h-4 text-blue-500" />}
+                          {key === 'reviews' && <Star className="w-4 h-4 text-blue-500" />}
+                          {key === 'features' && <Eye className="w-4 h-4 text-blue-500" />}
+                          {key === 'faq' && <Users className="w-4 h-4 text-blue-500" />}
+                          {key === 'cta' && <Type className="w-4 h-4 text-blue-500" />}
                         </div>
                         <Label className="capitalize font-medium">{key} Section</Label>
                       </div>
@@ -396,7 +396,7 @@ const HomepageCustomizationTab = () => {
               <Card className="card-modern">
                 <CardHeader>
                   <div className="flex items-center">
-                    <Layout className="w-5 h-5 mr-2 text-electric" />
+                    <Layout className="w-5 h-5 mr-2 text-blue-500" />
                     <CardTitle>Layout Settings</CardTitle>
                   </div>
                   <CardDescription>Adjust spacing and layout properties</CardDescription>
@@ -437,7 +437,7 @@ const HomepageCustomizationTab = () => {
           <Card className="card-modern sticky top-6">
             <CardHeader>
               <div className="flex items-center">
-                <Eye className="w-5 h-5 mr-2 text-electric" />
+                <Eye className="w-5 h-5 mr-2 text-blue-500" />
                 <CardTitle>Live Preview</CardTitle>
               </div>
               <CardDescription>Preview your changes in real-time</CardDescription>
@@ -452,7 +452,7 @@ const HomepageCustomizationTab = () => {
                       onClick={() => setActivePreview(tab)}
                       className={`px-3 py-2 text-xs rounded-lg transition-colors ${
                         activePreview === tab 
-                          ? 'bg-electric/10 text-electric border border-electric/20' 
+                          ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' 
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
