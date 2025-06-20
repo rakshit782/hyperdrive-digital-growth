@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import * as LucideIcons from "lucide-react";
 import { ServiceCard } from "@/types/dashboard";
@@ -44,7 +44,7 @@ const ModernServices = () => {
   if (services.length === 0) return null;
 
   return (
-    <section className="section-minimal bg-white">
+    <section className="section-minimal bg-gradient-to-b from-white to-gray-50">
       <div className="container-minimal">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -55,7 +55,7 @@ const ModernServices = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => {
             const Icon = getIcon(service.icon);
             return (
@@ -95,24 +95,6 @@ const ModernServices = () => {
               </div>
             );
           })}
-        </div>
-
-        {/* CTA Section */}
-        <div className="text-center bg-gray-50 rounded-2xl p-12">
-          <h3 className="text-3xl font-bold text-gray-900 mb-4">
-            Ready to Transform Your Business?
-          </h3>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Get a free consultation and discover how our services can accelerate your growth
-          </p>
-          <Button 
-            size="lg"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-            onClick={() => window.location.href = '/free-audit'}
-          >
-            Get Free Consultation
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
         </div>
       </div>
     </section>

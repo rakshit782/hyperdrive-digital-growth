@@ -63,7 +63,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="section-minimal bg-white">
+    <section id="contact" className="section-minimal bg-gradient-to-b from-blue-50 to-white">
       <div className="container-minimal">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
