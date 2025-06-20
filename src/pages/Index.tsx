@@ -1,24 +1,28 @@
 
 import Header from "@/components/Header";
-import ModernHero from "@/components/ModernHero";
-import ModernServices from "@/components/ModernServices";
-import ModernReviews from "@/components/ModernReviews";
-import ModernCTA from "@/components/ModernCTA";
-import Contact from "@/components/Contact";
+import Hero from "@/components/Hero";
+import Services from "@/components/Services";
+import Reviews from "@/components/Reviews";
+import ModernFeatures from "@/components/ModernFeatures";
+import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 
 const Index = () => {
   return (
     <>
-      <SEOHead />
-      <div className="min-h-screen bg-white">
+      <SEOHead 
+        title="Expert Amazon, Walmart & Meta Advertising Agency | Drive Sales Growth"
+        description="Leading advertising agency specializing in Amazon PPC, Walmart Connect, and Meta ads. Boost your ROI with our proven strategies. Free audit available!"
+        keywords="Amazon advertising, Walmart advertising, Meta ads, PPC management, e-commerce marketing, digital advertising agency"
+      />
+      <div className="min-h-screen">
         <Header />
-        <ModernHero />
-        <ModernServices />
-        <ModernReviews />
-        <ModernCTA />
-        <Contact />
+        <Hero />
+        <Services />
+        <ModernFeatures />
+        <Reviews />
+        <FAQ />
         <Footer />
       </div>
     </>

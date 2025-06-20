@@ -1,222 +1,143 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Phone, MapPin, Send, CheckCircle } from "lucide-react";
-import { toast } from "sonner";
+import { CheckCircle, TrendingUp, Users, Award, Star, ArrowRight } from "lucide-react";
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    company: "",
-    phone: "",
-    message: ""
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      // Submit to Google Sheets if configured
-      const googleSheetsConfig = localStorage.getItem('googleSheetsConfig');
-      if (googleSheetsConfig) {
-        try {
-          const config = JSON.parse(googleSheetsConfig);
-          if (config.isEnabled && config.forms.contact.isEnabled && config.forms.contact.sheetUrl) {
-            // In a real implementation, this would call the Google Sheets API
-            console.log('Submitting contact form to Google Sheets:', {
-              ...formData,
-              timestamp: new Date().toISOString()
-            });
-          }
-        } catch (error) {
-          console.error('Error submitting to Google Sheets:', error);
-        }
-      }
-
-      toast.success("Message sent successfully! We'll get back to you soon.");
-      setFormData({
-        name: "",
-        email: "",
-        company: "",
-        phone: "",
-        message: ""
-      });
-    } catch (error) {
-      toast.error("Failed to send message. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+  const benefits = [
+    {
+      icon: TrendingUp,
+      title: "Proven ROI Growth",
+      description: "Average 300% increase in ROAS within 90 days",
+      metric: "300%"
+    },
+    {
+      icon: Users,
+      title: "Expert Team",
+      description: "15+ years combined experience in digital advertising",
+      metric: "15+"
+    },
+    {
+      icon: Award,
+      title: "Certified Partners",
+      description: "Official partners with Amazon, Meta, and Walmart",
+      metric: "3"
+    },
+    {
+      icon: CheckCircle,
+      title: "Guaranteed Results",
+      description: "30-day money-back guarantee on all services",
+      metric: "30d"
     }
-  };
+  ];
 
   return (
-    <section id="contact" className="section-minimal bg-gradient-to-b from-blue-50 to-white">
-      <div className="container-minimal">
+    <section id="contact" className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+      {/* Enhanced background decoration elements */}
+      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute top-1/2 left-0 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl"></div>
+      
+      <div className="container mx-auto px-6 relative z-10">
+        {/* Modern header section */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Get In Touch
+          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-6">
+            <Star className="w-4 h-4 mr-2 text-yellow-400 fill-yellow-400" />
+            <span className="text-sm font-medium text-white/90">Trusted by 500+ Brands</span>
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            Why Leading Brands
+            <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Choose Us
+            </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Ready to transform your business? Let's discuss how we can help you achieve your goals.
+          <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+            Join hundreds of successful companies that trust us to scale their advertising performance 
+            and drive exceptional growth.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <Card className="shadow-lg border-0">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-gray-900">Send us a message</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Input
-                      name="name"
-                      placeholder="Your Name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                      className="h-12 rounded-lg border-gray-200"
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      name="email"
-                      type="email"
-                      placeholder="Your Email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="h-12 rounded-lg border-gray-200"
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Input
-                      name="company"
-                      placeholder="Company Name"
-                      value={formData.company}
-                      onChange={handleInputChange}
-                      className="h-12 rounded-lg border-gray-200"
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      name="phone"
-                      placeholder="Phone Number"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="h-12 rounded-lg border-gray-200"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Textarea
-                    name="message"
-                    placeholder="Tell us about your project..."
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    required
-                    rows={6}
-                    className="rounded-lg border-gray-200 resize-none"
-                  />
-                </div>
-
-                <Button 
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+        {/* Modern benefits grid */}
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {benefits.map((benefit, index) => {
+              const IconComponent = benefit.icon;
+              return (
+                <div 
+                  key={index} 
+                  className="group relative"
+                  style={{
+                    animationDelay: `${index * 100}ms`
+                  }}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="mr-2 w-5 h-5" />
-                      Send Message
-                    </>
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                  {/* Gradient border effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/50 via-blue-500/50 to-purple-500/50 rounded-2xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <div className="relative p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
+                    {/* Icon and metric */}
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="w-14 h-14 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <IconComponent className="w-7 h-7 text-white" />
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                          {benefit.metric}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">
+                      {benefit.title}
+                    </h3>
+                    <p className="text-white/70 leading-relaxed">
+                      {benefit.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-          {/* Contact Information */}
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Let's start a conversation</h3>
-              <p className="text-gray-600 text-lg leading-relaxed mb-8">
-                Have a project in mind? We'd love to hear about it. Get a free consultation and discover 
-                how our expertise can help accelerate your business growth.
-              </p>
-            </div>
+          {/* Modern CTA section */}
+          <div className="text-center">
+            <div className="relative max-w-4xl mx-auto">
+              {/* Glassmorphism card */}
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-10 md:p-12 border border-white/20 shadow-2xl">
+                <div className="mb-8">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                    Ready to Scale Your Business?
+                  </h3>
+                  <p className="text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
+                    Get your free advertising audit and discover how we can boost your revenue 
+                    with our proven strategies.
+                  </p>
+                </div>
 
-            <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-6 h-6 text-blue-600" />
+                {/* Enhanced buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <button className="group relative bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-10 py-4 rounded-xl font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center">
+                    Get Free Audit
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                  <button className="group border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white px-10 py-4 rounded-xl font-semibold hover:border-white/50 hover:bg-white/20 transition-all duration-300 flex items-center">
+                    View Case Studies
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Email Us</h4>
-                  <p className="text-gray-600">hello@digitalagency.com</p>
-                </div>
-              </div>
 
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Call Us</h4>
-                  <p className="text-gray-600">+1 (555) 123-4567</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Visit Us</h4>
-                  <p className="text-gray-600">123 Business St, Suite 100<br />New York, NY 10001</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="bg-gray-50 rounded-2xl p-6">
-              <h4 className="font-semibold text-gray-900 mb-4">Why choose us?</h4>
-              <div className="space-y-3">
-                <div className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-blue-600 mr-3" />
-                  <span className="text-gray-700">Free consultation & audit</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-blue-600 mr-3" />
-                  <span className="text-gray-700">24/7 dedicated support</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-blue-600 mr-3" />
-                  <span className="text-gray-700">Proven track record</span>
+                {/* Trust indicators */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mt-8 pt-8 border-t border-white/20">
+                  <div className="flex items-center text-white/70">
+                    <CheckCircle className="w-5 h-5 mr-2 text-green-400" />
+                    <span>30-Day Money Back Guarantee</span>
+                  </div>
+                  <div className="flex items-center text-white/70">
+                    <div className="flex mr-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <span>4.9/5 Client Satisfaction</span>
+                  </div>
                 </div>
               </div>
             </div>
