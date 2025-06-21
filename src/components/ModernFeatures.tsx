@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Shield, Zap, TrendingUp, Users, Award, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -190,28 +189,6 @@ const ModernFeatures = () => {
               </Card>
             );
           })}
-        </div>
-
-        {/* Trust Indicators */}
-        <div className="mt-12 pt-8 border-t border-slate-200">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center opacity-70">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-slate-700">500+</div>
-              <div className="text-sm text-slate-500">Happy Clients</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-slate-700">$50M+</div>
-              <div className="text-sm text-slate-500">Ad Spend Managed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-slate-700">150%</div>
-              <div className="text-sm text-slate-500">Avg Growth Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-slate-700">24hrs</div>
-              <div className="text-sm text-slate-500">Response Time</div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

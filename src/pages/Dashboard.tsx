@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServicesTab from "@/components/dashboard/ServicesTab";
@@ -44,6 +43,7 @@ import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import toast from "sonner";
 import ModernFeaturesTab from "@/components/dashboard/ModernFeaturesTab";
+import { ChevronDown } from "lucide-react";
 
 const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
@@ -185,184 +185,192 @@ const Dashboard = () => {
         description="Admin dashboard to manage website content, services, reviews, and settings"
       />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              Dashboard
-            </h1>
-            <p className="text-slate-600">Manage your website content and settings</p>
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="lg:w-64 flex-shrink-0">
-              <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl sticky top-6">
-                <CardHeader>
-                  <CardTitle className="text-lg font-bold text-slate-900">Navigation</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <nav className="space-y-1 max-h-96 overflow-y-auto scrollbar-hide">
-                    {/* Content Management */}
-                    <div className="px-4 py-2">
-                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Content</h3>
-                      <div className="space-y-1">
-                        <button
-                          onClick={() => setActiveTab('services')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            activeTab === 'services' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
-                          }`}
-                        >
-                          Services
-                        </button>
-                        <button
-                          onClick={() => setActiveTab('reviews')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            activeTab === 'reviews' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
-                          }`}
-                        >
-                          Reviews
-                        </button>
-                        <button
-                          onClick={() => setActiveTab('modern-features')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            activeTab === 'modern-features' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
-                          }`}
-                        >
-                          Modern Features
-                        </button>
-                        <button
-                          onClick={() => setActiveTab('blog')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                            activeTab === 'blog' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
-                          }`}
-                        >
-                          Blog Management
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Integrations */}
-                    <div className="px-4 py-2">
-                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Integrations</h3>
-                      <div className="space-y-1">
-                        <button 
-                          onClick={() => setActiveTab('integration-status')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-status' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Status Overview
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('integration-test')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-test' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Test All Integrations
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('google-sheets')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-sheets' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Google Sheets
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('facebook-pixel')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'facebook-pixel' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Facebook Pixel
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('google-analytics')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-analytics' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Google Analytics
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('chatgpt')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'chatgpt' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          ChatGPT AI
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* AWS Services */}
-                    <div className="px-4 py-2">
-                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">AWS Services</h3>
-                      <div className="space-y-1">
-                        <button 
-                          onClick={() => setActiveTab('amplify')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'amplify' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Amplify
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('cognito')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cognito' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Cognito
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('dynamodb')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'dynamodb' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          DynamoDB
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('s3')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 's3' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          S3
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('ses')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'ses' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          SES
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Other Tools */}
-                    <div className="px-4 py-2">
-                      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Other Tools</h3>
-                      <div className="space-y-1">
-                        <button 
-                          onClick={() => setActiveTab('cloudflare')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cloudflare' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Cloudflare
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('user-management')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'user-management' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          User Management
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('custom-events')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'custom-events' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Custom Events
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('seo')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'seo' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          SEO
-                        </button>
-                        <button 
-                          onClick={() => setActiveTab('pricing')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'pricing' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Pricing
-                        </button>
-                      </div>
-                    </div>
-                  </nav>
-                </CardContent>
-              </Card>
+        <Header />
+        <div className="pt-20">
+          <div className="container mx-auto px-4 py-8">
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                Dashboard
+              </h1>
+              <p className="text-slate-600">Manage your website content and settings</p>
             </div>
 
-            <div className="flex-1 max-h-screen overflow-y-auto scrollbar-hide">
-              {renderTabContent()}
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="lg:w-64 flex-shrink-0">
+                <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl sticky top-24 h-[calc(100vh-8rem)]">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-bold text-slate-900">Navigation</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0 h-full flex flex-col">
+                    <nav className="space-y-1 flex-1 overflow-y-auto invisible-scroll">
+                      {/* Content Management */}
+                      <div className="px-4 py-2">
+                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Content</h3>
+                        <div className="space-y-1">
+                          <button
+                            onClick={() => setActiveTab('services')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                              activeTab === 'services' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                          >
+                            Services
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('reviews')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                              activeTab === 'reviews' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                          >
+                            Reviews
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('modern-features')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                              activeTab === 'modern-features' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                          >
+                            Modern Features
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('blog')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                              activeTab === 'blog' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                          >
+                            Blog Management
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Integrations */}
+                      <div className="px-4 py-2">
+                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Integrations</h3>
+                        <div className="space-y-1">
+                          <button 
+                            onClick={() => setActiveTab('integration-status')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-status' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Status Overview
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('integration-test')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'integration-test' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Test All Integrations
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('google-sheets')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-sheets' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Google Sheets
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('facebook-pixel')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'facebook-pixel' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Facebook Pixel
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('google-analytics')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'google-analytics' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Google Analytics
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('chatgpt')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'chatgpt' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            ChatGPT AI
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* AWS Services */}
+                      <div className="px-4 py-2">
+                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">AWS Services</h3>
+                        <div className="space-y-1">
+                          <button 
+                            onClick={() => setActiveTab('amplify')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'amplify' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Amplify
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('cognito')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cognito' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Cognito
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('dynamodb')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'dynamodb' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            DynamoDB
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('s3')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 's3' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            S3
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('ses')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'ses' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            SES
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Other Tools */}
+                      <div className="px-4 py-2">
+                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Other Tools</h3>
+                        <div className="space-y-1">
+                          <button 
+                            onClick={() => setActiveTab('cloudflare')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'cloudflare' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Cloudflare
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('user-management')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'user-management' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            User Management
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('custom-events')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'custom-events' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Custom Events
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('seo')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'seo' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            SEO
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('pricing')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'pricing' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
+                          >
+                            Pricing
+                          </button>
+                        </div>
+                      </div>
+                    </nav>
+                    
+                    {/* Down Arrow at bottom */}
+                    <div className="flex justify-center py-3 border-t border-slate-200">
+                      <ChevronDown className="w-5 h-5 text-slate-400 animate-bounce" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex-1 max-h-screen overflow-y-auto invisible-scroll">
+                {renderTabContent()}
+              </div>
             </div>
           </div>
         </div>

@@ -272,7 +272,7 @@ const Header = () => {
             )}
           </nav>
           
-          {/* Auth Section */}
+          {/* Auth Section - Only show for authenticated users */}
           <div 
             className="hidden lg:flex items-center space-x-4"
             style={{ marginLeft: `${headerSettings.ctaMenuGap * 0.25}rem` }}
@@ -295,15 +295,7 @@ const Header = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <Button 
-                variant="outline" 
-                onClick={() => window.location.href = '/auth'}
-                className="mr-2"
-              >
-                Sign In
-              </Button>
-            )}
+            ) : null}
             
             <Button 
               className={getCTAButtonClass()}
@@ -372,7 +364,7 @@ const Header = () => {
                   </div>
                 )}
                 
-                {/* Mobile Auth */}
+                {/* Mobile Auth - Only show for authenticated users */}
                 <div className="px-6 pt-6 space-y-3">
                   {user ? (
                     <>
@@ -399,18 +391,7 @@ const Header = () => {
                         Sign Out
                       </Button>
                     </>
-                  ) : (
-                    <Button 
-                      variant="outline"
-                      className="w-full mb-3"
-                      onClick={() => {
-                        window.location.href = '/auth';
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      Sign In
-                    </Button>
-                  )}
+                  ) : null}
                   
                   <Button 
                     className={getCTAButtonClass() + " w-full py-4"}
