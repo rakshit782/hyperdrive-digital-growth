@@ -16,7 +16,7 @@ const ModernHero = () => {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div className="space-y-8">
+            <div className="space-y-8 text-center lg:text-left">
               {/* Trust badge */}
               <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-100 shadow-sm">
                 <div className="flex">
@@ -29,7 +29,7 @@ const ModernHero = () => {
 
               {/* Main heading */}
               <div className="space-y-6">
-                <h1 className="text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
+                <h1 className="text-4xl lg:text-6xl font-bold text-slate-900 leading-tight">
                   Scale Your
                   <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent block">
                     Digital Advertising
@@ -37,14 +37,14 @@ const ModernHero = () => {
                   Performance
                 </h1>
                 
-                <p className="text-xl text-slate-600 leading-relaxed max-w-lg">
+                <p className="text-xl text-slate-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
                   Expert Amazon, Walmart & Meta advertising agency that drives measurable growth. 
-                  Get 300% average ROAS increase in 90 days.
+                  Get proven results with our data-driven strategies.
                 </p>
               </div>
 
               {/* CTA buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
@@ -64,14 +64,14 @@ const ModernHero = () => {
               </div>
 
               {/* Trust indicators */}
-              <div className="flex flex-wrap items-center gap-6 pt-6">
+              <div className="flex flex-wrap items-center gap-6 pt-6 justify-center lg:justify-start">
                 <div className="flex items-center gap-2 text-slate-600">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   <span className="font-medium">Free Audit</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-600">
                   <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="font-medium">No Long-term Contracts</span>
+                  <span className="font-medium">No Contracts</span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-600">
                   <CheckCircle className="w-5 h-5 text-green-500" />
@@ -83,33 +83,15 @@ const ModernHero = () => {
             {/* Right Content - Visual */}
             <div className="relative">
               <div className="relative bg-white/20 backdrop-blur-sm rounded-3xl p-8 border border-white/30 shadow-2xl">
-                {/* Stats cards */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center border border-blue-100">
-                    <div className="text-2xl font-bold text-blue-600">300%</div>
-                    <div className="text-sm text-slate-600">Avg ROAS Increase</div>
-                  </div>
-                  <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center border border-purple-100">
-                    <div className="text-2xl font-bold text-purple-600">500+</div>
-                    <div className="text-sm text-slate-600">Happy Clients</div>
-                  </div>
-                  <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center border border-cyan-100">
-                    <div className="text-2xl font-bold text-cyan-600">90 Days</div>
-                    <div className="text-sm text-slate-600">Results Timeline</div>
-                  </div>
-                  <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center border border-indigo-100">
-                    <div className="text-2xl font-bold text-indigo-600">24/7</div>
-                    <div className="text-sm text-slate-600">Support</div>
-                  </div>
-                </div>
-
                 {/* Chart placeholder */}
                 <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-100">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold text-slate-800">Revenue Growth</h3>
-                    <span className="text-sm text-green-600 font-medium">+247%</span>
+                    <span className="text-sm text-green-600 font-medium">+300% ROAS</span>
                   </div>
-                  <div className="h-32 bg-gradient-to-r from-blue-400 to-purple-400 rounded-lg opacity-80"></div>
+                  <div className="h-32 bg-gradient-to-r from-blue-400 to-purple-400 rounded-lg opacity-80 flex items-end justify-center">
+                    <div className="text-white font-bold text-lg mb-4">Performance Analytics</div>
+                  </div>
                 </div>
               </div>
 

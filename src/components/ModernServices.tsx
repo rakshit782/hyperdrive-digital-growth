@@ -1,5 +1,5 @@
 
-import { ShoppingCart, Store, Facebook, TrendingUp, Users, Award } from "lucide-react";
+import { ShoppingCart, Store, Facebook, TrendingUp, Users, Award, Settings, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const ModernServices = () => {
@@ -30,6 +30,33 @@ const ModernServices = () => {
       gradient: "from-purple-500 to-indigo-500",
       bgGradient: "from-purple-50 to-indigo-50",
       stats: { metric: "400%", label: "Lead Gen" }
+    },
+    {
+      icon: Users,
+      title: "Account Management",
+      description: "Professional account oversight and strategic guidance for your success.",
+      features: ["Dedicated Manager", "Strategic Planning", "Performance Reviews", "Growth Strategies"],
+      gradient: "from-green-500 to-emerald-500",
+      bgGradient: "from-green-50 to-emerald-50",
+      stats: { metric: "24/7", label: "Support" }
+    },
+    {
+      icon: Settings,
+      title: "Shopify Integration",
+      description: "Seamlessly integrate your Shopify store with marketing platforms.",
+      features: ["Platform Integration", "Data Sync", "Automated Workflows", "Custom Solutions"],
+      gradient: "from-cyan-500 to-blue-500",
+      bgGradient: "from-cyan-50 to-blue-50",
+      stats: { metric: "50+", label: "Integrations" }
+    },
+    {
+      icon: Monitor,
+      title: "Shopify Development",
+      description: "Custom Shopify development and optimization for enhanced performance.",
+      features: ["Custom Development", "Theme Optimization", "App Integration", "Performance Tuning"],
+      gradient: "from-yellow-500 to-orange-500",
+      bgGradient: "from-yellow-50 to-orange-50",
+      stats: { metric: "95%", label: "Performance" }
     }
   ];
 
@@ -43,29 +70,29 @@ const ModernServices = () => {
             <span className="text-sm font-medium text-blue-700">Our Services</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            Advertising Solutions That
+            Comprehensive Advertising Solutions
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent block">
-              Drive Real Results
+              That Drive Real Results
             </span>
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            We specialize in high-performance advertising across the platforms that matter most for your business growth.
+            We specialize in high-performance advertising across all major platforms for complete business growth.
           </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {services.map((service, index) => {
             const IconComponent = service.icon;
             return (
               <div 
                 key={index}
-                className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-slate-200 transform hover:-translate-y-2"
+                className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-slate-200 transform hover:-translate-y-2 h-full flex flex-col"
               >
                 {/* Background gradient */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${service.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl`}></div>
                 
-                <div className="relative z-10">
+                <div className="relative z-10 flex flex-col h-full">
                   {/* Icon and stats */}
                   <div className="flex items-center justify-between mb-6">
                     <div className={`w-16 h-16 bg-gradient-to-br ${service.gradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -83,7 +110,7 @@ const ModernServices = () => {
                   <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-slate-800 transition-colors">
                     {service.title}
                   </h3>
-                  <p className="text-slate-600 mb-6 leading-relaxed">
+                  <p className="text-slate-600 mb-6 leading-relaxed flex-grow">
                     {service.description}
                   </p>
 
@@ -100,7 +127,7 @@ const ModernServices = () => {
                   {/* CTA */}
                   <Button 
                     variant="outline" 
-                    className="w-full border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 transition-all duration-300 group-hover:shadow-md"
+                    className="w-full border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 transition-all duration-300 group-hover:shadow-md mt-auto"
                   >
                     Learn More
                   </Button>
@@ -112,7 +139,7 @@ const ModernServices = () => {
 
         {/* Bottom stats */}
         <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <div className="text-3xl font-bold text-blue-600 mb-2">500+</div>
               <div className="text-slate-600">Happy Clients</div>

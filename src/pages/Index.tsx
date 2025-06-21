@@ -2,7 +2,7 @@
 import Header from "@/components/Header";
 import ModernHero from "@/components/ModernHero";
 import ModernServices from "@/components/ModernServices";
-import ModernReviews from "@/components/ModernReviews";
+import CircularReviews from "@/components/CircularReviews";
 import ModernFeatures from "@/components/ModernFeatures";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
@@ -23,7 +23,7 @@ const Index = () => {
         <ModernHero />
         <ModernServices />
         <ModernFeatures />
-        <ModernReviews />
+        <CircularReviews />
         <FAQ />
         
         {/* Newsletter Section */}
