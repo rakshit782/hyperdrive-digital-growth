@@ -1,199 +1,230 @@
 
-import Header from "@/components/Header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRight, TrendingUp, DollarSign, Target, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, DollarSign, Target, BarChart3, ArrowRight, Share2 } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 
 const MetaCaseStudies = () => {
   const caseStudies = [
     {
-      title: "Beauty Brand Achieves 500% ROAS with Meta Advertising",
-      client: "GlowUp Cosmetics",
-      category: "Beauty & Personal Care",
-      challenge: "High customer acquisition costs and low engagement rates across Facebook and Instagram",
-      solution: "Implemented advanced audience targeting with custom lookalike audiences and dynamic retargeting campaigns",
+      title: "E-commerce Fashion Brand Scaling",
+      client: "Trendy Threads",
+      challenge: "High customer acquisition costs and low ROAS",
+      solution: "Advanced audience segmentation with lookalike campaigns and retargeting funnels",
       results: {
-        roasIncrease: "500%",
-        cpaReduction: "65%",
-        engagementGrowth: "320%",
-        timeframe: "5 months"
+        roasIncrease: "520%",
+        salesGrowth: "$2.1M",
+        timeline: "6 months"
       },
-      metrics: [
-        { label: "ROAS", before: "1.2", after: "7.2", improvement: "+500%" },
-        { label: "Cost Per Acquisition", before: "$45", after: "$16", improvement: "-64%" },
-        { label: "Engagement Rate", before: "1.8%", after: "7.5%", improvement: "+317%" },
-        { label: "Monthly Revenue", before: "$12K", after: "$85K", improvement: "+608%" }
-      ]
+      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop"
     },
     {
-      title: "Fitness Brand Scales to 6-Figure Monthly Revenue",
-      client: "FitCore Equipment",
-      category: "Sports & Fitness",
-      challenge: "Seasonal fluctuations and difficulty reaching target demographic effectively",
-      solution: "Developed comprehensive funnel strategy with video ads and conversion optimization",
+      title: "SaaS Company Lead Generation",
+      client: "CloudTech Solutions",
+      challenge: "Difficulty reaching decision-makers and converting leads",
+      solution: "B2B targeting with video campaigns and lead form optimization",
       results: {
-        revenueGrowth: "450%",
-        leadIncrease: "280%",
-        conversionRate: "190%",
-        timeframe: "8 months"
+        roasIncrease: "450%",
+        salesGrowth: "$1.8M",
+        timeline: "5 months"
       },
-      metrics: [
-        { label: "Monthly Revenue", before: "$22K", after: "$121K", improvement: "+450%" },
-        { label: "Qualified Leads", before: "180/mo", after: "684/mo", improvement: "+280%" },
-        { label: "Conversion Rate", before: "2.1%", after: "6.1%", improvement: "+190%" },
-        { label: "Cost Per Click", before: "$1.20", after: "$0.75", improvement: "-38%" }
-      ]
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop"
     },
     {
-      title: "Home Decor Brand Increases Market Share by 200%",
-      client: "ModernLiving Designs",
-      category: "Home & Garden",
-      challenge: "Limited brand awareness and struggling to compete with established home decor brands",
-      solution: "Created compelling visual storytelling campaigns with carousel ads and Instagram Shopping integration",
+      title: "Local Restaurant Chain Growth",
+      client: "Gourmet Bites",
+      challenge: "Limited reach and seasonal fluctuations",
+      solution: "Location-based targeting with dynamic product ads and event promotion",
       results: {
-        brandAwareness: "300%",
-        marketShare: "200%",
-        socialFollowing: "400%",
-        timeframe: "6 months"
+        roasIncrease: "380%",
+        salesGrowth: "$950K",
+        timeline: "4 months"
       },
-      metrics: [
-        { label: "Brand Awareness", before: "15%", after: "60%", improvement: "+300%" },
-        { label: "Market Share", before: "3%", after: "9%", improvement: "+200%" },
-        { label: "Social Following", before: "5K", after: "25K", improvement: "+400%" },
-        { label: "Website Traffic", before: "8K/mo", after: "45K/mo", improvement: "+463%" }
-      ]
+      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Fitness Brand Community Building",
+      client: "FitLife Pro",
+      challenge: "Building brand awareness and engagement",
+      solution: "Community-focused campaigns with user-generated content and influencer partnerships",
+      results: {
+        roasIncrease: "410%",
+        salesGrowth: "$1.3M",
+        timeline: "7 months"
+      },
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Beauty Brand Influencer Success",
+      client: "Radiant Beauty",
+      challenge: "Breaking through saturated market competition",
+      solution: "Micro-influencer campaigns with authentic content and social proof",
+      results: {
+        roasIncrease: "480%",
+        salesGrowth: "$1.6M",
+        timeline: "6 months"
+      },
+      image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Home Services Lead Generation",
+      client: "Elite Contractors",
+      challenge: "Seasonal business with inconsistent lead flow",
+      solution: "Geo-targeted campaigns with seasonal messaging and lead nurturing",
+      results: {
+        roasIncrease: "350%",
+        salesGrowth: "$780K",
+        timeline: "5 months"
+      },
+      image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Educational Platform Expansion",
+      client: "LearnSmart Academy",
+      challenge: "Reaching the right student demographics effectively",
+      solution: "Age and interest-based targeting with educational content marketing",
+      results: {
+        roasIncrease: "420%",
+        salesGrowth: "$1.1M",
+        timeline: "6 months"
+      },
+      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Luxury Watch Brand Prestige",
+      client: "Timepiece Elite",
+      challenge: "Targeting high-value customers and building brand prestige",
+      solution: "Premium audience targeting with luxury lifestyle content and exclusivity messaging",
+      results: {
+        roasIncrease: "390%",
+        salesGrowth: "$2.3M",
+        timeline: "8 months"
+      },
+      image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=300&fit=crop"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-slate-900">
-              Meta <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Case Studies</span>
-            </h1>
-            <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-              Discover how our Meta advertising strategies have transformed businesses through 
-              powerful Facebook and Instagram campaigns that drive real results.
-            </p>
+    <>
+      <SEOHead 
+        title="Meta Advertising Case Studies | Facebook & Instagram Success"
+        description="Discover how our Meta advertising strategies helped brands achieve 350-520% ROAS increases on Facebook and Instagram."
+        keywords="Meta advertising case studies, Facebook ads success stories, Instagram marketing results"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Header />
+        
+        {/* Hero Section */}
+        <section className="pt-20 pb-12">
+          <div className="container mx-auto px-6">
+            <div className="text-center max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-100 mb-6">
+                <Star className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-700">Meta Success Stories</span>
+              </div>
+              <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
+                Meta Advertising
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent block">
+                  Case Studies
+                </span>
+              </h1>
+              <p className="text-xl text-slate-600 leading-relaxed">
+                Explore real success stories from our Meta advertising campaigns. See how strategic Facebook and Instagram marketing drives exceptional business growth.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Case Studies */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="space-y-20">
-            {caseStudies.map((study, index) => (
-              <div key={index} className="max-w-6xl mx-auto">
-                <Card className="bg-white border shadow-xl overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                    <CardTitle className="text-3xl font-bold">{study.title}</CardTitle>
-                    <CardDescription className="text-purple-100 text-lg">
-                      {study.client} • {study.category}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="p-8">
-                    <div className="grid lg:grid-cols-2 gap-12">
-                      {/* Challenge & Solution */}
-                      <div className="space-y-8">
+        {/* Case Studies Grid */}
+        <section className="pb-20">
+          <div className="container mx-auto px-6">
+            <div className="grid lg:grid-cols-2 gap-8 mb-16">
+              {caseStudies.map((study, index) => (
+                <div 
+                  key={index}
+                  className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-blue-200 transform hover:-translate-y-2"
+                >
+                  <div className="flex flex-col h-full">
+                    {/* Image */}
+                    <div className="relative rounded-2xl overflow-hidden mb-6">
+                      <img 
+                        src={study.image} 
+                        alt={study.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                        {study.title}
+                      </h3>
+                      <p className="text-blue-600 font-medium mb-4">{study.client}</p>
+                      
+                      <div className="space-y-4 mb-6">
                         <div>
-                          <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center">
-                            <Target className="w-6 h-6 mr-2 text-red-500" />
-                            Challenge
-                          </h3>
-                          <p className="text-slate-600 leading-relaxed">{study.challenge}</p>
+                          <h4 className="font-semibold text-slate-800 mb-1">Challenge:</h4>
+                          <p className="text-slate-600 text-sm">{study.challenge}</p>
                         </div>
                         
                         <div>
-                          <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center">
-                            <BarChart3 className="w-6 h-6 mr-2 text-purple-500" />
-                            Solution
-                          </h3>
-                          <p className="text-slate-600 leading-relaxed">{study.solution}</p>
+                          <h4 className="font-semibold text-slate-800 mb-1">Solution:</h4>
+                          <p className="text-slate-600 text-sm">{study.solution}</p>
                         </div>
-                        
-                        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl">
-                          <h3 className="text-xl font-bold text-slate-900 mb-3 flex items-center">
-                            <TrendingUp className="w-5 h-5 mr-2 text-green-500" />
-                            Results in {study.results.timeframe}
-                          </h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            {Object.entries(study.results).map(([key, value]) => {
-                              if (key === 'timeframe') return null;
-                              return (
-                                <div key={key} className="text-center">
-                                  <div className="text-2xl font-bold text-green-600">{value}</div>
-                                  <div className="text-sm text-slate-600 capitalize">
-                                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                                  </div>
-                                </div>
-                              );
-                            })}
+                      </div>
+
+                      {/* Results */}
+                      <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
+                        <h4 className="font-semibold text-slate-800 mb-4 flex items-center">
+                          <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
+                          Results Achieved
+                        </h4>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-600">{study.results.roasIncrease}</div>
+                            <div className="text-xs text-slate-600">ROAS Increase</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-purple-600">{study.results.salesGrowth}</div>
+                            <div className="text-xs text-slate-600">Revenue Growth</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-cyan-600">{study.results.timeline}</div>
+                            <div className="text-xs text-slate-600">Timeline</div>
                           </div>
                         </div>
                       </div>
-                      
-                      {/* Metrics */}
-                      <div>
-                        <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center">
-                          <Share2 className="w-6 h-6 mr-2 text-purple-500" />
-                          Key Metrics
-                        </h3>
-                        
-                        <div className="space-y-6">
-                          {study.metrics.map((metric, metricIndex) => (
-                            <div key={metricIndex} className="bg-slate-50 p-6 rounded-xl">
-                              <div className="flex justify-between items-center mb-3">
-                                <span className="font-semibold text-slate-900">{metric.label}</span>
-                                <span className="text-lg font-bold text-green-600">{metric.improvement}</span>
-                              </div>
-                              <div className="flex justify-between text-sm text-slate-600">
-                                <span>Before: {metric.before}</span>
-                                <span>After: {metric.after}</span>
-                              </div>
-                              <div className="w-full bg-slate-200 rounded-full h-2 mt-3">
-                                <div 
-                                  className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-1000"
-                                  style={{ width: '75%' }}
-                                ></div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-pink-600">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6 text-white">Ready to Transform Your Social Media Advertising?</h2>
-          <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-            Let's create a powerful Meta advertising strategy that connects with your audience and drives conversions.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-white text-purple-600 hover:bg-purple-50 font-semibold px-8 py-4 text-lg rounded-xl"
-            onClick={() => window.location.href = '/free-audit'}
-          >
-            Get Your Free Audit
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
-        </div>
-      </section>
-    </div>
+            {/* CTA Section */}
+            <div className="text-center">
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50 max-w-3xl mx-auto">
+                <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                  Ready to Achieve Meta Success?
+                </h2>
+                <p className="text-xl text-slate-600 mb-8">
+                  Get your free Meta advertising audit and discover how we can create similar success stories for your brand.
+                </p>
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                >
+                  Get Free Audit
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <Footer />
+    </>
   );
 };
 

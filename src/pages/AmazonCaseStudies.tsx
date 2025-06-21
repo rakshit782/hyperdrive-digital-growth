@@ -1,199 +1,230 @@
 
-import Header from "@/components/Header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRight, TrendingUp, DollarSign, Target, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, DollarSign, Target, BarChart3, ArrowRight } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 
 const AmazonCaseStudies = () => {
   const caseStudies = [
     {
-      title: "Electronics Brand Achieves 300% ROAS Increase",
+      title: "Home Decor Brand Scales to 7-Figures",
+      client: "Modern Living Co.",
+      challenge: "Low visibility and poor ROAS on Amazon PPC campaigns",
+      solution: "Complete campaign restructure with strategic keyword targeting and bid optimization",
+      results: {
+        roasIncrease: "450%",
+        salesGrowth: "$1.2M",
+        timeline: "6 months"
+      },
+      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Tech Accessory Brand Dominates Search",
       client: "TechGear Pro",
-      category: "Consumer Electronics",
-      challenge: "Low conversion rates and high ACOS across sponsored product campaigns",
-      solution: "Implemented advanced keyword research, negative keyword optimization, and bid management strategies",
+      challenge: "High competition and rising advertising costs",
+      solution: "Advanced keyword research and negative keyword optimization",
       results: {
-        roasIncrease: "300%",
-        acosReduction: "45%",
-        salesGrowth: "250%",
-        timeframe: "6 months"
+        roasIncrease: "320%",
+        salesGrowth: "$800K",
+        timeline: "4 months"
       },
-      metrics: [
-        { label: "ROAS", before: "2.1", after: "6.3", improvement: "+300%" },
-        { label: "ACOS", before: "48%", after: "26%", improvement: "-45%" },
-        { label: "Monthly Sales", before: "$15K", after: "$52K", improvement: "+247%" },
-        { label: "Conversion Rate", before: "2.1%", after: "4.8%", improvement: "+129%" }
-      ]
+      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop"
     },
     {
-      title: "Home & Garden Brand Scales to $100K Monthly Revenue",
-      client: "Garden Essentials",
-      category: "Home & Garden",
-      challenge: "Limited brand visibility and struggling to compete with established sellers",
-      solution: "Comprehensive campaign restructure with focus on long-tail keywords and brand defense",
+      title: "Beauty Brand Achieves Market Leadership",
+      client: "Pure Beauty",
+      challenge: "Struggling to compete with established brands",
+      solution: "Brand-focused campaign strategy with sponsored brand ads",
       results: {
-        revenueGrowth: "400%",
-        impressionIncrease: "180%",
-        clickIncrease: "220%",
-        timeframe: "8 months"
+        roasIncrease: "380%",
+        salesGrowth: "$950K",
+        timeline: "5 months"
       },
-      metrics: [
-        { label: "Monthly Revenue", before: "$20K", after: "$100K", improvement: "+400%" },
-        { label: "Impressions", before: "500K", after: "1.4M", improvement: "+180%" },
-        { label: "Click-Through Rate", before: "0.8%", after: "1.9%", improvement: "+138%" },
-        { label: "Organic Ranking", before: "Page 3", after: "Page 1", improvement: "Top 10" }
-      ]
+      image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop"
     },
     {
-      title: "Fashion Brand Reduces ACOS by 60% While Doubling Sales",
-      client: "StyleCraft Apparel",
-      category: "Fashion & Clothing",
-      challenge: "High advertising costs with declining profitability and market share loss",
-      solution: "Strategic campaign optimization with automated bidding and dayparting strategies",
+      title: "Sports Equipment Retailer Expansion",
+      client: "Active Sports",
+      challenge: "Limited reach and poor product visibility",
+      solution: "Multi-format campaign strategy with video ads",
       results: {
-        acosReduction: "60%",
-        salesDouble: "100%",
-        profitIncrease: "180%",
-        timeframe: "4 months"
+        roasIncrease: "410%",
+        salesGrowth: "$1.5M",
+        timeline: "7 months"
       },
-      metrics: [
-        { label: "ACOS", before: "55%", after: "22%", improvement: "-60%" },
-        { label: "Monthly Sales", before: "$35K", after: "$70K", improvement: "+100%" },
-        { label: "Profit Margin", before: "15%", after: "42%", improvement: "+180%" },
-        { label: "Brand Search Volume", before: "2K", after: "8K", improvement: "+300%" }
-      ]
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Kitchen Appliance Brand Growth Story",
+      client: "Chef's Choice",
+      challenge: "Seasonal sales fluctuations and inventory issues",
+      solution: "Dynamic campaign scheduling and inventory-based bidding",
+      results: {
+        roasIncrease: "365%",
+        salesGrowth: "$700K",
+        timeline: "4 months"
+      },
+      image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Fashion Accessory Brand Breakthrough",
+      client: "Style Forward",
+      challenge: "Low conversion rates and high ACOS",
+      solution: "Product targeting and competitor analysis optimization",
+      results: {
+        roasIncrease: "340%",
+        salesGrowth: "$650K",
+        timeline: "5 months"
+      },
+      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Pet Supplies Brand Market Domination",
+      client: "Happy Pets Co.",
+      challenge: "Fragmented campaign structure and poor performance",
+      solution: "Campaign consolidation and automated bidding implementation",
+      results: {
+        roasIncrease: "430%",
+        salesGrowth: "$1.1M",
+        timeline: "6 months"
+      },
+      image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop"
+    },
+    {
+      title: "Electronics Brand Revenue Explosion",
+      client: "Digital Pro",
+      challenge: "Complex product catalog and targeting difficulties",
+      solution: "AI-powered campaign optimization and advanced targeting",
+      results: {
+        roasIncrease: "500%",
+        salesGrowth: "$2.1M",
+        timeline: "8 months"
+      },
+      image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-slate-900">
-              Amazon <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Case Studies</span>
-            </h1>
-            <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-              Discover how we've helped Amazon sellers achieve remarkable growth through strategic 
-              advertising optimization and data-driven campaign management.
-            </p>
+    <>
+      <SEOHead 
+        title="Amazon Advertising Case Studies | Proven Success Stories"
+        description="Discover how our Amazon advertising strategies helped brands achieve 300-500% ROAS increases. Real results from real clients."
+        keywords="Amazon advertising case studies, Amazon PPC success stories, Amazon marketing results"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Header />
+        
+        {/* Hero Section */}
+        <section className="pt-20 pb-12">
+          <div className="container mx-auto px-6">
+            <div className="text-center max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-100 mb-6">
+                <Star className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-700">Amazon Success Stories</span>
+              </div>
+              <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
+                Amazon Advertising
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent block">
+                  Case Studies
+                </span>
+              </h1>
+              <p className="text-xl text-slate-600 leading-relaxed">
+                Real results from real clients. See how our proven Amazon advertising strategies have helped businesses like yours achieve extraordinary growth and dominate their markets.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Case Studies */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="space-y-20">
-            {caseStudies.map((study, index) => (
-              <div key={index} className="max-w-6xl mx-auto">
-                <Card className="bg-white border shadow-xl overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white">
-                    <CardTitle className="text-3xl font-bold">{study.title}</CardTitle>
-                    <CardDescription className="text-blue-100 text-lg">
-                      {study.client} • {study.category}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="p-8">
-                    <div className="grid lg:grid-cols-2 gap-12">
-                      {/* Challenge & Solution */}
-                      <div className="space-y-8">
+        {/* Case Studies Grid */}
+        <section className="pb-20">
+          <div className="container mx-auto px-6">
+            <div className="grid lg:grid-cols-2 gap-8 mb-16">
+              {caseStudies.map((study, index) => (
+                <div 
+                  key={index}
+                  className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-blue-200 transform hover:-translate-y-2"
+                >
+                  <div className="flex flex-col h-full">
+                    {/* Image */}
+                    <div className="relative rounded-2xl overflow-hidden mb-6">
+                      <img 
+                        src={study.image} 
+                        alt={study.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                        {study.title}
+                      </h3>
+                      <p className="text-blue-600 font-medium mb-4">{study.client}</p>
+                      
+                      <div className="space-y-4 mb-6">
                         <div>
-                          <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center">
-                            <Target className="w-6 h-6 mr-2 text-red-500" />
-                            Challenge
-                          </h3>
-                          <p className="text-slate-600 leading-relaxed">{study.challenge}</p>
+                          <h4 className="font-semibold text-slate-800 mb-1">Challenge:</h4>
+                          <p className="text-slate-600 text-sm">{study.challenge}</p>
                         </div>
                         
                         <div>
-                          <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center">
-                            <BarChart3 className="w-6 h-6 mr-2 text-blue-500" />
-                            Solution
-                          </h3>
-                          <p className="text-slate-600 leading-relaxed">{study.solution}</p>
+                          <h4 className="font-semibold text-slate-800 mb-1">Solution:</h4>
+                          <p className="text-slate-600 text-sm">{study.solution}</p>
                         </div>
-                        
-                        <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl">
-                          <h3 className="text-xl font-bold text-slate-900 mb-3 flex items-center">
-                            <TrendingUp className="w-5 h-5 mr-2 text-green-500" />
-                            Results in {study.results.timeframe}
-                          </h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            {Object.entries(study.results).map(([key, value]) => {
-                              if (key === 'timeframe') return null;
-                              return (
-                                <div key={key} className="text-center">
-                                  <div className="text-2xl font-bold text-green-600">{value}</div>
-                                  <div className="text-sm text-slate-600 capitalize">
-                                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                                  </div>
-                                </div>
-                              );
-                            })}
+                      </div>
+
+                      {/* Results */}
+                      <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
+                        <h4 className="font-semibold text-slate-800 mb-4 flex items-center">
+                          <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
+                          Results Achieved
+                        </h4>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-600">{study.results.roasIncrease}</div>
+                            <div className="text-xs text-slate-600">ROAS Increase</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-purple-600">{study.results.salesGrowth}</div>
+                            <div className="text-xs text-slate-600">Revenue Growth</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-cyan-600">{study.results.timeline}</div>
+                            <div className="text-xs text-slate-600">Timeline</div>
                           </div>
                         </div>
                       </div>
-                      
-                      {/* Metrics */}
-                      <div>
-                        <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center">
-                          <DollarSign className="w-6 h-6 mr-2 text-green-500" />
-                          Key Metrics
-                        </h3>
-                        
-                        <div className="space-y-6">
-                          {study.metrics.map((metric, metricIndex) => (
-                            <div key={metricIndex} className="bg-slate-50 p-6 rounded-xl">
-                              <div className="flex justify-between items-center mb-3">
-                                <span className="font-semibold text-slate-900">{metric.label}</span>
-                                <span className="text-lg font-bold text-green-600">{metric.improvement}</span>
-                              </div>
-                              <div className="flex justify-between text-sm text-slate-600">
-                                <span>Before: {metric.before}</span>
-                                <span>After: {metric.after}</span>
-                              </div>
-                              <div className="w-full bg-slate-200 rounded-full h-2 mt-3">
-                                <div 
-                                  className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full transition-all duration-1000"
-                                  style={{ width: '75%' }}
-                                ></div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-600">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6 text-white">Ready to Achieve Similar Results?</h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Let's analyze your Amazon advertising performance and create a custom strategy for your business.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg rounded-xl"
-            onClick={() => window.location.href = '/free-audit'}
-          >
-            Get Your Free Audit
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
-        </div>
-      </section>
-    </div>
+            {/* CTA Section */}
+            <div className="text-center">
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50 max-w-3xl mx-auto">
+                <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                  Ready to Write Your Success Story?
+                </h2>
+                <p className="text-xl text-slate-600 mb-8">
+                  Get your free Amazon advertising audit and discover how we can transform your performance like these success stories.
+                </p>
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                >
+                  Get Free Audit
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <Footer />
+    </>
   );
 };
 

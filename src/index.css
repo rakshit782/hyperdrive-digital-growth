@@ -205,6 +205,16 @@
   .grid-features {
     @apply grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16;
   }
+
+  /* Invisible scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer utilities {

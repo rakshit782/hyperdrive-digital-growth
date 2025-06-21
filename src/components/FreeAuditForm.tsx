@@ -14,11 +14,13 @@ import ContactInfoForm from "@/components/forms/ContactInfoForm";
 import BusinessInfoForm from "@/components/forms/BusinessInfoForm";
 import FileUploadForm from "@/components/forms/FileUploadForm";
 import AuditBenefits from "@/components/forms/AuditBenefits";
+import { useGoogleSheetsSubmission } from "@/components/GoogleSheetsConnector";
 
 const FreeAuditForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const { submitToGoogleSheets } = useGoogleSheetsSubmission();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -73,6 +75,9 @@ const FreeAuditForm = () => {
       if (validationError) {
         throw new Error(validationError);
       }
+
+      // Submit to Google Sheets first
+      await submitToGoogleSheets(values, 'audit');
 
       // Submit to DynamoDB if configured
       if (dynamoDBManager.isActive()) {

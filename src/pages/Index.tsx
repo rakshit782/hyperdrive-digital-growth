@@ -1,12 +1,14 @@
 
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import Services from "@/components/Services";
-import Reviews from "@/components/Reviews";
+import ModernHero from "@/components/ModernHero";
+import ModernServices from "@/components/ModernServices";
+import ModernReviews from "@/components/ModernReviews";
 import ModernFeatures from "@/components/ModernFeatures";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import Contact from "@/components/Contact";
+import NewsletterForm from "@/components/NewsletterForm";
 
 const Index = () => {
   return (
@@ -18,11 +20,28 @@ const Index = () => {
       />
       <div className="min-h-screen">
         <Header />
-        <Hero />
-        <Services />
+        <ModernHero />
+        <ModernServices />
         <ModernFeatures />
-        <Reviews />
+        <ModernReviews />
         <FAQ />
+        
+        {/* Newsletter Section */}
+        <section className="py-16 bg-gradient-to-b from-blue-50 to-white">
+          <div className="container mx-auto px-6">
+            <div className="max-w-2xl mx-auto text-center">
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                Stay Ahead of the Competition
+              </h2>
+              <p className="text-slate-600 mb-8">
+                Get the latest advertising insights, tips, and strategies delivered to your inbox.
+              </p>
+              <NewsletterForm />
+            </div>
+          </div>
+        </section>
+        
+        <Contact />
         <Footer />
       </div>
     </>

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ServicesTab from "@/components/dashboard/ServicesTab";
@@ -199,7 +200,7 @@ const Dashboard = () => {
                   <CardTitle className="text-lg font-bold text-slate-900">Navigation</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <nav className="space-y-1">
+                  <nav className="space-y-1 max-h-96 overflow-y-auto scrollbar-hide">
                     {/* Content Management */}
                     <div className="px-4 py-2">
                       <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Content</h3>
@@ -227,6 +228,14 @@ const Dashboard = () => {
                           }`}
                         >
                           Modern Features
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('blog')}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                            activeTab === 'blog' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          Blog Management
                         </button>
                       </div>
                     </div>
@@ -345,12 +354,6 @@ const Dashboard = () => {
                         >
                           Pricing
                         </button>
-                        <button 
-                          onClick={() => setActiveTab('blog')}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === 'blog' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                        >
-                          Blog
-                        </button>
                       </div>
                     </div>
                   </nav>
@@ -358,7 +361,7 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 max-h-screen overflow-y-auto scrollbar-hide">
               {renderTabContent()}
             </div>
           </div>
