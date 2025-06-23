@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import ModernHero from "@/components/ModernHero";
 import ModernServices from "@/components/ModernServices";
 import CircularReviews from "@/components/CircularReviews";
-import ModernFeatures from "@/components/ModernFeatures";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -21,7 +20,6 @@ const Index = () => {
         <Header />
         <ModernHero />
         <ModernServices />
-        <ModernFeatures />
         <CircularReviews />
         <FAQ />
         <Contact />

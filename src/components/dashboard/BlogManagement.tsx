@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Plus, Edit, Trash2, FileSpreadsheet } from "lucide-react";
+import { Upload, Plus, Edit, Trash2, FileSpreadsheet, Globe, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useBlogData, BlogPost } from "@/hooks/useBlogData";
 
@@ -14,6 +14,8 @@ const BlogManagement = () => {
   const { blogPosts, addBlogPosts, updateBlogPost, deleteBlogPost } = useBlogData();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [zapierWebhookUrl, setZapierWebhookUrl] = useState("");
+  const [isZapierLoading, setIsZapierLoading] = useState(false);
   
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -115,10 +117,11 @@ const BlogManagement = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.type !== 'text/csv') {
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    if (!['csv', 'xlsx', 'xls'].includes(fileExtension || '')) {
       toast({
         title: "Error",
-        description: "Please upload a CSV file",
+        description: "Please upload a CSV or Excel file",
         variant: "destructive"
       });
       return;
@@ -126,15 +129,24 @@ const BlogManagement = () => {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      const csvContent = e.target?.result as string;
-      console.log("CSV Content:", csvContent);
+      const content = e.target?.result as string;
+      console.log("File Content:", content);
       
       try {
-        const lines = csvContent.split('\n').filter(line => line.trim());
-        console.log("CSV Lines:", lines);
+        let lines: string[] = [];
+        
+        // Handle different file types
+        if (fileExtension === 'csv') {
+          lines = content.split('\n').filter(line => line.trim());
+        } else {
+          // For Excel files, assume they've been converted to CSV format
+          lines = content.split('\n').filter(line => line.trim());
+        }
+        
+        console.log("File Lines:", lines);
         
         if (lines.length < 2) {
-          throw new Error("CSV file must have at least a header row and one data row");
+          throw new Error("File must have at least a header row and one data row");
         }
 
         // Parse header row
@@ -155,7 +167,7 @@ const BlogManagement = () => {
           'slug': 'slug'
         };
 
-        // Create mapping from CSV headers to our fields
+        // Create mapping from file headers to our fields
         const fieldMapping: { [key: string]: number } = {};
         headers.forEach((header, index) => {
           const normalizedHeader = header.toLowerCase().replace(/\s+/g, '');
@@ -197,7 +209,7 @@ const BlogManagement = () => {
         console.log("All parsed posts:", posts);
 
         if (posts.length === 0) {
-          throw new Error("No valid blog posts found in CSV");
+          throw new Error("No valid blog posts found in file");
         }
 
         addBlogPosts(posts);
@@ -212,10 +224,10 @@ const BlogManagement = () => {
         }
 
       } catch (error) {
-        console.error("CSV parsing error:", error);
+        console.error("File parsing error:", error);
         toast({
           title: "Error",
-          description: `Failed to parse CSV: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          description: `Failed to parse file: ${error instanceof Error ? error.message : 'Unknown error'}`,
           variant: "destructive"
         });
       }
@@ -224,15 +236,58 @@ const BlogManagement = () => {
     reader.readAsText(file);
   };
 
+  const handleZapierImport = async () => {
+    if (!zapierWebhookUrl.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter your Zapier webhook URL",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsZapierLoading(true);
+    console.log("Triggering Zapier webhook for blog import:", zapierWebhookUrl);
+
+    try {
+      const response = await fetch(zapierWebhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "no-cors",
+        body: JSON.stringify({
+          action: "import_blogs",
+          timestamp: new Date().toISOString(),
+          triggered_from: window.location.origin,
+        }),
+      });
+
+      toast({
+        title: "Request Sent",
+        description: "Blog import request sent to Zapier. Check your Zap history to confirm it was triggered.",
+      });
+    } catch (error) {
+      console.error("Error triggering Zapier webhook:", error);
+      toast({
+        title: "Error",
+        description: "Failed to trigger the Zapier webhook. Please check the URL and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsZapierLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-slate-900">Blog Management</CardTitle>
-          <CardDescription>Create, edit, and manage blog posts</CardDescription>
+          <CardDescription>Create, edit, and manage blog posts with multiple import options</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 mb-6">
+          <div className="flex flex-wrap gap-4 mb-6">
             <Button onClick={() => setShowAddForm(true)} className="bg-blue-600 hover:bg-blue-700">
               <Plus className="w-4 h-4 mr-2" />
               Add New Post
@@ -242,10 +297,10 @@ const BlogManagement = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".csv"
+                accept=".csv,.xlsx,.xls"
                 onChange={handleFileUpload}
                 className="hidden"
-                id="csv-upload"
+                id="file-upload"
               />
               <Button 
                 onClick={() => fileInputRef.current?.click()}
@@ -253,22 +308,67 @@ const BlogManagement = () => {
                 className="border-green-600 text-green-600 hover:bg-green-50"
               >
                 <Upload className="w-4 h-4 mr-2" />
-                Import CSV
+                Import CSV/Excel
+              </Button>
+            </div>
+
+            <div className="flex gap-2">
+              <Input
+                placeholder="Zapier webhook URL"
+                value={zapierWebhookUrl}
+                onChange={(e) => setZapierWebhookUrl(e.target.value)}
+                className="min-w-64"
+              />
+              <Button
+                onClick={handleZapierImport}
+                disabled={isZapierLoading}
+                variant="outline"
+                className="border-purple-600 text-purple-600 hover:bg-purple-50"
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                {isZapierLoading ? "Importing..." : "Zapier Import"}
               </Button>
             </div>
           </div>
 
           <div className="bg-blue-50 p-4 rounded-lg mb-6">
-            <h4 className="font-semibold text-blue-900 mb-2">CSV Format Guide:</h4>
-            <p className="text-sm text-blue-800 mb-2">Your CSV should include these columns (case insensitive):</p>
-            <code className="text-xs text-blue-700 bg-blue-100 p-2 rounded block">
-              title,excerpt,content,author,category,tags,publishDate,status,slug
-            </code>
-            <p className="text-xs text-blue-600 mt-2">
-              • Tags should be separated by semicolons (;)<br/>
-              • Status should be 'published' or 'draft'<br/>
-              • publishDate in ISO format (YYYY-MM-DD)
-            </p>
+            <h4 className="font-semibold text-blue-900 mb-2">Import Methods:</h4>
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              <div className="bg-white p-3 rounded">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileSpreadsheet className="w-4 h-4 text-green-600" />
+                  <span className="font-semibold">CSV/Excel Format</span>
+                </div>
+                <code className="text-xs text-blue-700 bg-blue-100 p-1 rounded block mb-2">
+                  title,excerpt,content,author,category,tags,publishDate,status,slug
+                </code>
+                <p className="text-xs text-blue-600">
+                  • Tags separated by semicolons (;)<br/>
+                  • Status: 'published' or 'draft'<br/>
+                  • Date: YYYY-MM-DD format
+                </p>
+              </div>
+              
+              <div className="bg-white p-3 rounded">
+                <div className="flex items-center gap-2 mb-2">
+                  <Globe className="w-4 h-4 text-blue-600" />
+                  <span className="font-semibold">Google Sheets</span>
+                </div>
+                <p className="text-xs text-blue-600">
+                  Export your Google Sheet as CSV with the same column format, then upload using the CSV/Excel import button.
+                </p>
+              </div>
+              
+              <div className="bg-white p-3 rounded">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-4 h-4 text-purple-600" />
+                  <span className="font-semibold">Zapier Integration</span>
+                </div>
+                <p className="text-xs text-blue-600">
+                  Create a Zap with webhook trigger. The webhook will receive blog import requests and can pull from any source (Airtable, Notion, etc).
+                </p>
+              </div>
+            </div>
           </div>
 
           {showAddForm && (

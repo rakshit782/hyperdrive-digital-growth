@@ -44,6 +44,7 @@ import Footer from "@/components/Footer";
 import toast from "sonner";
 import ModernFeaturesTab from "@/components/dashboard/ModernFeaturesTab";
 import { ChevronDown } from "lucide-react";
+import AboutUsTab from "@/components/dashboard/AboutUsTab";
 
 const Dashboard = () => {
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
@@ -129,6 +130,8 @@ const Dashboard = () => {
         return <ContactManagement />;
       case 'homepage':
         return <HomepageElements />;
+      case 'about-us':
+        return <AboutUsTab />;
       case 'pricing':
         return <PricingManagement />;
       case 'blog':
@@ -222,6 +225,14 @@ const Dashboard = () => {
                             }`}
                           >
                             Reviews
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('about-us')}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${
+                              activeTab === 'about-us' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                          >
+                            About Us
                           </button>
                           <button
                             onClick={() => setActiveTab('modern-features')}
