@@ -3,6 +3,7 @@ import { useState } from "react";
 import { DashboardTab } from "@/types/dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
 // Component imports
 import ServicesTab from "@/components/dashboard/ServicesTab";
@@ -38,13 +39,58 @@ import CustomEventsTab from "@/components/dashboard/CustomEventsTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<DashboardTab>('services');
+  const { services, reviews, updateServices, updateReviews } = useDashboardData();
+
+  const handleEditService = (service: any) => {
+    // TODO: Implement service editing logic
+    console.log("Edit service:", service);
+  };
+
+  const handleDeleteService = (id: string) => {
+    const newServices = services.filter(service => service.id !== id);
+    updateServices(newServices);
+  };
+
+  const handleAddService = () => {
+    // TODO: Implement service adding logic
+    console.log("Add service");
+  };
+
+  const handleEditReview = (review: any) => {
+    // TODO: Implement review editing logic
+    console.log("Edit review:", review);
+  };
+
+  const handleDeleteReview = (id: string) => {
+    const newReviews = reviews.filter(review => review.id !== id);
+    updateReviews(newReviews);
+  };
+
+  const handleAddReview = () => {
+    // TODO: Implement review adding logic
+    console.log("Add review");
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'services':
-        return <ServicesTab />;
+        return (
+          <ServicesTab 
+            services={services}
+            onEdit={handleEditService}
+            onDelete={handleDeleteService}
+            onAdd={handleAddService}
+          />
+        );
       case 'reviews':
-        return <ReviewsTab />;
+        return (
+          <ReviewsTab 
+            reviews={reviews}
+            onEdit={handleEditReview}
+            onDelete={handleDeleteReview}
+            onAdd={handleAddReview}
+          />
+        );
       case 'website':
         return <WebsiteTab />;
       case 'logo':
@@ -102,7 +148,14 @@ const Dashboard = () => {
       case 'custom-events':
         return <CustomEventsTab />;
       default:
-        return <ServicesTab />;
+        return (
+          <ServicesTab 
+            services={services}
+            onEdit={handleEditService}
+            onDelete={handleDeleteService}
+            onAdd={handleAddService}
+          />
+        );
     }
   };
 
