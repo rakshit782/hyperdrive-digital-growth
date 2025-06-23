@@ -154,13 +154,13 @@ const ModernFeatures = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {features.map((feature, index) => {
             const IconComponent = iconMap[feature.icon as keyof typeof iconMap] || Star;
             return (
               <Card 
                 key={feature.id}
-                className={`group hover:shadow-xl transition-all duration-300 bg-white/90 backdrop-blur-sm border-white/20 hover:scale-102 hover:-translate-y-1 ${
+                className={`group hover:shadow-xl transition-all duration-300 bg-white/90 backdrop-blur-sm border-white/20 hover:scale-102 hover:-translate-y-1 h-full ${
                   isVisible ? 'animate-in slide-in-from-bottom-4' : 'opacity-0'
                 }`}
                 style={{
@@ -168,24 +168,26 @@ const ModernFeatures = () => {
                   animationFillMode: 'forwards'
                 }}
               >
-                <CardContent className="p-6">
+                <CardContent className="p-6 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                       <IconComponent className="w-6 h-6 text-white" />
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex-shrink-0">
                       <div className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         {feature.metric}
                       </div>
                       <div className="text-xs text-slate-500">{feature.label}</div>
                     </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">
-                    {feature.description}
-                  </p>
+                  <div className="flex-grow">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-slate-600 text-sm leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             );
