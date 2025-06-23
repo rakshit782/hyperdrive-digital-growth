@@ -1,20 +1,25 @@
-import { useState, useEffect } from "react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+import { useState } from "react";
+import { DashboardTab } from "@/types/dashboard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+// Component imports
 import ServicesTab from "@/components/dashboard/ServicesTab";
 import ReviewsTab from "@/components/dashboard/ReviewsTab";
 import WebsiteTab from "@/components/dashboard/WebsiteTab";
 import LogoManagement from "@/components/dashboard/LogoManagement";
 import ContactManagement from "@/components/dashboard/ContactManagement";
 import HomepageElements from "@/components/dashboard/HomepageElements";
+import AboutUsTab from "@/components/dashboard/AboutUsTab";
 import PricingManagement from "@/components/dashboard/PricingManagement";
-import CustomEventsTab from "@/components/dashboard/CustomEventsTab";
-import WebsiteSEOTab from "@/components/dashboard/WebsiteSEOTab";
-import HeaderCustomizationTab from "@/components/dashboard/HeaderCustomizationTab";
-import ServiceEditModal from "@/components/dashboard/ServiceEditModal";
-import ReviewEditModal from "@/components/dashboard/ReviewEditModal";
 import BlogManagement from "@/components/dashboard/BlogManagement";
-import FacebookPixelTab from "@/components/dashboard/FacebookPixelTab";
-import GoogleAnalyticsTab from "@/components/dashboard/GoogleAnalyticsTab";
+import HeaderCustomizationTab from "@/components/dashboard/HeaderCustomizationTab";
+import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
+import SocialMediaTab from "@/components/dashboard/SocialMediaTab";
+import StatsManagement from "@/components/dashboard/StatsManagement";
+import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
+import GoogleSheetsTab from "@/components/dashboard/GoogleSheetsTab";
 import AmplifyTab from "@/components/dashboard/AmplifyTab";
 import CognitoTab from "@/components/dashboard/CognitoTab";
 import DynamoDBTab from "@/components/dashboard/DynamoDBTab";
@@ -24,104 +29,22 @@ import CloudflareTab from "@/components/dashboard/CloudflareTab";
 import UserManagementTab from "@/components/dashboard/UserManagementTab";
 import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 import IntegrationTestTab from "@/components/dashboard/IntegrationTestTab";
-import SocialMediaTab from "@/components/dashboard/SocialMediaTab";
+import FacebookPixelTab from "@/components/dashboard/FacebookPixelTab";
+import GoogleAnalyticsTab from "@/components/dashboard/GoogleAnalyticsTab";
 import ChatGPTTab from "@/components/dashboard/ChatGPTTab";
-import StatsManagement from "@/components/dashboard/StatsManagement";
-import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
-import GoogleSheetsTab from "@/components/dashboard/GoogleSheetsTab";
-import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
-import Header from "@/components/Header";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { integrationManager } from "@/utils/integrationManager";
-import { chatGPTManager } from "@/utils/chatGPTManager";
-import { ServiceCard, Review, DashboardTab } from "@/types/dashboard";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import SEOHead from "@/components/SEOHead";
-import Footer from "@/components/Footer";
-import toast from "sonner";
 import ModernFeaturesTab from "@/components/dashboard/ModernFeaturesTab";
-import { ChevronDown } from "lucide-react";
-import AboutUsTab from "@/components/dashboard/AboutUsTab";
+import WebsiteSEOTab from "@/components/dashboard/WebsiteSEOTab";
+import CustomEventsTab from "@/components/dashboard/CustomEventsTab";
 
 const Dashboard = () => {
-  const { services, reviews, updateServices, updateReviews } = useDashboardData();
-  const [editingService, setEditingService] = useState<ServiceCard | null>(null);
-  const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [activeTab, setActiveTab] = useState<DashboardTab>('services');
-
-  useEffect(() => {
-    // Initialize all integrations on dashboard load
-    integrationManager.initializeAllIntegrations();
-    chatGPTManager.loadSavedConfig();
-  }, []);
-
-  const deleteService = (id: string) => {
-    const newServices = services.filter(service => service.id !== id);
-    updateServices(newServices);
-  };
-
-  const deleteReview = (id: string) => {
-    const newReviews = reviews.filter(review => review.id !== id);
-    updateReviews(newReviews);
-  };
-
-  const saveService = (service: ServiceCard) => {
-    const isNew = !services.find(s => s.id === service.id);
-    if (isNew) {
-      updateServices([...services, service]);
-    } else {
-      const newServices = services.map(s => s.id === service.id ? service : s);
-      updateServices(newServices);
-    }
-    setEditingService(null);
-  };
-
-  const saveReview = (review: Review) => {
-    const isNew = !reviews.find(r => r.id === review.id);
-    if (isNew) {
-      updateReviews([...reviews, review]);
-    } else {
-      const newReviews = reviews.map(r => r.id === review.id ? review : r);
-      updateReviews(newReviews);
-    }
-    setEditingReview(null);
-  };
-
-  const addNewService = () => {
-    const newService: ServiceCard = {
-      id: `new-service-${Date.now()}`,
-      icon: "ShoppingCart",
-      title: "New Service",
-      description: "Service description",
-      features: ["Feature 1", "Feature 2"],
-      gradient: "from-blue-500 to-purple-500",
-      bgGradient: "from-blue-50 to-purple-50",
-      link: "/new-service"
-    };
-    setEditingService(newService);
-  };
-
-  const addNewReview = () => {
-    const newReview: Review = {
-      id: `new-review-${Date.now()}`,
-      name: "New Customer",
-      company: "Company Name",
-      rating: 5,
-      review: "Review text",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-    };
-    setEditingReview(newReview);
-  };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'services':
-        return <ServicesTab services={services} onEdit={setEditingService} onDelete={deleteService} onAdd={addNewService} />;
+        return <ServicesTab />;
       case 'reviews':
-        return <ReviewsTab reviews={reviews} onEdit={setEditingReview} onDelete={deleteReview} onAdd={addNewReview} />;
+        return <ReviewsTab />;
       case 'website':
         return <WebsiteTab />;
       case 'logo':
@@ -176,235 +99,68 @@ const Dashboard = () => {
         return <ModernFeaturesTab />;
       case 'seo':
         return <WebsiteSEOTab />;
+      case 'custom-events':
+        return <CustomEventsTab />;
       default:
-        return <ServicesTab services={services} onEdit={setEditingService} onDelete={deleteService} onAdd={addNewService} />;
+        return <ServicesTab />;
     }
   };
 
   return (
-    <>
-      <SEOHead 
-        title="Dashboard - Manage Your Website Content"
-        description="Admin dashboard to manage website content, services, reviews, and settings"
-      />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <Header />
-        <div className="pt-20">
-          <div className="container mx-auto px-4 py-8">
-            <div className="mb-8">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                Dashboard
-              </h1>
-              <p className="text-slate-600">Manage your website content and settings</p>
-            </div>
-
-            <div className="flex flex-col lg:flex-row gap-8">
-              <div className="lg:w-64 flex-shrink-0">
-                <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl sticky top-24 overflow-hidden">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-bold text-slate-900">Navigation</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0 h-[calc(100vh-12rem)] flex flex-col">
-                    <nav className="space-y-1 flex-1 overflow-y-auto px-4 pb-2">
-                      {/* Content Management */}
-                      <div className="py-2">
-                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Content</h3>
-                        <div className="space-y-1">
-                          <button
-                            onClick={() => setActiveTab('services')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${
-                              activeTab === 'services' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
-                            }`}
-                          >
-                            Services
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('reviews')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${
-                              activeTab === 'reviews' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
-                            }`}
-                          >
-                            Reviews
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('about-us')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${
-                              activeTab === 'about-us' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
-                            }`}
-                          >
-                            About Us
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('modern-features')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${
-                              activeTab === 'modern-features' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
-                            }`}
-                          >
-                            Modern Features
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('blog')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${
-                              activeTab === 'blog' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'
-                            }`}
-                          >
-                            Blog Management
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Integrations */}
-                      <div className="py-2">
-                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Integrations</h3>
-                        <div className="space-y-1">
-                          <button 
-                            onClick={() => setActiveTab('integration-status')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'integration-status' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Status Overview
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('integration-test')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'integration-test' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Test All Integrations
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('google-sheets')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'google-sheets' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Google Sheets
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('facebook-pixel')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'facebook-pixel' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Facebook Pixel
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('google-analytics')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'google-analytics' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Google Analytics
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('chatgpt')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'chatgpt' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            ChatGPT AI
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* AWS Services */}
-                      <div className="py-2">
-                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">AWS Services</h3>
-                        <div className="space-y-1">
-                          <button 
-                            onClick={() => setActiveTab('amplify')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'amplify' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Amplify
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('cognito')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'cognito' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Cognito
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('dynamodb')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'dynamodb' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            DynamoDB
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('s3')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 's3' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            S3
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('ses')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'ses' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            SES
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Other Tools */}
-                      <div className="py-2">
-                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Other Tools</h3>
-                        <div className="space-y-1">
-                          <button 
-                            onClick={() => setActiveTab('cloudflare')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'cloudflare' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Cloudflare
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('user-management')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'user-management' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            User Management
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('custom-events')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'custom-events' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Custom Events
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('seo')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'seo' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            SEO
-                          </button>
-                          <button 
-                            onClick={() => setActiveTab('pricing')}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${activeTab === 'pricing' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}
-                          >
-                            Pricing
-                          </button>
-                        </div>
-                      </div>
-                    </nav>
-                    
-                    {/* Down Arrow at bottom - contained within the card */}
-                    <div className="flex justify-center py-3 border-t border-slate-200 bg-white/50">
-                      <ChevronDown className="w-4 h-4 text-slate-400 animate-bounce" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="flex-1 max-h-screen overflow-y-auto invisible-scroll">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-2xl">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Agency Dashboard
+            </CardTitle>
+            <CardDescription className="text-lg text-slate-600">
+              Manage your website content and settings
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as DashboardTab)} className="w-full">
+              <TabsList className="grid grid-cols-4 lg:grid-cols-8 gap-2 h-auto p-2 bg-white/50 mb-8">
+                <TabsTrigger value="services" className="text-xs">Services</TabsTrigger>
+                <TabsTrigger value="reviews" className="text-xs">Reviews</TabsTrigger>
+                <TabsTrigger value="website" className="text-xs">Website</TabsTrigger>
+                <TabsTrigger value="logo" className="text-xs">Logo</TabsTrigger>
+                <TabsTrigger value="contact" className="text-xs">Contact</TabsTrigger>
+                <TabsTrigger value="homepage" className="text-xs">Homepage</TabsTrigger>
+                <TabsTrigger value="about-us" className="text-xs">About Us</TabsTrigger>
+                <TabsTrigger value="pricing" className="text-xs">Pricing</TabsTrigger>
+                <TabsTrigger value="blog" className="text-xs">Blog</TabsTrigger>
+                <TabsTrigger value="header" className="text-xs">Header</TabsTrigger>
+                <TabsTrigger value="footer" className="text-xs">Footer</TabsTrigger>
+                <TabsTrigger value="social-media" className="text-xs">Social</TabsTrigger>
+                <TabsTrigger value="stats" className="text-xs">Stats</TabsTrigger>
+                <TabsTrigger value="modern-features" className="text-xs">Features</TabsTrigger>
+                <TabsTrigger value="policy-pages" className="text-xs">Policies</TabsTrigger>
+                <TabsTrigger value="seo" className="text-xs">SEO</TabsTrigger>
+                <TabsTrigger value="google-sheets" className="text-xs">Sheets</TabsTrigger>
+                <TabsTrigger value="amplify" className="text-xs">Amplify</TabsTrigger>
+                <TabsTrigger value="cognito" className="text-xs">Cognito</TabsTrigger>
+                <TabsTrigger value="dynamodb" className="text-xs">DynamoDB</TabsTrigger>
+                <TabsTrigger value="s3" className="text-xs">S3</TabsTrigger>
+                <TabsTrigger value="ses" className="text-xs">SES</TabsTrigger>
+                <TabsTrigger value="cloudflare" className="text-xs">Cloudflare</TabsTrigger>
+                <TabsTrigger value="user-management" className="text-xs">Users</TabsTrigger>
+                <TabsTrigger value="integration-status" className="text-xs">Status</TabsTrigger>
+                <TabsTrigger value="integration-test" className="text-xs">Test</TabsTrigger>
+                <TabsTrigger value="facebook-pixel" className="text-xs">FB Pixel</TabsTrigger>
+                <TabsTrigger value="google-analytics" className="text-xs">Analytics</TabsTrigger>
+                <TabsTrigger value="chatgpt" className="text-xs">ChatGPT</TabsTrigger>
+                <TabsTrigger value="custom-events" className="text-xs">Events</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value={activeTab} className="mt-0">
                 {renderTabContent()}
-              </div>
-            </div>
-          </div>
-        </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
       </div>
-      <Footer />
-
-      {/* Modals */}
-      {editingService && (
-        <ServiceEditModal
-          service={editingService}
-          onSave={saveService}
-          onClose={() => setEditingService(null)}
-        />
-      )}
-
-      {editingReview && (
-        <ReviewEditModal
-          review={editingReview}
-          onSave={saveReview}
-          onClose={() => setEditingReview(null)}
-        />
-      )}
-    </>
+    </div>
   );
 };
 

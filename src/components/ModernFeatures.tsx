@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Shield, Zap, TrendingUp, Users, Award, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
