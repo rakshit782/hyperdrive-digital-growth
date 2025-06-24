@@ -69,7 +69,6 @@ const Contact = () => {
           description: "Thank you for your message. We'll get back to you within 24 hours.",
         });
         
-        // Reset form
         setFormData({
           name: "",
           email: "",
@@ -284,9 +283,9 @@ const Contact = () => {
               </div>
             </div>
           </div>
-        </main>
-        <Footer />
-      </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };
