@@ -49,4 +49,5 @@ export type DashboardTab =
   | 'chatgpt' 
   | 'modern-features' 
   | 'seo' 
-  | 'custom-events';
+  | 'custom-events'
+  | 'hero-customization';

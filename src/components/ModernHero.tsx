@@ -1,8 +1,121 @@
 
+import { useState, useEffect } from "react";
 import { ArrowRight, Play, CheckCircle, Star, Zap, Shield, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+interface HeroSettings {
+  headline: {
+    main: string;
+    highlight: string;
+    subtitle: string;
+  };
+  description: string;
+  cta: {
+    primary: {
+      text: string;
+      link: string;
+      enabled: boolean;
+    };
+    secondary: {
+      text: string;
+      link: string;
+      enabled: boolean;
+    };
+  };
+  image: {
+    url: string;
+    alt: string;
+    type: 'success' | 'team' | 'dashboard' | 'growth' | 'custom';
+  };
+  stats: {
+    enabled: boolean;
+    stat1: { value: string; label: string };
+    stat2: { value: string; label: string };
+    stat3: { value: string; label: string };
+  };
+  trustBadge: {
+    enabled: boolean;
+    rating: string;
+    text: string;
+  };
+  urgency: {
+    enabled: boolean;
+    text: string;
+  };
+}
+
+const defaultSettings: HeroSettings = {
+  headline: {
+    main: "Get 3x",
+    highlight: "Higher ROAS",
+    subtitle: "in 90 Days"
+  },
+  description: "Join 500+ brands that increased their advertising revenue by an average of 300% with our proven Amazon, Walmart & Meta strategies.",
+  cta: {
+    primary: {
+      text: "Get FREE $2,000 Audit",
+      link: "/free-audit",
+      enabled: true
+    },
+    secondary: {
+      text: "Watch Success Stories",
+      link: "#",
+      enabled: true
+    }
+  },
+  image: {
+    url: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop&crop=center",
+    alt: "Business team celebrating success",
+    type: 'success'
+  },
+  stats: {
+    enabled: true,
+    stat1: { value: "300%", label: "Avg ROAS Increase" },
+    stat2: { value: "24hrs", label: "Setup Time" },
+    stat3: { value: "98%", label: "Client Retention" }
+  },
+  trustBadge: {
+    enabled: true,
+    rating: "4.9/5",
+    text: "from 500+ Happy Clients"
+  },
+  urgency: {
+    enabled: true,
+    text: "🔥 Limited Time: Only 10 spots left this month"
+  }
+};
+
 const ModernHero = () => {
+  const [settings, setSettings] = useState<HeroSettings>(defaultSettings);
+
+  useEffect(() => {
+    const loadSettings = () => {
+      const savedSettings = localStorage.getItem('heroSettings');
+      if (savedSettings) {
+        try {
+          const parsedSettings = JSON.parse(savedSettings);
+          setSettings({ ...defaultSettings, ...parsedSettings });
+        } catch (error) {
+          console.error("ModernHero: Error parsing hero settings:", error);
+        }
+      }
+    };
+
+    loadSettings();
+
+    const handleSettingsUpdate = (event: CustomEvent) => {
+      if (event.detail) {
+        setSettings(event.detail);
+      }
+    };
+
+    window.addEventListener('heroSettingsUpdated', handleSettingsUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('heroSettingsUpdated', handleSettingsUpdate as EventListener);
+    };
+  }, []);
+
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 overflow-hidden pt-24 pb-16 flex items-center">
       {/* Background decorative elements */}
@@ -18,66 +131,76 @@ const ModernHero = () => {
             {/* Left Content */}
             <div className="space-y-10 text-center lg:text-left">
               {/* Trust badge with social proof */}
-              <div className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full border border-indigo-100 shadow-lg">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
+              {settings.trustBadge.enabled && (
+                <div className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full border border-indigo-100 shadow-lg">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">
+                    {settings.trustBadge.rating} {settings.trustBadge.text}
+                  </span>
                 </div>
-                <span className="text-sm font-semibold text-slate-700">4.9/5 from 500+ Happy Clients</span>
-              </div>
+              )}
 
               {/* Main converting headline */}
               <div className="space-y-8">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 leading-tight tracking-tight">
-                  <span className="block mb-3">Get 3x</span>
+                  <span className="block mb-3">{settings.headline.main}</span>
                   <span className="bg-gradient-to-r from-indigo-600 via-blue-600 to-violet-600 bg-clip-text text-transparent block mb-3">
-                    Higher ROAS
+                    {settings.headline.highlight}
                   </span>
-                  <span className="block text-2xl sm:text-3xl lg:text-4xl font-semibold">in 90 Days</span>
+                  <span className="block text-2xl sm:text-3xl lg:text-4xl font-semibold">{settings.headline.subtitle}</span>
                 </h1>
                 
                 <p className="text-base sm:text-lg lg:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
-                  Join 500+ brands that increased their advertising revenue by an average of 
-                  <span className="font-bold text-indigo-600"> 300%</span> with our proven Amazon, Walmart & Meta strategies.
+                  {settings.description}
                 </p>
               </div>
 
               {/* Social proof numbers */}
-              <div className="grid grid-cols-3 gap-6 bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-lg">
-                <div className="text-center">
-                  <div className="text-xl lg:text-2xl font-bold text-indigo-600 mb-2">300%</div>
-                  <div className="text-sm text-slate-600 font-medium">Avg ROAS Increase</div>
+              {settings.stats.enabled && (
+                <div className="grid grid-cols-3 gap-6 bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-lg">
+                  <div className="text-center">
+                    <div className="text-xl lg:text-2xl font-bold text-indigo-600 mb-2">{settings.stats.stat1.value}</div>
+                    <div className="text-sm text-slate-600 font-medium">{settings.stats.stat1.label}</div>
+                  </div>
+                  <div className="text-center border-x border-slate-200">
+                    <div className="text-xl lg:text-2xl font-bold text-emerald-600 mb-2">{settings.stats.stat2.value}</div>
+                    <div className="text-sm text-slate-600 font-medium">{settings.stats.stat2.label}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl lg:text-2xl font-bold text-violet-600 mb-2">{settings.stats.stat3.value}</div>
+                    <div className="text-sm text-slate-600 font-medium">{settings.stats.stat3.label}</div>
+                  </div>
                 </div>
-                <div className="text-center border-x border-slate-200">
-                  <div className="text-xl lg:text-2xl font-bold text-emerald-600 mb-2">24hrs</div>
-                  <div className="text-sm text-slate-600 font-medium">Setup Time</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl lg:text-2xl font-bold text-violet-600 mb-2">98%</div>
-                  <div className="text-sm text-slate-600 font-medium">Client Retention</div>
-                </div>
-              </div>
+              )}
 
               {/* CTA buttons with urgency */}
               <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-6">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-8 py-4 text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-300 border-0"
-                  onClick={() => window.location.href = '/free-audit'}
-                >
-                  Get FREE $2,000 Audit
-                  <ArrowRight className="w-5 h-5 ml-3" />
-                </Button>
+                {settings.cta.primary.enabled && (
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-8 py-4 text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-300 border-0"
+                    onClick={() => window.location.href = settings.cta.primary.link}
+                  >
+                    {settings.cta.primary.text}
+                    <ArrowRight className="w-5 h-5 ml-3" />
+                  </Button>
+                )}
                 
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="border-2 border-slate-300 bg-white/90 backdrop-blur-sm hover:bg-white text-slate-700 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  <Play className="w-5 h-5 mr-3" />
-                  Watch Success Stories
-                </Button>
+                {settings.cta.secondary.enabled && (
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className="border-2 border-slate-300 bg-white/90 backdrop-blur-sm hover:bg-white text-slate-700 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => window.location.href = settings.cta.secondary.link}
+                  >
+                    <Play className="w-5 h-5 mr-3" />
+                    {settings.cta.secondary.text}
+                  </Button>
+                )}
               </div>
 
               {/* Trust indicators with icons */}
@@ -97,23 +220,25 @@ const ModernHero = () => {
               </div>
 
               {/* Urgency element */}
-              <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-4 inline-block">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
-                  <span className="text-orange-700 font-semibold text-sm">
-                    🔥 Limited Time: Only 10 spots left this month
-                  </span>
+              {settings.urgency.enabled && (
+                <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-4 inline-block">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                    <span className="text-orange-700 font-semibold text-sm">
+                      {settings.urgency.text}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Right Content - More Converting Visual */}
             <div className="relative mt-8 lg:mt-0">
-              {/* Main converting image - Marketing dashboard/growth visualization */}
+              {/* Main converting image */}
               <div className="relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&crop=center"
-                  alt="Digital Marketing Analytics Dashboard"
+                  src={settings.image.url}
+                  alt={settings.image.alt}
                   className="w-full h-96 object-cover rounded-3xl shadow-2xl"
                 />
                 
