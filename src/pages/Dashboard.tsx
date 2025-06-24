@@ -84,7 +84,8 @@ const Dashboard = () => {
         { value: 'homepage', label: 'Homepage', icon: '🏠' },
         { value: 'about-us', label: 'About Us', icon: '👥' },
         { value: 'pricing', label: 'Pricing', icon: '💰' },
-        { value: 'blog', label: 'Blog', icon: '📝' }
+        { value: 'blog', label: 'Blog', icon: '📝' },
+        { value: 'contact', label: 'Contact', icon: '📞' }
       ]
     },
     {
@@ -115,7 +116,9 @@ const Dashboard = () => {
         { value: 'dynamodb', label: 'DynamoDB', icon: '🗄️' },
         { value: 's3', label: 'S3', icon: '☁️' },
         { value: 'ses', label: 'SES', icon: '📧' },
-        { value: 'cloudflare', label: 'Cloudflare', icon: '🛡️' }
+        { value: 'cloudflare', label: 'Cloudflare', icon: '🛡️' },
+        { value: 'user-management', label: 'Users', icon: '👥' },
+        { value: 'website-preview', label: 'Preview', icon: '👁️' }
       ]
     }
   ];
@@ -182,6 +185,8 @@ const Dashboard = () => {
         return <CloudflareTab />;
       case 'user-management':
         return <UserManagementTab />;
+      case 'website-preview':
+        return <WebsitePreviewTab />;
       case 'integration-status':
         return <IntegrationStatusTab />;
       case 'integration-test':

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { cognitoManager } from "@/utils/cognitoManager";
-import { Users, UserPlus, Shield, Settings, Key, Mail, Lock } from "lucide-react";
+import { amplifyManager } from "@/utils/amplifyManager";
+import { useAuth } from "@/contexts/AuthContext";
+import { Users, UserPlus, Shield, Settings, Key, Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 interface UserRole {
   id: string;
@@ -66,13 +67,24 @@ const defaultPagePermissions: PagePermission[] = [
 
 const UserManagementTab = () => {
   const { toast } = useToast();
+  const { signUp } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<UserRole[]>(defaultRoles);
   const [pagePermissions, setPagePermissions] = useState<PagePermission[]>(defaultPagePermissions);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
+  const [newUserFullName, setNewUserFullName] = useState('');
   const [selectedUserRole, setSelectedUserRole] = useState('viewer');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [userProfiles, setUserProfiles] = useState<Array<{
+    id: string;
+    email: string;
+    fullName: string;
+    role: string;
+    createdAt: string;
+    status: 'active' | 'inactive';
+  }>>([]);
 
   useEffect(() => {
     loadUserManagementData();
@@ -82,6 +94,7 @@ const UserManagementTab = () => {
     const savedUsers = localStorage.getItem('userManagement_users');
     const savedRoles = localStorage.getItem('userManagement_roles');
     const savedPermissions = localStorage.getItem('userManagement_pagePermissions');
+    const savedProfiles = localStorage.getItem('userManagement_profiles');
 
     if (savedUsers) {
       try {
@@ -106,9 +119,17 @@ const UserManagementTab = () => {
         console.error('Failed to parse permissions data:', error);
       }
     }
+
+    if (savedProfiles) {
+      try {
+        setUserProfiles(JSON.parse(savedProfiles));
+      } catch (error) {
+        console.error('Failed to parse profiles data:', error);
+      }
+    }
   };
 
-  const saveUserManagementData = (updatedUsers?: User[], updatedRoles?: UserRole[], updatedPermissions?: PagePermission[]) => {
+  const saveUserManagementData = (updatedUsers?: User[], updatedRoles?: UserRole[], updatedPermissions?: PagePermission[], updatedProfiles?: any[]) => {
     if (updatedUsers) {
       localStorage.setItem('userManagement_users', JSON.stringify(updatedUsers));
       setUsers(updatedUsers);
@@ -120,6 +141,10 @@ const UserManagementTab = () => {
     if (updatedPermissions) {
       localStorage.setItem('userManagement_pagePermissions', JSON.stringify(updatedPermissions));
       setPagePermissions(updatedPermissions);
+    }
+    if (updatedProfiles) {
+      localStorage.setItem('userManagement_profiles', JSON.stringify(updatedProfiles));
+      setUserProfiles(updatedProfiles);
     }
   };
 
@@ -133,39 +158,67 @@ const UserManagementTab = () => {
       return;
     }
 
+    if (newUserPassword.length < 8) {
+      toast({
+        title: "Validation Error",
+        description: "Password must be at least 8 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Try to create user with Cognito if configured
-      if (cognitoManager.isActive()) {
-        await cognitoManager.signUp(newUserEmail, newUserPassword, {
-          email: newUserEmail
+      // Try to create user with Auth context (Amplify/Cognito)
+      const authResult = await signUp(newUserEmail, newUserPassword, newUserFullName);
+      
+      if (authResult.success) {
+        // Create user profile
+        const newProfile = {
+          id: `profile_${Date.now()}`,
+          email: newUserEmail,
+          fullName: newUserFullName || newUserEmail,
+          role: selectedUserRole,
+          createdAt: new Date().toISOString(),
+          status: 'active' as const
+        };
+
+        const updatedProfiles = [...userProfiles, newProfile];
+        saveUserManagementData(undefined, undefined, undefined, updatedProfiles);
+
+        // Create local user record
+        const newUser: User = {
+          id: `user_${Date.now()}`,
+          email: newUserEmail,
+          roles: [selectedUserRole],
+          status: 'active',
+          createdAt: new Date().toISOString()
+        };
+
+        const updatedUsers = [...users, newUser];
+        saveUserManagementData(updatedUsers);
+
+        setNewUserEmail('');
+        setNewUserPassword('');
+        setNewUserFullName('');
+        setSelectedUserRole('viewer');
+
+        toast({
+          title: "User Created Successfully",
+          description: `User ${newUserEmail} has been created and added to ${amplifyManager.isActive() ? 'AWS Amplify' : cognitoManager.isActive() ? 'AWS Cognito' : 'local storage'}.`,
+        });
+      } else {
+        toast({
+          title: "User Creation Failed",
+          description: authResult.error || "Failed to create user. Please check your AWS configuration.",
+          variant: "destructive",
         });
       }
-
-      const newUser: User = {
-        id: `user_${Date.now()}`,
-        email: newUserEmail,
-        roles: [selectedUserRole],
-        status: 'active',
-        createdAt: new Date().toISOString()
-      };
-
-      const updatedUsers = [...users, newUser];
-      saveUserManagementData(updatedUsers);
-
-      setNewUserEmail('');
-      setNewUserPassword('');
-      setSelectedUserRole('viewer');
-
-      toast({
-        title: "User Created",
-        description: `User ${newUserEmail} has been created successfully.`,
-      });
     } catch (error) {
       console.error('Error creating user:', error);
       toast({
         title: "Error",
-        description: "Failed to create user. Check your AWS Cognito configuration.",
+        description: "Failed to create user. Check your AWS Amplify/Cognito configuration.",
         variant: "destructive",
       });
     } finally {
@@ -207,6 +260,18 @@ const UserManagementTab = () => {
     saveUserManagementData(undefined, undefined, updatedPermissions);
   };
 
+  const getAuthProviderStatus = () => {
+    if (amplifyManager.isActive()) {
+      return { provider: 'AWS Amplify', status: 'connected', color: 'default' };
+    } else if (cognitoManager.isActive()) {
+      return { provider: 'AWS Cognito', status: 'connected', color: 'default' };
+    } else {
+      return { provider: 'Local Storage', status: 'offline', color: 'secondary' };
+    }
+  };
+
+  const authStatus = getAuthProviderStatus();
+
   return (
     <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
       <CardHeader>
@@ -217,12 +282,12 @@ const UserManagementTab = () => {
             </div>
             <div>
               <CardTitle className="text-xl font-bold text-slate-900">User Management</CardTitle>
-              <CardDescription>Manage users, roles, and permissions with AWS Cognito integration</CardDescription>
+              <CardDescription>Create and manage user accounts with AWS integration</CardDescription>
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge variant={cognitoManager.isActive() ? "default" : "secondary"}>
-              {cognitoManager.isActive() ? "AWS Cognito Connected" : "Local Mode"}
+            <Badge variant={authStatus.color as any}>
+              {authStatus.provider} - {authStatus.status}
             </Badge>
           </div>
         </div>
@@ -234,6 +299,10 @@ const UserManagementTab = () => {
               <Users className="w-4 h-4" />
               Users
             </TabsTrigger>
+            <TabsTrigger value="profiles" className="flex items-center gap-2">
+              <UserPlus className="w-4 h-4" />
+              Profiles
+            </TabsTrigger>
             <TabsTrigger value="roles" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Roles
@@ -241,10 +310,6 @@ const UserManagementTab = () => {
             <TabsTrigger value="permissions" className="flex items-center gap-2">
               <Key className="w-4 h-4" />
               Permissions
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              Settings
             </TabsTrigger>
           </TabsList>
 
@@ -254,13 +319,25 @@ const UserManagementTab = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UserPlus className="w-5 h-5" />
-                  Create New User
+                  Create New User Account
                 </CardTitle>
+                <CardDescription>
+                  Create a new user account that will be added to {authStatus.provider}
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="userEmail">Email</Label>
+                    <Label htmlFor="userFullName">Full Name</Label>
+                    <Input
+                      id="userFullName"
+                      value={newUserFullName}
+                      onChange={(e) => setNewUserFullName(e.target.value)}
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="userEmail">Email *</Label>
                     <Input
                       id="userEmail"
                       type="email"
@@ -270,14 +347,29 @@ const UserManagementTab = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="userPassword">Password</Label>
-                    <Input
-                      id="userPassword"
-                      type="password"
-                      value={newUserPassword}
-                      onChange={(e) => setNewUserPassword(e.target.value)}
-                      placeholder="••••••••"
-                    />
+                    <Label htmlFor="userPassword">Password *</Label>
+                    <div className="relative">
+                      <Input
+                        id="userPassword"
+                        type={showPassword ? "text" : "password"}
+                        value={newUserPassword}
+                        onChange={(e) => setNewUserPassword(e.target.value)}
+                        placeholder="Min 8 characters"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="userRole">Role</Label>
@@ -300,13 +392,22 @@ const UserManagementTab = () => {
                     </Button>
                   </div>
                 </div>
+                
+                {!amplifyManager.isActive() && !cognitoManager.isActive() && (
+                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Note:</strong> No AWS authentication provider is configured. Users will be stored locally only. 
+                      Configure AWS Amplify or Cognito for full authentication features.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
             {/* Users List */}
             <Card>
               <CardHeader>
-                <CardTitle>Existing Users ({users.length})</CardTitle>
+                <CardTitle>User Accounts ({users.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -350,6 +451,42 @@ const UserManagementTab = () => {
                             onCheckedChange={() => toggleUserStatus(user.id)}
                           />
                         </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="profiles" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>User Profiles ({userProfiles.length})</CardTitle>
+                <CardDescription>Detailed user profiles with additional information</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {userProfiles.length === 0 ? (
+                    <p className="text-slate-500 text-center py-8">No user profiles found. Create users to see their profiles here.</p>
+                  ) : (
+                    userProfiles.map((profile) => (
+                      <div key={profile.id} className="p-4 border rounded-lg bg-white/50">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <h3 className="font-semibold">{profile.fullName}</h3>
+                            <p className="text-sm text-slate-600">{profile.email}</p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="outline">{profile.role}</Badge>
+                            <Badge variant={profile.status === 'active' ? 'default' : 'secondary'}>
+                              {profile.status}
+                            </Badge>
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-500">
+                          Created: {new Date(profile.createdAt).toLocaleString()}
+                        </p>
                       </div>
                     ))
                   )}
@@ -425,60 +562,6 @@ const UserManagementTab = () => {
                       </div>
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lock className="w-5 h-5" />
-                  AWS Cognito Integration
-                </CardTitle>
-                <CardDescription>Configure AWS Cognito for user authentication</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-blue-50 rounded-lg">
-                    <p className="text-sm text-blue-700">
-                      Status: {cognitoManager.isActive() ? "Connected to AWS Cognito" : "Not connected - using local user management"}
-                    </p>
-                    {!cognitoManager.isActive() && (
-                      <p className="text-xs text-blue-600 mt-2">
-                        Configure AWS Cognito in the "Amazon Cognito" tab to enable full authentication features.
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <h4 className="font-medium">Features Status:</h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="flex items-center justify-between p-2 bg-white rounded border">
-                        <span className="text-sm">User Creation</span>
-                        <Badge variant={cognitoManager.isActive() ? "default" : "secondary"}>
-                          {cognitoManager.isActive() ? "Active" : "Local Only"}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between p-2 bg-white rounded border">
-                        <span className="text-sm">Password Management</span>
-                        <Badge variant={cognitoManager.isActive() ? "default" : "secondary"}>
-                          {cognitoManager.isActive() ? "Active" : "Disabled"}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between p-2 bg-white rounded border">
-                        <span className="text-sm">Role-based Access</span>
-                        <Badge variant="default">Active</Badge>
-                      </div>
-                      <div className="flex items-center justify-between p-2 bg-white rounded border">
-                        <span className="text-sm">Session Management</span>
-                        <Badge variant={cognitoManager.isActive() ? "default" : "secondary"}>
-                          {cognitoManager.isActive() ? "Active" : "Local Storage"}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>

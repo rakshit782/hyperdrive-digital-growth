@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,8 +10,23 @@ import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
+interface ContactInfo {
+  phone: string;
+  email: string;
+  address: string;
+  hours: string;
+}
+
+const defaultContact: ContactInfo = {
+  phone: "+1 (555) 123-4567",
+  email: "hello@yourcompany.com",
+  address: "123 Business Street, Suite 100, City, State 12345",
+  hours: "Monday - Friday: 9:00 AM - 6:00 PM"
+};
+
 const Contact = () => {
   const { toast } = useToast();
+  const [contactInfo, setContactInfo] = useState<ContactInfo>(defaultContact);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,6 +35,25 @@ const Contact = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  useEffect(() => {
+    const handleContactUpdate = (event: CustomEvent) => {
+      setContactInfo(event.detail);
+    };
+
+    const savedContact = localStorage.getItem('contactData');
+    if (savedContact) {
+      try {
+        const parsed = JSON.parse(savedContact);
+        setContactInfo({ ...defaultContact, ...parsed });
+      } catch (error) {
+        console.error('Failed to parse contact settings:', error);
+      }
+    }
+
+    window.addEventListener('contactUpdated', handleContactUpdate as EventListener);
+    return () => window.removeEventListener('contactUpdated', handleContactUpdate as EventListener);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -210,36 +244,28 @@ const Contact = () => {
                         <Mail className="w-6 h-6 text-blue-600 mt-1 mr-4" />
                         <div>
                           <h4 className="font-semibold text-slate-900">Email</h4>
-                          <p className="text-slate-600">hello@yourcompany.com</p>
+                          <p className="text-slate-600">{contactInfo.email}</p>
                         </div>
                       </div>
                       <div className="flex items-start">
                         <Phone className="w-6 h-6 text-blue-600 mt-1 mr-4" />
                         <div>
                           <h4 className="font-semibold text-slate-900">Phone</h4>
-                          <p className="text-slate-600">+1 (555) 123-4567</p>
+                          <p className="text-slate-600">{contactInfo.phone}</p>
                         </div>
                       </div>
                       <div className="flex items-start">
                         <MapPin className="w-6 h-6 text-blue-600 mt-1 mr-4" />
                         <div>
                           <h4 className="font-semibold text-slate-900">Office</h4>
-                          <p className="text-slate-600">
-                            123 Business Street<br />
-                            Suite 100<br />
-                            City, State 12345
-                          </p>
+                          <p className="text-slate-600 whitespace-pre-line">{contactInfo.address}</p>
                         </div>
                       </div>
                       <div className="flex items-start">
                         <Clock className="w-6 h-6 text-blue-600 mt-1 mr-4" />
                         <div>
                           <h4 className="font-semibold text-slate-900">Business Hours</h4>
-                          <p className="text-slate-600">
-                            Monday - Friday: 9:00 AM - 6:00 PM<br />
-                            Saturday: 10:00 AM - 4:00 PM<br />
-                            Sunday: Closed
-                          </p>
+                          <p className="text-slate-600 whitespace-pre-line">{contactInfo.hours}</p>
                         </div>
                       </div>
                     </div>
