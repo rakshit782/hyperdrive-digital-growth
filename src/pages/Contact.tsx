@@ -261,8 +261,8 @@ const Contact = () => {
             </div>
           </div>
         </main>
-      </main>
-      <Footer />
+        <Footer />
+      </div>
     </div>
   );
 };
