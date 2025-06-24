@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { amplifyManager } from '@/utils/amplifyManager';
 import { cognitoManager } from '@/utils/cognitoManager';
 import { signUp, signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
+import { integrationManager } from '@/utils/integrationManager';
 
 interface User {
   id: string;
@@ -17,6 +18,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ success: boolean; error?: string }>;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -25,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   signIn: async () => ({ success: false }),
   signUp: async () => ({ success: false }),
+  isAuthenticated: false,
 });
 
 export const useAuth = () => {
@@ -40,13 +43,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load saved configurations and initialize auth providers
     const initializeAuth = async () => {
       try {
-        amplifyManager.loadSavedConfig();
-        cognitoManager.loadSavedConfig();
+        // Initialize all integrations on app start
+        integrationManager.initializeAllIntegrations();
 
-        // Check for current user if Amplify is configured
+        // Check for current user if authentication is configured
         if (amplifyManager.isActive()) {
           try {
             const currentUser = await getCurrentUser();
@@ -58,7 +60,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               });
             }
           } catch (error) {
-            console.log('No current user found');
+            console.log('No current Amplify user found');
+          }
+        } else if (cognitoManager.isActive()) {
+          try {
+            const currentUser = cognitoManager.getCurrentUser();
+            if (currentUser) {
+              currentUser.getSession((err: any, session: any) => {
+                if (!err && session.isValid()) {
+                  const accessToken = session.getAccessToken();
+                  setUser({
+                    id: accessToken.payload.sub,
+                    email: accessToken.payload.username || accessToken.payload.email,
+                    fullName: accessToken.payload.given_name || accessToken.payload.username,
+                  });
+                }
+              });
+            }
+          } catch (error) {
+            console.log('No current Cognito user found');
           }
         }
       } catch (error) {
@@ -82,6 +102,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             email: email,
             fullName: email,
           });
+          integrationManager.notifyIntegrationUpdate('AWS Amplify', true);
           return { success: true };
         }
         return { success: false, error: 'Sign in not completed' };
@@ -94,13 +115,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             email: email,
             fullName: accessToken.payload.given_name || email,
           });
+          integrationManager.notifyIntegrationUpdate('AWS Cognito', true);
           return { success: true };
         }
         return { success: false, error: 'Authentication failed' };
       } else {
-        return { success: false, error: 'No authentication provider is configured' };
+        return { success: false, error: 'No authentication provider is configured. Please configure AWS Amplify or Cognito in the dashboard.' };
       }
     } catch (error) {
+      console.error('Sign in error:', error);
       return { success: false, error: String(error) };
     }
   };
@@ -134,9 +157,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         return { success: false, error: 'Sign up failed' };
       } else {
-        return { success: false, error: 'No authentication provider is configured' };
+        return { success: false, error: 'No authentication provider is configured. Please configure AWS Amplify or Cognito in the dashboard.' };
       }
     } catch (error) {
+      console.error('Sign up error:', error);
       return { success: false, error: String(error) };
     }
   };
@@ -160,6 +184,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signOut: handleSignOut,
     signIn: handleSignIn,
     signUp: handleSignUp,
+    isAuthenticated: !!user,
   };
 
   return (

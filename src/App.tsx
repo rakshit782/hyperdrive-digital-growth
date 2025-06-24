@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
+import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -41,39 +42,41 @@ const queryClient = new QueryClient({
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="min-h-screen bg-background font-sans antialiased">
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <TrackingScriptInjector />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/case-studies" element={<CaseStudies />} />
-              <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
-              <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
-              <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
-              <Route path="/free-audit" element={<FreeAudit />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
-              <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
-              <Route path="/meta-advertising" element={<MetaAdvertising />} />
-              <Route path="/account-management" element={<AccountManagement />} />
-              <Route path="/shopify-integration" element={<ShopifyIntegration />} />
-              <Route path="/shopify-development" element={<ShopifyDevelopment />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/terms-conditions" element={<TermsConditions />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </div>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <div className="min-h-screen bg-background font-sans antialiased">
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <TrackingScriptInjector />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/case-studies" element={<CaseStudies />} />
+                <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
+                <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
+                <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
+                <Route path="/free-audit" element={<FreeAudit />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
+                <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
+                <Route path="/meta-advertising" element={<MetaAdvertising />} />
+                <Route path="/account-management" element={<AccountManagement />} />
+                <Route path="/shopify-integration" element={<ShopifyIntegration />} />
+                <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/terms-conditions" element={<TermsConditions />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </div>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </HelmetProvider>
 );

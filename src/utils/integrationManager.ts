@@ -4,6 +4,8 @@ import { cloudflareManager } from './cloudflareManager';
 import { amplifyManager } from './amplifyManager';
 import { cognitoManager } from './cognitoManager';
 import { chatGPTManager } from './chatGPTManager';
+import { s3Manager } from './s3Manager';
+import { sesManager } from './sesManager';
 
 export interface IntegrationStatus {
   name: string;
@@ -12,6 +14,7 @@ export interface IntegrationStatus {
   lastChecked: Date;
   features?: string[];
   errors?: string[];
+  health?: 'healthy' | 'warning' | 'error';
 }
 
 class IntegrationManager {
@@ -30,8 +33,13 @@ class IntegrationManager {
     cognitoManager.loadSavedConfig();
     cloudflareManager.loadSavedConfig();
     chatGPTManager.loadSavedConfig();
+    s3Manager.loadSavedConfig();
+    sesManager.loadSavedConfig();
     
     console.log('Integration Manager: All integrations initialized');
+    
+    // Notify that integrations are ready
+    this.notifyIntegrationUpdate('System', true);
   }
 
   getIntegrationStatus(): IntegrationStatus[] {
@@ -42,15 +50,17 @@ class IntegrationManager {
         hasConfig: this.hasFacebookPixelConfig(),
         lastChecked: new Date(),
         features: ['Event Tracking', 'Conversion Tracking', 'Custom Events'],
-        errors: this.getFacebookPixelErrors()
+        errors: this.getFacebookPixelErrors(),
+        health: this.getHealthStatus('Facebook Pixel')
       },
       {
         name: 'Google Analytics',
         isActive: googleAnalyticsManager.isActive(),
         hasConfig: !!googleAnalyticsManager.getConfig(),
         lastChecked: new Date(),
-        features: ['Page Views', 'Events', 'Conversions'],
-        errors: this.getGoogleAnalyticsErrors()
+        features: ['Page Views', 'Events', 'Conversions', 'Enhanced Ecommerce'],
+        errors: this.getGoogleAnalyticsErrors(),
+        health: this.getHealthStatus('Google Analytics')
       },
       {
         name: 'ChatGPT AI',
@@ -58,35 +68,110 @@ class IntegrationManager {
         hasConfig: !!chatGPTManager.getConfig(),
         lastChecked: new Date(),
         features: ['Content Optimization', 'Review Enhancement', 'SEO Improvement'],
-        errors: this.getChatGPTErrors()
+        errors: this.getChatGPTErrors(),
+        health: this.getHealthStatus('ChatGPT AI')
       },
       {
         name: 'Cloudflare CDN',
         isActive: cloudflareManager.isActive(),
         hasConfig: !!cloudflareManager.getConfig(),
         lastChecked: new Date(),
-        features: ['Cache Management', 'Analytics', 'Security'],
-        errors: this.getCloudflareErrors()
+        features: ['Global CDN', 'Cache Management', 'Analytics', 'DDoS Protection'],
+        errors: this.getCloudflareErrors(),
+        health: this.getHealthStatus('Cloudflare CDN')
       },
       {
         name: 'AWS Amplify',
         isActive: amplifyManager.isActive(),
         hasConfig: !!amplifyManager.getConfig(),
         lastChecked: new Date(),
-        features: ['Authentication', 'API Gateway', 'Storage'],
-        errors: this.getAmplifyErrors()
+        features: ['Authentication', 'API Gateway', 'Hosting', 'Storage Integration'],
+        errors: this.getAmplifyErrors(),
+        health: this.getHealthStatus('AWS Amplify')
       },
       {
         name: 'AWS Cognito',
         isActive: cognitoManager.isActive(),
         hasConfig: !!cognitoManager.getConfig(),
         lastChecked: new Date(),
-        features: ['User Management', 'Authentication', 'Authorization'],
-        errors: this.getCognitoErrors()
+        features: ['User Management', 'Authentication', 'Authorization', 'MFA'],
+        errors: this.getCognitoErrors(),
+        health: this.getHealthStatus('AWS Cognito')
+      },
+      {
+        name: 'AWS S3',
+        isActive: s3Manager.isActive(),
+        hasConfig: !!s3Manager.getConfig(),
+        lastChecked: new Date(),
+        features: ['File Storage', 'Image Hosting', 'Backup', 'CDN Integration'],
+        errors: this.getS3Errors(),
+        health: this.getHealthStatus('AWS S3')
+      },
+      {
+        name: 'Amazon SES',
+        isActive: sesManager.isActive(),
+        hasConfig: !!sesManager.getConfig(),
+        lastChecked: new Date(),
+        features: ['Email Sending', 'Templates', 'Bounce Handling', 'Analytics'],
+        errors: this.getSESErrors(),
+        health: this.getHealthStatus('Amazon SES')
       }
     ];
 
     return integrations;
+  }
+
+  private getHealthStatus(integrationName: string): 'healthy' | 'warning' | 'error' {
+    const errors = this.getErrorsForIntegration(integrationName);
+    if (errors.length === 0) return 'healthy';
+    
+    const hasConfig = this.hasConfigForIntegration(integrationName);
+    const isActive = this.isIntegrationActive(integrationName);
+    
+    if (!hasConfig || !isActive) return 'error';
+    return 'warning';
+  }
+
+  private isIntegrationActive(name: string): boolean {
+    switch (name) {
+      case 'Facebook Pixel': return this.checkFacebookPixelStatus();
+      case 'Google Analytics': return googleAnalyticsManager.isActive();
+      case 'ChatGPT AI': return chatGPTManager.isActive();
+      case 'Cloudflare CDN': return cloudflareManager.isActive();
+      case 'AWS Amplify': return amplifyManager.isActive();
+      case 'AWS Cognito': return cognitoManager.isActive();
+      case 'AWS S3': return s3Manager.isActive();
+      case 'Amazon SES': return sesManager.isActive();
+      default: return false;
+    }
+  }
+
+  private hasConfigForIntegration(name: string): boolean {
+    switch (name) {
+      case 'Facebook Pixel': return this.hasFacebookPixelConfig();
+      case 'Google Analytics': return !!googleAnalyticsManager.getConfig();
+      case 'ChatGPT AI': return !!chatGPTManager.getConfig();
+      case 'Cloudflare CDN': return !!cloudflareManager.getConfig();
+      case 'AWS Amplify': return !!amplifyManager.getConfig();
+      case 'AWS Cognito': return !!cognitoManager.getConfig();
+      case 'AWS S3': return !!s3Manager.getConfig();
+      case 'Amazon SES': return !!sesManager.getConfig();
+      default: return false;
+    }
+  }
+
+  private getErrorsForIntegration(name: string): string[] {
+    switch (name) {
+      case 'Facebook Pixel': return this.getFacebookPixelErrors();
+      case 'Google Analytics': return this.getGoogleAnalyticsErrors();
+      case 'ChatGPT AI': return this.getChatGPTErrors();
+      case 'Cloudflare CDN': return this.getCloudflareErrors();
+      case 'AWS Amplify': return this.getAmplifyErrors();
+      case 'AWS Cognito': return this.getCognitoErrors();
+      case 'AWS S3': return this.getS3Errors();
+      case 'Amazon SES': return this.getSESErrors();
+      default: return [];
+    }
   }
 
   private checkFacebookPixelStatus(): boolean {
@@ -180,6 +265,34 @@ class IntegrationManager {
     return errors;
   }
 
+  private getS3Errors(): string[] {
+    const errors: string[] = [];
+    const config = s3Manager.getConfig();
+    if (!config) {
+      errors.push('No configuration found');
+    } else {
+      if (!config.region) errors.push('Missing region');
+      if (!config.accessKeyId) errors.push('Missing access key');
+      if (!config.secretAccessKey) errors.push('Missing secret key');
+      if (!config.bucketName) errors.push('Missing bucket name');
+    }
+    return errors;
+  }
+
+  private getSESErrors(): string[] {
+    const errors: string[] = [];
+    const config = sesManager.getConfig();
+    if (!config) {
+      errors.push('No configuration found');
+    } else {
+      if (!config.region) errors.push('Missing region');
+      if (!config.accessKeyId) errors.push('Missing access key');
+      if (!config.secretAccessKey) errors.push('Missing secret key');
+      if (!config.fromEmail) errors.push('Missing from email');
+    }
+    return errors;
+  }
+
   // Test integration connectivity
   async testIntegration(integrationName: string): Promise<boolean> {
     try {
@@ -189,8 +302,13 @@ class IntegrationManager {
         
         case 'Cloudflare CDN':
           if (!cloudflareManager.isActive()) return false;
-          // You could add a test API call here
-          return true;
+          // Test with a simple cache purge check
+          try {
+            await cloudflareManager.getZoneAnalytics();
+            return true;
+          } catch {
+            return false;
+          }
         
         case 'Facebook Pixel':
           return this.checkFacebookPixelStatus() && typeof window !== 'undefined' && !!window.fbq;
@@ -199,10 +317,22 @@ class IntegrationManager {
           return googleAnalyticsManager.isActive() && typeof window !== 'undefined' && !!window.gtag;
         
         case 'AWS Amplify':
-          return amplifyManager.isActive();
+          return await amplifyManager.testConnection();
         
         case 'AWS Cognito':
           return cognitoManager.isActive();
+        
+        case 'AWS S3':
+          if (!s3Manager.isActive()) return false;
+          try {
+            await s3Manager.listFiles('', 1);
+            return true;
+          } catch {
+            return false;
+          }
+        
+        case 'Amazon SES':
+          return sesManager.isActive();
         
         default:
           return false;
