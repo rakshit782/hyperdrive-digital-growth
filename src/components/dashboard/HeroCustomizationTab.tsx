@@ -181,6 +181,19 @@ const HeroCustomizationTab = () => {
     });
   };
 
+  const updateStatValue = (statKey: 'stat1' | 'stat2' | 'stat3', field: 'value' | 'label', newValue: string) => {
+    setSettings({
+      ...settings,
+      stats: {
+        ...settings.stats,
+        [statKey]: {
+          ...settings.stats[statKey],
+          [field]: newValue
+        }
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card className="bg-white border-slate-200 shadow-sm">
@@ -468,29 +481,17 @@ const HeroCustomizationTab = () => {
 
                     {settings.stats.enabled && (
                       <div className="space-y-3">
-                        {['stat1', 'stat2', 'stat3'].map((stat, index) => (
-                          <div key={stat} className="grid grid-cols-2 gap-2">
+                        {(['stat1', 'stat2', 'stat3'] as const).map((statKey, index) => (
+                          <div key={statKey} className="grid grid-cols-2 gap-2">
                             <Input
                               placeholder="300%"
-                              value={settings.stats[stat as keyof typeof settings.stats].value}
-                              onChange={(e) => setSettings({
-                                ...settings,
-                                stats: {
-                                  ...settings.stats,
-                                  [stat]: { ...settings.stats[stat as keyof typeof settings.stats], value: e.target.value }
-                                }
-                              })}
+                              value={settings.stats[statKey].value}
+                              onChange={(e) => updateStatValue(statKey, 'value', e.target.value)}
                             />
                             <Input
                               placeholder="ROAS Increase"
-                              value={settings.stats[stat as keyof typeof settings.stats].label}
-                              onChange={(e) => setSettings({
-                                ...settings,
-                                stats: {
-                                  ...settings.stats,
-                                  [stat]: { ...settings.stats[stat as keyof typeof settings.stats], label: e.target.value }
-                                }
-                              })}
+                              value={settings.stats[statKey].label}
+                              onChange={(e) => updateStatValue(statKey, 'label', e.target.value)}
                             />
                           </div>
                         ))}
