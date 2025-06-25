@@ -22,11 +22,6 @@ interface HeroSettings {
       enabled: boolean;
     };
   };
-  image: {
-    url: string;
-    alt: string;
-    type: 'success' | 'team' | 'dashboard' | 'growth' | 'custom';
-  };
   stats: {
     enabled: boolean;
     stat1: { value: string; label: string };
@@ -63,11 +58,6 @@ const defaultSettings: HeroSettings = {
       enabled: true
     }
   },
-  image: {
-    url: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop&crop=center",
-    alt: "Business team celebrating success",
-    type: 'success'
-  },
   stats: {
     enabled: true,
     stat1: { value: "300%", label: "Avg ROAS Increase" },
@@ -85,8 +75,33 @@ const defaultSettings: HeroSettings = {
   }
 };
 
+// Professional background images with abstract digital gradients and tech patterns
+const backgroundImages = [
+  {
+    url: "https://images.unsplash.com/photo-1557264337-e8a93017fe92?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80&fm=webp",
+    alt: "Abstract digital gradient with flowing lines"
+  },
+  {
+    url: "https://images.unsplash.com/photo-1551703599146-cd7355d43c9d?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80&fm=webp",
+    alt: "Blue purple gradient mesh pattern"
+  },
+  {
+    url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80&fm=webp",
+    alt: "Dark tech pattern with light streaks"
+  },
+  {
+    url: "https://images.unsplash.com/photo-1557264305-7e2764da873b?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80&fm=webp",
+    alt: "Futuristic gradient background"
+  },
+  {
+    url: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80&fm=webp",
+    alt: "Digital abstract pattern"
+  }
+];
+
 const ModernHero = () => {
   const [settings, setSettings] = useState<HeroSettings>(defaultSettings);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const loadSettings = () => {
@@ -116,178 +131,158 @@ const ModernHero = () => {
     };
   }, []);
 
+  // Background image slider
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === backgroundImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 6000); // Change image every 6 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50 overflow-hidden pt-24 pb-16 flex items-center">
-      {/* Background decorative elements */}
+    <section className="relative min-h-screen overflow-hidden pt-24 pb-16 flex items-center">
+      {/* Background Image Slider */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-indigo-100 rounded-full blur-3xl opacity-40"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-violet-50 rounded-full blur-3xl opacity-30 transform -translate-x-1/2 -translate-y-1/2"></div>
+        {backgroundImages.map((image, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <img
+              src={image.url}
+              alt={image.alt}
+              className="w-full h-full object-cover"
+              loading={index === 0 ? "eager" : "lazy"}
+            />
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/60"></div>
+          </div>
+        ))}
       </div>
 
+      {/* Additional gradient overlay for enhanced readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20"></div>
+
       <div className="relative z-10 container mx-auto px-8 w-full">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-20 lg:gap-24 items-center">
-            {/* Left Content */}
-            <div className="space-y-10 text-center lg:text-left">
-              {/* Trust badge with social proof */}
-              {settings.trustBadge.enabled && (
-                <div className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full border border-indigo-100 shadow-lg">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
-                  <span className="text-sm font-semibold text-slate-700">
-                    {settings.trustBadge.rating} {settings.trustBadge.text}
-                  </span>
-                </div>
-              )}
-
-              {/* Main converting headline */}
-              <div className="space-y-8">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 leading-tight tracking-tight">
-                  <span className="block mb-3">{settings.headline.main}</span>
-                  <span className="bg-gradient-to-r from-indigo-600 via-blue-600 to-violet-600 bg-clip-text text-transparent block mb-3">
-                    {settings.headline.highlight}
-                  </span>
-                  <span className="block text-2xl sm:text-3xl lg:text-4xl font-semibold">{settings.headline.subtitle}</span>
-                </h1>
-                
-                <p className="text-base sm:text-lg lg:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
-                  {settings.description}
-                </p>
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Trust badge with social proof */}
+          {settings.trustBadge.enabled && (
+            <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 shadow-lg mb-8">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                ))}
               </div>
-
-              {/* Social proof numbers */}
-              {settings.stats.enabled && (
-                <div className="grid grid-cols-3 gap-6 bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-lg">
-                  <div className="text-center">
-                    <div className="text-xl lg:text-2xl font-bold text-indigo-600 mb-2">{settings.stats.stat1.value}</div>
-                    <div className="text-sm text-slate-600 font-medium">{settings.stats.stat1.label}</div>
-                  </div>
-                  <div className="text-center border-x border-slate-200">
-                    <div className="text-xl lg:text-2xl font-bold text-emerald-600 mb-2">{settings.stats.stat2.value}</div>
-                    <div className="text-sm text-slate-600 font-medium">{settings.stats.stat2.label}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xl lg:text-2xl font-bold text-violet-600 mb-2">{settings.stats.stat3.value}</div>
-                    <div className="text-sm text-slate-600 font-medium">{settings.stats.stat3.label}</div>
-                  </div>
-                </div>
-              )}
-
-              {/* CTA buttons with urgency */}
-              <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start pt-6">
-                {settings.cta.primary.enabled && (
-                  <Button 
-                    size="lg" 
-                    className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white px-8 py-4 text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-300 border-0"
-                    onClick={() => window.location.href = settings.cta.primary.link}
-                  >
-                    {settings.cta.primary.text}
-                    <ArrowRight className="w-5 h-5 ml-3" />
-                  </Button>
-                )}
-                
-                {settings.cta.secondary.enabled && (
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    className="border-2 border-slate-300 bg-white/90 backdrop-blur-sm hover:bg-white text-slate-700 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-                    onClick={() => window.location.href = settings.cta.secondary.link}
-                  >
-                    <Play className="w-5 h-5 mr-3" />
-                    {settings.cta.secondary.text}
-                  </Button>
-                )}
-              </div>
-
-              {/* Trust indicators with icons */}
-              <div className="flex flex-wrap items-center gap-8 pt-6 justify-center lg:justify-start">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <CheckCircle className="w-5 h-5 text-emerald-500" />
-                  <span className="text-sm font-semibold">No Setup Fees</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Shield className="w-5 h-5 text-indigo-500" />
-                  <span className="text-sm font-semibold">Risk-Free Guarantee</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Zap className="w-5 h-5 text-amber-500" />
-                  <span className="text-sm font-semibold">Results in 24hrs</span>
-                </div>
-              </div>
-
-              {/* Urgency element */}
-              {settings.urgency.enabled && (
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-4 inline-block">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
-                    <span className="text-orange-700 font-semibold text-sm">
-                      {settings.urgency.text}
-                    </span>
-                  </div>
-                </div>
-              )}
+              <span className="text-sm font-semibold text-white">
+                {settings.trustBadge.rating} {settings.trustBadge.text}
+              </span>
             </div>
+          )}
 
-            {/* Right Content - More Converting Visual */}
-            <div className="relative mt-8 lg:mt-0">
-              {/* Main converting image */}
-              <div className="relative">
-                <img 
-                  src={settings.image.url}
-                  alt={settings.image.alt}
-                  className="w-full h-96 object-cover rounded-3xl shadow-2xl"
-                />
-                
-                {/* Overlay with performance metrics */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-3xl"></div>
-                
-                {/* Performance stats overlay */}
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 border border-white/40">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold text-slate-800 text-lg">Live Campaign Results</h3>
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-emerald-500" />
-                        <span className="text-sm text-emerald-600 font-bold">+347% ROAS</span>
-                      </div>
-                    </div>
-                    
-                    {/* Mini performance chart visualization */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-indigo-600 mb-1">$1.2M</div>
-                        <div className="text-sm text-slate-600">Revenue This Month</div>
-                      </div>
-                      <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-emerald-600 mb-1">4.7x</div>
-                        <div className="text-sm text-slate-600">Return on Ad Spend</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          {/* Main converting headline */}
+          <div className="space-y-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight tracking-tight">
+              <span className="block mb-3">{settings.headline.main}</span>
+              <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent block mb-3">
+                {settings.headline.highlight}
+              </span>
+              <span className="block text-2xl sm:text-3xl lg:text-4xl font-semibold">{settings.headline.subtitle}</span>
+            </h1>
+            
+            <p className="text-lg sm:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto font-medium">
+              {settings.description}
+            </p>
+          </div>
 
-              {/* Floating success indicators */}
-              <div className="absolute -top-4 -right-4 bg-gradient-to-r from-emerald-400 to-green-400 text-white rounded-full p-4 shadow-xl animate-bounce">
-                <TrendingUp className="w-6 h-6" />
+          {/* Social proof numbers */}
+          {settings.stats.enabled && (
+            <div className="grid grid-cols-3 gap-6 bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-lg max-w-2xl mx-auto my-12">
+              <div className="text-center">
+                <div className="text-xl lg:text-2xl font-bold text-blue-400 mb-2">{settings.stats.stat1.value}</div>
+                <div className="text-sm text-white/80 font-medium">{settings.stats.stat1.label}</div>
               </div>
-              
-              <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-full p-4 shadow-xl">
-                <Star className="w-6 h-6 fill-white" />
+              <div className="text-center border-x border-white/20">
+                <div className="text-xl lg:text-2xl font-bold text-emerald-400 mb-2">{settings.stats.stat2.value}</div>
+                <div className="text-sm text-white/80 font-medium">{settings.stats.stat2.label}</div>
               </div>
-              
-              {/* Achievement badge */}
-              <div className="absolute top-4 -left-6 bg-white rounded-full p-4 shadow-lg border-2 border-emerald-200">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-emerald-600">#1</div>
-                  <div className="text-xs text-slate-600 whitespace-nowrap">Growth Agency</div>
-                </div>
+              <div className="text-center">
+                <div className="text-xl lg:text-2xl font-bold text-purple-400 mb-2">{settings.stats.stat3.value}</div>
+                <div className="text-sm text-white/80 font-medium">{settings.stats.stat3.label}</div>
               </div>
             </div>
+          )}
+
+          {/* CTA buttons with urgency */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6">
+            {settings.cta.primary.enabled && (
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-300 border-0"
+                onClick={() => window.location.href = settings.cta.primary.link}
+              >
+                {settings.cta.primary.text}
+                <ArrowRight className="w-5 h-5 ml-3" />
+              </Button>
+            )}
+            
+            {settings.cta.secondary.enabled && (
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-2 border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => window.location.href = settings.cta.secondary.link}
+              >
+                <Play className="w-5 h-5 mr-3" />
+                {settings.cta.secondary.text}
+              </Button>
+            )}
+          </div>
+
+          {/* Trust indicators with icons */}
+          <div className="flex flex-wrap items-center gap-8 pt-8 justify-center">
+            <div className="flex items-center gap-2 text-white/80">
+              <CheckCircle className="w-5 h-5 text-emerald-400" />
+              <span className="text-sm font-semibold">No Setup Fees</span>
+            </div>
+            <div className="flex items-center gap-2 text-white/80">
+              <Shield className="w-5 h-5 text-blue-400" />
+              <span className="text-sm font-semibold">Risk-Free Guarantee</span>
+            </div>
+            <div className="flex items-center gap-2 text-white/80">
+              <Zap className="w-5 h-5 text-amber-400" />
+              <span className="text-sm font-semibold">Results in 24hrs</span>
+            </div>
+          </div>
+
+          {/* Urgency element */}
+          {settings.urgency.enabled && (
+            <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-400/30 rounded-xl p-4 inline-block mt-8 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-orange-400 rounded-full animate-pulse"></div>
+                <span className="text-orange-200 font-semibold text-sm">
+                  {settings.urgency.text}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Slider indicators */}
+          <div className="flex justify-center gap-2 mt-8">
+            {backgroundImages.map((_, index) => (
+              <button
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentImageIndex ? 'bg-white w-8' : 'bg-white/40'
+                }`}
+                onClick={() => setCurrentImageIndex(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </div>
