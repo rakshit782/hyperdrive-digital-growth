@@ -33,6 +33,7 @@ import S3Tab from "@/components/dashboard/S3Tab";
 import SESTab from "@/components/dashboard/SESTab";
 import CloudflareTab from "@/components/dashboard/CloudflareTab";
 import UserManagementTab from "@/components/dashboard/UserManagementTab";
+import WebsitePreviewTab from "@/components/dashboard/WebsitePreviewTab";
 import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 import IntegrationTestTab from "@/components/dashboard/IntegrationTestTab";
 import FacebookPixelTab from "@/components/dashboard/FacebookPixelTab";
