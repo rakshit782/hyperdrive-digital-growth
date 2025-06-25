@@ -1,10 +1,10 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, ExternalLink, Smartphone, Monitor, Tablet } from "lucide-react";
 
-const WebsitePreviewTab = () => {
+const WebsitePreviewTab: React.FC = () => {
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [currentPage, setCurrentPage] = useState('/');
 
@@ -33,6 +33,11 @@ const WebsitePreviewTab = () => {
     }
   };
 
+  const handleOpenInNewTab = () => {
+    // Always open the homepage (/) when clicking the preview button
+    window.open(window.location.origin + '/', '_blank');
+  };
+
   return (
     <div className="space-y-6">
       <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
@@ -48,12 +53,12 @@ const WebsitePreviewTab = () => {
               </div>
             </div>
             <Button
-              onClick={() => window.open(window.location.origin + currentPage, '_blank')}
+              onClick={handleOpenInNewTab}
               className="flex items-center gap-2"
               variant="outline"
             >
               <ExternalLink className="w-4 h-4" />
-              Open in New Tab
+              Open Homepage
             </Button>
           </div>
         </CardHeader>
