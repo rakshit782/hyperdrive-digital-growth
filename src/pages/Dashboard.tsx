@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DashboardTab } from "@/types/dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -43,6 +42,7 @@ import ModernFeaturesTab from "@/components/dashboard/ModernFeaturesTab";
 import WebsiteSEOTab from "@/components/dashboard/WebsiteSEOTab";
 import CustomEventsTab from "@/components/dashboard/CustomEventsTab";
 import HeroCustomizationTab from "@/components/dashboard/HeroCustomizationTab";
+import HeroSliderTab from "@/components/dashboard/HeroSliderTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<DashboardTab>('services');
@@ -82,6 +82,7 @@ const Dashboard = () => {
         { value: 'services', label: 'Services', icon: '🛠️' },
         { value: 'reviews', label: 'Reviews', icon: '⭐' },
         { value: 'hero-customization', label: 'Hero Section', icon: '🎯' },
+        { value: 'hero-slider', label: 'Hero Images', icon: '🖼️' },
         { value: 'homepage', label: 'Homepage', icon: '🏠' },
         { value: 'about-us', label: 'About Us', icon: '👥' },
         { value: 'pricing', label: 'Pricing', icon: '💰' },
@@ -146,6 +147,8 @@ const Dashboard = () => {
         );
       case 'hero-customization':
         return <HeroCustomizationTab />;
+      case 'hero-slider':
+        return <HeroSliderTab />;
       case 'website':
         return <WebsiteTab />;
       case 'logo':
