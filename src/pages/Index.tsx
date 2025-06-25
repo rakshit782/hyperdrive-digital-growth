@@ -1,6 +1,6 @@
 
 import Header from "@/components/Header";
-import ModernHero from "@/components/ModernHero";
+import Hero from "@/components/Hero";
 import ModernServices from "@/components/ModernServices";
 import ModernFeatures from "@/components/ModernFeatures";
 import CircularReviews from "@/components/CircularReviews";
@@ -19,7 +19,7 @@ const Index = () => {
       />
       <div className="min-h-screen">
         <Header />
-        <ModernHero />
+        <Hero />
         <ModernServices />
         <ModernFeatures />
         <CircularReviews />
