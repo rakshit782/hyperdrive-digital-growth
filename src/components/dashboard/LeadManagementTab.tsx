@@ -23,6 +23,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useSupabaseData, Lead } from "@/hooks/useSupabaseData";
 
+type LeadStatus = 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
+
 const LeadManagementTab = () => {
   const { useLeads } = useSupabaseData();
   const { leads, loading, createLead, updateLead, deleteLead } = useLeads();
@@ -37,7 +39,7 @@ const LeadManagementTab = () => {
     phone: '',
     company: '',
     source: '',
-    status: 'new' as const,
+    status: 'new' as LeadStatus,
     notes: ''
   });
 
@@ -66,10 +68,20 @@ const LeadManagementTab = () => {
     e.preventDefault();
     
     try {
+      const leadData = {
+        ...formData,
+        lead_data: {},
+        phone: formData.phone || null,
+        company: formData.company || null,
+        source: formData.source || null,
+        notes: formData.notes || null,
+        assigned_to: null
+      };
+
       if (selectedLead) {
-        await updateLead(selectedLead.id, formData);
+        await updateLead(selectedLead.id, leadData);
       } else {
-        await createLead(formData);
+        await createLead(leadData);
       }
       
       resetForm();
@@ -202,7 +214,7 @@ const LeadManagementTab = () => {
                   </div>
                   <div>
                     <Label htmlFor="status">Status</Label>
-                    <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+                    <Select value={formData.status} onValueChange={(value: LeadStatus) => setFormData({ ...formData, status: value })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>

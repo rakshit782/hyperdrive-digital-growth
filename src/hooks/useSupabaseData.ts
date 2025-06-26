@@ -2,29 +2,52 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import type { Database } from '@/integrations/supabase/types';
 
+// Use Supabase generated types as base and extend them
+type BlogPostRow = Database['public']['Tables']['blog_posts']['Row'];
+type BlogPostInsert = Database['public']['Tables']['blog_posts']['Insert'];
+type BlogPostUpdate = Database['public']['Tables']['blog_posts']['Update'];
+
+type PricingPlanRow = Database['public']['Tables']['pricing_plans']['Row'];
+type PricingPlanInsert = Database['public']['Tables']['pricing_plans']['Insert'];
+type PricingPlanUpdate = Database['public']['Tables']['pricing_plans']['Update'];
+
+type LeadRow = Database['public']['Tables']['leads']['Row'];
+type LeadInsert = Database['public']['Tables']['leads']['Insert'];
+type LeadUpdate = Database['public']['Tables']['leads']['Update'];
+
+type FAQRow = Database['public']['Tables']['faqs']['Row'];
+type FAQInsert = Database['public']['Tables']['faqs']['Insert'];
+type FAQUpdate = Database['public']['Tables']['faqs']['Update'];
+
+type WebsiteSettingRow = Database['public']['Tables']['website_settings']['Row'];
+type WebsiteSettingInsert = Database['public']['Tables']['website_settings']['Insert'];
+type WebsiteSettingUpdate = Database['public']['Tables']['website_settings']['Update'];
+
+// Export interfaces that match Supabase types
 export interface BlogPost {
   id: string;
   title: string;
   slug: string;
-  content?: string;
-  excerpt?: string;
-  featured_image?: string;
+  content?: string | null;
+  excerpt?: string | null;
+  featured_image?: string | null;
   status: 'draft' | 'published' | 'archived';
-  tags?: string[];
-  meta_title?: string;
-  meta_description?: string;
-  published_at?: string;
+  tags?: string[] | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  published_at?: string | null;
   created_at: string;
   updated_at: string;
-  author_id?: string;
+  author_id?: string | null;
 }
 
 export interface PricingPlan {
   id: string;
   name: string;
-  description?: string;
-  price: number;
+  description?: string | null;
+  price: number | null;
   billing_period: 'monthly' | 'yearly' | 'one-time';
   features: string[];
   is_popular: boolean;
@@ -38,7 +61,7 @@ export interface FAQ {
   id: string;
   question: string;
   answer: string;
-  category?: string;
+  category?: string | null;
   is_active: boolean;
   sort_order: number;
   created_at: string;
@@ -47,10 +70,10 @@ export interface FAQ {
 
 export interface ContactInfo {
   id: string;
-  company_name?: string;
-  phone?: string;
-  email?: string;
-  address?: string;
+  company_name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
   social_links: Record<string, string>;
   business_hours: Record<string, string>;
   created_at: string;
@@ -61,13 +84,13 @@ export interface Lead {
   id: string;
   name: string;
   email: string;
-  phone?: string;
-  company?: string;
-  source?: string;
+  phone?: string | null;
+  company?: string | null;
+  source?: string | null;
   status: 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
-  notes?: string;
+  notes?: string | null;
   lead_data: Record<string, any>;
-  assigned_to?: string;
+  assigned_to?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -101,7 +124,7 @@ export const useSupabaseData = () => {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setPosts(data || []);
+        setPosts((data as BlogPost[]) || []);
       } catch (error) {
         console.error('Error fetching blog posts:', error);
         toast({
@@ -114,21 +137,35 @@ export const useSupabaseData = () => {
       }
     };
 
-    const createPost = async (post: Partial<BlogPost>) => {
+    const createPost = async (post: Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>) => {
       try {
+        const insertData: BlogPostInsert = {
+          title: post.title,
+          slug: post.slug,
+          content: post.content,
+          excerpt: post.excerpt,
+          featured_image: post.featured_image,
+          status: post.status,
+          tags: post.tags,
+          meta_title: post.meta_title,
+          meta_description: post.meta_description,
+          published_at: post.published_at,
+          author_id: post.author_id
+        };
+
         const { data, error } = await supabase
           .from('blog_posts')
-          .insert([post])
+          .insert(insertData)
           .select()
           .single();
 
         if (error) throw error;
-        setPosts(prev => [data, ...prev]);
+        setPosts(prev => [data as BlogPost, ...prev]);
         toast({
           title: "Success",
           description: "Blog post created successfully",
         });
-        return data;
+        return data as BlogPost;
       } catch (error) {
         console.error('Error creating blog post:', error);
         toast({
@@ -140,22 +177,27 @@ export const useSupabaseData = () => {
       }
     };
 
-    const updatePost = async (id: string, updates: Partial<BlogPost>) => {
+    const updatePost = async (id: string, updates: Partial<Omit<BlogPost, 'id' | 'created_at'>>) => {
       try {
+        const updateData: BlogPostUpdate = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        };
+
         const { data, error } = await supabase
           .from('blog_posts')
-          .update({ ...updates, updated_at: new Date().toISOString() })
+          .update(updateData)
           .eq('id', id)
           .select()
           .single();
 
         if (error) throw error;
-        setPosts(prev => prev.map(post => post.id === id ? data : post));
+        setPosts(prev => prev.map(post => post.id === id ? data as BlogPost : post));
         toast({
           title: "Success",
           description: "Blog post updated successfully",
         });
-        return data;
+        return data as BlogPost;
       } catch (error) {
         console.error('Error updating blog post:', error);
         toast({
@@ -211,7 +253,7 @@ export const useSupabaseData = () => {
           .order('sort_order', { ascending: true });
 
         if (error) throw error;
-        setPlans(data || []);
+        setPlans((data as PricingPlan[]) || []);
       } catch (error) {
         console.error('Error fetching pricing plans:', error);
         toast({
@@ -224,21 +266,32 @@ export const useSupabaseData = () => {
       }
     };
 
-    const createPlan = async (plan: Partial<PricingPlan>) => {
+    const createPlan = async (plan: Omit<PricingPlan, 'id' | 'created_at' | 'updated_at'>) => {
       try {
+        const insertData: PricingPlanInsert = {
+          name: plan.name,
+          description: plan.description,
+          price: plan.price,
+          billing_period: plan.billing_period,
+          features: plan.features,
+          is_popular: plan.is_popular,
+          is_active: plan.is_active,
+          sort_order: plan.sort_order
+        };
+
         const { data, error } = await supabase
           .from('pricing_plans')
-          .insert([plan])
+          .insert(insertData)
           .select()
           .single();
 
         if (error) throw error;
-        setPlans(prev => [...prev, data].sort((a, b) => a.sort_order - b.sort_order));
+        setPlans(prev => [...prev, data as PricingPlan].sort((a, b) => a.sort_order - b.sort_order));
         toast({
           title: "Success",
           description: "Pricing plan created successfully",
         });
-        return data;
+        return data as PricingPlan;
       } catch (error) {
         console.error('Error creating pricing plan:', error);
         toast({
@@ -250,22 +303,27 @@ export const useSupabaseData = () => {
       }
     };
 
-    const updatePlan = async (id: string, updates: Partial<PricingPlan>) => {
+    const updatePlan = async (id: string, updates: Partial<Omit<PricingPlan, 'id' | 'created_at'>>) => {
       try {
+        const updateData: PricingPlanUpdate = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        };
+
         const { data, error } = await supabase
           .from('pricing_plans')
-          .update({ ...updates, updated_at: new Date().toISOString() })
+          .update(updateData)
           .eq('id', id)
           .select()
           .single();
 
         if (error) throw error;
-        setPlans(prev => prev.map(plan => plan.id === id ? data : plan));
+        setPlans(prev => prev.map(plan => plan.id === id ? data as PricingPlan : plan));
         toast({
           title: "Success",
           description: "Pricing plan updated successfully",
         });
-        return data;
+        return data as PricingPlan;
       } catch (error) {
         console.error('Error updating pricing plan:', error);
         toast({
@@ -321,7 +379,7 @@ export const useSupabaseData = () => {
           .order('sort_order', { ascending: true });
 
         if (error) throw error;
-        setFAQs(data || []);
+        setFAQs((data as FAQ[]) || []);
       } catch (error) {
         console.error('Error fetching FAQs:', error);
         toast({
@@ -334,21 +392,29 @@ export const useSupabaseData = () => {
       }
     };
 
-    const createFAQ = async (faq: Partial<FAQ>) => {
+    const createFAQ = async (faq: Omit<FAQ, 'id' | 'created_at' | 'updated_at'>) => {
       try {
+        const insertData: FAQInsert = {
+          question: faq.question,
+          answer: faq.answer,
+          category: faq.category,
+          is_active: faq.is_active,
+          sort_order: faq.sort_order
+        };
+
         const { data, error } = await supabase
           .from('faqs')
-          .insert([faq])
+          .insert(insertData)
           .select()
           .single();
 
         if (error) throw error;
-        setFAQs(prev => [...prev, data].sort((a, b) => a.sort_order - b.sort_order));
+        setFAQs(prev => [...prev, data as FAQ].sort((a, b) => a.sort_order - b.sort_order));
         toast({
           title: "Success",
           description: "FAQ created successfully",
         });
-        return data;
+        return data as FAQ;
       } catch (error) {
         console.error('Error creating FAQ:', error);
         toast({
@@ -360,22 +426,27 @@ export const useSupabaseData = () => {
       }
     };
 
-    const updateFAQ = async (id: string, updates: Partial<FAQ>) => {
+    const updateFAQ = async (id: string, updates: Partial<Omit<FAQ, 'id' | 'created_at'>>) => {
       try {
+        const updateData: FAQUpdate = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        };
+
         const { data, error } = await supabase
           .from('faqs')
-          .update({ ...updates, updated_at: new Date().toISOString() })
+          .update(updateData)
           .eq('id', id)
           .select()
           .single();
 
         if (error) throw error;
-        setFAQs(prev => prev.map(faq => faq.id === id ? data : faq));
+        setFAQs(prev => prev.map(faq => faq.id === id ? data as FAQ : faq));
         toast({
           title: "Success",
           description: "FAQ updated successfully",
         });
-        return data;
+        return data as FAQ;
       } catch (error) {
         console.error('Error updating FAQ:', error);
         toast({
@@ -430,7 +501,7 @@ export const useSupabaseData = () => {
           .select('*');
 
         if (error) throw error;
-        setSettings(data || []);
+        setSettings((data as WebsiteSetting[]) || []);
       } catch (error) {
         console.error('Error fetching website settings:', error);
         toast({
@@ -460,16 +531,16 @@ export const useSupabaseData = () => {
         setSettings(prev => {
           const existing = prev.find(s => s.setting_key === key);
           if (existing) {
-            return prev.map(s => s.setting_key === key ? data : s);
+            return prev.map(s => s.setting_key === key ? data as WebsiteSetting : s);
           } else {
-            return [...prev, data];
+            return [...prev, data as WebsiteSetting];
           }
         });
         toast({
           title: "Success",
           description: "Setting updated successfully",
         });
-        return data;
+        return data as WebsiteSetting;
       } catch (error) {
         console.error('Error updating setting:', error);
         toast({
@@ -505,7 +576,7 @@ export const useSupabaseData = () => {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setLeads(data || []);
+        setLeads((data as Lead[]) || []);
       } catch (error) {
         console.error('Error fetching leads:', error);
         toast({
@@ -518,21 +589,33 @@ export const useSupabaseData = () => {
       }
     };
 
-    const createLead = async (lead: Partial<Lead>) => {
+    const createLead = async (lead: Omit<Lead, 'id' | 'created_at' | 'updated_at'>) => {
       try {
+        const insertData: LeadInsert = {
+          name: lead.name,
+          email: lead.email,
+          phone: lead.phone,
+          company: lead.company,
+          source: lead.source,
+          status: lead.status,
+          notes: lead.notes,
+          lead_data: lead.lead_data,
+          assigned_to: lead.assigned_to
+        };
+
         const { data, error } = await supabase
           .from('leads')
-          .insert([lead])
+          .insert(insertData)
           .select()
           .single();
 
         if (error) throw error;
-        setLeads(prev => [data, ...prev]);
+        setLeads(prev => [data as Lead, ...prev]);
         toast({
           title: "Success",
           description: "Lead created successfully",
         });
-        return data;
+        return data as Lead;
       } catch (error) {
         console.error('Error creating lead:', error);
         toast({
@@ -544,22 +627,27 @@ export const useSupabaseData = () => {
       }
     };
 
-    const updateLead = async (id: string, updates: Partial<Lead>) => {
+    const updateLead = async (id: string, updates: Partial<Omit<Lead, 'id' | 'created_at'>>) => {
       try {
+        const updateData: LeadUpdate = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        };
+
         const { data, error } = await supabase
           .from('leads')
-          .update({ ...updates, updated_at: new Date().toISOString() })
+          .update(updateData)
           .eq('id', id)
           .select()
           .single();
 
         if (error) throw error;
-        setLeads(prev => prev.map(lead => lead.id === id ? data : lead));
+        setLeads(prev => prev.map(lead => lead.id === id ? data as Lead : lead));
         toast({
           title: "Success",
           description: "Lead updated successfully",
         });
-        return data;
+        return data as Lead;
       } catch (error) {
         console.error('Error updating lead:', error);
         toast({
