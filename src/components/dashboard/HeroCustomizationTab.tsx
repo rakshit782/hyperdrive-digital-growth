@@ -15,13 +15,22 @@ import {
   RefreshCw,
   Target,
   Type,
-  Image,
   Zap,
-  Star,
-  TrendingUp,
-  Users
+  TrendingUp
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+interface CTAButtons {
+  primaryText?: string;
+  secondaryText?: string;
+}
+
+interface StatBlock {
+  id: string;
+  number: string;
+  label: string;
+  color: string;
+}
 
 interface HeroSettings {
   headline: {
@@ -42,95 +51,42 @@ interface HeroSettings {
       enabled: boolean;
     };
   };
-  image: {
-    url: string;
-    alt: string;
-    type: 'success' | 'team' | 'dashboard' | 'growth' | 'custom';
-  };
   stats: {
     enabled: boolean;
-    stat1: { value: string; label: string };
-    stat2: { value: string; label: string };
-    stat3: { value: string; label: string };
-  };
-  trustBadge: {
-    enabled: boolean;
-    rating: string;
-    text: string;
-  };
-  urgency: {
-    enabled: boolean;
-    text: string;
+    stat1: { value: string; label: string; color: string };
+    stat2: { value: string; label: string; color: string };
+    stat3: { value: string; label: string; color: string };
+    stat4: { value: string; label: string; color: string };
   };
 }
 
 const defaultSettings: HeroSettings = {
   headline: {
-    main: "Get 3x Higher ROAS",
-    highlight: "Higher ROAS",
-    subtitle: "in 90 Days"
+    main: "Scale Your Business",
+    highlight: "With Precision",
+    subtitle: ""
   },
-  description: "Join 500+ brands that increased their advertising revenue by an average of 300% with our proven Amazon, Walmart & Meta strategies.",
+  description: "Transform your advertising performance with our data-driven strategies across Amazon, Walmart, and Meta platforms",
   cta: {
     primary: {
-      text: "Get FREE $2,000 Audit",
+      text: "Get Free Strategy Call",
       link: "/free-audit",
       enabled: true
     },
     secondary: {
-      text: "Watch Success Stories",
-      link: "#",
+      text: "Watch Case Study",
+      link: "/case-studies",
       enabled: true
     }
   },
-  image: {
-    url: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43",
-    alt: "Business team celebrating success",
-    type: 'success'
-  },
   stats: {
     enabled: true,
-    stat1: { value: "300%", label: "Avg ROAS Increase" },
-    stat2: { value: "24hrs", label: "Setup Time" },
-    stat3: { value: "98%", label: "Client Retention" }
-  },
-  trustBadge: {
-    enabled: true,
-    rating: "4.9/5",
-    text: "from 500+ Happy Clients"
-  },
-  urgency: {
-    enabled: true,
-    text: "🔥 Limited Time: Only 10 spots left this month"
+    stat1: { value: "500+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
+    stat2: { value: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
+    stat3: { value: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
+    stat4: { value: "24/7", label: "Account Monitoring", color: "from-pink-400 to-blue-400" }
   }
 };
-
-const imageOptions = [
-  {
-    type: 'success',
-    url: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43',
-    alt: 'Business team celebrating success',
-    description: 'Team celebrating success - High converting'
-  },
-  {
-    type: 'growth',
-    url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71',
-    alt: 'Business growth visualization',
-    description: 'Growth charts and analytics'
-  },
-  {
-    type: 'team',
-    url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c',
-    alt: 'Professional business team',
-    description: 'Professional team working together'
-  },
-  {
-    type: 'dashboard',
-    url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71',
-    alt: 'Digital analytics dashboard',
-    description: 'Analytics dashboard interface'
-  }
-];
 
 const HeroCustomizationTab = () => {
   const [settings, setSettings] = useState<HeroSettings>(defaultSettings);
@@ -138,25 +94,81 @@ const HeroCustomizationTab = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedSettings = localStorage.getItem('heroSettings');
-    if (savedSettings) {
-      try {
-        const parsedSettings = JSON.parse(savedSettings);
-        setSettings({ ...defaultSettings, ...parsedSettings });
-      } catch (error) {
-        console.error('Failed to load hero settings:', error);
+    const loadSettings = () => {
+      // Load CTA buttons from localStorage (current system)
+      const savedCTAButtons = localStorage.getItem('ctaButtonsData');
+      if (savedCTAButtons) {
+        try {
+          const parsedCTA = JSON.parse(savedCTAButtons);
+          setSettings(prev => ({
+            ...prev,
+            cta: {
+              primary: {
+                text: parsedCTA.primaryText || prev.cta.primary.text,
+                link: prev.cta.primary.link,
+                enabled: prev.cta.primary.enabled
+              },
+              secondary: {
+                text: parsedCTA.secondaryText || prev.cta.secondary.text,
+                link: prev.cta.secondary.link,
+                enabled: prev.cta.secondary.enabled
+              }
+            }
+          }));
+        } catch (error) {
+          console.error('Failed to load CTA buttons:', error);
+        }
       }
-    }
+
+      // Load stats from localStorage (current system)
+      const savedStats = localStorage.getItem('statsData');
+      if (savedStats) {
+        try {
+          const parsedStats = JSON.parse(savedStats);
+          if (Array.isArray(parsedStats) && parsedStats.length >= 4) {
+            setSettings(prev => ({
+              ...prev,
+              stats: {
+                enabled: prev.stats.enabled,
+                stat1: { value: parsedStats[0].number, label: parsedStats[0].label, color: parsedStats[0].color },
+                stat2: { value: parsedStats[1].number, label: parsedStats[1].label, color: parsedStats[1].color },
+                stat3: { value: parsedStats[2].number, label: parsedStats[2].label, color: parsedStats[2].color },
+                stat4: { value: parsedStats[3].number, label: parsedStats[3].label, color: parsedStats[3].color }
+              }
+            }));
+          }
+        } catch (error) {
+          console.error('Failed to load stats:', error);
+        }
+      }
+    };
+
+    loadSettings();
   }, []);
 
   const saveSettings = () => {
     setIsLoading(true);
     
     try {
-      localStorage.setItem('heroSettings', JSON.stringify(settings));
+      // Save CTA buttons in current format
+      const ctaButtonsData = {
+        primaryText: settings.cta.primary.text,
+        secondaryText: settings.cta.secondary.text
+      };
+      localStorage.setItem('ctaButtonsData', JSON.stringify(ctaButtonsData));
+
+      // Save stats in current format
+      const statsData = [
+        { id: "campaigns", number: settings.stats.stat1.value, label: settings.stats.stat1.label, color: settings.stats.stat1.color },
+        { id: "adspend", number: settings.stats.stat2.value, label: settings.stats.stat2.label, color: settings.stats.stat2.color },
+        { id: "roi", number: settings.stats.stat3.value, label: settings.stats.stat3.label, color: settings.stats.stat3.color },
+        { id: "monitoring", number: settings.stats.stat4.value, label: settings.stats.stat4.label, color: settings.stats.stat4.color }
+      ];
+      localStorage.setItem('statsData', JSON.stringify(statsData));
       
-      // Dispatch event for components to listen
-      window.dispatchEvent(new CustomEvent('heroSettingsUpdated', { detail: settings }));
+      // Dispatch events to notify frontend components
+      window.dispatchEvent(new CustomEvent('ctaButtonsUpdated', { detail: ctaButtonsData }));
+      window.dispatchEvent(new CustomEvent('statsUpdated', { detail: statsData }));
       
       toast({
         title: "Hero Settings Saved",
@@ -181,7 +193,7 @@ const HeroCustomizationTab = () => {
     });
   };
 
-  const updateStatValue = (statKey: 'stat1' | 'stat2' | 'stat3', field: 'value' | 'label', newValue: string) => {
+  const updateStatValue = (statKey: 'stat1' | 'stat2' | 'stat3' | 'stat4', field: 'value' | 'label', newValue: string) => {
     setSettings({
       ...settings,
       stats: {
@@ -220,11 +232,10 @@ const HeroCustomizationTab = () => {
         
         <CardContent>
           <Tabs defaultValue="content" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="content">Content</TabsTrigger>
-              <TabsTrigger value="image">Image</TabsTrigger>
               <TabsTrigger value="cta">Call-to-Action</TabsTrigger>
-              <TabsTrigger value="elements">Elements</TabsTrigger>
+              <TabsTrigger value="elements">Statistics</TabsTrigger>
             </TabsList>
 
             {/* Content Tab */}
@@ -247,7 +258,7 @@ const HeroCustomizationTab = () => {
                             ...settings,
                             headline: { ...settings.headline, main: e.target.value }
                           })}
-                          placeholder="Get 3x Higher ROAS"
+                          placeholder="Scale Your Business"
                         />
                       </div>
 
@@ -260,20 +271,7 @@ const HeroCustomizationTab = () => {
                             ...settings,
                             headline: { ...settings.headline, highlight: e.target.value }
                           })}
-                          placeholder="Higher ROAS"
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="subtitle">Subtitle</Label>
-                        <Input
-                          id="subtitle"
-                          value={settings.headline.subtitle}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            headline: { ...settings.headline, subtitle: e.target.value }
-                          })}
-                          placeholder="in 90 Days"
+                          placeholder="With Precision"
                         />
                       </div>
                     </div>
@@ -288,7 +286,7 @@ const HeroCustomizationTab = () => {
                         ...settings,
                         description: e.target.value
                       })}
-                      placeholder="Join 500+ brands that increased their advertising revenue..."
+                      placeholder="Transform your advertising performance with our data-driven strategies..."
                       rows={4}
                     />
                   </div>
@@ -296,72 +294,17 @@ const HeroCustomizationTab = () => {
 
                 <div className="space-y-4">
                   <Label className="text-base font-semibold">Preview</Label>
-                  <div className="p-6 border rounded-lg bg-gradient-to-br from-indigo-50 via-white to-blue-50">
+                  <div className="p-6 border rounded-lg bg-gradient-to-br from-gray-50 via-white to-gray-100">
                     <div className="space-y-4">
-                      <h1 className="text-2xl font-bold text-slate-900">
-                        {settings.headline.main.replace(settings.headline.highlight, '')}{' '}
-                        <span className="bg-gradient-to-r from-indigo-600 via-blue-600 to-violet-600 bg-clip-text text-transparent">
+                      <h1 className="text-2xl font-bold text-gray-900">
+                        {settings.headline.main}{' '}
+                        <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                           {settings.headline.highlight}
-                        </span>{' '}
-                        {settings.headline.subtitle}
+                        </span>
                       </h1>
-                      <p className="text-slate-600">{settings.description}</p>
+                      <p className="text-gray-600">{settings.description}</p>
                     </div>
                   </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Image Tab */}
-            <TabsContent value="image" className="space-y-6">
-              <div>
-                <Label className="text-base font-semibold flex items-center mb-4">
-                  <Image className="w-4 h-4 mr-2" />
-                  Hero Image Selection
-                </Label>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {imageOptions.map((option) => (
-                    <Card 
-                      key={option.type}
-                      className={`cursor-pointer transition-all duration-200 ${
-                        settings.image.type === option.type 
-                          ? 'ring-2 ring-blue-500 shadow-lg' 
-                          : 'hover:shadow-md'
-                      }`}
-                      onClick={() => setSettings({
-                        ...settings,
-                        image: {
-                          url: option.url,
-                          alt: option.alt,
-                          type: option.type as any
-                        }
-                      })}
-                    >
-                      <CardContent className="p-4">
-                        <img 
-                          src={option.url} 
-                          alt={option.alt}
-                          className="w-full h-32 object-cover rounded-lg mb-3"
-                        />
-                        <h3 className="font-semibold text-sm text-slate-900">{option.description}</h3>
-                        <p className="text-xs text-slate-500 mt-1">{option.alt}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                <div className="mt-6">
-                  <Label htmlFor="customImage">Custom Image URL</Label>
-                  <Input
-                    id="customImage"
-                    value={settings.image.url}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      image: { ...settings.image, url: e.target.value, type: 'custom' }
-                    })}
-                    placeholder="https://your-image-url.com/image.jpg"
-                  />
                 </div>
               </div>
             </TabsContent>
@@ -458,125 +401,56 @@ const HeroCustomizationTab = () => {
               </div>
             </TabsContent>
 
-            {/* Elements Tab */}
+            {/* Statistics Tab */}
             <TabsContent value="elements" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-6">
-                  <div>
-                    <Label className="text-base font-semibold flex items-center mb-4">
-                      <TrendingUp className="w-4 h-4 mr-2" />
-                      Statistics
-                    </Label>
-                    
-                    <div className="flex items-center space-x-2 mb-4">
-                      <Switch
-                        checked={settings.stats.enabled}
-                        onCheckedChange={(checked) => setSettings({
-                          ...settings,
-                          stats: { ...settings.stats, enabled: checked }
-                        })}
-                      />
-                      <Label>Show Statistics</Label>
-                    </div>
+              <div className="space-y-6">
+                <div>
+                  <Label className="text-base font-semibold flex items-center mb-4">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Statistics
+                  </Label>
+                  
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Switch
+                      checked={settings.stats.enabled}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        stats: { ...settings.stats, enabled: checked }
+                      })}
+                    />
+                    <Label>Show Statistics</Label>
+                  </div>
 
-                    {settings.stats.enabled && (
-                      <div className="space-y-3">
-                        {(['stat1', 'stat2', 'stat3'] as const).map((statKey, index) => (
-                          <div key={statKey} className="grid grid-cols-2 gap-2">
+                  {settings.stats.enabled && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(['stat1', 'stat2', 'stat3', 'stat4'] as const).map((statKey, index) => (
+                        <div key={statKey} className="space-y-2">
+                          <Label className="text-sm font-medium">Statistic {index + 1}</Label>
+                          <div className="grid grid-cols-2 gap-2">
                             <Input
-                              placeholder="300%"
+                              placeholder="500+"
                               value={settings.stats[statKey].value}
                               onChange={(e) => updateStatValue(statKey, 'value', e.target.value)}
                             />
                             <Input
-                              placeholder="ROAS Increase"
+                              placeholder="Campaigns Managed"
                               value={settings.stats[statKey].label}
                               onChange={(e) => updateStatValue(statKey, 'label', e.target.value)}
                             />
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label className="text-base font-semibold flex items-center mb-4">
-                      <Star className="w-4 h-4 mr-2" />
-                      Trust Badge
-                    </Label>
-                    
-                    <div className="flex items-center space-x-2 mb-4">
-                      <Switch
-                        checked={settings.trustBadge.enabled}
-                        onCheckedChange={(checked) => setSettings({
-                          ...settings,
-                          trustBadge: { ...settings.trustBadge, enabled: checked }
-                        })}
-                      />
-                      <Label>Show Trust Badge</Label>
+                        </div>
+                      ))}
                     </div>
-
-                    {settings.trustBadge.enabled && (
-                      <div className="space-y-3">
-                        <Input
-                          placeholder="4.9/5"
-                          value={settings.trustBadge.rating}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            trustBadge: { ...settings.trustBadge, rating: e.target.value }
-                          })}
-                        />
-                        <Input
-                          placeholder="from 500+ Happy Clients"
-                          value={settings.trustBadge.text}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            trustBadge: { ...settings.trustBadge, text: e.target.value }
-                          })}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
 
-                <div className="space-y-6">
-                  <div>
-                    <Label className="text-base font-semibold flex items-center mb-4">
-                      <Users className="w-4 h-4 mr-2" />
-                      Urgency Element
-                    </Label>
-                    
-                    <div className="flex items-center space-x-2 mb-4">
-                      <Switch
-                        checked={settings.urgency.enabled}
-                        onCheckedChange={(checked) => setSettings({
-                          ...settings,
-                          urgency: { ...settings.urgency, enabled: checked }
-                        })}
-                      />
-                      <Label>Show Urgency Banner</Label>
-                    </div>
-
-                    {settings.urgency.enabled && (
-                      <Input
-                        placeholder="🔥 Limited Time: Only 10 spots left this month"
-                        value={settings.urgency.text}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          urgency: { ...settings.urgency, text: e.target.value }
-                        })}
-                      />
-                    )}
-                  </div>
-
-                  <div className="p-4 bg-slate-50 rounded-lg">
-                    <Label className="text-sm font-semibold text-slate-700 mb-2 block">Live Preview</Label>
-                    <div className="text-xs text-slate-500 mb-3">See changes instantly on your homepage</div>
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Eye className="w-4 h-4 mr-2" />
-                      View Homepage
-                    </Button>
-                  </div>
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <Label className="text-sm font-semibold text-slate-700 mb-2 block">Live Preview</Label>
+                  <div className="text-xs text-slate-500 mb-3">See changes instantly on your homepage</div>
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => window.open('/', '_blank')}>
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Homepage
+                  </Button>
                 </div>
               </div>
             </TabsContent>

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { DashboardTab } from "@/types/dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -42,7 +43,10 @@ import ModernFeaturesTab from "@/components/dashboard/ModernFeaturesTab";
 import WebsiteSEOTab from "@/components/dashboard/WebsiteSEOTab";
 import CustomEventsTab from "@/components/dashboard/CustomEventsTab";
 import HeroCustomizationTab from "@/components/dashboard/HeroCustomizationTab";
-import HeroSliderTab from "@/components/dashboard/HeroSliderTab";
+import AnalyticsDashboardTab from "@/components/dashboard/AnalyticsDashboardTab";
+import LeadManagementTab from "@/components/dashboard/LeadManagementTab";
+import AutomationSettingsTab from "@/components/dashboard/AutomationSettingsTab";
+import ContentManagementTab from "@/components/dashboard/ContentManagementTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<DashboardTab>('services');
@@ -82,12 +86,12 @@ const Dashboard = () => {
         { value: 'services', label: 'Services', icon: '🛠️' },
         { value: 'reviews', label: 'Reviews', icon: '⭐' },
         { value: 'hero-customization', label: 'Hero Section', icon: '🎯' },
-        { value: 'hero-slider', label: 'Hero Images', icon: '🖼️' },
         { value: 'homepage', label: 'Homepage', icon: '🏠' },
         { value: 'about-us', label: 'About Us', icon: '👥' },
         { value: 'pricing', label: 'Pricing', icon: '💰' },
         { value: 'blog', label: 'Blog', icon: '📝' },
-        { value: 'contact', label: 'Contact', icon: '📞' }
+        { value: 'contact', label: 'Contact', icon: '📞' },
+        { value: 'content-management', label: 'Content', icon: '📄' }
       ]
     },
     {
@@ -101,13 +105,21 @@ const Dashboard = () => {
       ]
     },
     {
-      category: "Analytics & SEO",
+      category: "Analytics & Performance",
       tabs: [
         { value: 'stats', label: 'Stats', icon: '📊' },
         { value: 'seo', label: 'SEO', icon: '🔍' },
         { value: 'facebook-pixel', label: 'FB Pixel', icon: '📘' },
         { value: 'google-analytics', label: 'Analytics', icon: '📈' },
-        { value: 'custom-events', label: 'Events', icon: '🎯' }
+        { value: 'custom-events', label: 'Events', icon: '🎯' },
+        { value: 'analytics-dashboard', label: 'Dashboard', icon: '📊' }
+      ]
+    },
+    {
+      category: "Lead Management",
+      tabs: [
+        { value: 'lead-management', label: 'Leads', icon: '👥' },
+        { value: 'automation-settings', label: 'Automation', icon: '⚡' }
       ]
     },
     {
@@ -147,8 +159,6 @@ const Dashboard = () => {
         );
       case 'hero-customization':
         return <HeroCustomizationTab />;
-      case 'hero-slider':
-        return <HeroSliderTab />;
       case 'website':
         return <WebsiteTab />;
       case 'logo':
@@ -207,6 +217,14 @@ const Dashboard = () => {
         return <WebsiteSEOTab />;
       case 'custom-events':
         return <CustomEventsTab />;
+      case 'analytics-dashboard':
+        return <AnalyticsDashboardTab />;
+      case 'lead-management':
+        return <LeadManagementTab />;
+      case 'automation-settings':
+        return <AutomationSettingsTab />;
+      case 'content-management':
+        return <ContentManagementTab />;
       default:
         return (
           <ServicesTab 

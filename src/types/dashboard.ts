@@ -3,7 +3,6 @@ export type DashboardTab =
   | 'services'
   | 'reviews'
   | 'hero-customization'
-  | 'hero-slider'
   | 'website'
   | 'logo'
   | 'contact'
