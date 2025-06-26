@@ -1,6 +1,6 @@
 
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, QueryCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 
 interface DynamoDBConfig {
   region: string;
@@ -72,6 +72,19 @@ class DynamoDBManager {
     }
 
     const command = new GetCommand({
+      TableName: tableName,
+      Key: key,
+    });
+
+    return await this.client.send(command);
+  }
+
+  async deleteItem(tableName: string, key: Record<string, any>) {
+    if (!this.client) {
+      throw new Error('DynamoDB not configured');
+    }
+
+    const command = new DeleteCommand({
       TableName: tableName,
       Key: key,
     });
