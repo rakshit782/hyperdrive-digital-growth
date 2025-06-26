@@ -1,3 +1,4 @@
+
 export type DashboardTab = 
   | 'services'
   | 'reviews'
@@ -31,7 +32,16 @@ export type DashboardTab =
   | 'chatgpt'
   | 'modern-features'
   | 'seo'
-  | 'custom-events';
+  | 'custom-events'
+  | 'emailjs'
+  | 'formspree'
+  | 'auth0'
+  | 'clerk'
+  | 'content-management'
+  | 'analytics-dashboard'
+  | 'performance-tracking'
+  | 'lead-management'
+  | 'automation-settings';
 
 export interface ServiceCard {
   id: string;
@@ -51,4 +61,14 @@ export interface Review {
   rating: number;
   review: string;
   avatar?: string;
+}
+
+export interface DashboardSection {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  isActive: boolean;
+  category: 'content' | 'integrations' | 'analytics' | 'management';
+  features?: string[];
 }
