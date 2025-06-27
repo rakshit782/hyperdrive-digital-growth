@@ -1,130 +1,184 @@
 
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp, Target, DollarSign, Users } from "lucide-react";
+import SEOHead from "@/components/SEOHead";
+import { ArrowUpRight, TrendingUp, Target, DollarSign } from "lucide-react";
+
+interface CaseStudy {
+  id: string;
+  title: string;
+  description: string;
+  results: {
+    metric1: { label: string; value: string; };
+    metric2: { label: string; value: string; };
+    metric3: { label: string; value: string; };
+  };
+  industry: string;
+  platform: string;
+  imageUrl?: string;
+}
 
 const CaseStudies = () => {
-  const caseStudies = [
+  const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([
     {
-      title: "E-commerce Brand Scales Amazon Revenue 400%",
-      platform: "Amazon",
-      industry: "Home & Garden",
+      id: "1",
+      title: "E-commerce Fashion Brand Scales to $2M Revenue",
+      description: "How we helped a fashion startup increase their Amazon sales by 400% in 6 months through strategic PPC campaigns and listing optimization.",
       results: {
-        revenue: "+400%",
-        roas: "6.2x",
-        impressions: "+250%"
+        metric1: { label: "Revenue Increase", value: "400%" },
+        metric2: { label: "ROAS Improvement", value: "5.2x" },
+        metric3: { label: "Market Share Growth", value: "25%" }
       },
-      description: "Complete account restructure and advanced keyword targeting helped this home goods brand dominate their category on Amazon.",
-      link: "/amazon-case-studies"
+      industry: "Fashion",
+      platform: "Amazon"
     },
     {
-      title: "Fashion Brand Conquers Walmart Marketplace",
-      platform: "Walmart",
-      industry: "Fashion & Apparel", 
+      id: "2", 
+      title: "Tech Gadgets Brand Dominates Walmart Marketplace",
+      description: "A comprehensive Walmart Connect advertising strategy that resulted in 300% sales growth and category leadership.",
       results: {
-        sales: "+320%",
-        conversion: "+45%",
-        traffic: "+180%"
+        metric1: { label: "Sales Growth", value: "300%" },
+        metric2: { label: "Click-Through Rate", value: "+180%" },
+        metric3: { label: "Conversion Rate", value: "+95%" }
       },
-      description: "Strategic product positioning and competitive pricing optimization led to market dominance in the fashion category.",
-      link: "/walmart-case-studies"
-    },
-    {
-      title: "Tech Startup Achieves 8x ROAS on Meta",
-      platform: "Meta",
       industry: "Technology",
+      platform: "Walmart"
+    },
+    {
+      id: "3",
+      title: "Home Decor Brand's Meta Advertising Success",
+      description: "Strategic Facebook and Instagram campaigns that drove massive brand awareness and direct-to-consumer sales growth.",
       results: {
-        roas: "8.3x",
-        cpa: "-60%",
-        reach: "+400%"
+        metric1: { label: "Brand Awareness", value: "+250%" },
+        metric2: { label: "Website Traffic", value: "+320%" },
+        metric3: { label: "Customer Acquisition", value: "+190%" }
       },
-      description: "Precision audience targeting and creative optimization delivered exceptional performance for this SaaS company.",
-      link: "/meta-case-studies"
+      industry: "Home & Garden",
+      platform: "Meta"
     }
-  ];
+  ]);
+
+  useEffect(() => {
+    // Load case studies from localStorage if available
+    const savedStudies = localStorage.getItem('caseStudiesData');
+    if (savedStudies) {
+      try {
+        const parsed = JSON.parse(savedStudies);
+        if (Array.isArray(parsed)) {
+          setCaseStudies(parsed);
+        }
+      } catch (error) {
+        console.error('Failed to parse case studies:', error);
+      }
+    }
+
+    // Listen for updates
+    const handleStudiesUpdate = (event: CustomEvent) => {
+      setCaseStudies(event.detail);
+    };
+
+    window.addEventListener('caseStudiesUpdated', handleStudiesUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('caseStudiesUpdated', handleStudiesUpdate as EventListener);
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      <SEOHead 
+        title="Case Studies - Proven Results in Digital Advertising"
+        description="Explore our successful case studies showing real results from Amazon, Walmart, and Meta advertising campaigns."
+      />
       <Header />
-      
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-slate-900">
-              Success <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Stories</span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        {/* Hero Section with symmetrical padding */}
+        <section className="py-24 md:py-32 lg:py-40">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
+              Success Stories
             </h1>
-            <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-              Real results from real businesses. See how we've helped companies across different industries achieve remarkable growth through strategic advertising.
+            <p className="text-xl md:text-2xl text-slate-600 leading-relaxed">
+              Real results from real businesses. See how we've helped brands achieve extraordinary growth through strategic advertising.
             </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Case Studies Grid */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {caseStudies.map((study, index) => (
-              <Card key={index} className="bg-white border shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-                      {study.platform}
-                    </span>
-                    <span className="text-sm text-slate-500">{study.industry}</span>
-                  </div>
-                  <CardTitle className="text-xl font-bold text-slate-900 mb-2">
-                    {study.title}
-                  </CardTitle>
-                  <CardDescription className="text-slate-600">
-                    {study.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    {Object.entries(study.results).map(([key, value]) => (
-                      <div key={key} className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">{value}</div>
-                        <div className="text-xs text-slate-500 capitalize">{key}</div>
+        {/* Case Studies Grid */}
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
+              {caseStudies.map((study) => (
+                <div key={study.id} className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden hover:shadow-3xl transition-all duration-300 hover:-translate-y-2">
+                  {study.imageUrl && (
+                    <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-500">
+                      <img 
+                        src={study.imageUrl} 
+                        alt={study.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  
+                  <div className="p-8">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        {study.platform}
+                      </span>
+                      <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
+                        {study.industry}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4 leading-tight">
+                      {study.title}
+                    </h3>
+                    
+                    <p className="text-slate-600 leading-relaxed mb-6">
+                      {study.description}
+                    </p>
+                    
+                    {/* Results Metrics */}
+                    <div className="grid grid-cols-3 gap-4 mb-6">
+                      <div className="text-center">
+                        <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg mb-2 mx-auto">
+                          <TrendingUp className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div className="text-2xl font-bold text-green-600">{study.results.metric1.value}</div>
+                        <div className="text-xs text-slate-500">{study.results.metric1.label}</div>
                       </div>
-                    ))}
+                      
+                      <div className="text-center">
+                        <div className="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-lg mb-2 mx-auto">
+                          <Target className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div className="text-2xl font-bold text-purple-600">{study.results.metric2.value}</div>
+                        <div className="text-xs text-slate-500">{study.results.metric2.label}</div>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg mb-2 mx-auto">
+                          <DollarSign className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div className="text-2xl font-bold text-blue-600">{study.results.metric3.value}</div>
+                        <div className="text-xs text-slate-500">{study.results.metric3.label}</div>
+                      </div>
+                    </div>
+                    
+                    <button className="group w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                      View Full Case Study
+                      <ArrowUpRight className="ml-2 w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                    </button>
                   </div>
-                  <Button 
-                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
-                    onClick={() => window.location.href = study.link}
-                  >
-                    Read Full Case Study
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-600">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6 text-white">Ready to Be Our Next Success Story?</h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Let's discuss how we can help you achieve similar results for your business.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg rounded-xl"
-            onClick={() => window.location.href = '/contact'}
-          >
-            Get Your Free Audit
-          </Button>
-        </div>
-      </section>
-      
+        </section>
+      </div>
       <Footer />
-    </div>
+    </>
   );
 };
 

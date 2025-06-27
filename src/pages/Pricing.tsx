@@ -1,220 +1,193 @@
+
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Check, Star, ArrowRight } from "lucide-react";
 
-interface PricingTier {
+interface PricingPlan {
   id: string;
   name: string;
   price: string;
-  period: string;
   description: string;
   features: string[];
-  popular: boolean;
-  buttonText: string;
+  popular?: boolean;
+  ctaText: string;
+  ctaLink: string;
 }
 
-const defaultPricing: PricingTier[] = [
-  {
-    id: "basic",
-    name: "Basic Package",
-    price: "$999",
-    period: "/month",
-    description: "Perfect for small businesses starting their advertising journey",
-    features: [
-      "Amazon PPC Management",
-      "Basic Keyword Research",
-      "Monthly Performance Reports",
-      "Email Support",
-      "Campaign Setup & Optimization"
-    ],
-    popular: false,
-    buttonText: "Get Started"
-  },
-  {
-    id: "professional",
-    name: "Professional Package", 
-    price: "$1,999",
-    period: "/month",
-    description: "Comprehensive solution for growing businesses",
-    features: [
-      "Amazon + Walmart Advertising",
-      "Advanced Keyword Research",
-      "Weekly Performance Reports",
-      "Priority Support",
-      "A/B Testing",
-      "Competitor Analysis",
-      "Landing Page Optimization"
-    ],
-    popular: true,
-    buttonText: "Most Popular"
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise Package",
-    price: "$3,999", 
-    period: "/month",
-    description: "Full-service solution for established businesses",
-    features: [
-      "Amazon + Walmart + Meta Advertising",
-      "Complete Account Management",
-      "Daily Performance Monitoring",
-      "24/7 Dedicated Support",
-      "Custom Strategy Development",
-      "Shopify Integration",
-      "Advanced Analytics Dashboard",
-      "Monthly Strategy Calls"
-    ],
-    popular: false,
-    buttonText: "Contact Sales"
-  }
-];
-
 const Pricing = () => {
-  const [pricingData, setPricingData] = useState<PricingTier[]>(defaultPricing);
+  const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([
+    {
+      id: "starter",
+      name: "Starter",
+      price: "$2,500/mo",
+      description: "Perfect for small businesses looking to get started with professional advertising.",
+      features: [
+        "Up to $10K monthly ad spend",
+        "Amazon PPC management",
+        "Monthly strategy calls",
+        "Performance reporting",
+        "Account setup & optimization"
+      ],
+      ctaText: "Get Started",
+      ctaLink: "/free-audit"
+    },
+    {
+      id: "growth",
+      name: "Growth",
+      price: "$4,500/mo",
+      description: "Ideal for growing businesses ready to scale across multiple platforms.",
+      features: [
+        "Up to $25K monthly ad spend",
+        "Amazon + Walmart advertising",
+        "Bi-weekly strategy calls",
+        "Advanced reporting & analytics",
+        "Listing optimization",
+        "Competitor analysis",
+        "A/B testing campaigns"
+      ],
+      popular: true,
+      ctaText: "Start Growing",
+      ctaLink: "/free-audit"
+    },
+    {
+      id: "enterprise",
+      name: "Enterprise",
+      price: "Custom",
+      description: "Full-service solution for established brands with complex needs.",
+      features: [
+        "Unlimited ad spend management",
+        "Amazon + Walmart + Meta",
+        "Weekly strategy calls",
+        "Real-time dashboard access",
+        "Dedicated account manager",
+        "Creative development",
+        "Advanced attribution tracking",
+        "Custom integrations",
+        "Priority support"
+      ],
+      ctaText: "Contact Sales",
+      ctaLink: "/contact"
+    }
+  ]);
 
-  // Load pricing from localStorage and listen for updates
   useEffect(() => {
-    const loadPricingData = () => {
-      const savedPricing = localStorage.getItem('pricingData');
-      if (savedPricing) {
-        try {
-          const parsed = JSON.parse(savedPricing);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setPricingData(parsed);
-          }
-        } catch (error) {
-          console.error('Failed to parse pricing data:', error);
+    const savedPlans = localStorage.getItem('pricingPlansData');
+    if (savedPlans) {
+      try {
+        const parsed = JSON.parse(savedPlans);
+        if (Array.isArray(parsed)) {
+          setPricingPlans(parsed);
         }
+      } catch (error) {
+        console.error('Failed to parse pricing plans:', error);
       }
+    }
+
+    const handlePlansUpdate = (event: CustomEvent) => {
+      setPricingPlans(event.detail);
     };
 
-    // Load initial data
-    loadPricingData();
-
-    // Listen for pricing updates from dashboard
-    const handlePricingUpdate = (event: CustomEvent) => {
-      if (event.detail && Array.isArray(event.detail)) {
-        setPricingData(event.detail);
-      }
-    };
-
-    window.addEventListener('pricingUpdated', handlePricingUpdate as EventListener);
-
+    window.addEventListener('pricingPlansUpdated', handlePlansUpdate as EventListener);
+    
     return () => {
-      window.removeEventListener('pricingUpdated', handlePricingUpdate as EventListener);
+      window.removeEventListener('pricingPlansUpdated', handlePlansUpdate as EventListener);
     };
   }, []);
 
-  // Get the maximum number of features to make cards symmetrical
-  const maxFeatures = Math.max(...pricingData.map(tier => tier.features.length));
-
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      <SEOHead 
+        title="Pricing - Transparent Advertising Management Plans"
+        description="Choose the perfect advertising management plan for your business. Transparent pricing with no hidden fees."
+      />
       <Header />
-      
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-slate-900">
-              Simple <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Pricing</span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        {/* Hero Section with symmetrical padding */}
+        <section className="py-24 md:py-32 lg:py-40">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
+              Simple, Transparent Pricing
             </h1>
-            <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-              Choose the perfect plan to scale your business. All packages include our expert management and proven strategies.
+            <p className="text-xl md:text-2xl text-slate-600 leading-relaxed">
+              Choose the plan that fits your business size and goals. No hidden fees, no long-term contracts.
             </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Pricing Cards */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {pricingData.map((tier) => (
-              <Card 
-                key={tier.id} 
-                className={`relative flex flex-col h-full ${
-                  tier.popular 
-                    ? 'border-blue-500 shadow-2xl scale-105 bg-gradient-to-br from-blue-50 to-cyan-50' 
-                    : 'border-gray-200 shadow-lg hover:shadow-xl'
-                } transition-all duration-300`}
-              >
-                {tier.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-1">
-                      <Star className="w-4 h-4 mr-1" />
+        {/* Pricing Cards */}
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid lg:grid-cols-3 gap-8">
+              {pricingPlans.map((plan) => (
+                <div key={plan.id} className={`relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden hover:shadow-3xl transition-all duration-300 ${plan.popular ? 'ring-2 ring-blue-500 transform scale-105' : ''}`}>
+                  {plan.popular && (
+                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 text-sm font-semibold">
+                      <Star className="inline w-4 h-4 mr-1" />
                       Most Popular
-                    </Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="text-center pb-8">
-                  <CardTitle className="text-2xl font-bold text-slate-900 mb-2">
-                    {tier.name}
-                  </CardTitle>
-                  <div className="mb-4">
-                    <span className="text-4xl font-bold text-slate-900">{tier.price}</span>
-                    {tier.period && <span className="text-slate-600">{tier.period}</span>}
-                  </div>
-                  <CardDescription className="text-slate-600 leading-relaxed min-h-[3rem] flex items-center justify-center">
-                    {tier.description}
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardContent className="space-y-6 flex-grow flex flex-col">
-                  <ul className="space-y-4 flex-grow">
-                    {tier.features.map((feature, index) => (
-                      <li key={index} className="flex items-start">
-                        <Check className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-slate-700">{feature}</span>
-                      </li>
-                    ))}
-                    {/* Add empty list items to maintain consistent height */}
-                    {Array.from({ length: maxFeatures - tier.features.length }).map((_, index) => (
-                      <li key={`spacer-${index}`} className="invisible">
-                        <span className="text-slate-700">.</span>
-                      </li>
-                    ))}
-                  </ul>
+                    </div>
+                  )}
                   
-                  <Button 
-                    className={`w-full py-3 mt-auto ${
-                      tier.popular
-                        ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
-                        : 'bg-slate-900 hover:bg-slate-800'
-                    } text-white font-semibold rounded-xl`}
-                    onClick={() => window.location.href = '/contact'}
-                  >
-                    {tier.buttonText}
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                  <div className={`p-8 ${plan.popular ? 'pt-16' : ''}`}>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4">{plan.name}</h3>
+                    <div className="text-4xl font-bold text-slate-900 mb-2">{plan.price}</div>
+                    <p className="text-slate-600 mb-6">{plan.description}</p>
+                    
+                    <ul className="space-y-3 mb-8">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start">
+                          <Check className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                          <span className="text-slate-700">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    <Button 
+                      className={`w-full py-3 text-lg font-semibold rounded-xl transition-all duration-300 ${
+                        plan.popular 
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl' 
+                          : 'bg-slate-900 hover:bg-slate-800 text-white'
+                      }`}
+                      onClick={() => window.location.href = plan.ctaLink}
+                    >
+                      {plan.ctaText}
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          
-          <div className="text-center mt-16">
-            <p className="text-slate-600 mb-6">
-              Need a custom solution? Our team can create a tailored package for your specific needs.
-            </p>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-              onClick={() => window.location.href = '/free-audit'}
-            >
-              Get Free Audit for Custom Pricing
-            </Button>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-16">
+          <div className="max-w-4xl mx-auto px-6">
+            <h2 className="text-3xl font-bold text-center text-slate-900 mb-12">Frequently Asked Questions</h2>
+            
+            <div className="space-y-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">Is there a setup fee?</h3>
+                <p className="text-slate-600">No, there are no setup fees. We include all account setup and initial optimization in your monthly fee.</p>
+              </div>
+              
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">Can I change plans anytime?</h3>
+                <p className="text-slate-600">Yes, you can upgrade or downgrade your plan at any time. Changes take effect at the start of your next billing cycle.</p>
+              </div>
+              
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">What's included in the free audit?</h3>
+                <p className="text-slate-600">Our free audit includes a comprehensive review of your current advertising performance, competitive analysis, and a customized strategy recommendation.</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
-      
+        </section>
+      </div>
       <Footer />
-    </div>
+    </>
   );
 };
 

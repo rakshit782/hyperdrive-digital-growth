@@ -1,179 +1,145 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Target, TrendingUp, Zap, CheckCircle, ArrowRight, BarChart3 } from "lucide-react";
+import { ArrowRight, Target, ShoppingCart, BarChart3, TrendingUp, Zap, Users } from "lucide-react";
 
 const WalmartAdvertising = () => {
-  const features = [
-    {
-      title: "Enhanced Product Visibility",
-      description: "Increase your product's visibility on Walmart's marketplace, driving more traffic and sales.",
-      icon: Target,
-    },
-    {
-      title: "Targeted Advertising Campaigns",
-      description: "Reach your ideal customers with precision using Walmart's advanced targeting options.",
-      icon: TrendingUp,
-    },
-    {
-      title: "Real-Time Performance Tracking",
-      description: "Monitor your campaign's performance in real-time, making data-driven decisions to optimize your ROI.",
-      icon: BarChart3,
-    },
-    {
-      title: "Automated Campaign Management",
-      description: "Save time and resources with our automated campaign management tools, designed to streamline your advertising efforts.",
-      icon: Zap,
-    },
-  ];
-
-  const stats = [
-    { label: "Increased Sales", value: "30%" },
-    { label: "Improved ROI", value: "25%" },
-    { label: "Higher Conversion Rate", value: "15%" },
-  ];
-
-  const testimonials = [
-    {
-      name: "Jane Doe",
-      title: "CEO of Acme Corp",
-      quote: "Walmart Advertising helped us significantly increase our sales and reach a wider audience.",
-    },
-    {
-      name: "John Smith",
-      title: "Marketing Manager at Beta Co",
-      quote: "We saw a noticeable improvement in our ROI after implementing Walmart's advertising solutions.",
-    },
-  ];
-
   return (
-    <div className="min-h-screen">
+    <>
+      <SEOHead 
+        title="Walmart Advertising Management - Walmart Connect Experts"
+        description="Professional Walmart Connect advertising management. Grow your sales on Walmart Marketplace with our proven strategies."
+      />
       <Header />
-      <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-        {/* Hero Section */}
-        <section className="py-24">
-          <div className="container mx-auto px-6 text-center">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-slate-900 leading-tight">
-              Dominate <span className="bg-gradient-to-r from-orange-600 via-yellow-600 to-blue-600 bg-clip-text text-transparent">Walmart</span> Marketplace
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        {/* Hero Section with symmetrical padding */}
+        <section className="py-24 md:py-32 lg:py-40">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
+              Dominate Walmart Marketplace
             </h1>
-            <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light mb-12">
-              Unlock the full potential of your products on Walmart with our expert advertising strategies.
+            <p className="text-xl md:text-2xl text-slate-600 leading-relaxed mb-8">
+              Unlock the power of Walmart Connect advertising and reach millions of shoppers with our expert campaign management.
             </p>
-            <Button size="lg" className="bg-gradient-to-r from-orange-600 via-yellow-600 to-blue-600 hover:from-orange-700 hover:via-yellow-700 hover:to-blue-700 text-white px-10 py-4 text-lg font-semibold rounded-xl shadow-xl">
-              Get a Free Consultation
-            </Button>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-20">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500/10 to-blue-500/10 backdrop-blur-sm rounded-full border border-blue-200/50 mb-8">
-                <ShoppingCart className="w-5 h-5 mr-2 text-blue-600" />
-                <span className="text-sm font-semibold text-blue-600 tracking-wide">KEY FEATURES</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">
-                Why Choose <span className="bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent">Walmart Advertising</span>?
-              </h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-                Maximize your reach and ROI with our tailored Walmart advertising solutions.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {features.map((feature, index) => (
-                <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                  <CardHeader>
-                    <feature.icon className="w-6 h-6 text-orange-500 mb-4" />
-                    <CardTitle className="text-xl font-bold text-slate-900">{feature.title}</CardTitle>
-                    <CardDescription className="text-slate-600">{feature.description}</CardDescription>
-                  </CardHeader>
-                </Card>
-              ))}
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                onClick={() => window.location.href = '/free-audit'}
+              >
+                Get Free Walmart Audit
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+                onClick={() => window.location.href = '/walmart-case-studies'}
+              >
+                View Success Stories
+              </Button>
             </div>
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="py-20">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500/10 to-blue-500/10 backdrop-blur-sm rounded-full border border-blue-200/50 mb-8">
-                <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
-                <span className="text-sm font-semibold text-blue-600 tracking-wide">OUR IMPACT</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">
-                Proven <span className="bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent">Results</span>
-              </h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-                See how we've helped businesses like yours thrive on Walmart.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              {stats.map((stat, index) => (
-                <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-center">
-                  <CardHeader>
-                    <CardTitle className="text-3xl font-bold text-orange-600">{stat.value}</CardTitle>
-                    <CardDescription className="text-slate-600">{stat.label}</CardDescription>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section className="py-20">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500/10 to-blue-500/10 backdrop-blur-sm rounded-full border border-blue-200/50 mb-8">
-                <CheckCircle className="w-5 h-5 mr-2 text-blue-600" />
-                <span className="text-sm font-semibold text-blue-600 tracking-wide">HAPPY CLIENTS</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">
-                What Our Clients <span className="bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent">Say</span>
-              </h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-                Real stories from businesses that have achieved success with Walmart Advertising.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <CardContent>
-                    <p className="text-slate-700 italic mb-4">"{testimonial.quote}"</p>
-                    <div className="flex items-center">
-                      <div className="ml-4">
-                        <p className="font-semibold text-slate-900">{testimonial.name}</p>
-                        <p className="text-sm text-slate-500">{testimonial.title}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Call to Action Section */}
-        <section className="py-24">
-          <div className="container mx-auto px-6 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-8 text-slate-900">
-              Ready to <span className="bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent">Transform</span> Your Walmart Presence?
+        {/* Services Section */}
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <h2 className="text-4xl font-bold text-center bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent mb-16">
+              Our Walmart Advertising Services
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light mb-12">
-              Contact us today to learn how our Walmart advertising services can help you achieve your business goals.
-            </p>
-            <Button size="lg" className="bg-gradient-to-r from-orange-600 via-yellow-600 to-blue-600 hover:from-orange-700 hover:via-yellow-700 hover:to-blue-700 text-white px-10 py-4 text-lg font-semibold rounded-xl shadow-xl">
-              Get Started Now
-              <ArrowRight className="ml-3 w-5 h-5" />
-            </Button>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mb-6">
+                  <Target className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Sponsored Products</h3>
+                <p className="text-slate-600 leading-relaxed">Boost your product visibility and sales with targeted Sponsored Products campaigns on Walmart Marketplace.</p>
+              </div>
+              
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6">
+                  <ShoppingCart className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Sponsored Brands</h3>
+                <p className="text-slate-600 leading-relaxed">Increase brand awareness and drive traffic to your product listings with engaging Sponsored Brands campaigns.</p>
+              </div>
+              
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center mb-6">
+                  <BarChart3 className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Performance Analytics</h3>
+                <p className="text-slate-600 leading-relaxed">Track and optimize your campaign performance with detailed analytics and reporting.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="py-16">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent mb-6">
+                  Why Choose Our Walmart Management?
+                </h2>
+                
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">Proven Strategies</h3>
+                      <p className="text-slate-600">We use data-driven strategies to maximize your ROI on Walmart Marketplace.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Zap className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">Fast Implementation</h3>
+                      <p className="text-slate-600">We quickly implement and optimize your campaigns for rapid results.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Users className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">Dedicated Support</h3>
+                      <p className="text-slate-600">Our team provides dedicated support and ongoing optimization to ensure your success.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8">
+                <h3 className="text-2xl font-bold text-slate-900 mb-6">Ready to Dominate Walmart Marketplace?</h3>
+                <p className="text-slate-600 mb-6">Get a free audit of your Walmart advertising performance and discover opportunities for growth.</p>
+                
+                <Button 
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={() => window.location.href = '/free-audit'}
+                >
+                  Claim Your Free Audit
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </div>
+            </div>
           </div>
         </section>
       </div>
       <Footer />
-    </div>
+    </>
   );
 };
 
