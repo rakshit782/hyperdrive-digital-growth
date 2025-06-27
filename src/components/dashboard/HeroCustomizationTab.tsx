@@ -9,21 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Save, 
-  Eye, 
-  RefreshCw,
-  Target,
-  Type,
-  Zap,
-  TrendingUp
-} from "lucide-react";
+import { Plus, Trash2, Save, Eye, RefreshCw, Target, Type, Zap, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-interface CTAButtons {
-  primaryText?: string;
-  secondaryText?: string;
-}
 
 interface StatBlock {
   id: string;
@@ -36,66 +23,73 @@ interface HeroSettings {
   headline: {
     main: string;
     highlight: string;
-    subtitle: string;
   };
   description: string;
   cta: {
     primary: {
       text: string;
-      link: string;
       enabled: boolean;
     };
     secondary: {
       text: string;
-      link: string;
       enabled: boolean;
     };
   };
-  stats: {
+  trustBadge: {
     enabled: boolean;
-    stat1: { value: string; label: string; color: string };
-    stat2: { value: string; label: string; color: string };
-    stat3: { value: string; label: string; color: string };
-    stat4: { value: string; label: string; color: string };
+    text: string;
   };
+  statsEnabled: boolean;
 }
 
 const defaultSettings: HeroSettings = {
   headline: {
     main: "Scale Your Business",
-    highlight: "With Precision",
-    subtitle: ""
+    highlight: "With Precision"
   },
   description: "Transform your advertising performance with our data-driven strategies across Amazon, Walmart, and Meta platforms",
   cta: {
     primary: {
       text: "Get Free Strategy Call",
-      link: "/free-audit",
       enabled: true
     },
     secondary: {
       text: "Watch Case Study",
-      link: "/case-studies",
       enabled: true
     }
   },
-  stats: {
+  trustBadge: {
     enabled: true,
-    stat1: { value: "500+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
-    stat2: { value: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
-    stat3: { value: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
-    stat4: { value: "24/7", label: "Account Monitoring", color: "from-pink-400 to-blue-400" }
-  }
+    text: "Trusted by 500+ Leading Brands"
+  },
+  statsEnabled: true
 };
+
+const defaultStats: StatBlock[] = [
+  { id: "campaigns", number: "500+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
+  { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
+  { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
+  { id: "monitoring", number: "24/7", label: "Account Monitoring", color: "from-pink-400 to-blue-400" }
+];
+
+const colorOptions = [
+  { value: "from-blue-400 to-cyan-400", label: "Blue to Cyan" },
+  { value: "from-cyan-400 to-purple-400", label: "Cyan to Purple" },
+  { value: "from-purple-400 to-pink-400", label: "Purple to Pink" },
+  { value: "from-pink-400 to-blue-400", label: "Pink to Blue" },
+  { value: "from-green-400 to-blue-400", label: "Green to Blue" },
+  { value: "from-yellow-400 to-red-400", label: "Yellow to Red" }
+];
 
 const HeroCustomizationTab = () => {
   const [settings, setSettings] = useState<HeroSettings>(defaultSettings);
+  const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>(defaultStats);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     const loadSettings = () => {
-      // Load CTA buttons from localStorage (current system)
+      // Load CTA buttons from localStorage
       const savedCTAButtons = localStorage.getItem('ctaButtonsData');
       if (savedCTAButtons) {
         try {
@@ -105,12 +99,10 @@ const HeroCustomizationTab = () => {
             cta: {
               primary: {
                 text: parsedCTA.primaryText || prev.cta.primary.text,
-                link: prev.cta.primary.link,
                 enabled: prev.cta.primary.enabled
               },
               secondary: {
                 text: parsedCTA.secondaryText || prev.cta.secondary.text,
-                link: prev.cta.secondary.link,
                 enabled: prev.cta.secondary.enabled
               }
             }
@@ -120,22 +112,13 @@ const HeroCustomizationTab = () => {
         }
       }
 
-      // Load stats from localStorage (current system)
+      // Load stats from localStorage
       const savedStats = localStorage.getItem('statsData');
       if (savedStats) {
         try {
           const parsedStats = JSON.parse(savedStats);
-          if (Array.isArray(parsedStats) && parsedStats.length >= 4) {
-            setSettings(prev => ({
-              ...prev,
-              stats: {
-                enabled: prev.stats.enabled,
-                stat1: { value: parsedStats[0].number, label: parsedStats[0].label, color: parsedStats[0].color },
-                stat2: { value: parsedStats[1].number, label: parsedStats[1].label, color: parsedStats[1].color },
-                stat3: { value: parsedStats[2].number, label: parsedStats[2].label, color: parsedStats[2].color },
-                stat4: { value: parsedStats[3].number, label: parsedStats[3].label, color: parsedStats[3].color }
-              }
-            }));
+          if (Array.isArray(parsedStats)) {
+            setStatsBlocks(parsedStats);
           }
         } catch (error) {
           console.error('Failed to load stats:', error);
@@ -158,17 +141,11 @@ const HeroCustomizationTab = () => {
       localStorage.setItem('ctaButtonsData', JSON.stringify(ctaButtonsData));
 
       // Save stats in current format
-      const statsData = [
-        { id: "campaigns", number: settings.stats.stat1.value, label: settings.stats.stat1.label, color: settings.stats.stat1.color },
-        { id: "adspend", number: settings.stats.stat2.value, label: settings.stats.stat2.label, color: settings.stats.stat2.color },
-        { id: "roi", number: settings.stats.stat3.value, label: settings.stats.stat3.label, color: settings.stats.stat3.color },
-        { id: "monitoring", number: settings.stats.stat4.value, label: settings.stats.stat4.label, color: settings.stats.stat4.color }
-      ];
-      localStorage.setItem('statsData', JSON.stringify(statsData));
+      localStorage.setItem('statsData', JSON.stringify(statsBlocks));
       
       // Dispatch events to notify frontend components
       window.dispatchEvent(new CustomEvent('ctaButtonsUpdated', { detail: ctaButtonsData }));
-      window.dispatchEvent(new CustomEvent('statsUpdated', { detail: statsData }));
+      window.dispatchEvent(new CustomEvent('statsUpdated', { detail: statsBlocks }));
       
       toast({
         title: "Hero Settings Saved",
@@ -187,23 +164,31 @@ const HeroCustomizationTab = () => {
 
   const resetToDefaults = () => {
     setSettings(defaultSettings);
+    setStatsBlocks(defaultStats);
     toast({
       title: "Settings Reset",
       description: "Hero settings have been reset to defaults.",
     });
   };
 
-  const updateStatValue = (statKey: 'stat1' | 'stat2' | 'stat3' | 'stat4', field: 'value' | 'label', newValue: string) => {
-    setSettings({
-      ...settings,
-      stats: {
-        ...settings.stats,
-        [statKey]: {
-          ...settings.stats[statKey],
-          [field]: newValue
-        }
-      }
-    });
+  const updateStatBlock = (id: string, field: keyof StatBlock, value: string) => {
+    setStatsBlocks(prev => prev.map(stat => 
+      stat.id === id ? { ...stat, [field]: value } : stat
+    ));
+  };
+
+  const addStatBlock = () => {
+    const newStat: StatBlock = {
+      id: `stat-${Date.now()}`,
+      number: "100+",
+      label: "New Metric",
+      color: "from-blue-400 to-purple-400"
+    };
+    setStatsBlocks(prev => [...prev, newStat]);
+  };
+
+  const removeStatBlock = (id: string) => {
+    setStatsBlocks(prev => prev.filter(stat => stat.id !== id));
   };
 
   return (
@@ -216,8 +201,8 @@ const HeroCustomizationTab = () => {
                 <Target className="w-5 h-5 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl font-bold text-slate-900">Hero Section Customization</CardTitle>
-                <CardDescription>Customize your homepage hero section for maximum conversion</CardDescription>
+                <CardTitle className="text-xl font-bold text-slate-900">Hero Section & Statistics Management</CardTitle>
+                <CardDescription>Customize your homepage hero section and manage all statistics</CardDescription>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -233,12 +218,12 @@ const HeroCustomizationTab = () => {
         <CardContent>
           <Tabs defaultValue="content" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="content">Content</TabsTrigger>
-              <TabsTrigger value="cta">Call-to-Action</TabsTrigger>
-              <TabsTrigger value="elements">Statistics</TabsTrigger>
+              <TabsTrigger value="content">Content & CTA</TabsTrigger>
+              <TabsTrigger value="statistics">Statistics Management</TabsTrigger>
+              <TabsTrigger value="preview">Live Preview</TabsTrigger>
             </TabsList>
 
-            {/* Content Tab */}
+            {/* Content & CTA Tab */}
             <TabsContent value="content" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -293,46 +278,26 @@ const HeroCustomizationTab = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <Label className="text-base font-semibold">Preview</Label>
-                  <div className="p-6 border rounded-lg bg-gradient-to-br from-gray-50 via-white to-gray-100">
-                    <div className="space-y-4">
-                      <h1 className="text-2xl font-bold text-gray-900">
-                        {settings.headline.main}{' '}
-                        <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                          {settings.headline.highlight}
-                        </span>
-                      </h1>
-                      <p className="text-gray-600">{settings.description}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* CTA Tab */}
-            <TabsContent value="cta" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-4">
                   <Label className="text-base font-semibold flex items-center">
                     <Zap className="w-4 h-4 mr-2" />
-                    Primary CTA
+                    Call-to-Action Buttons
                   </Label>
                   
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={settings.cta.primary.enabled}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        cta: { ...settings.cta, primary: { ...settings.cta.primary, enabled: checked }}
-                      })}
-                    />
-                    <Label>Enable Primary Button</Label>
-                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={settings.cta.primary.enabled}
+                        onCheckedChange={(checked) => setSettings({
+                          ...settings,
+                          cta: { ...settings.cta, primary: { ...settings.cta.primary, enabled: checked }}
+                        })}
+                      />
+                      <Label>Enable Primary Button</Label>
+                    </div>
 
-                  {settings.cta.primary.enabled && (
-                    <>
+                    {settings.cta.primary.enabled && (
                       <div>
-                        <Label htmlFor="primaryText">Button Text</Label>
+                        <Label htmlFor="primaryText">Primary Button Text</Label>
                         <Input
                           id="primaryText"
                           value={settings.cta.primary.text}
@@ -342,39 +307,22 @@ const HeroCustomizationTab = () => {
                           })}
                         />
                       </div>
-                      <div>
-                        <Label htmlFor="primaryLink">Button Link</Label>
-                        <Input
-                          id="primaryLink"
-                          value={settings.cta.primary.link}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            cta: { ...settings.cta, primary: { ...settings.cta.primary, link: e.target.value }}
-                          })}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
+                    )}
 
-                <div className="space-y-4">
-                  <Label className="text-base font-semibold">Secondary CTA</Label>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={settings.cta.secondary.enabled}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        cta: { ...settings.cta, secondary: { ...settings.cta.secondary, enabled: checked }}
-                      })}
-                    />
-                    <Label>Enable Secondary Button</Label>
-                  </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={settings.cta.secondary.enabled}
+                        onCheckedChange={(checked) => setSettings({
+                          ...settings,
+                          cta: { ...settings.cta, secondary: { ...settings.cta.secondary, enabled: checked }}
+                        })}
+                      />
+                      <Label>Enable Secondary Button</Label>
+                    </div>
 
-                  {settings.cta.secondary.enabled && (
-                    <>
+                    {settings.cta.secondary.enabled && (
                       <div>
-                        <Label htmlFor="secondaryText">Button Text</Label>
+                        <Label htmlFor="secondaryText">Secondary Button Text</Label>
                         <Input
                           id="secondaryText"
                           value={settings.cta.secondary.text}
@@ -384,72 +332,155 @@ const HeroCustomizationTab = () => {
                           })}
                         />
                       </div>
-                      <div>
-                        <Label htmlFor="secondaryLink">Button Link</Label>
-                        <Input
-                          id="secondaryLink"
-                          value={settings.cta.secondary.link}
-                          onChange={(e) => setSettings({
-                            ...settings,
-                            cta: { ...settings.cta, secondary: { ...settings.cta.secondary, link: e.target.value }}
-                          })}
-                        />
-                      </div>
-                    </>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </TabsContent>
 
-            {/* Statistics Tab */}
-            <TabsContent value="elements" className="space-y-6">
+            {/* Statistics Management Tab */}
+            <TabsContent value="statistics" className="space-y-6">
               <div className="space-y-6">
-                <div>
-                  <Label className="text-base font-semibold flex items-center mb-4">
+                <div className="flex justify-between items-center">
+                  <Label className="text-base font-semibold flex items-center">
                     <TrendingUp className="w-4 h-4 mr-2" />
-                    Statistics
+                    Statistics Blocks (Used across the website)
                   </Label>
-                  
-                  <div className="flex items-center space-x-2 mb-4">
-                    <Switch
-                      checked={settings.stats.enabled}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        stats: { ...settings.stats, enabled: checked }
-                      })}
-                    />
-                    <Label>Show Statistics</Label>
-                  </div>
+                  <Button onClick={addStatBlock} size="sm" variant="outline">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Stat
+                  </Button>
+                </div>
+                
+                <div className="flex items-center space-x-2 mb-4">
+                  <Switch
+                    checked={settings.statsEnabled}
+                    onCheckedChange={(checked) => setSettings({
+                      ...settings,
+                      statsEnabled: checked
+                    })}
+                  />
+                  <Label>Show Statistics on Homepage</Label>
+                </div>
 
-                  {settings.stats.enabled && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {(['stat1', 'stat2', 'stat3', 'stat4'] as const).map((statKey, index) => (
-                        <div key={statKey} className="space-y-2">
-                          <Label className="text-sm font-medium">Statistic {index + 1}</Label>
-                          <div className="grid grid-cols-2 gap-2">
+                {settings.statsEnabled && (
+                  <div className="space-y-4">
+                    <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
+                      <strong>Note:</strong> These statistics are used across your entire website including:
+                      <br />• Hero section on homepage
+                      <br />• FAQ section statistics
+                      <br />• Any other sections that display stats
+                    </div>
+                    
+                    {statsBlocks.map((stat, index) => (
+                      <div key={stat.id} className="border border-gray-200 rounded-lg p-4 space-y-3 bg-gray-50">
+                        <div className="flex justify-between items-center">
+                          <h5 className="font-medium text-slate-700">Statistic {index + 1}</h5>
+                          <Button 
+                            onClick={() => removeStatBlock(stat.id)} 
+                            size="sm" 
+                            variant="outline"
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium">Number/Value</Label>
                             <Input
+                              value={stat.number}
+                              onChange={(e) => updateStatBlock(stat.id, 'number', e.target.value)}
                               placeholder="500+"
-                              value={settings.stats[statKey].value}
-                              onChange={(e) => updateStatValue(statKey, 'value', e.target.value)}
                             />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium">Label</Label>
                             <Input
+                              value={stat.label}
+                              onChange={(e) => updateStatBlock(stat.id, 'label', e.target.value)}
                               placeholder="Campaigns Managed"
-                              value={settings.stats[statKey].label}
-                              onChange={(e) => updateStatValue(statKey, 'label', e.target.value)}
                             />
                           </div>
                         </div>
-                      ))}
+                        
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Color Gradient</Label>
+                          <select
+                            value={stat.color}
+                            onChange={(e) => updateStatBlock(stat.id, 'color', e.target.value)}
+                            className="w-full h-10 px-3 py-2 bg-white border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:outline-none"
+                          >
+                            {colorOptions.map(option => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            {/* Live Preview Tab */}
+            <TabsContent value="preview" className="space-y-6">
+              <div className="space-y-6">
+                {/* Hero Preview */}
+                <div className="p-6 border rounded-lg bg-gradient-to-br from-gray-50 via-white to-gray-100">
+                  <div className="space-y-4 text-center">
+                    <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200/50">
+                      <span className="text-sm font-medium text-gray-700">{settings.trustBadge.text}</span>
                     </div>
-                  )}
+                    
+                    <h1 className="text-3xl font-bold text-gray-900">
+                      {settings.headline.main}{' '}
+                      <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        {settings.headline.highlight}
+                      </span>
+                    </h1>
+                    <p className="text-gray-600 max-w-2xl mx-auto">{settings.description}</p>
+                    
+                    <div className="flex gap-4 justify-center">
+                      {settings.cta.primary.enabled && (
+                        <Button className="bg-blue-600 hover:bg-blue-700">
+                          {settings.cta.primary.text}
+                        </Button>
+                      )}
+                      {settings.cta.secondary.enabled && (
+                        <Button variant="outline">
+                          {settings.cta.secondary.text}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="p-4 bg-slate-50 rounded-lg">
-                  <Label className="text-sm font-semibold text-slate-700 mb-2 block">Live Preview</Label>
-                  <div className="text-xs text-slate-500 mb-3">See changes instantly on your homepage</div>
-                  <Button variant="outline" size="sm" className="w-full" onClick={() => window.open('/', '_blank')}>
+                {/* Stats Preview */}
+                {settings.statsEnabled && (
+                  <div className="bg-white rounded-lg p-6 border">
+                    <h4 className="font-medium text-slate-700 mb-4 text-center">Statistics Preview</h4>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                      {statsBlocks.map((stat) => (
+                        <div key={stat.id} className="text-center p-4 bg-gray-50 rounded-lg">
+                          <div className={`text-2xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
+                            {stat.number}
+                          </div>
+                          <div className="text-sm text-gray-600">{stat.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="text-center">
+                  <Button variant="outline" onClick={() => window.open('/', '_blank')}>
                     <Eye className="w-4 h-4 mr-2" />
-                    View Homepage
+                    View Live Homepage
                   </Button>
                 </div>
               </div>
@@ -460,7 +491,7 @@ const HeroCustomizationTab = () => {
 
           <div className="flex items-center justify-between">
             <div className="text-sm text-slate-500">
-              Changes will be applied to your homepage immediately
+              Changes will be applied across your website immediately
             </div>
             <Button 
               onClick={saveSettings} 
@@ -468,7 +499,7 @@ const HeroCustomizationTab = () => {
               className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
             >
               <Save className="w-4 h-4 mr-2" />
-              {isLoading ? 'Saving...' : 'Save Changes'}
+              {isLoading ? 'Saving...' : 'Save All Changes'}
             </Button>
           </div>
         </CardContent>

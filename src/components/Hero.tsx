@@ -83,7 +83,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden">
+    <section className="relative flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden py-24 md:py-32 lg:py-40">
       {/* Enhanced Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-mesh opacity-40"></div>
