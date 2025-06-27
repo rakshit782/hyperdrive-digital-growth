@@ -17,12 +17,26 @@ interface SyncProgress {
   status: 'pending' | 'syncing' | 'completed' | 'error';
 }
 
+// Define allowed table names based on Supabase schema
+type AllowedTableName = 
+  | 'blog_posts' 
+  | 'pricing_plans' 
+  | 'faqs' 
+  | 'leads' 
+  | 'website_settings' 
+  | 'analytics_events'
+  | 'contact_info'
+  | 'contact_submissions'
+  | 'integrations'
+  | 'profiles'
+  | 'user_roles';
+
 class DynamoSyncManager {
   private syncInProgress = false;
   private progressCallbacks: ((progress: SyncProgress[]) => void)[] = [];
 
   // Table mapping for DynamoDB
-  private tableSchemas = {
+  private tableSchemas: Record<AllowedTableName, any> = {
     blog_posts: {
       tableName: 'blog_posts',
       primaryKey: 'id',
@@ -119,6 +133,75 @@ class DynamoSyncManager {
         ip_address: 'S',
         created_at: 'S'
       }
+    },
+    contact_info: {
+      tableName: 'contact_info',
+      primaryKey: 'id',
+      attributes: {
+        id: 'S',
+        company_name: 'S',
+        phone: 'S',
+        email: 'S',
+        address: 'S',
+        social_links: 'M',
+        business_hours: 'M',
+        created_at: 'S',
+        updated_at: 'S'
+      }
+    },
+    contact_submissions: {
+      tableName: 'contact_submissions',
+      primaryKey: 'id',
+      attributes: {
+        id: 'S',
+        name: 'S',
+        email: 'S',
+        company: 'S',
+        phone: 'S',
+        message: 'S',
+        form_type: 'S',
+        created_at: 'S'
+      }
+    },
+    integrations: {
+      tableName: 'integrations',
+      primaryKey: 'id',
+      attributes: {
+        id: 'S',
+        integration_type: 'S',
+        integration_name: 'S',
+        config: 'M',
+        is_active: 'BOOL',
+        api_keys: 'M',
+        webhook_url: 'S',
+        last_sync: 'S',
+        created_at: 'S',
+        updated_at: 'S'
+      }
+    },
+    profiles: {
+      tableName: 'profiles',
+      primaryKey: 'id',
+      attributes: {
+        id: 'S',
+        full_name: 'S',
+        company: 'S',
+        phone: 'S',
+        created_at: 'S',
+        updated_at: 'S'
+      }
+    },
+    user_roles: {
+      tableName: 'user_roles',
+      primaryKey: 'id',
+      attributes: {
+        id: 'S',
+        user_id: 'S',
+        role: 'S',
+        permissions: 'M',
+        created_at: 'S',
+        updated_at: 'S'
+      }
     }
   };
 
@@ -141,7 +224,7 @@ class DynamoSyncManager {
 
     this.syncInProgress = true;
     const results: SyncResult[] = [];
-    const tableNames = Object.keys(this.tableSchemas);
+    const tableNames = Object.keys(this.tableSchemas) as AllowedTableName[];
     
     // Initialize progress
     const progress: SyncProgress[] = tableNames.map(tableName => ({
@@ -174,7 +257,7 @@ class DynamoSyncManager {
     return results;
   }
 
-  private async syncTable(tableName: string): Promise<SyncResult> {
+  private async syncTable(tableName: AllowedTableName): Promise<SyncResult> {
     const result: SyncResult = {
       success: false,
       tableName,
@@ -199,7 +282,7 @@ class DynamoSyncManager {
       }
 
       // Convert and insert data to DynamoDB
-      const schema = this.tableSchemas[tableName as keyof typeof this.tableSchemas];
+      const schema = this.tableSchemas[tableName];
       
       for (const record of data) {
         try {
@@ -254,7 +337,7 @@ class DynamoSyncManager {
     return item;
   }
 
-  async syncSingleTable(tableName: string): Promise<SyncResult> {
+  async syncSingleTable(tableName: AllowedTableName): Promise<SyncResult> {
     if (!dynamoDBManager.isActive()) {
       throw new Error('DynamoDB not configured');
     }
