@@ -15,6 +15,21 @@ interface LogoSettings {
   logoAlt: string;
 }
 
+interface MenuItem {
+  id: string;
+  title: string;
+  href: string;
+  enabled: boolean;
+  role?: 'admin' | 'user' | 'public';
+  order: number;
+}
+
+interface MenuSettings {
+  items: MenuItem[];
+  servicesDropdownEnabled: boolean;
+  mobileMenuEnabled: boolean;
+}
+
 interface HeaderSettings {
   logoSize: string;
   logoAlt: string;
@@ -35,6 +50,14 @@ interface HeaderSettings {
     enabled: boolean;
   }>;
 }
+
+const defaultMenuItems: MenuItem[] = [
+  { id: '1', title: "Home", href: "/", enabled: true, role: 'public', order: 0 },
+  { id: '2', title: "Pricing", href: "/pricing", enabled: true, role: 'public', order: 1 },
+  { id: '3', title: "About", href: "/about", enabled: true, role: 'public', order: 2 },
+  { id: '4', title: "Case Studies", href: "/case-studies", enabled: true, role: 'public', order: 3 },
+  { id: '5', title: "Contact", href: "/contact", enabled: true, role: 'public', order: 4 },
+];
 
 const defaultHeaderSettings: HeaderSettings = {
   logoSize: "h-12",
@@ -69,8 +92,36 @@ const Header = () => {
     logoAlt: "AMZ AD SCOUT - The Growth Agency"
   });
   const [headerSettings, setHeaderSettings] = useState<HeaderSettings>(defaultHeaderSettings);
+  const [menuSettings, setMenuSettings] = useState<MenuSettings>({
+    items: defaultMenuItems,
+    servicesDropdownEnabled: true,
+    mobileMenuEnabled: true,
+  });
   
   const { user, signOut } = useAuth();
+
+  // Check user role (simplified for demo - in real app, this would come from user profile/roles table)
+  const getUserRole = () => {
+    if (!user) return 'public';
+    // In a real app, you'd check the user's role from your database
+    // For demo purposes, assume first user is admin
+    return user.email?.includes('admin') ? 'admin' : 'user';
+  };
+
+  const userRole = getUserRole();
+
+  // Filter menu items based on user role and enabled status
+  const getVisibleMenuItems = () => {
+    return menuSettings.items
+      .filter(item => item.enabled)
+      .filter(item => {
+        if (item.role === 'public') return true;
+        if (item.role === 'user' && user) return true;
+        if (item.role === 'admin' && userRole === 'admin') return true;
+        return false;
+      })
+      .sort((a, b) => a.order - b.order);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -81,7 +132,7 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Load logo settings from localStorage on mount
+    // Load logo settings
     const savedLogo = localStorage.getItem('logoData');
     if (savedLogo) {
       try {
@@ -92,42 +143,54 @@ const Header = () => {
           logoAlt: parsed.logoAlt || "AMZ AD SCOUT - The Growth Agency"
         };
         setLogoSettings(newSettings);
-        console.log('Header: Loaded logo settings on mount:', newSettings);
       } catch (error) {
         console.error('Header: Failed to parse logo settings:', error);
       }
     }
 
-    // Load header settings from localStorage
+    // Load header settings
     const savedHeaderSettings = localStorage.getItem('headerSettings');
     if (savedHeaderSettings) {
       try {
         const parsed = JSON.parse(savedHeaderSettings);
         setHeaderSettings({ ...defaultHeaderSettings, ...parsed });
-        console.log('Header: Loaded header settings:', parsed);
       } catch (error) {
         console.error('Header: Failed to parse header settings:', error);
       }
     }
 
-    // Listen for logo updates from dashboard
+    // Load menu settings
+    const savedMenuSettings = localStorage.getItem('menuSettings');
+    if (savedMenuSettings) {
+      try {
+        const parsed = JSON.parse(savedMenuSettings);
+        setMenuSettings(parsed);
+      } catch (error) {
+        console.error('Header: Failed to parse menu settings:', error);
+      }
+    }
+
+    // Event listeners
     const handleLogoUpdate = (event: CustomEvent<LogoSettings>) => {
-      console.log('Header: Received logo update event:', event.detail);
       setLogoSettings(event.detail);
     };
 
-    // Listen for header settings updates
     const handleHeaderSettingsUpdate = (event: CustomEvent<HeaderSettings>) => {
-      console.log('Header: Received header settings update:', event.detail);
       setHeaderSettings(event.detail);
+    };
+
+    const handleMenuSettingsUpdate = (event: CustomEvent<MenuSettings>) => {
+      setMenuSettings(event.detail);
     };
 
     window.addEventListener('logoUpdated', handleLogoUpdate as EventListener);
     window.addEventListener('headerSettingsUpdated', handleHeaderSettingsUpdate as EventListener);
+    window.addEventListener('menuSettingsUpdated', handleMenuSettingsUpdate as EventListener);
     
     return () => {
       window.removeEventListener('logoUpdated', handleLogoUpdate as EventListener);
       window.removeEventListener('headerSettingsUpdated', handleHeaderSettingsUpdate as EventListener);
+      window.removeEventListener('menuSettingsUpdated', handleMenuSettingsUpdate as EventListener);
     };
   }, []);
 
@@ -154,27 +217,20 @@ const Header = () => {
     { title: "Shopify Development", href: "/shopify-development", description: "Custom store development" },
   ];
 
-  // Use custom menu items if available
-  const navItems = headerSettings.menuItems.filter(item => item.enabled);
+  const visibleMenuItems = getVisibleMenuItems();
 
-  // Force white background for header bar
   const getHeaderBarColor = () => {
-    // Always return white background regardless of settings
     return 'bg-white';
   };
 
-  // Dynamic header background styles - force white background
   const getHeaderBackgroundStyle = () => {
     const opacity = headerSettings.headerOpacity / 100;
-    
-    // Force white background with blur effect
     return { 
       className: `bg-white/${Math.round(opacity * 100)} backdrop-blur-xl border-b border-gray-200/40 shadow-lg shadow-black/5`,
       style: {}
     };
   };
 
-  // Dynamic CTA button styles
   const getCTAButtonClass = () => {
     const baseClass = "font-semibold px-6 py-3 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:-translate-y-1 border-0 text-sm tracking-wide";
     
@@ -220,9 +276,9 @@ const Header = () => {
               gap: `${headerSettings.menuGap * 0.25}rem` 
             }}
           >
-            {navItems.map((item) => (
+            {visibleMenuItems.map((item) => (
               <a 
-                key={item.href}
+                key={item.id}
                 href={item.href}
                 className="relative text-slate-700 hover:text-blue-600 transition-all duration-300 font-medium text-sm tracking-wide px-3 py-2.5 rounded-lg hover:bg-blue-50/80 group"
               >
@@ -232,7 +288,7 @@ const Header = () => {
             ))}
             
             {/* Services Dropdown */}
-            {headerSettings.servicesDropdownEnabled && (
+            {menuSettings.servicesDropdownEnabled && (
               <div className="relative">
                 <button
                   onClick={() => setIsServicesOpen(!isServicesOpen)}
@@ -272,7 +328,7 @@ const Header = () => {
             )}
           </nav>
           
-          {/* Auth Section - Only show for authenticated users */}
+          {/* Auth Section */}
           <div 
             className="hidden lg:flex items-center space-x-4"
             style={{ marginLeft: `${headerSettings.ctaMenuGap * 0.25}rem` }}
@@ -286,9 +342,11 @@ const Header = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => window.location.href = '/dashboard'}>
-                    Dashboard
-                  </DropdownMenuItem>
+                  {userRole === 'admin' && (
+                    <DropdownMenuItem onClick={() => window.location.href = '/dashboard'}>
+                      Dashboard
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out
@@ -306,7 +364,7 @@ const Header = () => {
           </div>
           
           {/* Mobile Menu Button */}
-          {headerSettings.mobileMenuEnabled && (
+          {menuSettings.mobileMenuEnabled && (
             <button 
               className="lg:hidden p-3 rounded-xl hover:bg-gray-100/80 transition-all duration-300 flex-shrink-0 group"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -322,7 +380,7 @@ const Header = () => {
         </div>
         
         {/* Mobile Navigation */}
-        {headerSettings.mobileMenuEnabled && (
+        {menuSettings.mobileMenuEnabled && (
           <div className={`lg:hidden transition-all duration-500 ease-in-out ${
             isMenuOpen 
               ? 'max-h-screen opacity-100 border-t border-gray-200/50' 
@@ -330,9 +388,9 @@ const Header = () => {
           }`}>
             <div className="py-6 bg-white/95 backdrop-blur-sm">
               <nav className="flex flex-col space-y-1">
-                {navItems.map((item) => (
+                {visibleMenuItems.map((item) => (
                   <a 
-                    key={item.href}
+                    key={item.id}
                     href={item.href}
                     className="text-slate-700 hover:text-blue-600 hover:bg-blue-50/80 transition-all duration-300 font-medium py-4 px-6 rounded-xl mx-2 group"
                     onClick={() => setIsMenuOpen(false)}
@@ -345,7 +403,7 @@ const Header = () => {
                 ))}
                 
                 {/* Mobile Services */}
-                {headerSettings.servicesDropdownEnabled && (
+                {menuSettings.servicesDropdownEnabled && (
                   <div className="mx-2 mt-2">
                     <div className="text-slate-700 font-medium py-4 px-6 text-sm uppercase tracking-wider text-slate-500">Services</div>
                     <div className="ml-4 space-y-1">
@@ -364,21 +422,23 @@ const Header = () => {
                   </div>
                 )}
                 
-                {/* Mobile Auth - Only show for authenticated users */}
+                {/* Mobile Auth */}
                 <div className="px-6 pt-6 space-y-3">
                   {user ? (
                     <>
                       <div className="text-sm text-slate-600 mb-2">Signed in as {user.email}</div>
-                      <Button 
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => {
-                          window.location.href = '/dashboard';
-                          setIsMenuOpen(false);
-                        }}
-                      >
-                        Dashboard
-                      </Button>
+                      {userRole === 'admin' && (
+                        <Button 
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => {
+                            window.location.href = '/dashboard';
+                            setIsMenuOpen(false);
+                          }}
+                        >
+                          Dashboard
+                        </Button>
+                      )}
                       <Button 
                         variant="outline"
                         className="w-full"

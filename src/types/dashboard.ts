@@ -1,6 +1,7 @@
 
 export type DashboardTab = 
   | 'services'
+  | 'service-pages'
   | 'reviews'
   | 'hero-customization'
   | 'website'
@@ -11,6 +12,7 @@ export type DashboardTab =
   | 'pricing'
   | 'blog'
   | 'header'
+  | 'menu-management'
   | 'footer'
   | 'social-media'
   | 'stats'
@@ -24,6 +26,7 @@ export type DashboardTab =
   | 'cloudflare'
   | 'user-management'
   | 'website-preview'
+  | 'website-audit'
   | 'integration-status'
   | 'integration-test'
   | 'facebook-pixel'
@@ -32,42 +35,7 @@ export type DashboardTab =
   | 'modern-features'
   | 'seo'
   | 'custom-events'
-  | 'emailjs'
-  | 'formspree'
-  | 'auth0'
-  | 'clerk'
-  | 'content-management'
   | 'analytics-dashboard'
-  | 'performance-tracking'
   | 'lead-management'
-  | 'automation-settings';
-
-export interface ServiceCard {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-  features: string[];
-  gradient: string;
-  bgGradient: string;
-  link: string;
-}
-
-export interface Review {
-  id: string;
-  name: string;
-  company: string;
-  rating: number;
-  review: string;
-  avatar?: string;
-}
-
-export interface DashboardSection {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  isActive: boolean;
-  category: 'content' | 'integrations' | 'analytics' | 'management';
-  features?: string[];
-}
+  | 'automation-settings'
+  | 'content-management';

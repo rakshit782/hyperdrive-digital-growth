@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DashboardTab } from "@/types/dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -47,6 +46,9 @@ import AnalyticsDashboardTab from "@/components/dashboard/AnalyticsDashboardTab"
 import LeadManagementTab from "@/components/dashboard/LeadManagementTab";
 import AutomationSettingsTab from "@/components/dashboard/AutomationSettingsTab";
 import ContentManagementTab from "@/components/dashboard/ContentManagementTab";
+import MenuManagementTab from "@/components/dashboard/MenuManagementTab";
+import ServicePagesManagementTab from "@/components/dashboard/ServicePagesManagementTab";
+import WebsiteAuditTab from "@/components/dashboard/WebsiteAuditTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<DashboardTab>('services');
@@ -84,6 +86,7 @@ const Dashboard = () => {
       category: "Content Management",
       tabs: [
         { value: 'services', label: 'Services', icon: '🛠️' },
+        { value: 'service-pages', label: 'Service Pages', icon: '📄' },
         { value: 'reviews', label: 'Reviews', icon: '⭐' },
         { value: 'hero-customization', label: 'Hero Section', icon: '🎯' },
         { value: 'homepage', label: 'Homepage', icon: '🏠' },
@@ -99,6 +102,7 @@ const Dashboard = () => {
       tabs: [
         { value: 'logo', label: 'Logo', icon: '🎨' },
         { value: 'header', label: 'Header', icon: '📋' },
+        { value: 'menu-management', label: 'Menu', icon: '📋' },
         { value: 'footer', label: 'Footer', icon: '📄' },
         { value: 'modern-features', label: 'Features', icon: '✨' },
         { value: 'social-media', label: 'Social', icon: '📱' }
@@ -112,7 +116,8 @@ const Dashboard = () => {
         { value: 'facebook-pixel', label: 'FB Pixel', icon: '📘' },
         { value: 'google-analytics', label: 'Analytics', icon: '📈' },
         { value: 'custom-events', label: 'Events', icon: '🎯' },
-        { value: 'analytics-dashboard', label: 'Dashboard', icon: '📊' }
+        { value: 'analytics-dashboard', label: 'Dashboard', icon: '📊' },
+        { value: 'website-audit', label: 'Site Audit', icon: '🔍' }
       ]
     },
     {
@@ -225,6 +230,12 @@ const Dashboard = () => {
         return <AutomationSettingsTab />;
       case 'content-management':
         return <ContentManagementTab />;
+      case 'service-pages':
+        return <ServicePagesManagementTab />;
+      case 'menu-management':
+        return <MenuManagementTab />;
+      case 'website-audit':
+        return <WebsiteAuditTab />;
       default:
         return (
           <ServicesTab 
