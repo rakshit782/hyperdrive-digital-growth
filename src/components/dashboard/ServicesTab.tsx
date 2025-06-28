@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trash2, Plus, Edit } from "lucide-react";
 import { ServiceCard } from "@/types/dashboard";
 import useSupabaseData, { ServiceCaseStudy, ServiceStat, ServiceReview } from "@/hooks/useSupabaseData";
+import ServicePagesManagementTab from "./ServicePagesManagementTab";
 
 interface ServicesTabProps {
   services: ServiceCard[];
@@ -44,13 +44,18 @@ const ServicesTab = ({ services, onEdit, onDelete, onAdd }: ServicesTabProps) =>
         </Button>
       </div>
 
-      <Tabs defaultValue="services" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="services">Service Pages</TabsTrigger>
+      <Tabs defaultValue="service-pages" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="service-pages">Service Pages</TabsTrigger>
+          <TabsTrigger value="services">Service Cards</TabsTrigger>
           <TabsTrigger value="case-studies">Case Studies</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="service-pages" className="space-y-6">
+          <ServicePagesManagementTab />
+        </TabsContent>
 
         <TabsContent value="services" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
