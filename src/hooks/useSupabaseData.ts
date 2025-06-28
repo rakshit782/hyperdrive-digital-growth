@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -100,6 +99,50 @@ export interface WebsiteSetting {
   setting_key: string;
   setting_value: any;
   setting_type: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceCaseStudy {
+  id: string;
+  service_type: string;
+  title: string;
+  description: string;
+  client_name?: string;
+  industry?: string;
+  results: Record<string, string>;
+  image_url?: string;
+  is_featured: boolean;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceStat {
+  id: string;
+  service_type: string;
+  stat_label: string;
+  stat_value: string;
+  stat_description?: string;
+  icon_name?: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceReview {
+  id: string;
+  service_type: string;
+  client_name: string;
+  company: string;
+  rating: number;
+  review_text: string;
+  avatar_url?: string;
+  results_achieved?: string;
+  sort_order: number;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -686,12 +729,360 @@ export const useSupabaseData = () => {
     return { leads, loading, createLead, updateLead, deleteLead, refetch: fetchLeads };
   };
 
+  // Service Case Studies
+  const useServiceCaseStudies = () => {
+    const [caseStudies, setCaseStudies] = useState<ServiceCaseStudy[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      fetchCaseStudies();
+    }, []);
+
+    const fetchCaseStudies = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('service_case_studies')
+          .select('*')
+          .order('sort_order', { ascending: true });
+
+        if (error) throw error;
+        setCaseStudies((data as ServiceCaseStudy[]) || []);
+      } catch (error) {
+        console.error('Error fetching case studies:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch case studies",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const createCaseStudy = async (caseStudy: Omit<ServiceCaseStudy, 'id' | 'created_at' | 'updated_at'>) => {
+      try {
+        const { data, error } = await supabase
+          .from('service_case_studies')
+          .insert(caseStudy)
+          .select()
+          .single();
+
+        if (error) throw error;
+        setCaseStudies(prev => [...prev, data as ServiceCaseStudy].sort((a, b) => a.sort_order - b.sort_order));
+        toast({
+          title: "Success",
+          description: "Case study created successfully",
+        });
+        return data as ServiceCaseStudy;
+      } catch (error) {
+        console.error('Error creating case study:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create case study",
+          variant: "destructive",
+        });
+        throw error;
+      }
+    };
+
+    const updateCaseStudy = async (id: string, updates: Partial<Omit<ServiceCaseStudy, 'id' | 'created_at'>>) => {
+      try {
+        const updateData = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        };
+
+        const { data, error } = await supabase
+          .from('service_case_studies')
+          .update(updateData)
+          .eq('id', id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        setCaseStudies(prev => prev.map(study => study.id === id ? data as ServiceCaseStudy : study));
+        toast({
+          title: "Success",
+          description: "Case study updated successfully",
+        });
+        return data as ServiceCaseStudy;
+      } catch (error) {
+        console.error('Error updating case study:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update case study",
+          variant: "destructive",
+        });
+        throw error;
+      }
+    };
+
+    const deleteCaseStudy = async (id: string) => {
+      try {
+        const { error } = await supabase
+          .from('service_case_studies')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        setCaseStudies(prev => prev.filter(study => study.id !== id));
+        toast({
+          title: "Success",
+          description: "Case study deleted successfully",
+        });
+      } catch (error) {
+        console.error('Error deleting case study:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete case study",
+          variant: "destructive",
+        });
+        throw error;
+      }
+    };
+
+    return { caseStudies, loading, createCaseStudy, updateCaseStudy, deleteCaseStudy, refetch: fetchCaseStudies };
+  };
+
+  // Service Stats
+  const useServiceStats = () => {
+    const [stats, setStats] = useState<ServiceStat[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      fetchStats();
+    }, []);
+
+    const fetchStats = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('service_stats')
+          .select('*')
+          .order('sort_order', { ascending: true });
+
+        if (error) throw error;
+        setStats((data as ServiceStat[]) || []);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch stats",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const createStat = async (stat: Omit<ServiceStat, 'id' | 'created_at' | 'updated_at'>) => {
+      try {
+        const { data, error } = await supabase
+          .from('service_stats')
+          .insert(stat)
+          .select()
+          .single();
+
+        if (error) throw error;
+        setStats(prev => [...prev, data as ServiceStat].sort((a, b) => a.sort_order - b.sort_order));
+        toast({
+          title: "Success",
+          description: "Stat created successfully",
+        });
+        return data as ServiceStat;
+      } catch (error) {
+        console.error('Error creating stat:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create stat",
+          variant: "destructive",
+        });
+        throw error;
+      }
+    };
+
+    const updateStat = async (id: string, updates: Partial<Omit<ServiceStat, 'id' | 'created_at'>>) => {
+      try {
+        const updateData = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        };
+
+        const { data, error } = await supabase
+          .from('service_stats')
+          .update(updateData)
+          .eq('id', id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        setStats(prev => prev.map(stat => stat.id === id ? data as ServiceStat : stat));
+        toast({
+          title: "Success",
+          description: "Stat updated successfully",
+        });
+        return data as ServiceStat;
+      } catch (error) {
+        console.error('Error updating stat:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update stat",
+          variant: "destructive",
+        });
+        throw error;
+      }
+    };
+
+    const deleteStat = async (id: string) => {
+      try {
+        const { error } = await supabase
+          .from('service_stats')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        setStats(prev => prev.filter(stat => stat.id !== id));
+        toast({
+          title: "Success",
+          description: "Stat deleted successfully",
+        });
+      } catch (error) {
+        console.error('Error deleting stat:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete stat",
+          variant: "destructive",
+        });
+        throw error;
+      }
+    };
+
+    return { stats, loading, createStat, updateStat, deleteStat, refetch: fetchStats };
+  };
+
+  // Service Reviews
+  const useServiceReviews = () => {
+    const [reviews, setReviews] = useState<ServiceReview[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      fetchReviews();
+    }, []);
+
+    const fetchReviews = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('service_reviews')
+          .select('*')
+          .order('sort_order', { ascending: true });
+
+        if (error) throw error;
+        setReviews((data as ServiceReview[]) || []);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch reviews",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const createReview = async (review: Omit<ServiceReview, 'id' | 'created_at' | 'updated_at'>) => {
+      try {
+        const { data, error } = await supabase
+          .from('service_reviews')
+          .insert(review)
+          .select()
+          .single();
+
+        if (error) throw error;
+        setReviews(prev => [...prev, data as ServiceReview].sort((a, b) => a.sort_order - b.sort_order));
+        toast({
+          title: "Success",
+          description: "Review created successfully",
+        });
+        return data as ServiceReview;
+      } catch (error) {
+        console.error('Error creating review:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create review",
+          variant: "destructive",
+        });
+        throw error;
+      }
+    };
+
+    const updateReview = async (id: string, updates: Partial<Omit<ServiceReview, 'id' | 'created_at'>>) => {
+      try {
+        const updateData = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        };
+
+        const { data, error } = await supabase
+          .from('service_reviews')
+          .update(updateData)
+          .eq('id', id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        setReviews(prev => prev.map(review => review.id === id ? data as ServiceReview : review));
+        toast({
+          title: "Success",
+          description: "Review updated successfully",
+        });
+        return data as ServiceReview;
+      } catch (error) {
+        console.error('Error updating review:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update review",
+          variant: "destructive",
+        });
+        throw error;
+      }
+    };
+
+    const deleteReview = async (id: string) => {
+      try {
+        const { error } = await supabase
+          .from('service_reviews')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        setReviews(prev => prev.filter(review => review.id !== id));
+        toast({
+          title: "Success",
+          description: "Review deleted successfully",
+        });
+      } catch (error) {
+        console.error('Error deleting review:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete review",
+          variant: "destructive",
+        });
+        throw error;
+      }
+    };
+
+    return { reviews, loading, createReview, updateReview, deleteReview, refetch: fetchReviews };
+  };
+
   return {
     useBlogPosts,
     usePricingPlans,
     useFAQs,
     useWebsiteSettings,
-    useLeads
+    useLeads,
+    useServiceCaseStudies,
+    useServiceStats,
+    useServiceReviews
   };
 };
 

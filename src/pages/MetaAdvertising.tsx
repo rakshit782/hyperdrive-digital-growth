@@ -1,10 +1,17 @@
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import ServiceStats from "@/components/ServiceStats";
+import ServiceCaseStudies from "@/components/ServiceCaseStudies";
+import ServiceReviews from "@/components/ServiceReviews";
+import { useServiceData } from "@/hooks/useServiceData";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Target, Users, BarChart3, TrendingUp, Zap, Heart } from "lucide-react";
 
 const MetaAdvertising = () => {
+  const { caseStudies, stats, reviews, loading } = useServiceData('meta');
+
   return (
     <>
       <SEOHead 
@@ -45,6 +52,9 @@ const MetaAdvertising = () => {
           </div>
         </section>
 
+        {/* Stats Section */}
+        {!loading && <ServiceStats stats={stats} title="Meta Advertising Results" />}
+
         {/* Services Section */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-6">
@@ -79,6 +89,12 @@ const MetaAdvertising = () => {
             </div>
           </div>
         </section>
+
+        {/* Case Studies Section */}
+        {!loading && <ServiceCaseStudies caseStudies={caseStudies} />}
+
+        {/* Reviews Section */}
+        {!loading && <ServiceReviews reviews={reviews} />}
 
         {/* Benefits Section */}
         <section className="py-16">

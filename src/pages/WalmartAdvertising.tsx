@@ -1,15 +1,22 @@
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import ServiceStats from "@/components/ServiceStats";
+import ServiceCaseStudies from "@/components/ServiceCaseStudies";
+import ServiceReviews from "@/components/ServiceReviews";
+import { useServiceData } from "@/hooks/useServiceData";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, ShoppingCart, BarChart3, TrendingUp, Zap, Users } from "lucide-react";
+import { ArrowRight, ShoppingCart, Target, TrendingUp, Users, BarChart3, Zap } from "lucide-react";
 
 const WalmartAdvertising = () => {
+  const { caseStudies, stats, reviews, loading } = useServiceData('walmart');
+
   return (
     <>
       <SEOHead 
         title="Walmart Advertising Management - Walmart Connect Experts"
-        description="Professional Walmart Connect advertising management. Grow your sales on Walmart Marketplace with our proven strategies."
+        description="Professional Walmart advertising management services. Boost your Walmart sales with expert Walmart Connect campaign optimization and management."
       />
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -17,10 +24,10 @@ const WalmartAdvertising = () => {
         <section className="py-24 md:py-32 lg:py-40">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-              Dominate Walmart Marketplace
+              Walmart Connect Advertising
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 leading-relaxed mb-8">
-              Unlock the power of Walmart Connect advertising and reach millions of shoppers with our expert campaign management.
+              Maximize your Walmart marketplace success with expert Walmart Connect advertising management and optimization.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -39,46 +46,55 @@ const WalmartAdvertising = () => {
                 className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
                 onClick={() => window.location.href = '/walmart-case-studies'}
               >
-                View Success Stories
+                View Case Studies
               </Button>
             </div>
           </div>
         </section>
 
+        {/* Stats Section */}
+        {!loading && <ServiceStats stats={stats} title="Walmart Advertising Results" />}
+
         {/* Services Section */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-4xl font-bold text-center bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent mb-16">
-              Our Walmart Advertising Services
+              Our Walmart Connect Services
             </h2>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mb-6">
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">Sponsored Products</h3>
-                <p className="text-slate-600 leading-relaxed">Boost your product visibility and sales with targeted Sponsored Products campaigns on Walmart Marketplace.</p>
-              </div>
-              
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mb-6">
                   <ShoppingCart className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">Sponsored Brands</h3>
-                <p className="text-slate-600 leading-relaxed">Increase brand awareness and drive traffic to your product listings with engaging Sponsored Brands campaigns.</p>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Sponsored Products</h3>
+                <p className="text-slate-600 leading-relaxed">Drive targeted traffic to your Walmart listings with optimized Sponsored Product campaigns that increase visibility and sales.</p>
               </div>
               
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
                 <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center mb-6">
+                  <Target className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Search Brand Amplifier</h3>
+                <p className="text-slate-600 leading-relaxed">Increase brand awareness and drive traffic with Search Brand Amplifier campaigns across Walmart's marketplace.</p>
+              </div>
+              
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6">
                   <BarChart3 className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">Performance Analytics</h3>
-                <p className="text-slate-600 leading-relaxed">Track and optimize your campaign performance with detailed analytics and reporting.</p>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Performance Optimization</h3>
+                <p className="text-slate-600 leading-relaxed">Continuous campaign optimization with bid management, keyword research, and performance analysis.</p>
               </div>
             </div>
           </div>
         </section>
+
+        {/* Case Studies Section */}
+        {!loading && <ServiceCaseStudies caseStudies={caseStudies} />}
+
+        {/* Reviews Section */}
+        {!loading && <ServiceReviews reviews={reviews} />}
 
         {/* Benefits Section */}
         <section className="py-16">
@@ -95,8 +111,8 @@ const WalmartAdvertising = () => {
                       <TrendingUp className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-slate-900 mb-2">Proven Strategies</h3>
-                      <p className="text-slate-600">We use data-driven strategies to maximize your ROI on Walmart Marketplace.</p>
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">Marketplace Expertise</h3>
+                      <p className="text-slate-600">Deep understanding of Walmart's unique advertising platform and customer behavior.</p>
                     </div>
                   </div>
                   
@@ -105,8 +121,8 @@ const WalmartAdvertising = () => {
                       <Zap className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-slate-900 mb-2">Fast Implementation</h3>
-                      <p className="text-slate-600">We quickly implement and optimize your campaigns for rapid results.</p>
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">Rapid Implementation</h3>
+                      <p className="text-slate-600">Get your Walmart campaigns live and optimized within 48 hours of onboarding.</p>
                     </div>
                   </div>
                   
@@ -116,21 +132,21 @@ const WalmartAdvertising = () => {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-slate-900 mb-2">Dedicated Support</h3>
-                      <p className="text-slate-600">Our team provides dedicated support and ongoing optimization to ensure your success.</p>
+                      <p className="text-slate-600">Dedicated Walmart advertising specialists focused on your success.</p>
                     </div>
                   </div>
                 </div>
               </div>
               
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8">
-                <h3 className="text-2xl font-bold text-slate-900 mb-6">Ready to Dominate Walmart Marketplace?</h3>
+                <h3 className="text-2xl font-bold text-slate-900 mb-6">Ready to Grow on Walmart?</h3>
                 <p className="text-slate-600 mb-6">Get a free audit of your Walmart advertising performance and discover opportunities for growth.</p>
                 
                 <Button 
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                   onClick={() => window.location.href = '/free-audit'}
                 >
-                  Claim Your Free Audit
+                  Get Your Free Walmart Audit
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </div>

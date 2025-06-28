@@ -354,6 +354,138 @@ export type Database = {
         }
         Relationships: []
       }
+      service_case_studies: {
+        Row: {
+          client_name: string | null
+          created_at: string | null
+          description: string
+          id: string
+          image_url: string | null
+          industry: string | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          results: Json
+          service_type: string
+          sort_order: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          client_name?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          image_url?: string | null
+          industry?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          results?: Json
+          service_type: string
+          sort_order?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          client_name?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          image_url?: string | null
+          industry?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          results?: Json
+          service_type?: string
+          sort_order?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      service_reviews: {
+        Row: {
+          avatar_url: string | null
+          client_name: string
+          company: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          rating: number
+          results_achieved: string | null
+          review_text: string
+          service_type: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          client_name: string
+          company: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          rating: number
+          results_achieved?: string | null
+          review_text: string
+          service_type: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          client_name?: string
+          company?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          rating?: number
+          results_achieved?: string | null
+          review_text?: string
+          service_type?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      service_stats: {
+        Row: {
+          created_at: string | null
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          service_type: string
+          sort_order: number | null
+          stat_description: string | null
+          stat_label: string
+          stat_value: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          service_type: string
+          sort_order?: number | null
+          stat_description?: string | null
+          stat_label: string
+          stat_value: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          service_type?: string
+          sort_order?: number | null
+          stat_description?: string | null
+          stat_label?: string
+          stat_value?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
