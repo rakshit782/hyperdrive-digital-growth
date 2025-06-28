@@ -10,7 +10,7 @@ export interface ServiceCaseStudy {
   description: string;
   client_name?: string;
   industry?: string;
-  results: Record<string, string>;
+  results: Record<string, any>; // Changed from Record<string, string> to Record<string, any>
   image_url?: string;
   is_featured: boolean;
   sort_order: number;
@@ -88,9 +88,15 @@ export const useServiceData = (serviceType: string) => {
 
       if (reviewsError) throw reviewsError;
 
-      setCaseStudies(caseStudiesData || []);
-      setStats(statsData || []);
-      setReviews(reviewsData || []);
+      // Type cast and ensure results is an object
+      const typedCaseStudies = (caseStudiesData || []).map(study => ({
+        ...study,
+        results: typeof study.results === 'object' && study.results !== null ? study.results as Record<string, any> : {}
+      })) as ServiceCaseStudy[];
+
+      setCaseStudies(typedCaseStudies);
+      setStats((statsData || []) as ServiceStat[]);
+      setReviews((reviewsData || []) as ServiceReview[]);
 
     } catch (error) {
       console.error('Error fetching service data:', error);
