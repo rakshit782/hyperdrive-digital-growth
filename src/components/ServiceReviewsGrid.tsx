@@ -30,13 +30,16 @@ const ServiceReviewsGrid = ({ reviews }: ServiceReviewsGridProps) => {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayReviews.map((review) => (
-            <div key={review.id} className="bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100">
+            <div key={review.id} className="bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100 h-80 flex flex-col">
               <div className="flex items-center mb-4">
                 {review.avatar_url ? (
                   <img
                     src={review.avatar_url}
                     alt={review.client_name}
                     className="w-12 h-12 rounded-full object-cover mr-4"
+                    onError={(e) => {
+                      e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(review.client_name)}&background=random`;
+                    }}
                   />
                 ) : (
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
@@ -55,12 +58,12 @@ const ServiceReviewsGrid = ({ reviews }: ServiceReviewsGridProps) => {
                 {renderStars(review.rating)}
               </div>
               
-              <p className="text-slate-700 leading-relaxed mb-4">
+              <p className="text-slate-700 leading-relaxed mb-4 flex-grow">
                 "{review.review_text}"
               </p>
               
               {review.results_achieved && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-auto">
                   <p className="text-green-800 text-sm font-medium">
                     Results: {review.results_achieved}
                   </p>

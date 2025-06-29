@@ -27,8 +27,8 @@ const ServiceStatsGrid = ({ stats, serviceType }: ServiceStatsGridProps) => {
           {displayStats.map((stat) => {
             const IconComponent = getIcon(stat.icon_name);
             return (
-              <div key={stat.id} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl mb-6">
+              <div key={stat.id} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 h-64 flex flex-col justify-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl mb-6 mx-auto">
                   <IconComponent className="w-8 h-8 text-white" />
                 </div>
                 <div className="text-4xl font-bold text-slate-900 mb-3">{stat.stat_value}</div>

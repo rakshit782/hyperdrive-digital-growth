@@ -44,6 +44,14 @@ const MetaAdvertising = () => {
       {/* Hero Section */}
       <section className="py-24 md:py-32 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="mb-8">
+            <img
+              src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=300&fit=crop&crop=center"
+              alt="Meta Advertising Management"
+              className="w-full max-w-md mx-auto rounded-2xl shadow-lg object-cover"
+              style={{ aspectRatio: '4/3' }}
+            />
+          </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
             {config?.title || 'Meta Advertising Management'}
           </h1>

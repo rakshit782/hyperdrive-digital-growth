@@ -7,7 +7,6 @@ import CircularReviews from "@/components/CircularReviews";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import Contact from "@/components/Contact";
 
 const Index = () => {
   return (
@@ -24,7 +23,6 @@ const Index = () => {
         <ModernFeatures />
         <CircularReviews />
         <FAQ />
-        <Contact />
         <Footer />
       </div>
     </>

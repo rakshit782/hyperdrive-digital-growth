@@ -64,6 +64,14 @@ const WebsiteDevelopment = () => {
         {/* Hero Section */}
         <section className="py-24 md:py-32 lg:py-40">
           <div className="max-w-4xl mx-auto px-6 text-center">
+            <div className="mb-8">
+              <img
+                src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=300&fit=crop&crop=center"
+                alt="Website Development Services"
+                className="w-full max-w-md mx-auto rounded-2xl shadow-lg object-cover"
+                style={{ aspectRatio: '4/3' }}
+              />
+            </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
               Website Development Services
             </h1>
@@ -105,7 +113,7 @@ const WebsiteDevelopment = () => {
             
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
-                <div key={index} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div key={index} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 h-48 flex flex-col justify-center">
                   <div className="text-4xl font-bold text-slate-900 mb-3">{stat.value}</div>
                   <h3 className="text-xl font-semibold text-slate-900 mb-3">{stat.label}</h3>
                   <p className="text-slate-600 text-sm leading-relaxed">{stat.description}</p>
@@ -126,12 +134,12 @@ const WebsiteDevelopment = () => {
               {services.map((service, index) => {
                 const IconComponent = service.icon;
                 return (
-                  <div key={index} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
+                  <div key={index} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300 h-72 flex flex-col">
                     <div className={`w-12 h-12 ${service.gradient} rounded-xl flex items-center justify-center mb-6`}>
                       <IconComponent className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="text-2xl font-bold text-slate-900 mb-4">{service.title}</h3>
-                    <p className="text-slate-600 leading-relaxed">{service.description}</p>
+                    <p className="text-slate-600 leading-relaxed flex-grow">{service.description}</p>
                   </div>
                 );
               })}
