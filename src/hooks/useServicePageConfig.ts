@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 interface ServicePageConfig {
@@ -245,20 +244,29 @@ export const useServicePageConfig = () => {
   const refetch = () => {
     setLoading(true);
     try {
+      // Ensure we start with default configs
+      let newConfigs = { ...defaultConfigs };
+      
       Object.keys(defaultConfigs).forEach(serviceType => {
         const saved = localStorage.getItem(`servicePageConfig_${serviceType}`);
         if (saved) {
           try {
             const config = JSON.parse(saved);
-            setConfigs(prev => ({
-              ...prev,
-              [serviceType]: config
-            }));
+            newConfigs = {
+              ...newConfigs,
+              [serviceType]: { ...defaultConfigs[serviceType], ...config }
+            };
           } catch (error) {
-            console.error('Error loading saved config:', error);
+            console.error('Error loading saved config for', serviceType, ':', error);
           }
         }
       });
+      
+      setConfigs(newConfigs);
+    } catch (error) {
+      console.error('Error in refetch:', error);
+      // Keep default configs on error
+      setConfigs(defaultConfigs);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import Index from "./pages/Index";
@@ -16,6 +15,7 @@ import MetaAdvertising from "./pages/MetaAdvertising";
 import AccountManagement from "./pages/AccountManagement";
 import ShopifyIntegration from "./pages/ShopifyIntegration";
 import ShopifyDevelopment from "./pages/ShopifyDevelopment";
+import WebsiteDevelopment from "./pages/WebsiteDevelopment";
 import FreeAudit from "./pages/FreeAudit";
 
 function App() {
@@ -37,6 +37,7 @@ function App() {
         <Route path="/account-management" element={<AccountManagement />} />
         <Route path="/shopify-integration" element={<ShopifyIntegration />} />
         <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+        <Route path="/website-development" element={<WebsiteDevelopment />} />
         <Route path="/free-audit" element={<FreeAudit />} />
       </Routes>
       <Toaster />

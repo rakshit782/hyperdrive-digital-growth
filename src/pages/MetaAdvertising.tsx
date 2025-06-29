@@ -45,13 +45,13 @@ const MetaAdvertising = () => {
       <section className="py-24 md:py-32 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-            {config.title}
+            {config?.title || 'Meta Advertising Management'}
           </h1>
           <h2 className="text-xl md:text-2xl text-slate-700 font-medium mb-6">
-            {config.subtitle}
+            {config?.subtitle || 'Facebook & Instagram Advertising Excellence'}
           </h2>
           <p className="text-xl md:text-2xl text-slate-600 leading-relaxed mb-8">
-            {config.heroDescription}
+            {config?.heroDescription || 'Drive explosive growth with our Meta advertising expertise. We help businesses achieve 650% average ROAS through strategic Facebook and Instagram campaigns that convert prospects into customers.'}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -60,7 +60,7 @@ const MetaAdvertising = () => {
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
               onClick={() => window.location.href = '/free-audit'}
             >
-              {config.primaryButtonText}
+              {config?.primaryButtonText || 'Get Free Meta Audit'}
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
             
@@ -70,7 +70,7 @@ const MetaAdvertising = () => {
               className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
               onClick={() => window.location.href = '/case-studies'}
             >
-              {config.secondaryButtonText}
+              {config?.secondaryButtonText || 'View Success Stories'}
             </Button>
           </div>
         </div>
@@ -87,9 +87,9 @@ const MetaAdvertising = () => {
 
       {/* CTA Section */}
       <ServiceCTA 
-        title={config.ctaTitle}
-        description={config.ctaDescription}
-        buttonText={config.ctaButtonText}
+        title={config?.ctaTitle || 'Ready to Scale with Meta?'}
+        description={config?.ctaDescription || 'Get your free Meta advertising audit and discover how we can 10x your social media ROI.'}
+        buttonText={config?.ctaButtonText || 'Get Free Audit'}
         serviceType="Meta"
       />
 

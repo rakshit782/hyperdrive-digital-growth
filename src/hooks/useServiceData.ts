@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -254,12 +253,23 @@ export const useServiceData = (serviceType: string) => {
   const [caseStudies, setCaseStudies] = useState<ServiceCaseStudy[]>([]);
   const [stats, setStats] = useState<ServiceStat[]>([]);
   const [reviews, setReviews] = useState<ServiceReview[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchServiceData = async () => {
+      if (!serviceType) {
+        console.log('No service type provided');
+        return;
+      }
+
       try {
+        console.log('Fetching service data for:', serviceType);
         setLoading(true);
+        
+        // Always set fallback data first
+        setCaseStudies(fallbackCaseStudies[serviceType] || []);
+        setStats(fallbackStats[serviceType] || []);
+        setReviews(fallbackReviews[serviceType] || []);
         
         // Fetch case studies
         const { data: caseStudiesData, error: caseStudiesError } = await supabase
@@ -271,17 +281,12 @@ export const useServiceData = (serviceType: string) => {
 
         if (caseStudiesError) {
           console.error('Error fetching case studies:', caseStudiesError);
-          // Use fallback data
-          setCaseStudies(fallbackCaseStudies[serviceType] || []);
         } else if (caseStudiesData && caseStudiesData.length > 0) {
           const transformedCaseStudies = caseStudiesData.map(study => ({
             ...study,
             results: (study.results as Record<string, string>) || {}
           }));
           setCaseStudies(transformedCaseStudies);
-        } else {
-          // Use fallback data when no data in database
-          setCaseStudies(fallbackCaseStudies[serviceType] || []);
         }
 
         // Fetch stats
@@ -294,11 +299,8 @@ export const useServiceData = (serviceType: string) => {
 
         if (statsError) {
           console.error('Error fetching stats:', statsError);
-          setStats(fallbackStats[serviceType] || []);
         } else if (statsData && statsData.length > 0) {
           setStats(statsData);
-        } else {
-          setStats(fallbackStats[serviceType] || []);
         }
 
         // Fetch reviews
@@ -311,26 +313,20 @@ export const useServiceData = (serviceType: string) => {
 
         if (reviewsError) {
           console.error('Error fetching reviews:', reviewsError);
-          setReviews(fallbackReviews[serviceType] || []);
         } else if (reviewsData && reviewsData.length > 0) {
           setReviews(reviewsData);
-        } else {
-          setReviews(fallbackReviews[serviceType] || []);
         }
+
+        console.log('Service data loaded successfully for:', serviceType);
       } catch (error) {
         console.error('Error in fetchServiceData:', error);
-        // Use fallback data on any error
-        setCaseStudies(fallbackCaseStudies[serviceType] || []);
-        setStats(fallbackStats[serviceType] || []);
-        setReviews(fallbackReviews[serviceType] || []);
+        // Fallback data is already set above
       } finally {
         setLoading(false);
       }
     };
 
-    if (serviceType) {
-      fetchServiceData();
-    }
+    fetchServiceData();
   }, [serviceType]);
 
   return { caseStudies, stats, reviews, loading };
