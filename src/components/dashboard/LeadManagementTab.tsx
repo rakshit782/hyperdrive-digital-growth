@@ -18,7 +18,12 @@ import {
   Building,
   Calendar,
   Target,
-  TrendingUp
+  TrendingUp,
+  Search,
+  Filter,
+  Globe,
+  FileText,
+  Award
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSupabaseData, Lead } from "@/hooks/useSupabaseData";
@@ -31,6 +36,7 @@ const LeadManagementTab = () => {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -49,6 +55,18 @@ const LeadManagementTab = () => {
     qualified: 'bg-purple-100 text-purple-800',
     converted: 'bg-green-100 text-green-800',
     lost: 'bg-red-100 text-red-800'
+  };
+
+  const sourceIcons = {
+    website: Globe,
+    contact_form: Mail,
+    free_audit_form: Award,
+    referral: Users,
+    social_media: Target,
+    google_ads: Search,
+    facebook_ads: Target,
+    cold_outreach: Phone,
+    other: FileText
   };
 
   const resetForm = () => {
@@ -111,16 +129,23 @@ const LeadManagementTab = () => {
     }
   };
 
-  const filteredLeads = leads.filter(lead => 
-    filterStatus === 'all' || lead.status === filterStatus
-  );
+  const filteredLeads = leads.filter(lead => {
+    const matchesStatus = filterStatus === 'all' || lead.status === filterStatus;
+    const matchesSearch = !searchTerm || 
+      lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (lead.company && lead.company.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    return matchesStatus && matchesSearch;
+  });
 
   const leadStats = {
     total: leads.length,
     new: leads.filter(l => l.status === 'new').length,
     qualified: leads.filter(l => l.status === 'qualified').length,
     converted: leads.filter(l => l.status === 'converted').length,
-    conversionRate: leads.length > 0 ? Math.round((leads.filter(l => l.status === 'converted').length / leads.length) * 100) : 0
+    conversionRate: leads.length > 0 ? Math.round((leads.filter(l => l.status === 'converted').length / leads.length) * 100) : 0,
+    formSubmissions: leads.filter(l => l.source === 'contact_form' || l.source === 'free_audit_form').length
   };
 
   if (loading) {
@@ -142,7 +167,7 @@ const LeadManagementTab = () => {
               </div>
               <div>
                 <CardTitle className="text-xl font-bold text-slate-900">Lead Management</CardTitle>
-                <CardDescription>Track and manage your leads and prospects</CardDescription>
+                <CardDescription>Track and manage your leads and website form submissions</CardDescription>
               </div>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -203,6 +228,8 @@ const LeadManagementTab = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="website">Website</SelectItem>
+                        <SelectItem value="contact_form">Contact Form</SelectItem>
+                        <SelectItem value="free_audit_form">Free Audit Form</SelectItem>
                         <SelectItem value="referral">Referral</SelectItem>
                         <SelectItem value="social_media">Social Media</SelectItem>
                         <SelectItem value="google_ads">Google Ads</SelectItem>
@@ -252,7 +279,7 @@ const LeadManagementTab = () => {
         
         <CardContent className="space-y-6">
           {/* Lead Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -312,94 +339,127 @@ const LeadManagementTab = () => {
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-teal-600">Form Leads</p>
+                    <p className="text-2xl font-bold text-teal-900">{leadStats.formSubmissions}</p>
+                  </div>
+                  <FileText className="w-8 h-8 text-teal-500" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Filter */}
-          <div className="flex items-center gap-4">
-            <Label htmlFor="filter">Filter by status:</Label>
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Leads</SelectItem>
-                <SelectItem value="new">New</SelectItem>
-                <SelectItem value="contacted">Contacted</SelectItem>
-                <SelectItem value="qualified">Qualified</SelectItem>
-                <SelectItem value="converted">Converted</SelectItem>
-                <SelectItem value="lost">Lost</SelectItem>
-              </SelectContent>
-            </Select>
+          {/* Search and Filter */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search leads by name, email, or company..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-gray-500" />
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Leads</SelectItem>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="contacted">Contacted</SelectItem>
+                  <SelectItem value="qualified">Qualified</SelectItem>
+                  <SelectItem value="converted">Converted</SelectItem>
+                  <SelectItem value="lost">Lost</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Leads List */}
           <div className="space-y-4">
             {filteredLeads.length > 0 ? (
-              filteredLeads.map((lead) => (
-                <Card key={lead.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold text-gray-900">{lead.name}</h3>
-                          <Badge className={statusColors[lead.status]}>
-                            {lead.status.charAt(0).toUpperCase() + lead.status.slice(1)}
-                          </Badge>
-                          {lead.source && (
-                            <Badge variant="outline" className="text-xs">
-                              {lead.source.replace('_', ' ')}
+              filteredLeads.map((lead) => {
+                const SourceIcon = sourceIcons[lead.source as keyof typeof sourceIcons] || FileText;
+                return (
+                  <Card key={lead.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="font-semibold text-gray-900">{lead.name}</h3>
+                            <Badge className={statusColors[lead.status]}>
+                              {lead.status.charAt(0).toUpperCase() + lead.status.slice(1)}
                             </Badge>
+                            {lead.source && (
+                              <Badge variant="outline" className="text-xs flex items-center gap-1">
+                                <SourceIcon className="w-3 h-3" />
+                                {lead.source.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
+                            <div className="flex items-center gap-1">
+                              <Mail className="w-4 h-4" />
+                              {lead.email}
+                            </div>
+                            {lead.phone && (
+                              <div className="flex items-center gap-1">
+                                <Phone className="w-4 h-4" />
+                                {lead.phone}
+                              </div>
+                            )}
+                            {lead.company && (
+                              <div className="flex items-center gap-1">
+                                <Building className="w-4 h-4" />
+                                {lead.company}
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              {new Date(lead.created_at).toLocaleDateString()}
+                            </div>
+                          </div>
+                          {lead.notes && (
+                            <p className="text-sm text-gray-600 mt-2 line-clamp-2">{lead.notes}</p>
                           )}
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-1">
-                            <Mail className="w-4 h-4" />
-                            {lead.email}
-                          </div>
-                          {lead.phone && (
-                            <div className="flex items-center gap-1">
-                              <Phone className="w-4 h-4" />
-                              {lead.phone}
-                            </div>
-                          )}
-                          {lead.company && (
-                            <div className="flex items-center gap-1">
-                              <Building className="w-4 h-4" />
-                              {lead.company}
-                            </div>
-                          )}
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            {new Date(lead.created_at).toLocaleDateString()}
-                          </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          <Button variant="outline" size="sm" onClick={() => handleEdit(lead)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete(lead.id)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
-                        {lead.notes && (
-                          <p className="text-sm text-gray-600 mt-2">{lead.notes}</p>
-                        )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" onClick={() => handleEdit(lead)}>
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleDelete(lead.id)}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                    </CardContent>
+                  </Card>
+                );
+              })
             ) : (
               <div className="text-center py-12">
                 <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No leads found</h3>
                 <p className="text-gray-600 mb-4">
-                  {filterStatus === 'all' ? 'Start by adding your first lead' : `No leads with status "${filterStatus}"`}
+                  {filterStatus === 'all' && !searchTerm ? 'Start by adding your first lead or set up form submissions' : 
+                   searchTerm ? `No leads match "${searchTerm}"` :
+                   `No leads with status "${filterStatus}"`}
                 </p>
-                <Button onClick={() => setIsDialogOpen(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Your First Lead
-                </Button>
+                {filterStatus === 'all' && !searchTerm && (
+                  <Button onClick={() => setIsDialogOpen(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Your First Lead
+                  </Button>
+                )}
               </div>
             )}
           </div>

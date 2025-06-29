@@ -1,146 +1,198 @@
 
-import { CheckCircle, TrendingUp, Users, Award, Star, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { useFormSubmission } from "@/hooks/useFormSubmission";
 
 const Contact = () => {
-  const benefits = [
-    {
-      icon: TrendingUp,
-      title: "Proven ROI Growth",
-      description: "Average 300% increase in ROAS within 90 days",
-      metric: "300%"
-    },
-    {
-      icon: Users,
-      title: "Expert Team",
-      description: "15+ years combined experience in digital advertising",
-      metric: "15+"
-    },
-    {
-      icon: Award,
-      title: "Certified Partners",
-      description: "Official partners with Amazon, Meta, and Walmart",
-      metric: "3"
-    },
-    {
-      icon: CheckCircle,
-      title: "Guaranteed Results",
-      description: "30-day money-back guarantee on all services",
-      metric: "30d"
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    message: ''
+  });
+
+  const { submitForm, isSubmitting } = useFormSubmission();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.message) {
+      return;
     }
-  ];
+
+    const result = await submitForm({
+      ...formData,
+      source: 'contact_form',
+      formType: 'contact'
+    });
+
+    if (result.success) {
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+        message: ''
+      });
+    }
+  };
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-      {/* Enhanced background decoration elements */}
-      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]"></div>
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div className="absolute top-1/2 left-0 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl"></div>
-      
-      <div className="container mx-auto px-6 relative z-10">
-        {/* Modern header section */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-6">
-            <Star className="w-4 h-4 mr-2 text-yellow-400 fill-yellow-400" />
-            <span className="text-sm font-medium text-white/90">Trusted by 500+ Brands</span>
-          </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            Why Leading Brands
-            <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Choose Us
-            </span>
-          </h2>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-            Join hundreds of successful companies that trust us to scale their advertising performance 
-            and drive exceptional growth.
-          </p>
-        </div>
+    <section className="py-16">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          {/* Contact Form */}
+          <Card className="bg-white/80 backdrop-blur-sm shadow-2xl">
+            <CardHeader>
+              <CardTitle className="text-3xl font-bold text-slate-900">Get Started Today</CardTitle>
+              <CardDescription className="text-lg text-slate-600">
+                Ready to scale your advertising? Fill out the form and we'll get back to you within 24 hours.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
+                      Full Name *
+                    </label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                      className="border-slate-300"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                      Email Address *
+                    </label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                      className="border-slate-300"
+                    />
+                  </div>
+                </div>
 
-        {/* Modern benefits grid */}
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            {benefits.map((benefit, index) => {
-              const IconComponent = benefit.icon;
-              return (
-                <div 
-                  key={index} 
-                  className="group relative"
-                  style={{
-                    animationDelay: `${index * 100}ms`
-                  }}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
+                      Phone Number
+                    </label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="border-slate-300"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="company" className="block text-sm font-medium text-slate-700 mb-2">
+                      Company Name
+                    </label>
+                    <Input
+                      id="company"
+                      type="text"
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      className="border-slate-300"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
+                    Message *
+                  </label>
+                  <Textarea
+                    id="message"
+                    rows={4}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    required
+                    className="border-slate-300"
+                    placeholder="Tell us about your advertising goals and current challenges..."
+                  />
+                </div>
+
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 text-lg font-semibold"
                 >
-                  {/* Gradient border effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/50 via-blue-500/50 to-purple-500/50 rounded-2xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  <div className="relative p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
-                    {/* Icon and metric */}
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="w-14 h-14 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                        <IconComponent className="w-7 h-7 text-white" />
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                          {benefit.metric}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors">
-                      {benefit.title}
-                    </h3>
-                    <p className="text-white/70 leading-relaxed">
-                      {benefit.description}
-                    </p>
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Contact Information */}
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">Get in Touch</h3>
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                    <Mail className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-900">Email Us</h4>
+                    <p className="text-slate-600">hello@yourcompany.com</p>
                   </div>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* Modern CTA section */}
-          <div className="text-center">
-            <div className="relative max-w-4xl mx-auto">
-              {/* Glassmorphism card */}
-              <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-10 md:p-12 border border-white/20 shadow-2xl">
-                <div className="mb-8">
-                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                    Ready to Scale Your Business?
-                  </h3>
-                  <p className="text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
-                    Get your free advertising audit and discover how we can boost your revenue 
-                    with our proven strategies.
-                  </p>
-                </div>
-
-                {/* Enhanced buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                  <button className="group relative bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-10 py-4 rounded-xl font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center">
-                    Get Free Audit
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                  <button className="group border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white px-10 py-4 rounded-xl font-semibold hover:border-white/50 hover:bg-white/20 transition-all duration-300 flex items-center">
-                    View Case Studies
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </div>
-
-                {/* Trust indicators */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mt-8 pt-8 border-t border-white/20">
-                  <div className="flex items-center text-white/70">
-                    <CheckCircle className="w-5 h-5 mr-2 text-green-400" />
-                    <span>30-Day Money Back Guarantee</span>
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                    <Phone className="w-5 h-5 text-white" />
                   </div>
-                  <div className="flex items-center text-white/70">
-                    <div className="flex mr-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                    <span>4.9/5 Client Satisfaction</span>
+                  <div>
+                    <h4 className="font-semibold text-slate-900">Call Us</h4>
+                    <p className="text-slate-600">+1 (555) 123-4567</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-900">Visit Us</h4>
+                    <p className="text-slate-600">123 Business Ave<br />Suite 100<br />New York, NY 10001</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-900">Business Hours</h4>
+                    <p className="text-slate-600">Monday - Friday: 9AM - 6PM<br />Saturday: 10AM - 4PM<br />Sunday: Closed</p>
                   </div>
                 </div>
               </div>
             </div>
+
+            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+              <CardContent className="p-6">
+                <h4 className="font-bold text-slate-900 mb-2">Free Consultation</h4>
+                <p className="text-slate-600 text-sm">
+                  Get a free 30-minute consultation to discuss your advertising goals and see how we can help you achieve 300% ROAS.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

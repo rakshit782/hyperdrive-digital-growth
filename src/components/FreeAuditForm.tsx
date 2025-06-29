@@ -1,197 +1,267 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Send } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { dynamoDBManager } from "@/utils/dynamoDBManager";
-import { sesManager } from "@/utils/sesManager";
-import { formSchema, FormValues } from "@/types/freeAuditSchema";
-import ContactInfoForm from "@/components/forms/ContactInfoForm";
-import BusinessInfoForm from "@/components/forms/BusinessInfoForm";
-import FileUploadForm from "@/components/forms/FileUploadForm";
-import AuditBenefits from "@/components/forms/AuditBenefits";
-import { useGoogleSheetsSubmission } from "@/components/GoogleSheetsConnector";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, DollarSign, TrendingUp, Target } from "lucide-react";
+import { useFormSubmission } from "@/hooks/useFormSubmission";
 
 const FreeAuditForm = () => {
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const { submitToGoogleSheets } = useGoogleSheetsSubmission();
-  
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      company: "",
-      phone: "",
-      platform: "amazon",
-      monthlyAdSpend: "",
-      businessGoals: "",
-    },
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    website: '',
+    currentSpend: '',
+    platforms: '',
+    message: ''
   });
 
-  const validateFormData = (values: FormValues): string | null => {
-    // Backend-side validation matching frontend Zod schema
-    if (!values.firstName.trim() || values.firstName.length < 2) {
-      return "First name must be at least 2 characters";
+  const { submitForm, isSubmitting } = useFormSubmission();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.company) {
+      return;
     }
-    if (!values.lastName.trim() || values.lastName.length < 2) {
-      return "Last name must be at least 2 characters";
+
+    const auditMessage = `Free Audit Request:
+Website: ${formData.website}
+Current Monthly Spend: ${formData.currentSpend}
+Platforms: ${formData.platforms}
+Additional Info: ${formData.message}`;
+
+    const result = await submitForm({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      company: formData.company,
+      message: auditMessage,
+      source: 'free_audit_form',
+      formType: 'free_audit'
+    });
+
+    if (result.success) {
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+        website: '',
+        currentSpend: '',
+        platforms: '',
+        message: ''
+      });
     }
-    if (!values.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
-      return "Please enter a valid email address";
-    }
-    if (!values.company.trim() || values.company.length < 2) {
-      return "Company name must be at least 2 characters";
-    }
-    if (!values.phone.trim() || values.phone.length < 10) {
-      return "Phone number must be at least 10 characters";
-    }
-    if (!values.monthlyAdSpend.trim()) {
-      return "Monthly ad spend is required";
-    }
-    if (!values.businessGoals.trim() || values.businessGoals.length < 10) {
-      return "Business goals must be at least 10 characters";
-    }
-    return null;
   };
 
-  const onSubmit = async (values: FormValues) => {
-    if (isSubmitting) return; // Prevent duplicate submissions
-    
-    setIsSubmitting(true);
-    setSubmitError(null);
-    console.log("Free audit form submitted:", values);
-    
-    try {
-      // Backend-side validation
-      const validationError = validateFormData(values);
-      if (validationError) {
-        throw new Error(validationError);
-      }
-
-      // Submit to Google Sheets first
-      await submitToGoogleSheets(values, 'audit');
-
-      // Submit to DynamoDB if configured
-      if (dynamoDBManager.isActive()) {
-        const submissionData = {
-          id: `audit-${Date.now()}`,
-          name: `${values.firstName} ${values.lastName}`,
-          email: values.email,
-          company: values.company,
-          phone: values.phone,
-          platform: values.platform,
-          monthlyAdSpend: values.monthlyAdSpend,
-          businessGoals: values.businessGoals,
-          submittedAt: new Date().toISOString(),
-          formType: 'free_audit',
-          ipAddress: 'unknown', // Could be enhanced with IP detection
-          userAgent: navigator.userAgent,
-        };
-
-        await dynamoDBManager.putItem('contact_submissions', submissionData);
-        console.log('Form data saved to DynamoDB');
-      }
-
-      // Send email notification if SES is configured
-      if (sesManager.isActive()) {
-        const emailBody = `
-          <h2>New Free Audit Request</h2>
-          <p><strong>Name:</strong> ${values.firstName} ${values.lastName}</p>
-          <p><strong>Company:</strong> ${values.company}</p>
-          <p><strong>Email:</strong> ${values.email}</p>
-          <p><strong>Phone:</strong> ${values.phone}</p>
-          <p><strong>Platform:</strong> ${values.platform}</p>
-          <p><strong>Monthly Ad Spend:</strong> ${values.monthlyAdSpend}</p>
-          <p><strong>Business Goals:</strong> ${values.businessGoals}</p>
-          <p><strong>Submitted At:</strong> ${new Date().toLocaleString()}</p>
-        `;
-
-        await sesManager.sendEmail(
-          [values.email],
-          'Free Audit Request Received',
-          emailBody,
-          `New Free Audit Request from ${values.firstName} ${values.lastName}`
-        );
-        console.log('Email notification sent via SES');
-      }
-
-      toast({
-        title: "Audit Request Submitted Successfully!",
-        description: "Thank you! We've received your free audit request and will analyze your data within 24-48 hours. You'll receive a detailed report at the email address provided.",
-      });
-      
-      form.reset();
-      
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
-      setSubmitError(errorMessage);
-      
-      toast({
-        title: "Submission Error",
-        description: errorMessage.includes("validation") 
-          ? errorMessage 
-          : "An unexpected error occurred. Please try again or contact us directly at admin@amzadscout.com.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
+  const benefits = [
+    {
+      icon: DollarSign,
+      title: "ROI Analysis",
+      description: "Detailed breakdown of your current return on ad spend"
+    },
+    {
+      icon: Target,
+      title: "Targeting Review",
+      description: "Assessment of your audience targeting and optimization opportunities"
+    },
+    {
+      icon: TrendingUp,
+      title: "Growth Strategy",
+      description: "Custom roadmap to scale your advertising results"
     }
-  };
+  ];
 
   return (
-    <Card className="max-w-4xl mx-auto bg-white border shadow-xl">
-      <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-t-lg">
-        <CardTitle className="text-3xl font-bold">Free Advertising Audit</CardTitle>
-        <CardDescription className="text-blue-100 text-lg">
-          Get a comprehensive analysis of your advertising performance and actionable recommendations for growth
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent className="p-8">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <ContactInfoForm form={form} />
-            <BusinessInfoForm form={form} />
-            <FileUploadForm form={form} />
-            <AuditBenefits />
+    <section className="py-16">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          {/* Benefits */}
+          <div className="space-y-8">
+            <div>
+              <Badge className="bg-green-100 text-green-800 px-3 py-1 text-sm font-medium mb-4">
+                $2,000 Value - Completely Free
+              </Badge>
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                What You'll Get in Your Free Audit
+              </h2>
+              <p className="text-lg text-slate-600 mb-8">
+                Our comprehensive advertising audit typically costs $2,000. For a limited time, we're offering it completely free to qualified businesses.
+              </p>
+            </div>
 
-            {submitError && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 text-sm font-medium">{submitError}</p>
-              </div>
-            )}
+            <div className="space-y-6">
+              {benefits.map((benefit, index) => {
+                const IconComponent = benefit.icon;
+                return (
+                  <div key={index} className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <IconComponent className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">{benefit.title}</h3>
+                      <p className="text-slate-600">{benefit.description}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
-            <Button 
-              type="submit" 
-              size="lg" 
-              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-4 text-lg rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Submitting Your Audit Request...
-                </>
-              ) : (
-                <>
-                  Get My Free Audit
-                  <Send className="ml-2 w-5 h-5" />
-                </>
-              )}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+            <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <h4 className="font-bold text-slate-900">100% Free Guarantee</h4>
+                </div>
+                <p className="text-slate-600 text-sm">
+                  No hidden fees, no obligations. Just valuable insights to help you grow your business.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Form */}
+          <Card className="bg-white/80 backdrop-blur-sm shadow-2xl">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-slate-900">Get Your Free $2,000 Audit</CardTitle>
+              <CardDescription className="text-slate-600">
+                Fill out the form below and we'll send you a comprehensive audit within 48 hours.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
+                      Full Name *
+                    </label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                      className="border-slate-300"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                      Email Address *
+                    </label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                      className="border-slate-300"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">
+                      Phone Number
+                    </label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="border-slate-300"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="company" className="block text-sm font-medium text-slate-700 mb-1">
+                      Company Name *
+                    </label>
+                    <Input
+                      id="company"
+                      type="text"
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      required
+                      className="border-slate-300"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="website" className="block text-sm font-medium text-slate-700 mb-1">
+                    Website URL
+                  </label>
+                  <Input
+                    id="website"
+                    type="url"
+                    value={formData.website}
+                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                    className="border-slate-300"
+                    placeholder="https://yourwebsite.com"
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="currentSpend" className="block text-sm font-medium text-slate-700 mb-1">
+                      Current Monthly Ad Spend
+                    </label>
+                    <Input
+                      id="currentSpend"
+                      type="text"
+                      value={formData.currentSpend}
+                      onChange={(e) => setFormData({ ...formData, currentSpend: e.target.value })}
+                      className="border-slate-300"
+                      placeholder="e.g., $5,000/month"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="platforms" className="block text-sm font-medium text-slate-700 mb-1">
+                      Current Platforms
+                    </label>
+                    <Input
+                      id="platforms"
+                      type="text"
+                      value={formData.platforms}
+                      onChange={(e) => setFormData({ ...formData, platforms: e.target.value })}
+                      className="border-slate-300"
+                      placeholder="e.g., Amazon, Google, Facebook"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-1">
+                    Additional Information
+                  </label>
+                  <Textarea
+                    id="message"
+                    rows={3}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="border-slate-300"
+                    placeholder="Tell us about your biggest advertising challenges..."
+                  />
+                </div>
+
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white py-3 text-lg font-semibold"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Get My Free $2,000 Audit'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </section>
   );
 };
 

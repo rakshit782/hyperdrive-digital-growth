@@ -16,6 +16,7 @@ import MetaAdvertising from "./pages/MetaAdvertising";
 import AccountManagement from "./pages/AccountManagement";
 import ShopifyIntegration from "./pages/ShopifyIntegration";
 import ShopifyDevelopment from "./pages/ShopifyDevelopment";
+import FreeAudit from "./pages/FreeAudit";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="/account-management" element={<AccountManagement />} />
         <Route path="/shopify-integration" element={<ShopifyIntegration />} />
         <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+        <Route path="/free-audit" element={<FreeAudit />} />
       </Routes>
       <Toaster />
     </BrowserRouter>
