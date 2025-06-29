@@ -56,7 +56,12 @@ export const useServiceData = (serviceType: string) => {
         if (caseStudiesError) {
           console.error('Error fetching case studies:', caseStudiesError);
         } else {
-          setCaseStudies(caseStudiesData || []);
+          // Transform the data to match our interface, ensuring results is properly typed
+          const transformedCaseStudies = (caseStudiesData || []).map(study => ({
+            ...study,
+            results: (study.results as Record<string, string>) || {}
+          }));
+          setCaseStudies(transformedCaseStudies);
         }
 
         // Fetch stats
