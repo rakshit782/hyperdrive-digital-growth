@@ -1,87 +1,130 @@
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
-import { Code, Palette, Smartphone, Zap, CheckCircle, ArrowRight } from "lucide-react";
+import { ArrowRight, Code, Palette, Zap, Monitor } from "lucide-react";
 
 const ShopifyDevelopment = () => {
-  const features = [
-    "Custom theme development",
-    "Third-party app integration",
-    "Mobile optimization",
-    "Performance enhancement",
-    "SEO optimization",
-    "Custom functionality development"
-  ];
-
-  const benefits = [
-    { title: "Unique Design", description: "Stand out with custom themes tailored to your brand" },
-    { title: "Enhanced Performance", description: "Lightning-fast loading speeds for better conversions" },
-    { title: "Mobile-First", description: "Optimized for mobile users who drive most sales" },
-    { title: "Scalable Solution", description: "Built to handle growth and increased traffic" }
+  const services = [
+    {
+      title: 'Custom Development',
+      description: 'Bespoke Shopify solutions tailored to your unique business requirements and goals.',
+      icon: Code,
+      gradient: 'bg-gradient-to-r from-blue-500 to-indigo-500'
+    },
+    {
+      title: 'Theme Customization',
+      description: 'Professional theme design and customization for a unique brand experience.',
+      icon: Palette,
+      gradient: 'bg-gradient-to-r from-purple-500 to-pink-500'
+    },
+    {
+      title: 'Performance Optimization',
+      description: 'Speed optimization and performance tuning for better user experience and SEO.',
+      icon: Zap,
+      gradient: 'bg-gradient-to-r from-green-500 to-emerald-500'
+    },
+    {
+      title: 'Responsive Design',
+      description: 'Mobile-first design approach ensuring perfect display across all devices.',
+      icon: Monitor,
+      gradient: 'bg-gradient-to-r from-orange-500 to-red-500'
+    }
   ];
 
   return (
-    <div className="min-h-screen">
-      <Header />
-      <div className="container mx-auto px-6 py-20">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-500/10 to-purple-500/10 backdrop-blur-sm rounded-full border border-violet-200/50 mb-8">
-            <Code className="w-5 h-5 mr-2 text-violet-600" />
-            <span className="text-sm font-semibold text-violet-600 tracking-wide">SHOPIFY DEVELOPMENT</span>
+    <>
+      <SEOHead 
+        title="Shopify Development Services - Custom Store Development"
+        description="Professional Shopify development services. Custom themes, performance optimization, and bespoke solutions for high-converting e-commerce stores."
+      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <Header />
+        
+        {/* Hero Section */}
+        <section className="py-24 md:py-32 lg:py-40">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
+              Shopify Development Services
+            </h1>
+            <h2 className="text-xl md:text-2xl text-slate-700 font-medium mb-4">
+              Custom Store Development & Optimization
+            </h2>
+            <p className="text-xl md:text-2xl text-slate-600 leading-relaxed mb-8">
+              Transform your Shopify store with custom development, theme optimization, and performance enhancements that drive conversions and sales.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                onClick={() => window.location.href = '/contact'}
+              >
+                Start Development
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+                onClick={() => window.location.href = '/shopify-integration'}
+              >
+                View Integration
+              </Button>
+            </div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-8 text-slate-900 leading-tight">
-            Custom <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">E-commerce</span>
-          </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Professional Shopify development and customization to create a powerful, unique e-commerce presence that converts visitors into customers
-          </p>
-        </div>
+        </section>
 
-        <div className="grid lg:grid-cols-2 gap-12 mb-20">
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader>
-              <CardTitle className="text-3xl text-slate-900 flex items-center">
-                <Palette className="mr-4 w-8 h-8 text-violet-600" />
-                Development Services
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {features.map((feature, index) => (
-                  <div key={index} className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span className="text-lg text-slate-700">{feature}</span>
+        {/* Services Section */}
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <h2 className="text-4xl font-bold text-center bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent mb-16">
+              Our Development Services
+            </h2>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {services.map((service, index) => {
+                const IconComponent = service.icon;
+                return (
+                  <div key={index} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
+                    <div className={`w-12 h-12 ${service.gradient} rounded-xl flex items-center justify-center mb-6`}>
+                      <IconComponent className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4">{service.title}</h3>
+                    <p className="text-slate-600 leading-relaxed">{service.description}</p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="space-y-6">
-            {benefits.map((benefit, index) => (
-              <Card key={index} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">{benefit.title}</h3>
-                  <p className="text-slate-600">{benefit.description}</p>
-                </CardContent>
-              </Card>
-            ))}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div className="text-center">
-          <Button 
-            size="lg" 
-            className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-12 py-6 text-xl font-semibold rounded-2xl shadow-2xl"
-          >
-            Start Development
-            <ArrowRight className="ml-3 w-6 h-6" />
-          </Button>
-        </div>
+        {/* CTA Section */}
+        <section className="py-16">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 text-center">
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                Ready to Transform Your Shopify Store?
+              </h2>
+              <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
+                Get custom development solutions that drive conversions and enhance your customer experience.
+              </p>
+              
+              <Button 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => window.location.href = '/contact'}
+              >
+                Get Started
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        </section>
       </div>
       <Footer />
-    </div>
+    </>
   );
 };
 
