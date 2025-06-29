@@ -36,7 +36,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     heroDescription: 'Maximize your Amazon sales with our proven advertising strategies. We help brands achieve 350% average sales growth through expert PPC management, listing optimization, and strategic campaign planning.',
     primaryButtonText: 'Get Free Amazon Audit',
     secondaryButtonText: 'View Success Stories',
-    primaryButtonUrl: '/contact',
+    primaryButtonUrl: '/free-audit',
     secondaryButtonUrl: '/amazon-case-studies',
     services: [
       {
@@ -93,7 +93,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaTitle: 'Ready to Dominate Amazon?',
     ctaDescription: 'Get your free Amazon advertising audit and discover how we can triple your sales in 90 days.',
     ctaButtonText: 'Get Free Audit',
-    ctaButtonUrl: '/contact'
+    ctaButtonUrl: '/free-audit'
   },
   walmart: {
     serviceType: 'walmart',
@@ -102,7 +102,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     heroDescription: 'Grow your business on Walmart marketplace with our expert advertising strategies. We help brands achieve 380% average revenue growth through Walmart Connect optimization and strategic marketplace positioning.',
     primaryButtonText: 'Get Free Walmart Audit',
     secondaryButtonText: 'View Case Studies',
-    primaryButtonUrl: '/contact',
+    primaryButtonUrl: '/free-audit',
     secondaryButtonUrl: '/walmart-case-studies',
     services: [
       {
@@ -126,7 +126,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
       {
         title: 'Performance Analytics',
         description: 'Advanced reporting and insights to drive continuous improvement.',
-        icon: 'Analytics',
+        icon: 'BarChart3',
         gradient: 'bg-gradient-to-r from-orange-500 to-orange-700'
       }
     ],
@@ -159,7 +159,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaTitle: 'Ready to Conquer Walmart?',
     ctaDescription: 'Get your free Walmart marketplace audit and learn how we can multiply your revenue.',
     ctaButtonText: 'Get Free Audit',
-    ctaButtonUrl: '/contact'
+    ctaButtonUrl: '/free-audit'
   },
   meta: {
     serviceType: 'meta',
@@ -168,19 +168,19 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     heroDescription: 'Drive explosive growth with our Meta advertising expertise. We help businesses achieve 650% average ROAS through strategic Facebook and Instagram campaigns that convert prospects into customers.',
     primaryButtonText: 'Get Free Meta Audit',
     secondaryButtonText: 'View Success Stories',
-    primaryButtonUrl: '/contact',
-    secondaryButtonUrl: '/meta-case-studies',
+    primaryButtonUrl: '/free-audit',
+    secondaryButtonUrl: '/case-studies',
     services: [
       {
         title: 'Facebook Advertising',
         description: 'Strategic Facebook ad campaigns designed for maximum reach and conversions.',
-        icon: 'Facebook',
+        icon: 'Users',
         gradient: 'bg-gradient-to-r from-blue-600 to-blue-800'
       },
       {
         title: 'Instagram Marketing',
         description: 'Visual storytelling and engagement strategies that drive real results.',
-        icon: 'Instagram',
+        icon: 'Camera',
         gradient: 'bg-gradient-to-r from-pink-500 to-purple-600'
       },
       {
@@ -225,7 +225,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaTitle: 'Ready to Scale with Meta?',
     ctaDescription: 'Get your free Meta advertising audit and discover how we can 10x your social media ROI.',
     ctaButtonText: 'Get Free Audit',
-    ctaButtonUrl: '/contact'
+    ctaButtonUrl: '/free-audit'
   }
 };
 
@@ -234,32 +234,34 @@ export const useServicePageConfig = () => {
   const [loading, setLoading] = useState(false);
 
   const saveConfig = async (serviceType: string, config: ServicePageConfig) => {
-    // This would save to a database in a real implementation
     setConfigs(prev => ({
       ...prev,
       [serviceType]: config
     }));
     
-    // Save to localStorage for persistence
     localStorage.setItem(`servicePageConfig_${serviceType}`, JSON.stringify(config));
   };
 
   const refetch = () => {
-    // Load from localStorage if available
-    Object.keys(defaultConfigs).forEach(serviceType => {
-      const saved = localStorage.getItem(`servicePageConfig_${serviceType}`);
-      if (saved) {
-        try {
-          const config = JSON.parse(saved);
-          setConfigs(prev => ({
-            ...prev,
-            [serviceType]: config
-          }));
-        } catch (error) {
-          console.error('Error loading saved config:', error);
+    setLoading(true);
+    try {
+      Object.keys(defaultConfigs).forEach(serviceType => {
+        const saved = localStorage.getItem(`servicePageConfig_${serviceType}`);
+        if (saved) {
+          try {
+            const config = JSON.parse(saved);
+            setConfigs(prev => ({
+              ...prev,
+              [serviceType]: config
+            }));
+          } catch (error) {
+            console.error('Error loading saved config:', error);
+          }
         }
-      }
-    });
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

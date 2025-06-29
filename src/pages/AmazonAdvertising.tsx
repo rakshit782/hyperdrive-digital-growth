@@ -12,25 +12,6 @@ const AmazonAdvertising = () => {
   
   const config = configs.amazon;
 
-  if (!config) {
-    return (
-      <>
-        <SEOHead 
-          title="Amazon PPC Management - Expert Amazon Advertising Services"
-          description="Professional Amazon PPC management services. Increase sales, improve ROAS, and dominate Amazon search with our proven advertising strategies."
-        />
-        <Header />
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-slate-600">Loading...</p>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
-
   return (
     <>
       <SEOHead 

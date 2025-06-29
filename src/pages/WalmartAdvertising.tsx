@@ -12,25 +12,6 @@ const WalmartAdvertising = () => {
   
   const config = configs.walmart;
 
-  if (!config) {
-    return (
-      <>
-        <SEOHead 
-          title="Walmart Advertising Management - Walmart Connect Experts"
-          description="Professional Walmart advertising management services. Boost your Walmart sales with expert Walmart Connect campaign optimization and management."
-        />
-        <Header />
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-slate-600">Loading...</p>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
-
   return (
     <>
       <SEOHead 
