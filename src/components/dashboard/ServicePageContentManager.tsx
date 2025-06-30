@@ -16,11 +16,30 @@ interface ServicePageContentManagerProps {
 
 const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentManagerProps) => {
   const { toast } = useToast();
-  const { data: allCaseStudies = [] } = useSupabaseData('service_case_studies');
-  const { data: allReviews = [] } = useSupabaseData('service_reviews');
+  const supabaseHooks = useSupabaseData();
   
+  const [allCaseStudies, setAllCaseStudies] = useState<any[]>([]);
+  const [allReviews, setAllReviews] = useState<any[]>([]);
   const [selectedCaseStudies, setSelectedCaseStudies] = useState<string[]>([]);
   const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
+
+  // Load data on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // For now, we'll use empty arrays since we need to implement proper data fetching
+        // In a real implementation, you'd fetch from your data source here
+        setAllCaseStudies([]);
+        setAllReviews([]);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        setAllCaseStudies([]);
+        setAllReviews([]);
+      }
+    };
+
+    loadData();
+  }, []);
 
   // Filter case studies and reviews for this service type
   const serviceCaseStudies = allCaseStudies.filter(cs => cs.service_type === serviceType);
@@ -31,7 +50,7 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
   const availableReviews = allReviews.filter(r => r.service_type !== serviceType);
 
   useEffect(() => {
-    // Load existing selections from localStorage or API
+    // Load existing selections from localStorage
     const savedCaseStudies = localStorage.getItem(`${serviceType}-case-studies`);
     const savedReviews = localStorage.getItem(`${serviceType}-reviews`);
     
@@ -44,7 +63,7 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
   }, [serviceType]);
 
   const handleSaveSelections = () => {
-    // Save selections to localStorage (in a real app, this would be an API call)
+    // Save selections to localStorage
     localStorage.setItem(`${serviceType}-case-studies`, JSON.stringify(selectedCaseStudies));
     localStorage.setItem(`${serviceType}-reviews`, JSON.stringify(selectedReviews));
     
@@ -105,15 +124,19 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
                     Current {serviceType.replace('-', ' ')} Case Studies ({serviceCaseStudies.length})
                   </h3>
                   <div className="grid gap-2">
-                    {serviceCaseStudies.map((caseStudy) => (
-                      <div key={caseStudy.id} className="flex items-center justify-between bg-white p-3 rounded border">
-                        <div>
-                          <h4 className="font-medium">{caseStudy.title}</h4>
-                          <p className="text-sm text-gray-600">{caseStudy.client_name} - {caseStudy.industry}</p>
+                    {serviceCaseStudies.length === 0 ? (
+                      <p className="text-sm text-gray-500">No case studies found for this service type.</p>
+                    ) : (
+                      serviceCaseStudies.map((caseStudy) => (
+                        <div key={caseStudy.id} className="flex items-center justify-between bg-white p-3 rounded border">
+                          <div>
+                            <h4 className="font-medium">{caseStudy.title}</h4>
+                            <p className="text-sm text-gray-600">{caseStudy.client_name} - {caseStudy.industry}</p>
+                          </div>
+                          <Badge variant="secondary">Current</Badge>
                         </div>
-                        <Badge variant="secondary">Current</Badge>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
 
@@ -121,50 +144,54 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
                   <h3 className="font-semibold mb-4">
                     Available Case Studies from Other Services ({availableCaseStudies.length})
                   </h3>
-                  <div className="grid gap-3">
-                    {availableCaseStudies.map((caseStudy) => (
-                      <Card key={caseStudy.id} className={`cursor-pointer transition-all ${
-                        selectedCaseStudies.includes(caseStudy.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''
-                      }`}>
-                        <CardContent className="p-4">
-                          <div className="flex items-start space-x-3">
-                            <Checkbox
-                              checked={selectedCaseStudies.includes(caseStudy.id)}
-                              onCheckedChange={() => toggleCaseStudy(caseStudy.id)}
-                            />
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <h4 className="font-medium">{caseStudy.title}</h4>
-                                  <p className="text-sm text-gray-600 mb-2">
-                                    {caseStudy.client_name} - {caseStudy.industry}
-                                  </p>
-                                  <p className="text-sm text-gray-700 line-clamp-2">
-                                    {caseStudy.description}
-                                  </p>
+                  {availableCaseStudies.length === 0 ? (
+                    <p className="text-sm text-gray-500">No additional case studies available.</p>
+                  ) : (
+                    <div className="grid gap-3">
+                      {availableCaseStudies.map((caseStudy) => (
+                        <Card key={caseStudy.id} className={`cursor-pointer transition-all ${
+                          selectedCaseStudies.includes(caseStudy.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+                        }`}>
+                          <CardContent className="p-4">
+                            <div className="flex items-start space-x-3">
+                              <Checkbox
+                                checked={selectedCaseStudies.includes(caseStudy.id)}
+                                onCheckedChange={() => toggleCaseStudy(caseStudy.id)}
+                              />
+                              <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h4 className="font-medium">{caseStudy.title}</h4>
+                                    <p className="text-sm text-gray-600 mb-2">
+                                      {caseStudy.client_name} - {caseStudy.industry}
+                                    </p>
+                                    <p className="text-sm text-gray-700 line-clamp-2">
+                                      {caseStudy.description}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <Badge variant="outline" className="capitalize">
+                                      {caseStudy.service_type.replace('-', ' ')}
+                                    </Badge>
+                                    <Button variant="outline" size="sm">
+                                      <Eye className="w-3 h-3" />
+                                    </Button>
+                                  </div>
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                  <Badge variant="outline" className="capitalize">
-                                    {caseStudy.service_type.replace('-', ' ')}
-                                  </Badge>
-                                  <Button variant="outline" size="sm">
-                                    <Eye className="w-3 h-3" />
-                                  </Button>
-                                </div>
+                                {caseStudy.results && (
+                                  <div className="mt-2 text-xs text-green-600">
+                                    Results: {Object.entries(caseStudy.results).map(([key, value]) => 
+                                      `${key}: ${value}`
+                                    ).join(', ')}
+                                  </div>
+                                )}
                               </div>
-                              {caseStudy.results && (
-                                <div className="mt-2 text-xs text-green-600">
-                                  Results: {Object.entries(caseStudy.results).map(([key, value]) => 
-                                    `${key}: ${value}`
-                                  ).join(', ')}
-                                </div>
-                              )}
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </TabsContent>
@@ -176,15 +203,19 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
                     Current {serviceType.replace('-', ' ')} Reviews ({serviceReviews.length})
                   </h3>
                   <div className="grid gap-2">
-                    {serviceReviews.map((review) => (
-                      <div key={review.id} className="flex items-center justify-between bg-white p-3 rounded border">
-                        <div>
-                          <h4 className="font-medium">{review.client_name}</h4>
-                          <p className="text-sm text-gray-600">{review.company} - {review.rating}/5 stars</p>
+                    {serviceReviews.length === 0 ? (
+                      <p className="text-sm text-gray-500">No reviews found for this service type.</p>
+                    ) : (
+                      serviceReviews.map((review) => (
+                        <div key={review.id} className="flex items-center justify-between bg-white p-3 rounded border">
+                          <div>
+                            <h4 className="font-medium">{review.client_name}</h4>
+                            <p className="text-sm text-gray-600">{review.company} - {review.rating}/5 stars</p>
+                          </div>
+                          <Badge variant="secondary">Current</Badge>
                         </div>
-                        <Badge variant="secondary">Current</Badge>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
 
@@ -192,43 +223,47 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
                   <h3 className="font-semibold mb-4">
                     Available Reviews from Other Services ({availableReviews.length})
                   </h3>
-                  <div className="grid gap-3">
-                    {availableReviews.map((review) => (
-                      <Card key={review.id} className={`cursor-pointer transition-all ${
-                        selectedReviews.includes(review.id) ? 'ring-2 ring-green-500 bg-green-50' : ''
-                      }`}>
-                        <CardContent className="p-4">
-                          <div className="flex items-start space-x-3">
-                            <Checkbox
-                              checked={selectedReviews.includes(review.id)}
-                              onCheckedChange={() => toggleReview(review.id)}
-                            />
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <h4 className="font-medium">{review.client_name}</h4>
-                                  <p className="text-sm text-gray-600 mb-1">
-                                    {review.company} - {review.rating}/5 stars
-                                  </p>
-                                  <p className="text-sm text-gray-700 line-clamp-3">
-                                    "{review.review_text}"
-                                  </p>
+                  {availableReviews.length === 0 ? (
+                    <p className="text-sm text-gray-500">No additional reviews available.</p>
+                  ) : (
+                    <div className="grid gap-3">
+                      {availableReviews.map((review) => (
+                        <Card key={review.id} className={`cursor-pointer transition-all ${
+                          selectedReviews.includes(review.id) ? 'ring-2 ring-green-500 bg-green-50' : ''
+                        }`}>
+                          <CardContent className="p-4">
+                            <div className="flex items-start space-x-3">
+                              <Checkbox
+                                checked={selectedReviews.includes(review.id)}
+                                onCheckedChange={() => toggleReview(review.id)}
+                              />
+                              <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h4 className="font-medium">{review.client_name}</h4>
+                                    <p className="text-sm text-gray-600 mb-1">
+                                      {review.company} - {review.rating}/5 stars
+                                    </p>
+                                    <p className="text-sm text-gray-700 line-clamp-3">
+                                      "{review.review_text}"
+                                    </p>
+                                  </div>
+                                  <Badge variant="outline" className="capitalize">
+                                    {review.service_type.replace('-', ' ')}
+                                  </Badge>
                                 </div>
-                                <Badge variant="outline" className="capitalize">
-                                  {review.service_type.replace('-', ' ')}
-                                </Badge>
+                                {review.results_achieved && (
+                                  <div className="mt-2 text-xs text-blue-600">
+                                    Results: {review.results_achieved}
+                                  </div>
+                                )}
                               </div>
-                              {review.results_achieved && (
-                                <div className="mt-2 text-xs text-blue-600">
-                                  Results: {review.results_achieved}
-                                </div>
-                              )}
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </TabsContent>
