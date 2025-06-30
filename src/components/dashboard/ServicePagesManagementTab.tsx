@@ -2,13 +2,15 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Eye, RefreshCw } from 'lucide-react';
+import { Edit, Eye, RefreshCw, Settings } from 'lucide-react';
 import { useServicePageConfig } from '@/hooks/useServicePageConfig';
 import ServicePageEditor from './ServicePageEditor';
+import ServicePageCustomizer from './ServicePageCustomizer';
 
 const ServicePagesManagementTab = () => {
   const { configs, loading, saveConfig, refetch } = useServicePageConfig();
   const [editingService, setEditingService] = useState<string | null>(null);
+  const [customizingService, setCustomizingService] = useState<string | null>(null);
 
   const handleSave = async (config: any) => {
     await saveConfig(config.serviceType, config);
@@ -37,6 +39,15 @@ const ServicePagesManagementTab = () => {
     );
   }
 
+  if (customizingService) {
+    return (
+      <ServicePageCustomizer
+        serviceType={customizingService}
+        onClose={() => setCustomizingService(null)}
+      />
+    );
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -53,16 +64,23 @@ const ServicePagesManagementTab = () => {
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-lg capitalize">{serviceType} Advertising</CardTitle>
+                  <CardTitle className="text-lg capitalize">{serviceType.replace('-', ' ')} Service</CardTitle>
                   <CardDescription>{config.title}</CardDescription>
                 </div>
                 <div className="flex space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => window.open(`/${serviceType}-advertising`, '_blank')}
+                    onClick={() => window.open(`/${serviceType === 'meta' ? 'meta-advertising' : serviceType === 'amazon' ? 'amazon-advertising' : serviceType === 'walmart' ? 'walmart-advertising' : serviceType}`, '_blank')}
                   >
                     <Eye className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCustomizingService(serviceType)}
+                  >
+                    <Settings className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="outline"
@@ -77,10 +95,10 @@ const ServicePagesManagementTab = () => {
             <CardContent>
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">
-                  <strong>Services:</strong> {config.services.length} items
+                  <strong>Services:</strong> {config.services?.length || 0} items
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Benefits:</strong> {config.benefits.length} items
+                  <strong>Benefits:</strong> {config.benefits?.length || 0} items
                 </p>
                 <p className="text-sm text-gray-600 line-clamp-3">
                   {config.heroDescription}
@@ -94,11 +112,11 @@ const ServicePagesManagementTab = () => {
       <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
         <h3 className="font-semibold text-blue-900 mb-2">Service Page Management Features:</h3>
         <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Customize hero sections with titles, descriptions, and call-to-action buttons</li>
-          <li>• Manage service offerings with custom icons and gradients</li>
-          <li>• Edit benefits sections with different color schemes</li>
-          <li>• Configure CTA sections for maximum conversion</li>
-          <li>• Real-time preview available for all changes</li>
+          <li>• <strong>Edit Page Content:</strong> Customize hero sections, titles, descriptions, and call-to-action buttons</li>
+          <li>• <strong>Customize Components:</strong> Manage stat blocks, case studies, reviews, and feature sections</li>
+          <li>• <strong>Content Selection:</strong> Choose which case studies and reviews to display on each page</li>
+          <li>• <strong>Real-time Preview:</strong> View changes instantly with live preview functionality</li>
+          <li>• <strong>Performance Tracking:</strong> Monitor page performance and conversion metrics</li>
         </ul>
       </div>
     </div>

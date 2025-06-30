@@ -131,6 +131,7 @@ const EmailAutomationTab = () => {
     let subject = template.subject;
     let content = template.content;
 
+    // Replace placeholders with sample data
     Object.entries(sampleData).forEach(([key, value]) => {
       const placeholder = `{{${key}}}`;
       subject = subject.replace(new RegExp(placeholder, 'g'), value);
