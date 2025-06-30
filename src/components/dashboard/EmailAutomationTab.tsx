@@ -1,508 +1,437 @@
 
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Mail, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Settings,
-  Send,
+  Send, 
+  Clock, 
+  Users, 
+  TrendingUp, 
+  Settings, 
   Eye,
-  Save
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useEmailAutomation, EmailTemplate, EmailSettings } from "@/hooks/useEmailAutomation";
+  Plus,
+  Trash2,
+  Edit3
+} from 'lucide-react';
+
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  content: string;
+  type: 'welcome' | 'follow-up' | 'newsletter' | 'promotion';
+  isActive: boolean;
+}
+
+interface AutomationRule {
+  id: string;
+  name: string;
+  trigger: string;
+  templateId: string;
+  delay: number;
+  isActive: boolean;
+}
 
 const EmailAutomationTab = () => {
-  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
-  const [emailSettings, setEmailSettings] = useState<EmailSettings | null>(null);
-  const [isEditingTemplate, setIsEditingTemplate] = useState(false);
-  const [isEditingSettings, setIsEditingSettings] = useState(false);
-  const [currentTemplate, setCurrentTemplate] = useState<Partial<EmailTemplate>>({
-    name: '',
-    subject: '',
-    content: '',
-    trigger: 'contact',
-    isActive: true
-  });
   const { toast } = useToast();
-  const {
-    getEmailSettings,
-    saveEmailSettings,
-    getEmailTemplates,
-    saveEmailTemplate,
-    deleteEmailTemplate
-  } = useEmailAutomation();
-
-  const triggerTypes = [
-    { value: 'contact', label: 'Contact Form Submission' },
-    { value: 'free_audit', label: 'Free Audit Request' },
-    { value: 'new_lead', label: 'New Lead Created' },
-    { value: 'lead_status_change', label: 'Lead Status Change' },
-    { value: 'welcome', label: 'Welcome Email' }
-  ];
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = () => {
-    setTemplates(getEmailTemplates());
-    setEmailSettings(getEmailSettings());
-  };
-
-  const handleSaveSettings = () => {
-    if (!emailSettings) return;
-
-    saveEmailSettings(emailSettings);
-    setIsEditingSettings(false);
-    toast({
-      title: "Success",
-      description: "Email settings saved successfully",
-    });
-  };
-
-  const handleSaveTemplate = () => {
-    if (!currentTemplate.name || !currentTemplate.subject || !currentTemplate.content) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
-      return;
+  const [templates, setTemplates] = useState<EmailTemplate[]>([
+    {
+      id: '1',
+      name: 'Welcome Email',
+      subject: 'Welcome to our service!',
+      content: 'Thank you for joining us...',
+      type: 'welcome',
+      isActive: true
     }
+  ]);
 
-    const template: EmailTemplate = {
-      id: currentTemplate.id || Math.random().toString(36).substring(2, 15),
-      name: currentTemplate.name!,
-      subject: currentTemplate.subject!,
-      content: currentTemplate.content!,
-      trigger: currentTemplate.trigger!,
-      isActive: currentTemplate.isActive !== undefined ? currentTemplate.isActive : true
-    };
-
-    saveEmailTemplate(template);
-    loadData();
-    setIsEditingTemplate(false);
-    setCurrentTemplate({
-      name: '', subject: '', content: '', trigger: 'contact', isActive: true
-    });
-
-    toast({
-      title: "Success",
-      description: `Template ${currentTemplate.id ? 'updated' : 'created'} successfully`,
-    });
-  };
-
-  const handleEditTemplate = (template: EmailTemplate) => {
-    setCurrentTemplate(template);
-    setIsEditingTemplate(true);
-  };
-
-  const handleDeleteTemplate = (templateId: string) => {
-    if (window.confirm('Are you sure you want to delete this template?')) {
-      deleteEmailTemplate(templateId);
-      loadData();
-      toast({
-        title: "Success",
-        description: "Template deleted successfully",
-      });
+  const [rules, setRules] = useState<AutomationRule[]>([
+    {
+      id: '1',
+      name: 'New User Welcome',
+      trigger: 'user_signup',
+      templateId: '1',
+      delay: 0,
+      isActive: true
     }
+  ]);
+
+  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleSaveTemplate = (template: EmailTemplate) => {
+    if (template.id === 'new') {
+      const newTemplate = { ...template, id: Date.now().toString() };
+      setTemplates([...templates, newTemplate]);
+    } else {
+      setTemplates(templates.map(t => t.id === template.id ? template : t));
+    }
+    setIsEditing(false);
+    setSelectedTemplate(null);
+    toast({
+      title: "Template saved",
+      description: "Email template has been saved successfully."
+    });
+  };
+
+  const handleDeleteTemplate = (id: string) => {
+    setTemplates(templates.filter(t => t.id !== id));
+    toast({
+      title: "Template deleted",
+      description: "Email template has been deleted."
+    });
   };
 
   const previewTemplate = (template: EmailTemplate) => {
-    // Create preview with sample data
     const sampleData = {
       name: 'John Doe',
       email: 'john@example.com',
       company: 'Acme Corp',
-      phone: '+1 (555) 123-4567'
+      phone: '+1-555-0123'
     };
-
-    let subject = template.subject;
+    
     let content = template.content;
-
-    // Replace placeholders with sample data
     Object.entries(sampleData).forEach(([key, value]) => {
-      const placeholder = `{{${key}}}`;
-      subject = subject.replace(new RegExp(placeholder, 'g'), value);
-      content = content.replace(new RegExp(placeholder, 'g'), value);
+      content = content.replace(new RegExp(`{{${key}}}`, 'g'), value);
     });
-
-    alert(`Subject: ${subject}\n\nContent:\n${content}`);
+    
+    return content;
   };
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
-        <CardHeader>
-          <div className="flex items-center">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg mr-3">
-              <Mail className="w-5 h-5 text-white" />
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900">Email Automation</h2>
+          <p className="text-gray-600">Manage automated email campaigns and templates</p>
+        </div>
+        <Button onClick={() => {
+          setSelectedTemplate({
+            id: 'new',
+            name: '',
+            subject: '',
+            content: '',
+            type: 'welcome',
+            isActive: true
+          });
+          setIsEditing(true);
+        }}>
+          <Plus className="w-4 h-4 mr-2" />
+          New Template
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Templates</CardTitle>
+            <Mail className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{templates.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {templates.filter(t => t.isActive).length} active
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Automation Rules</CardTitle>
+            <Settings className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{rules.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {rules.filter(r => r.isActive).length} active
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Emails Sent</CardTitle>
+            <Send className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1,284</div>
+            <p className="text-xs text-muted-foreground">
+              +12% from last month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Open Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">24.3%</div>
+            <p className="text-xs text-muted-foreground">
+              +2.1% from last month
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="templates" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="templates">Email Templates</TabsTrigger>
+          <TabsTrigger value="automation">Automation Rules</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="templates" className="space-y-4">
+          <div className="grid gap-4">
+            {templates.map((template) => (
+              <Card key={template.id}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg">{template.name}</CardTitle>
+                      <CardDescription>{template.subject}</CardDescription>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant={template.isActive ? "default" : "secondary"}>
+                        {template.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          // Show preview
+                          const preview = previewTemplate(template);
+                          toast({
+                            title: "Template Preview",
+                            description: preview.substring(0, 100) + "..."
+                          });
+                        }}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedTemplate(template);
+                          setIsEditing(true);
+                        }}
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteTemplate(template.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    {template.content.substring(0, 150)}...
+                  </p>
+                  <div className="mt-2">
+                    <Badge variant="outline">{template.type}</Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="automation" className="space-y-4">
+          <div className="grid gap-4">
+            {rules.map((rule) => (
+              <Card key={rule.id}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg">{rule.name}</CardTitle>
+                      <CardDescription>
+                        Trigger: {rule.trigger} | Delay: {rule.delay} minutes
+                      </CardDescription>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant={rule.isActive ? "default" : "secondary"}>
+                        {rule.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                      <Switch
+                        checked={rule.isActive}
+                        onCheckedChange={(checked) => {
+                          setRules(rules.map(r => 
+                            r.id === rule.id ? { ...r, isActive: checked } : r
+                          ));
+                        }}
+                      />
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Email Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between">
+                    <span>Delivered</span>
+                    <span className="font-medium">98.5%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Opened</span>
+                    <span className="font-medium">24.3%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Clicked</span>
+                    <span className="font-medium">3.2%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Unsubscribed</span>
+                    <span className="font-medium">0.8%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Top Performing Templates</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {templates.slice(0, 3).map((template) => (
+                    <div key={template.id} className="flex justify-between items-center">
+                      <span className="text-sm">{template.name}</span>
+                      <span className="text-sm font-medium">28.5%</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Template Editor Modal would go here */}
+      {isEditing && selectedTemplate && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">
+              {selectedTemplate.id === 'new' ? 'Create' : 'Edit'} Email Template
+            </h3>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Template Name</Label>
+                <Input
+                  id="name"
+                  value={selectedTemplate.name}
+                  onChange={(e) => setSelectedTemplate({
+                    ...selectedTemplate,
+                    name: e.target.value
+                  })}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="subject">Subject Line</Label>
+                <Input
+                  id="subject"
+                  value={selectedTemplate.subject}
+                  onChange={(e) => setSelectedTemplate({
+                    ...selectedTemplate,
+                    subject: e.target.value
+                  })}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="type">Template Type</Label>
+                <Select
+                  value={selectedTemplate.type}
+                  onValueChange={(value: 'welcome' | 'follow-up' | 'newsletter' | 'promotion') => 
+                    setSelectedTemplate({
+                      ...selectedTemplate,
+                      type: value
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="welcome">Welcome</SelectItem>
+                    <SelectItem value="follow-up">Follow-up</SelectItem>
+                    <SelectItem value="newsletter">Newsletter</SelectItem>
+                    <SelectItem value="promotion">Promotion</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="content">Email Content</Label>
+                <Textarea
+                  id="content"
+                  rows={10}
+                  value={selectedTemplate.content}
+                  onChange={(e) => setSelectedTemplate({
+                    ...selectedTemplate,
+                    content: e.target.value
+                  })}
+                  placeholder="Use {{name}}, {{email}}, {{company}}, {{phone}} for dynamic content"
+                />
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="active"
+                  checked={selectedTemplate.isActive}
+                  onCheckedChange={(checked) => setSelectedTemplate({
+                    ...selectedTemplate,
+                    isActive: checked
+                  })}
+                />
+                <Label htmlFor="active">Active</Label>
+              </div>
             </div>
-            <div>
-              <CardTitle className="text-xl font-bold text-slate-900">Email Automation</CardTitle>
-              <CardDescription>Configure automated email templates and SMTP settings</CardDescription>
+            
+            <div className="flex justify-end space-x-2 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditing(false);
+                  setSelectedTemplate(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={() => handleSaveTemplate(selectedTemplate)}>
+                Save Template
+              </Button>
             </div>
           </div>
-        </CardHeader>
-        
-        <CardContent>
-          <Tabs defaultValue="templates" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="templates">Email Templates</TabsTrigger>
-              <TabsTrigger value="settings">SMTP Settings</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="templates" className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Email Templates</h3>
-                <Button
-                  onClick={() => setIsEditingTemplate(true)}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Template
-                </Button>
-              </div>
-
-              {/* Template Editor */}
-              {isEditingTemplate && (
-                <Card className="border-2 border-blue-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      {currentTemplate.id ? 'Edit Template' : 'Create New Template'}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="templateName">Template Name</Label>
-                        <Input
-                          id="templateName"
-                          value={currentTemplate.name || ''}
-                          onChange={(e) => setCurrentTemplate({
-                            ...currentTemplate,
-                            name: e.target.value
-                          })}
-                          placeholder="Welcome Email"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="trigger">Trigger Event</Label>
-                        <Select
-                          value={currentTemplate.trigger}
-                          onValueChange={(value) => setCurrentTemplate({
-                            ...currentTemplate,
-                            trigger: value
-                          })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select trigger" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {triggerTypes.map(trigger => (
-                              <SelectItem key={trigger.value} value={trigger.value}>
-                                {trigger.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="subject">Email Subject</Label>
-                      <Input
-                        id="subject"
-                        value={currentTemplate.subject || ''}
-                        onChange={(e) => setCurrentTemplate({
-                          ...currentTemplate,
-                          subject: e.target.value
-                        })}
-                        placeholder="Welcome to our service, {{name}}!"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="content">Email Content</Label>
-                      <Textarea
-                        id="content"
-                        value={currentTemplate.content || ''}
-                        onChange={(e) => setCurrentTemplate({
-                          ...currentTemplate,
-                          content: e.target.value
-                        })}
-                        rows={8}
-                        placeholder="Hi {{name}},
-
-Thank you for your interest in our services. We received your message and will get back to you within 24 hours.
-
-Best regards,
-The Team"
-                      />
-                      <p className="text-sm text-gray-500 mt-2">
-                        Available variables: {{name}}, {{email}}, {{company}}, {{phone}}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={currentTemplate.isActive !== false}
-                        onCheckedChange={(checked) => setCurrentTemplate({
-                          ...currentTemplate,
-                          isActive: checked
-                        })}
-                      />
-                      <Label>Active</Label>
-                    </div>
-
-                    <div className="flex justify-end space-x-2">
-                      <Button variant="outline" onClick={() => setIsEditingTemplate(false)}>
-                        Cancel
-                      </Button>
-                      <Button onClick={handleSaveTemplate} className="bg-gradient-to-r from-blue-600 to-indigo-600">
-                        Save Template
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Templates List */}
-              <div className="space-y-4">
-                {templates.length > 0 ? (
-                  templates.map((template) => (
-                    <Card key={template.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{template.name}</h4>
-                            <p className="text-sm text-gray-600">Subject: {template.subject}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="outline" className="text-xs">
-                                {triggerTypes.find(t => t.value === template.trigger)?.label || template.trigger}
-                              </Badge>
-                              <Badge className={template.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                                {template.isActive ? 'Active' : 'Inactive'}
-                              </Badge>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" onClick={() => previewTemplate(template)}>
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            <Button variant="outline" size="sm" onClick={() => handleEditTemplate(template)}>
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button variant="outline" size="sm" onClick={() => handleDeleteTemplate(template.id)}>
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                ) : (
-                  <div className="text-center py-12">
-                    <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No email templates</h3>
-                    <p className="text-gray-600 mb-4">Create your first email template to start automating</p>
-                    <Button onClick={() => setIsEditingTemplate(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create Your First Template
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="settings" className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">SMTP Configuration</h3>
-                <Button
-                  onClick={() => setIsEditingSettings(true)}
-                  variant="outline"
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  Configure SMTP
-                </Button>
-              </div>
-
-              {isEditingSettings ? (
-                <Card className="border-2 border-blue-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg">SMTP Settings</CardTitle>
-                    <CardDescription>
-                      Configure your email server settings for sending automated emails
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="smtpHost">SMTP Host</Label>
-                        <Input
-                          id="smtpHost"
-                          value={emailSettings?.smtpHost || ''}
-                          onChange={(e) => setEmailSettings({
-                            ...emailSettings!,
-                            smtpHost: e.target.value
-                          })}
-                          placeholder="smtp.gmail.com"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="smtpPort">SMTP Port</Label>
-                        <Input
-                          id="smtpPort"
-                          type="number"
-                          value={emailSettings?.smtpPort || 587}
-                          onChange={(e) => setEmailSettings({
-                            ...emailSettings!,
-                            smtpPort: parseInt(e.target.value)
-                          })}
-                          placeholder="587"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="smtpUser">SMTP Username</Label>
-                        <Input
-                          id="smtpUser"
-                          value={emailSettings?.smtpUser || ''}
-                          onChange={(e) => setEmailSettings({
-                            ...emailSettings!,
-                            smtpUser: e.target.value
-                          })}
-                          placeholder="your-email@gmail.com"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="smtpPass">SMTP Password</Label>
-                        <Input
-                          id="smtpPass"
-                          type="password"
-                          value={emailSettings?.smtpPass || ''}
-                          onChange={(e) => setEmailSettings({
-                            ...emailSettings!,
-                            smtpPass: e.target.value
-                          })}
-                          placeholder="Your app password"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="fromEmail">From Email</Label>
-                        <Input
-                          id="fromEmail"
-                          value={emailSettings?.fromEmail || ''}
-                          onChange={(e) => setEmailSettings({
-                            ...emailSettings!,
-                            fromEmail: e.target.value
-                          })}
-                          placeholder="noreply@yourcompany.com"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="fromName">From Name</Label>
-                        <Input
-                          id="fromName"
-                          value={emailSettings?.fromName || ''}
-                          onChange={(e) => setEmailSettings({
-                            ...emailSettings!,
-                            fromName: e.target.value
-                          })}
-                          placeholder="Your Company"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={emailSettings?.smtpSecure || false}
-                        onCheckedChange={(checked) => setEmailSettings({
-                          ...emailSettings!,
-                          smtpSecure: checked
-                        })}
-                      />
-                      <Label>Use SSL/TLS</Label>
-                    </div>
-
-                    <div className="flex justify-end space-x-2">
-                      <Button variant="outline" onClick={() => setIsEditingSettings(false)}>
-                        Cancel
-                      </Button>
-                      <Button onClick={handleSaveSettings} className="bg-gradient-to-r from-blue-600 to-indigo-600">
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Settings
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card>
-                  <CardContent className="p-6">
-                    {emailSettings ? (
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="text-sm font-medium text-gray-500">SMTP Host:</span>
-                          <span className="text-sm text-gray-900">{emailSettings.smtpHost}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm font-medium text-gray-500">Port:</span>
-                          <span className="text-sm text-gray-900">{emailSettings.smtpPort}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm font-medium text-gray-500">From Email:</span>
-                          <span className="text-sm text-gray-900">{emailSettings.fromEmail}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm font-medium text-gray-500">Security:</span>
-                          <span className="text-sm text-gray-900">{emailSettings.smtpSecure ? 'SSL/TLS' : 'None'}</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">SMTP Not Configured</h3>
-                        <p className="text-gray-600 mb-4">Configure your SMTP settings to enable automated emails</p>
-                        <Button onClick={() => {
-                          setEmailSettings({
-                            smtpHost: '',
-                            smtpPort: 587,
-                            smtpSecure: false,
-                            smtpUser: '',
-                            smtpPass: '',
-                            fromEmail: '',
-                            fromName: ''
-                          });
-                          setIsEditingSettings(true);
-                        }}>
-                          <Settings className="w-4 h-4 mr-2" />
-                          Configure SMTP
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
   );
 };

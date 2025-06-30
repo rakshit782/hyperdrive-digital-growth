@@ -1,4 +1,3 @@
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -8,12 +7,14 @@ import ServiceCaseStudiesGrid from "@/components/ServiceCaseStudiesGrid";
 import ServiceCTA from "@/components/ServiceCTA";
 import { useServiceData } from "@/hooks/useServiceData";
 import { useServicePageConfig } from "@/hooks/useServicePageConfig";
+import { useSelectedContent } from "@/hooks/useSelectedContent";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShoppingCart, TrendingUp, Star, Package } from "lucide-react";
 
 const WalmartAdvertising = () => {
-  const { caseStudies, stats, reviews } = useServiceData('walmart');
+  const { stats } = useServiceData('walmart');
   const { configs } = useServicePageConfig();
+  const { caseStudies, reviews } = useSelectedContent('walmart');
   
   const config = configs.walmart;
 
