@@ -9,29 +9,36 @@ import ServiceCTA from "@/components/ServiceCTA";
 import { useServiceData } from "@/hooks/useServiceData";
 import { useServicePageConfig } from "@/hooks/useServicePageConfig";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, TrendingUp, Target, Zap, Award } from "lucide-react";
 
 const AmazonAdvertising = () => {
-  const { caseStudies, stats, reviews, loading } = useServiceData('amazon');
+  const { caseStudies, stats, reviews } = useServiceData('amazon');
   const { configs } = useServicePageConfig();
   
   const config = configs.amazon;
 
-  if (loading) {
-    return (
-      <>
-        <SEOHead 
-          title="Amazon Advertising Management - Expert Amazon PPC Services"
-          description="Professional Amazon advertising management services. Increase sales, improve ROAS, and dominate Amazon search with our proven PPC strategies."
-        />
-        <Header />
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
+  const features = [
+    {
+      icon: TrendingUp,
+      title: "Performance Optimization",
+      description: "Advanced bid management and keyword optimization to maximize your Amazon advertising ROI."
+    },
+    {
+      icon: Target,
+      title: "Strategic Targeting",
+      description: "Precision audience targeting across Sponsored Products, Brands, and Display campaigns."
+    },
+    {
+      icon: Zap,
+      title: "Campaign Automation",
+      description: "Smart automation tools to scale your campaigns while maintaining optimal performance."
+    },
+    {
+      icon: Award,
+      title: "Brand Domination",
+      description: "Complete brand protection and market domination strategies on Amazon marketplace."
+    }
+  ];
 
   return (
     <>
@@ -41,51 +48,103 @@ const AmazonAdvertising = () => {
       />
       <Header />
       
-      {/* Hero Section */}
-      <section className="py-24 md:py-32 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="mb-8">
-            <img
-              src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop&crop=center"
-              alt="Amazon Advertising Management"
-              className="w-full max-w-md mx-auto rounded-2xl shadow-lg object-cover"
-              style={{ aspectRatio: '4/3' }}
-            />
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-            {config?.title || 'Amazon Advertising Management'}
-          </h1>
-          <h2 className="text-xl md:text-2xl text-slate-700 font-medium mb-6">
-            {config?.subtitle || 'Expert Amazon PPC & Marketplace Optimization'}
-          </h2>
-          <p className="text-xl md:text-2xl text-slate-600 leading-relaxed mb-8">
-            {config?.heroDescription || 'Maximize your Amazon sales with our proven advertising strategies. We help brands achieve 350% average sales growth through expert PPC management, listing optimization, and strategic campaign planning.'}
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-              onClick={() => window.location.href = '/free-audit'}
-            >
-              {config?.primaryButtonText || 'Get Free Amazon Audit'}
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
+      {/* Enhanced Hero Section */}
+      <section className="py-24 md:py-32 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="max-w-7xl mx-auto px-6 relative">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="mb-6">
+                <span className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                  🚀 Amazon PPC Experts
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6 leading-tight">
+                {config?.title || 'Dominate Amazon with Expert PPC Management'}
+              </h1>
+              <p className="text-xl text-slate-600 leading-relaxed mb-8 max-w-xl">
+                {config?.heroDescription || 'Transform your Amazon presence with data-driven advertising strategies that deliver 350% average sales growth and 4.2x ROAS.'}
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                  onClick={() => window.location.href = '/free-audit'}
+                >
+                  {config?.primaryButtonText || 'Get Free Amazon Audit'}
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+                  onClick={() => window.location.href = '/case-studies'}
+                >
+                  {config?.secondaryButtonText || 'View Success Stories'}
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-200">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-slate-900">350%</div>
+                  <div className="text-sm text-slate-600">Avg Sales Growth</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-slate-900">4.2x</div>
+                  <div className="text-sm text-slate-600">Average ROAS</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-slate-900">98%</div>
+                  <div className="text-sm text-slate-600">Client Satisfaction</div>
+                </div>
+              </div>
+            </div>
             
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-              onClick={() => window.location.href = '/amazon-case-studies'}
-            >
-              {config?.secondaryButtonText || 'View Success Stories'}
-            </Button>
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-3xl blur-3xl opacity-20"></div>
+              <img
+                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop&crop=center"
+                alt="Amazon Advertising Management"
+                className="relative w-full rounded-3xl shadow-2xl object-cover h-96"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Why Choose Our Amazon Advertising Services?
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              We combine cutting-edge technology with proven strategies to deliver exceptional results for your Amazon business.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <div key={index} className="text-center p-6 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <IconComponent className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-900 mb-3">{feature.title}</h3>
+                  <p className="text-slate-600 leading-relaxed">{feature.description}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <ServiceStatsGrid stats={stats} serviceType="Amazon" />
+      <ServiceStatsGrid stats={stats} serviceType="Amazon Advertising" />
 
       {/* Case Studies Section */}
       <ServiceCaseStudiesGrid caseStudies={caseStudies} />
@@ -98,7 +157,7 @@ const AmazonAdvertising = () => {
         title={config?.ctaTitle || 'Ready to Dominate Amazon?'}
         description={config?.ctaDescription || 'Get your free Amazon advertising audit and discover how we can triple your sales in 90 days.'}
         buttonText={config?.ctaButtonText || 'Get Free Audit'}
-        serviceType="Amazon"
+        serviceType="Amazon Advertising"
       />
 
       <Footer />

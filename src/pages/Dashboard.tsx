@@ -49,6 +49,8 @@ import ContentManagementTab from "@/components/dashboard/ContentManagementTab";
 import MenuManagementTab from "@/components/dashboard/MenuManagementTab";
 import ServicePagesManagementTab from "@/components/dashboard/ServicePagesManagementTab";
 import WebsiteAuditTab from "@/components/dashboard/WebsiteAuditTab";
+import ZapierIntegrationTab from "@/components/dashboard/ZapierIntegrationTab";
+import EmailAutomationTab from "@/components/dashboard/EmailAutomationTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<DashboardTab>('services');
@@ -121,10 +123,12 @@ const Dashboard = () => {
       ]
     },
     {
-      category: "Lead Management",
+      category: "Lead Management & Automation",
       tabs: [
         { value: 'lead-management', label: 'Leads', icon: '👥' },
-        { value: 'automation-settings', label: 'Automation', icon: '⚡' }
+        { value: 'zapier-integration', label: 'Zapier', icon: '⚡' },
+        { value: 'email-automation', label: 'Email Auto', icon: '📧' },
+        { value: 'automation-settings', label: 'Automation', icon: '🤖' }
       ]
     },
     {
@@ -236,6 +240,10 @@ const Dashboard = () => {
         return <MenuManagementTab />;
       case 'website-audit':
         return <WebsiteAuditTab />;
+      case 'zapier-integration':
+        return <ZapierIntegrationTab />;
+      case 'email-automation':
+        return <EmailAutomationTab />;
       default:
         return (
           <ServicesTab 

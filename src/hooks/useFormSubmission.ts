@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useZapierIntegration } from './useZapierIntegration';
+import { useEmailAutomation } from './useEmailAutomation';
 
 export interface FormSubmissionData {
   name: string;
@@ -16,6 +18,8 @@ export interface FormSubmissionData {
 export const useFormSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { triggerZapierWebhook, getStoredWebhookUrls } = useZapierIntegration();
+  const { triggerAutomatedEmails } = useEmailAutomation();
 
   const submitForm = async (data: FormSubmissionData) => {
     setIsSubmitting(true);
@@ -48,6 +52,42 @@ export const useFormSubmission = () => {
       }
 
       console.log('Lead created successfully:', leadResult);
+
+      // Trigger Zapier webhooks
+      const webhooks = getStoredWebhookUrls();
+      const formTypeWebhook = webhooks[data.formType || 'contact'];
+      const generalWebhook = webhooks['new_lead'];
+
+      if (formTypeWebhook || generalWebhook) {
+        const zapierData = {
+          leadId: leadResult.id,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          company: data.company,
+          source: data.source || 'website',
+          formType: data.formType || 'contact',
+          message: data.message,
+          timestamp: new Date().toISOString()
+        };
+
+        // Try form-specific webhook first, then general webhook
+        const webhookUrl = formTypeWebhook || generalWebhook;
+        await triggerZapierWebhook(webhookUrl, zapierData);
+      }
+
+      // Trigger automated emails
+      try {
+        await triggerAutomatedEmails(data.formType || 'contact', {
+          email: data.email,
+          name: data.name,
+          company: data.company,
+          phone: data.phone
+        });
+      } catch (emailError) {
+        console.error('Email automation error:', emailError);
+        // Don't fail the entire submission if email fails
+      }
 
       toast({
         title: "Thank you for your submission!",

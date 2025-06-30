@@ -1,10 +1,10 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
 
 const Contact = () => {
@@ -15,124 +15,160 @@ const Contact = () => {
     company: '',
     message: ''
   });
-
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { submitForm, isSubmitting } = useFormSubmission();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.message) {
-      return;
-    }
-
     const result = await submitForm({
       ...formData,
-      source: 'contact_form',
-      formType: 'contact'
+      formType: 'contact',
+      source: 'contact_page'
     });
 
     if (result.success) {
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        message: ''
-      });
+      setIsSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', company: '', message: '' });
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  if (isSubmitted) {
+    return (
+      <section className="py-16">
+        <div className="max-w-4xl mx-auto px-6">
+          <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0">
+            <CardContent className="p-12 text-center">
+              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-6" />
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">Thank You!</h2>
+              <p className="text-xl text-slate-600 mb-6">
+                We've received your message and will get back to you within 24 hours.
+              </p>
+              <Button 
+                onClick={() => setIsSubmitted(false)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600"
+              >
+                Send Another Message
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <Card className="bg-white/80 backdrop-blur-sm shadow-2xl">
-            <CardHeader>
-              <CardTitle className="text-3xl font-bold text-slate-900">Get Started Today</CardTitle>
+          <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0">
+            <CardHeader className="pb-8">
+              <CardTitle className="text-3xl font-bold text-slate-900">Send us a message</CardTitle>
               <CardDescription className="text-lg text-slate-600">
-                Ready to scale your advertising? Fill out the form and we'll get back to you within 24 hours.
+                Ready to scale your business? Let's discuss your goals and create a custom strategy.
               </CardDescription>
             </CardHeader>
+            
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
                       Full Name *
                     </label>
                     <Input
-                      id="name"
-                      type="text"
+                      name="name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={handleChange}
                       required
-                      className="border-slate-300"
+                      className="h-12 text-lg border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="John Doe"
                     />
                   </div>
+                  
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
                       Email Address *
                     </label>
                     <Input
-                      id="email"
+                      name="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={handleChange}
                       required
-                      className="border-slate-300"
+                      className="h-12 text-lg border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="john@company.com"
                     />
                   </div>
                 </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
+                
+                <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
                       Phone Number
                     </label>
                     <Input
-                      id="phone"
-                      type="tel"
+                      name="phone"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="border-slate-300"
+                      onChange={handleChange}
+                      className="h-12 text-lg border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="+1 (555) 123-4567"
                     />
                   </div>
+                  
                   <div>
-                    <label htmlFor="company" className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
                       Company Name
                     </label>
                     <Input
-                      id="company"
-                      type="text"
+                      name="company"
                       value={formData.company}
-                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                      className="border-slate-300"
+                      onChange={handleChange}
+                      className="h-12 text-lg border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="Your Company"
                     />
                   </div>
                 </div>
-
+                
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
-                    Message *
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    How can we help you? *
                   </label>
                   <Textarea
-                    id="message"
-                    rows={4}
+                    name="message"
                     value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    onChange={handleChange}
                     required
-                    className="border-slate-300"
-                    placeholder="Tell us about your advertising goals and current challenges..."
+                    rows={6}
+                    className="text-lg border-slate-300 focus:border-blue-500 focus:ring-blue-500 resize-none"
+                    placeholder="Tell us about your business goals and challenges..."
                   />
                 </div>
-
+                
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 text-lg font-semibold"
+                  className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                  {isSubmitting ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Sending...
+                    </div>
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="ml-2 w-5 h-5" />
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
@@ -140,57 +176,71 @@ const Contact = () => {
 
           {/* Contact Information */}
           <div className="space-y-8">
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-6">Get in Touch</h3>
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                    <Mail className="w-5 h-5 text-white" />
+            <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold text-slate-900 mb-6">Get in touch</h3>
+                
+                <div className="space-y-6">
+                  <div className="flex items-start">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                      <Mail className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-slate-900 mb-1">Email us</h4>
+                      <p className="text-slate-600">hello@yourcompany.com</p>
+                      <p className="text-sm text-slate-500">We'll respond within 24 hours</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900">Email Us</h4>
-                    <p className="text-slate-600">hello@yourcompany.com</p>
+                  
+                  <div className="flex items-start">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                      <Phone className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-slate-900 mb-1">Call us</h4>
+                      <p className="text-slate-600">+1 (555) 123-4567</p>
+                      <p className="text-sm text-slate-500">Mon-Fri from 8am to 5pm</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                      <MapPin className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-slate-900 mb-1">Visit us</h4>
+                      <p className="text-slate-600">123 Business Ave, Suite 100</p>
+                      <p className="text-slate-600">New York, NY 10001</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                      <Clock className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-slate-900 mb-1">Business hours</h4>
+                      <p className="text-slate-600">Monday - Friday: 8:00 AM - 6:00 PM</p>
+                      <p className="text-slate-600">Saturday: 9:00 AM - 4:00 PM</p>
+                      <p className="text-slate-600">Sunday: Closed</p>
+                    </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                    <Phone className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900">Call Us</h4>
-                    <p className="text-slate-600">+1 (555) 123-4567</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                    <MapPin className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900">Visit Us</h4>
-                    <p className="text-slate-600">123 Business Ave<br />Suite 100<br />New York, NY 10001</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900">Business Hours</h4>
-                    <p className="text-slate-600">Monday - Friday: 9AM - 6PM<br />Saturday: 10AM - 4PM<br />Sunday: Closed</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-              <CardContent className="p-6">
-                <h4 className="font-bold text-slate-900 mb-2">Free Consultation</h4>
-                <p className="text-slate-600 text-sm">
-                  Get a free 30-minute consultation to discuss your advertising goals and see how we can help you achieve 300% ROAS.
+            <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl border-0">
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold mb-4">Ready to get started?</h3>
+                <p className="text-blue-100 mb-6">
+                  Schedule a free consultation and discover how we can help scale your business with proven advertising strategies.
                 </p>
+                <Button 
+                  className="bg-white text-blue-600 hover:bg-gray-100"
+                  onClick={() => window.location.href = '/free-audit'}
+                >
+                  Schedule Free Consultation
+                </Button>
               </CardContent>
             </Card>
           </div>
