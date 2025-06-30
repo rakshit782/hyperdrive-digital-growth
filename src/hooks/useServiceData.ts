@@ -136,6 +136,142 @@ const fallbackStats: Record<string, ServiceStat[]> = {
       stat_description: 'Increase in qualified reach',
       icon_name: 'Users'
     }
+  ],
+  'account-management': [
+    {
+      id: '1',
+      service_type: 'account-management',
+      stat_label: 'Accounts Managed',
+      stat_value: '500+',
+      stat_description: 'Successfully managed accounts',
+      icon_name: 'Users'
+    },
+    {
+      id: '2',
+      service_type: 'account-management',
+      stat_label: 'Time Saved',
+      stat_value: '40hrs/week',
+      stat_description: 'Average time saved per account',
+      icon_name: 'Clock'
+    },
+    {
+      id: '3',
+      service_type: 'account-management',
+      stat_label: 'Performance Boost',
+      stat_value: '250%',
+      stat_description: 'Average performance improvement',
+      icon_name: 'TrendingUp'
+    },
+    {
+      id: '4',
+      service_type: 'account-management',
+      stat_label: 'Client Satisfaction',
+      stat_value: '99%',
+      stat_description: 'Client retention rate',
+      icon_name: 'Star'
+    }
+  ],
+  'shopify-integration': [
+    {
+      id: '1',
+      service_type: 'shopify-integration',
+      stat_label: 'Integrations Done',
+      stat_value: '300+',
+      stat_description: 'Successful platform connections',
+      icon_name: 'Link'
+    },
+    {
+      id: '2',
+      service_type: 'shopify-integration',
+      stat_label: 'Setup Time',
+      stat_value: '24hrs',
+      stat_description: 'Average integration completion',
+      icon_name: 'Clock'
+    },
+    {
+      id: '3',
+      service_type: 'shopify-integration',
+      stat_label: 'Sales Increase',
+      stat_value: '180%',
+      stat_description: 'Average multi-channel boost',
+      icon_name: 'TrendingUp'
+    },
+    {
+      id: '4',
+      service_type: 'shopify-integration',
+      stat_label: 'Uptime',
+      stat_value: '99.9%',
+      stat_description: 'Integration reliability',
+      icon_name: 'Shield'
+    }
+  ],
+  'shopify-development': [
+    {
+      id: '1',
+      service_type: 'shopify-development',
+      stat_label: 'Stores Built',
+      stat_value: '200+',
+      stat_description: 'Custom Shopify stores created',
+      icon_name: 'ShoppingBag'
+    },
+    {
+      id: '2',
+      service_type: 'shopify-development',
+      stat_label: 'Conversion Rate',
+      stat_value: '+85%',
+      stat_description: 'Average conversion improvement',
+      icon_name: 'ArrowUp'
+    },
+    {
+      id: '3',
+      service_type: 'shopify-development',
+      stat_label: 'Page Speed',
+      stat_value: '95+',
+      stat_description: 'Average PageSpeed score',
+      icon_name: 'Zap'
+    },
+    {
+      id: '4',
+      service_type: 'shopify-development',
+      stat_label: 'Launch Time',
+      stat_value: '14 days',
+      stat_description: 'Average project completion',
+      icon_name: 'Calendar'
+    }
+  ],
+  'website-development': [
+    {
+      id: '1',
+      service_type: 'website-development',
+      stat_label: 'Websites Built',
+      stat_value: '150+',
+      stat_description: 'Custom websites delivered',
+      icon_name: 'Globe'
+    },
+    {
+      id: '2',
+      service_type: 'website-development',
+      stat_label: 'Mobile Score',
+      stat_value: '98/100',
+      stat_description: 'Average mobile performance',
+      icon_name: 'Smartphone'
+    },
+    {
+      id: '3',
+      service_type: 'website-development',
+      stat_label: 'Load Time',
+      stat_value: '<2sec',
+      stat_description: 'Average page load speed',
+      icon_name: 'Zap'
+    },
+    {
+      id: '4',
+      service_type: 'website-development',
+      stat_label: 'SEO Score',
+      stat_value: '95+',
+      stat_description: 'Average SEO optimization',
+      icon_name: 'Search'
+    }
   ]
 };
 
@@ -201,6 +337,84 @@ const fallbackCaseStudies: Record<string, ServiceCaseStudy[]> = {
       },
       is_featured: true
     }
+  ],
+  'account-management': [
+    {
+      id: '1',
+      service_type: 'account-management',
+      title: 'E-commerce Brand Scales to $2M Revenue',
+      description: 'Complete account management transformation helped this growing brand focus on product development while we handled all marketplace operations.',
+      client_name: 'TechStart Solutions',
+      industry: 'Technology',
+      results: {
+        'Revenue Growth': '400%',
+        'Time Saved': '50hrs/week',
+        'Market Expansion': '5 platforms'
+      },
+      is_featured: true
+    },
+    {
+      id: '2',
+      service_type: 'account-management',
+      title: 'Fashion Brand Streamlines Operations',
+      description: 'Our comprehensive account management service allowed this fashion brand to reduce operational overhead while expanding to new markets.',
+      client_name: 'StyleForward',
+      industry: 'Fashion',
+      results: {
+        'Cost Reduction': '45%',
+        'Efficiency Gain': '300%',
+        'New Markets': '8 platforms'
+      },
+      is_featured: false
+    }
+  ],
+  'shopify-integration': [
+    {
+      id: '1',
+      service_type: 'shopify-integration',
+      title: 'Multi-Channel Success Story',
+      description: 'Seamless integration of Shopify store with Amazon, Walmart, and eBay resulted in explosive multi-channel growth for this home goods brand.',
+      client_name: 'HomeComfort Co',
+      industry: 'Home & Garden',
+      results: {
+        'Sales Increase': '250%',
+        'Platform Coverage': '6 marketplaces',
+        'Inventory Sync': '99.9% accuracy'
+      },
+      is_featured: true
+    }
+  ],
+  'shopify-development': [
+    {
+      id: '1',
+      service_type: 'shopify-development',
+      title: 'Custom Store Drives 300% Growth',
+      description: 'Custom Shopify development with advanced features and optimizations transformed this startup into a major player in their industry.',
+      client_name: 'FitnessPro Equipment',
+      industry: 'Fitness',
+      results: {
+        'Conversion Rate': '+120%',
+        'Revenue Growth': '300%',
+        'Page Speed': '95 score'
+      },
+      is_featured: true
+    }
+  ],
+  'website-development': [
+    {
+      id: '1',
+      service_type: 'website-development',
+      title: 'Corporate Website Transformation',
+      description: 'Complete website redesign and development resulted in significantly improved user engagement and lead generation for this B2B company.',
+      client_name: 'InnovateB2B Corp',
+      industry: 'Technology',
+      results: {
+        'Lead Generation': '+400%',
+        'User Engagement': '+200%',
+        'Mobile Performance': '98/100'
+      },
+      is_featured: true
+    }
   ]
 };
 
@@ -245,6 +459,59 @@ const fallbackReviews: Record<string, ServiceReview[]> = {
       rating: 5,
       review_text: 'Outstanding Meta advertising management. Achieved 800% ROAS and significantly reduced our cost per lead.',
       results_achieved: '800% ROAS, 60% cost reduction'
+    }
+  ],
+  'account-management': [
+    {
+      id: '1',
+      service_type: 'account-management',
+      client_name: 'Jennifer Walsh',
+      company: 'TechStart Solutions',
+      rating: 5,
+      review_text: 'Professional account management freed up 50+ hours per week for us to focus on product innovation. Revenue grew 400% in 6 months.',
+      results_achieved: '400% revenue growth'
+    },
+    {
+      id: '2',
+      service_type: 'account-management',
+      client_name: 'Marcus Thompson',
+      company: 'StyleForward',
+      rating: 5,
+      review_text: 'The team handles everything seamlessly. Our operational costs dropped 45% while expanding to 8 new platforms.',
+      results_achieved: '45% cost reduction'
+    }
+  ],
+  'shopify-integration': [
+    {
+      id: '1',
+      service_type: 'shopify-integration',
+      client_name: 'Sarah Mitchell',
+      company: 'HomeComfort Co',
+      rating: 5,
+      review_text: 'The multi-channel integration was flawless. We went from one platform to six with perfect inventory synchronization.',
+      results_achieved: '250% sales increase'
+    }
+  ],
+  'shopify-development': [
+    {
+      id: '1',
+      service_type: 'shopify-development',
+      client_name: 'Alex Rivera',
+      company: 'FitnessPro Equipment',
+      rating: 5,
+      review_text: 'The custom Shopify store they built exceeded all expectations. Conversion rates increased 120% and the site loads incredibly fast.',
+      results_achieved: '300% revenue growth'
+    }
+  ],
+  'website-development': [
+    {
+      id: '1',
+      service_type: 'website-development',
+      client_name: 'Rebecca Chen',
+      company: 'InnovateB2B Corp',
+      rating: 5,
+      review_text: 'Our new website transformed our business. Lead generation increased 400% and the mobile experience is outstanding.',
+      results_achieved: '400% lead increase'
     }
   ]
 };

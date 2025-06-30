@@ -2,127 +2,114 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import ServiceStatsGrid from "@/components/ServiceStatsGrid";
+import ServiceReviewsGrid from "@/components/ServiceReviewsGrid";
+import ServiceCaseStudiesGrid from "@/components/ServiceCaseStudiesGrid";
+import ServiceCTA from "@/components/ServiceCTA";
+import { useServiceData } from "@/hooks/useServiceData";
+import { useServicePageConfig } from "@/hooks/useServicePageConfig";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Settings, Zap, Link, BarChart3 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const ShopifyIntegration = () => {
-  const services = [
-    {
-      title: 'Platform Integration',
-      description: 'Seamless integration with marketing platforms, payment gateways, and third-party tools.',
-      icon: Link,
-      gradient: 'bg-gradient-to-r from-green-500 to-emerald-500'
-    },
-    {
-      title: 'Automated Workflows',
-      description: 'Set up automated processes for inventory, orders, and customer communications.',
-      icon: Zap,
-      gradient: 'bg-gradient-to-r from-blue-500 to-cyan-500'
-    },
-    {
-      title: 'Custom Configuration',
-      description: 'Tailored setup and configuration to match your specific business requirements.',
-      icon: Settings,
-      gradient: 'bg-gradient-to-r from-purple-500 to-pink-500'
-    },
-    {
-      title: 'Analytics Integration',
-      description: 'Connect advanced analytics and reporting tools for comprehensive insights.',
-      icon: BarChart3,
-      gradient: 'bg-gradient-to-r from-orange-500 to-red-500'
-    }
-  ];
+  const { caseStudies, stats, reviews, loading } = useServiceData('shopify-integration');
+  const { configs } = useServicePageConfig();
+  
+  const config = configs['shopify-integration'] || {
+    title: 'Shopify Integration Services',
+    subtitle: 'Seamless E-commerce Platform Connections',
+    heroDescription: 'Connect your Shopify store with Amazon, Walmart, and other marketplaces. We handle complex integrations so you can sell everywhere without the technical headaches.',
+    primaryButtonText: 'Get Integration Quote',
+    secondaryButtonText: 'View Integrations',
+    ctaTitle: 'Ready to Expand Your Reach?',
+    ctaDescription: 'Get your free integration consultation and discover how we can connect your store to major marketplaces.',
+    ctaButtonText: 'Get Free Consultation'
+  };
+
+  if (loading) {
+    return (
+      <>
+        <SEOHead 
+          title="Shopify Integration Services - Connect Your Store to Marketplaces"
+          description="Expert Shopify integration services for Amazon, Walmart, and other marketplaces. Seamless connections, automated inventory sync."
+        />
+        <Header />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
       <SEOHead 
-        title="Shopify Integration Services - Platform Connectivity & Automation"
-        description="Professional Shopify integration services. Connect your store with marketing platforms, automate workflows, and optimize your e-commerce operations."
+        title="Shopify Integration Services - Connect Your Store to Marketplaces"
+        description="Expert Shopify integration services for Amazon, Walmart, and other marketplaces. Seamless connections, automated inventory sync."
       />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <Header />
-        
-        {/* Hero Section */}
-        <section className="py-24 md:py-32 lg:py-40">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-              Shopify Integration Services
-            </h1>
-            <h2 className="text-xl md:text-2xl text-slate-700 font-medium mb-4">
-              Platform Connectivity & Automation
-            </h2>
-            <p className="text-xl md:text-2xl text-slate-600 leading-relaxed mb-8">
-              Seamlessly integrate your Shopify store with marketing platforms, payment systems, and automation tools to streamline operations and boost performance.
-            </p>
+      <Header />
+      
+      {/* Hero Section */}
+      <section className="py-24 md:py-32 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="mb-8">
+            <img
+              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop&crop=center"
+              alt="Shopify Integration Services"
+              className="w-full max-w-md mx-auto rounded-2xl shadow-lg object-cover"
+              style={{ aspectRatio: '4/3' }}
+            />
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
+            {config.title}
+          </h1>
+          <h2 className="text-xl md:text-2xl text-slate-700 font-medium mb-6">
+            {config.subtitle}
+          </h2>
+          <p className="text-xl md:text-2xl text-slate-600 leading-relaxed mb-8">
+            {config.heroDescription}
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+              onClick={() => window.location.href = '/free-audit'}
+            >
+              {config.primaryButtonText}
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                onClick={() => window.location.href = '/contact'}
-              >
-                Start Integration
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-                onClick={() => window.location.href = '/shopify-development'}
-              >
-                View Development
-              </Button>
-            </div>
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+              onClick={() => window.location.href = '/case-studies'}
+            >
+              {config.secondaryButtonText}
+            </Button>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Services Section */}
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-4xl font-bold text-center bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent mb-16">
-              Our Integration Services
-            </h2>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {services.map((service, index) => {
-                const IconComponent = service.icon;
-                return (
-                  <div key={index} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300">
-                    <div className={`w-12 h-12 ${service.gradient} rounded-xl flex items-center justify-center mb-6`}>
-                      <IconComponent className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-slate-900 mb-4">{service.title}</h3>
-                    <p className="text-slate-600 leading-relaxed">{service.description}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+      {/* Stats Section */}
+      <ServiceStatsGrid stats={stats} serviceType="Shopify Integration" />
 
-        {/* CTA Section */}
-        <section className="py-16">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 text-center">
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">
-                Ready to Integrate Your Shopify Store?
-              </h2>
-              <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
-                Connect your store with powerful tools and automation to streamline operations and accelerate growth.
-              </p>
-              
-              <Button 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={() => window.location.href = '/contact'}
-              >
-                Get Started
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </section>
-      </div>
+      {/* Case Studies Section */}
+      <ServiceCaseStudiesGrid caseStudies={caseStudies} />
+
+      {/* Reviews Section */}
+      <ServiceReviewsGrid reviews={reviews} />
+
+      {/* CTA Section */}
+      <ServiceCTA 
+        title={config.ctaTitle}
+        description={config.ctaDescription}
+        buttonText={config.ctaButtonText}
+        serviceType="Shopify Integration"
+      />
+
       <Footer />
     </>
   );
