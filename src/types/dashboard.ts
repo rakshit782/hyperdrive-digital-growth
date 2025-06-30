@@ -1,4 +1,3 @@
-
 export type DashboardTab = 
   | 'services'
   | 'service-pages'
@@ -38,7 +37,9 @@ export type DashboardTab =
   | 'analytics-dashboard'
   | 'lead-management'
   | 'automation-settings'
-  | 'content-management';
+  | 'content-management'
+  | 'zapier-integration'
+  | 'email-automation';
 
 export interface ServiceCard {
   id: string;
