@@ -74,20 +74,28 @@ const Pricing = () => {
   ]);
 
   useEffect(() => {
-    const savedPlans = localStorage.getItem('pricingPlansData');
-    if (savedPlans) {
-      try {
-        const parsed = JSON.parse(savedPlans);
-        if (Array.isArray(parsed)) {
-          setPricingPlans(parsed);
+    // Load pricing plans from localStorage (dashboard settings)
+    const loadPricingPlans = () => {
+      const savedPlans = localStorage.getItem('pricingPlansData');
+      if (savedPlans) {
+        try {
+          const parsed = JSON.parse(savedPlans);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setPricingPlans(parsed);
+          }
+        } catch (error) {
+          console.error('Failed to parse pricing plans:', error);
         }
-      } catch (error) {
-        console.error('Failed to parse pricing plans:', error);
       }
-    }
+    };
 
+    loadPricingPlans();
+
+    // Listen for pricing updates from dashboard
     const handlePlansUpdate = (event: CustomEvent) => {
-      setPricingPlans(event.detail);
+      if (event.detail && Array.isArray(event.detail)) {
+        setPricingPlans(event.detail);
+      }
     };
 
     window.addEventListener('pricingPlansUpdated', handlePlansUpdate as EventListener);

@@ -51,6 +51,7 @@ import ServicePagesManagementTab from "@/components/dashboard/ServicePagesManage
 import WebsiteAuditTab from "@/components/dashboard/WebsiteAuditTab";
 import ZapierIntegrationTab from "@/components/dashboard/ZapierIntegrationTab";
 import EmailAutomationTab from "@/components/dashboard/EmailAutomationTab";
+import FAQManagementTab from "@/components/dashboard/FAQManagementTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<DashboardTab>('services');
@@ -94,6 +95,7 @@ const Dashboard = () => {
         { value: 'homepage', label: 'Homepage', icon: '🏠' },
         { value: 'about-us', label: 'About Us', icon: '👥' },
         { value: 'pricing', label: 'Pricing', icon: '💰' },
+        { value: 'faq-management', label: 'FAQ', icon: '❓' },
         { value: 'blog', label: 'Blog', icon: '📝' },
         { value: 'contact', label: 'Contact', icon: '📞' },
         { value: 'content-management', label: 'Content', icon: '📄' }
@@ -244,6 +246,8 @@ const Dashboard = () => {
         return <ZapierIntegrationTab />;
       case 'email-automation':
         return <EmailAutomationTab />;
+      case 'faq-management':
+        return <FAQManagementTab />;
       default:
         return (
           <ServicesTab 

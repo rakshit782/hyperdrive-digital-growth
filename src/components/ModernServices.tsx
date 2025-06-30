@@ -11,7 +11,8 @@ const ModernServices = () => {
       features: ["PPC Campaign Management", "Keyword Research", "Product Listing Optimization", "Competitive Analysis"],
       gradient: "from-orange-500 to-red-500",
       bgGradient: "from-orange-50 to-red-50",
-      stats: { metric: "300%", label: "Avg ROAS" }
+      stats: { metric: "300%", label: "Avg ROAS" },
+      link: "/amazon-advertising"
     },
     {
       icon: Store,
@@ -20,7 +21,8 @@ const ModernServices = () => {
       features: ["Sponsored Products", "Display Advertising", "Brand Amplifier", "Performance Analytics"],
       gradient: "from-blue-500 to-cyan-500",
       bgGradient: "from-blue-50 to-cyan-50",
-      stats: { metric: "250%", label: "Sales Growth" }
+      stats: { metric: "250%", label: "Sales Growth" },
+      link: "/walmart-advertising"
     },
     {
       icon: Facebook,
@@ -29,7 +31,8 @@ const ModernServices = () => {
       features: ["Facebook Ads", "Instagram Marketing", "Audience Targeting", "Creative Optimization"],
       gradient: "from-purple-500 to-indigo-500",
       bgGradient: "from-purple-50 to-indigo-50",
-      stats: { metric: "400%", label: "Lead Gen" }
+      stats: { metric: "400%", label: "Lead Gen" },
+      link: "/meta-advertising"
     },
     {
       icon: Users,
@@ -38,7 +41,8 @@ const ModernServices = () => {
       features: ["Dedicated Manager", "Strategic Planning", "Performance Reviews", "Growth Strategies"],
       gradient: "from-green-500 to-emerald-500",
       bgGradient: "from-green-50 to-emerald-50",
-      stats: { metric: "24/7", label: "Support" }
+      stats: { metric: "24/7", label: "Support" },
+      link: "/account-management"
     },
     {
       icon: Settings,
@@ -47,7 +51,8 @@ const ModernServices = () => {
       features: ["Platform Integration", "Data Sync", "Automated Workflows", "Custom Solutions"],
       gradient: "from-cyan-500 to-blue-500",
       bgGradient: "from-cyan-50 to-blue-50",
-      stats: { metric: "50+", label: "Integrations" }
+      stats: { metric: "50+", label: "Integrations" },
+      link: "/shopify-integration"
     },
     {
       icon: Monitor,
@@ -56,7 +61,8 @@ const ModernServices = () => {
       features: ["Custom Development", "Theme Optimization", "App Integration", "Performance Tuning"],
       gradient: "from-yellow-500 to-orange-500",
       bgGradient: "from-yellow-50 to-orange-50",
-      stats: { metric: "95%", label: "Performance" }
+      stats: { metric: "95%", label: "Performance" },
+      link: "/shopify-development"
     }
   ];
 
@@ -128,6 +134,7 @@ const ModernServices = () => {
                   <Button 
                     variant="outline" 
                     className="w-full border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 transition-all duration-300 group-hover:shadow-md mt-auto"
+                    onClick={() => window.location.href = service.link}
                   >
                     Learn More
                   </Button>

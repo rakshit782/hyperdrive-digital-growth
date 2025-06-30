@@ -31,7 +31,7 @@ const CaseStudies = () => {
         metric3: { label: "Market Share Growth", value: "25%" }
       },
       industry: "Fashion",
-      platform: "Amazon"
+      platform: "Amazon Advertising"
     },
     {
       id: "2", 
@@ -43,7 +43,7 @@ const CaseStudies = () => {
         metric3: { label: "Conversion Rate", value: "+95%" }
       },
       industry: "Technology",
-      platform: "Walmart"
+      platform: "Walmart Advertising"
     },
     {
       id: "3",
@@ -55,27 +55,69 @@ const CaseStudies = () => {
         metric3: { label: "Customer Acquisition", value: "+190%" }
       },
       industry: "Home & Garden",
-      platform: "Meta"
+      platform: "Meta Advertising"
+    },
+    {
+      id: "4",
+      title: "B2B Software Company's Account Management Transformation",
+      description: "Complete account restructuring and management that led to exceptional performance across all advertising platforms.",
+      results: {
+        metric1: { label: "Lead Quality", value: "+280%" },
+        metric2: { label: "Cost Per Lead", value: "-65%" },
+        metric3: { label: "Revenue Growth", value: "+450%" }
+      },
+      industry: "Software",
+      platform: "Account Management"
+    },
+    {
+      id: "5",
+      title: "E-commerce Store's Shopify Integration Success",
+      description: "Seamless integration of multiple marketing platforms with Shopify store resulting in streamlined operations and increased sales.",
+      results: {
+        metric1: { label: "Operational Efficiency", value: "+180%" },
+        metric2: { label: "Data Accuracy", value: "99.5%" },
+        metric3: { label: "Sales Increase", value: "+220%" }
+      },
+      industry: "E-commerce",
+      platform: "Shopify Integration"
+    },
+    {
+      id: "6",
+      title: "Premium Brand's Custom Shopify Development",
+      description: "Custom Shopify development and optimization that enhanced user experience and conversion rates significantly.",
+      results: {
+        metric1: { label: "Page Speed", value: "+300%" },
+        metric2: { label: "Conversion Rate", value: "+85%" },
+        metric3: { label: "User Engagement", value: "+160%" }
+      },
+      industry: "Luxury Goods",
+      platform: "Shopify Development"
     }
   ]);
 
   useEffect(() => {
     // Load case studies from localStorage if available
-    const savedStudies = localStorage.getItem('caseStudiesData');
-    if (savedStudies) {
-      try {
-        const parsed = JSON.parse(savedStudies);
-        if (Array.isArray(parsed)) {
-          setCaseStudies(parsed);
+    const loadCaseStudies = () => {
+      const savedStudies = localStorage.getItem('caseStudiesData');
+      if (savedStudies) {
+        try {
+          const parsed = JSON.parse(savedStudies);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setCaseStudies(parsed);
+          }
+        } catch (error) {
+          console.error('Failed to parse case studies:', error);
         }
-      } catch (error) {
-        console.error('Failed to parse case studies:', error);
       }
-    }
+    };
 
-    // Listen for updates
+    loadCaseStudies();
+
+    // Listen for updates from dashboard
     const handleStudiesUpdate = (event: CustomEvent) => {
-      setCaseStudies(event.detail);
+      if (event.detail && Array.isArray(event.detail)) {
+        setCaseStudies(event.detail);
+      }
     };
 
     window.addEventListener('caseStudiesUpdated', handleStudiesUpdate as EventListener);
@@ -100,7 +142,7 @@ const CaseStudies = () => {
               Success Stories
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 leading-relaxed">
-              Real results from real businesses. See how we've helped brands achieve extraordinary growth through strategic advertising.
+              Real results from real businesses. See how we've helped brands achieve extraordinary growth through strategic advertising across all our service areas.
             </p>
           </div>
         </section>

@@ -54,18 +54,26 @@ const About = () => {
   });
 
   useEffect(() => {
-    const savedContent = localStorage.getItem('aboutUsContent');
-    if (savedContent) {
-      try {
-        const parsed = JSON.parse(savedContent);
-        setAboutContent(parsed);
-      } catch (error) {
-        console.error('Failed to parse about content:', error);
+    // Load about content from localStorage (dashboard settings)
+    const loadAboutContent = () => {
+      const savedContent = localStorage.getItem('aboutUsContent');
+      if (savedContent) {
+        try {
+          const parsed = JSON.parse(savedContent);
+          setAboutContent(parsed);
+        } catch (error) {
+          console.error('Failed to parse about content:', error);
+        }
       }
-    }
+    };
 
+    loadAboutContent();
+
+    // Listen for about content updates from dashboard
     const handleContentUpdate = (event: CustomEvent) => {
-      setAboutContent(event.detail);
+      if (event.detail) {
+        setAboutContent(event.detail);
+      }
     };
 
     window.addEventListener('aboutUsUpdated', handleContentUpdate as EventListener);
