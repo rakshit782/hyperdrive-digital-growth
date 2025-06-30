@@ -9,7 +9,7 @@ import ServiceCTA from "@/components/ServiceCTA";
 import { useServiceData } from "@/hooks/useServiceData";
 import { useServicePageConfig } from "@/hooks/useServicePageConfig";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Link, Sync, Database, Shield, Zap, Settings } from "lucide-react";
+import { ArrowRight, Link, RefreshCw, Database, Shield, Zap, Settings } from "lucide-react";
 
 const ShopifyIntegration = () => {
   const { caseStudies, stats, reviews } = useServiceData('shopify-integration');
@@ -33,7 +33,7 @@ const ShopifyIntegration = () => {
       description: "Connect your Shopify store to Amazon, Walmart, eBay, Etsy, and other major marketplaces with seamless integrations."
     },
     {
-      icon: Sync,
+      icon: RefreshCw,
       title: "Real-Time Synchronization",
       description: "Automatic synchronization of inventory, orders, and product data across all connected platforms in real-time."
     },
