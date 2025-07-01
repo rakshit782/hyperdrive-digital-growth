@@ -36,7 +36,13 @@ export type DashboardTab =
   | 'zapier-integration'
   | 'email-automation'
   | 'faq-management'
-  | 'auth0';
+  | 'auth0'
+  | 'amplify'
+  | 'cognito'
+  | 'dynamodb'
+  | 's3'
+  | 'ses'
+  | 'cloudflare';
 
 export interface ServiceCard {
   id: string;

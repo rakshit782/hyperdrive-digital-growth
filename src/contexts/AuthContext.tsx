@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             email: email,
             fullName: email,
           });
-          integrationManager.notifyIntegrationUpdate('AWS Amplify', true);
+          integrationManager.notifyIntegrationUpdate();
           return { success: true };
         }
         return { success: false, error: 'Sign in not completed' };
@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             email: email,
             fullName: accessToken.payload.given_name || email,
           });
-          integrationManager.notifyIntegrationUpdate('AWS Cognito', true);
+          integrationManager.notifyIntegrationUpdate();
           return { success: true };
         }
         return { success: false, error: 'Authentication failed' };
