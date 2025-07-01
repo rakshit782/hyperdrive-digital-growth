@@ -39,7 +39,8 @@ export type DashboardTab =
   | 'automation-settings'
   | 'content-management'
   | 'zapier-integration'
-  | 'email-automation';
+  | 'email-automation'
+  | 'faq-management';
 
 export interface ServiceCard {
   id: string;
