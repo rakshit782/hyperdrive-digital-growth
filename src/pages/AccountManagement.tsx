@@ -2,10 +2,10 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ServicePageLayout from "@/components/ServicePageLayout";
-import { useSelectedContent } from "@/hooks/useSelectedContent";
+import { useServiceData } from "@/hooks/useServiceData";
 
 const AccountManagement = () => {
-  const selectedContent = useSelectedContent('account-management');
+  const { caseStudies, stats, reviews, loading } = useServiceData('account-management');
 
   return (
     <>
@@ -18,14 +18,10 @@ const AccountManagement = () => {
         secondaryButtonText="View Case Studies"
         primaryButtonUrl="/contact"
         secondaryButtonUrl="/case-studies"
-        stats={[
-          { id: '1', service_type: 'account-management', stat_label: 'Client Retention', stat_value: '98%', stat_description: 'Long-term partnerships' },
-          { id: '2', service_type: 'account-management', stat_label: 'Account Growth', stat_value: '250%', stat_description: 'Average annual growth' },
-          { id: '3', service_type: 'account-management', stat_label: 'Response Time', stat_value: '<2hr', stat_description: 'Average response time' },
-          { id: '4', service_type: 'account-management', stat_label: 'Success Rate', stat_value: '95%', stat_description: 'Goal achievement rate' }
-        ]}
-        caseStudies={selectedContent.caseStudies}
-        reviews={selectedContent.reviews}
+        stats={stats}
+        caseStudies={caseStudies}
+        reviews={reviews}
+        loading={loading}
         services={[
           {
             title: 'Dedicated Account Manager',

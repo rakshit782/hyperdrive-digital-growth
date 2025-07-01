@@ -2,10 +2,10 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ServicePageLayout from "@/components/ServicePageLayout";
-import { useSelectedContent } from "@/hooks/useSelectedContent";
+import { useServiceData } from "@/hooks/useServiceData";
 
 const ShopifyIntegration = () => {
-  const selectedContent = useSelectedContent('shopify-integration');
+  const { caseStudies, stats, reviews, loading } = useServiceData('shopify-integration');
 
   return (
     <>
@@ -18,14 +18,10 @@ const ShopifyIntegration = () => {
         secondaryButtonText="View Case Studies"
         primaryButtonUrl="/contact"
         secondaryButtonUrl="/case-studies"
-        stats={[
-          { id: '1', service_type: 'shopify-integration', stat_label: 'Integrations', stat_value: '50+', stat_description: 'Platform connections' },
-          { id: '2', service_type: 'shopify-integration', stat_label: 'Data Accuracy', stat_value: '99.9%', stat_description: 'Synchronization accuracy' },
-          { id: '3', service_type: 'shopify-integration', stat_label: 'Setup Time', stat_value: '24hr', stat_description: 'Average setup time' },
-          { id: '4', service_type: 'shopify-integration', stat_label: 'Uptime', stat_value: '99.9%', stat_description: 'System reliability' }
-        ]}
-        caseStudies={selectedContent.caseStudies}
-        reviews={selectedContent.reviews}
+        stats={stats}
+        caseStudies={caseStudies}
+        reviews={reviews}
+        loading={loading}
         services={[
           {
             title: 'Platform Integration',

@@ -2,10 +2,10 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ServicePageLayout from "@/components/ServicePageLayout";
-import { useSelectedContent } from "@/hooks/useSelectedContent";
+import { useServiceData } from "@/hooks/useServiceData";
 
 const ShopifyDevelopment = () => {
-  const selectedContent = useSelectedContent('shopify-development');
+  const { caseStudies, stats, reviews, loading } = useServiceData('shopify-development');
 
   return (
     <>
@@ -18,14 +18,10 @@ const ShopifyDevelopment = () => {
         secondaryButtonText="View Case Studies"
         primaryButtonUrl="/contact"
         secondaryButtonUrl="/case-studies"
-        stats={[
-          { id: '1', service_type: 'shopify-development', stat_label: 'Page Speed', stat_value: '+300%', stat_description: 'Performance improvement' },
-          { id: '2', service_type: 'shopify-development', stat_label: 'Conversion Rate', stat_value: '+85%', stat_description: 'Average increase' },
-          { id: '3', service_type: 'shopify-development', stat_label: 'Projects', stat_value: '200+', stat_description: 'Completed developments' },
-          { id: '4', service_type: 'shopify-development', stat_label: 'Client Rating', stat_value: '4.9/5', stat_description: 'Average satisfaction' }
-        ]}
-        caseStudies={selectedContent.caseStudies}
-        reviews={selectedContent.reviews}
+        stats={stats}
+        caseStudies={caseStudies}
+        reviews={reviews}
+        loading={loading}
         services={[
           {
             title: 'Custom Development',
