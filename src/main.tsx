@@ -3,10 +3,14 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import { integrationManager } from './utils/integrationManager';
+import { localDB } from './utils/localStorageDB';
 
-// Initialize all integrations on app start
-integrationManager.initializeAllIntegrations();
+// Initialize local database and seed default data
+localDB.seedDefaultData().then(() => {
+  console.log('Local database initialized');
+}).catch(error => {
+  console.error('Failed to initialize local database:', error);
+});
 
 // Optimize rendering
 const container = document.getElementById("root");

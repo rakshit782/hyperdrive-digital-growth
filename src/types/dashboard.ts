@@ -1,3 +1,4 @@
+
 export type DashboardTab = 
   | 'services'
   | 'service-pages'
@@ -17,12 +18,6 @@ export type DashboardTab =
   | 'stats'
   | 'policy-pages'
   | 'google-sheets'
-  | 'amplify'
-  | 'cognito'
-  | 'dynamodb'
-  | 's3'
-  | 'ses'
-  | 'cloudflare'
   | 'user-management'
   | 'website-preview'
   | 'website-audit'
@@ -40,7 +35,8 @@ export type DashboardTab =
   | 'content-management'
   | 'zapier-integration'
   | 'email-automation'
-  | 'faq-management';
+  | 'faq-management'
+  | 'auth0';
 
 export interface ServiceCard {
   id: string;

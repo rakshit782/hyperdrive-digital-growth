@@ -6,48 +6,57 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Save, Lock, ExternalLink } from "lucide-react";
-import { auth0Manager, Auth0Config } from "@/utils/auth0Manager";
+import { Save, Lock, ExternalLink, TestTube } from "lucide-react";
+import { auth0ConfigManager, Auth0Config } from "@/utils/auth0Config";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth0Tab = () => {
   const [config, setConfig] = useState<Auth0Config>({
     domain: '',
     clientId: '',
-    isActive: false,
     redirectUri: window.location.origin,
     audience: '',
-    scope: 'openid profile email'
+    scope: 'openid profile email',
+    isActive: false
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedConfig = localStorage.getItem('auth0Config');
+    const savedConfig = auth0ConfigManager.getConfig();
     if (savedConfig) {
-      try {
-        const parsedConfig = JSON.parse(savedConfig);
-        setConfig(parsedConfig);
-      } catch (error) {
-        console.error('Failed to load Auth0 config:', error);
-      }
+      setConfig(savedConfig);
     }
   }, []);
 
-  const saveConfiguration = () => {
+  const saveConfiguration = async () => {
     setIsLoading(true);
     
     try {
-      localStorage.setItem('auth0Config', JSON.stringify(config));
-      
-      if (config.isActive && config.domain && config.clientId) {
-        auth0Manager.initialize(config);
+      // Validate required fields
+      if (config.isActive && (!config.domain || !config.clientId)) {
+        toast({
+          title: "Validation Error",
+          description: "Domain and Client ID are required when Auth0 is active.",
+          variant: "destructive",
+        });
+        return;
       }
+
+      await auth0ConfigManager.saveConfig(config);
       
       toast({
         title: "Auth0 Configuration Saved",
-        description: config.isActive ? "Auth0 is now active." : "Auth0 configuration saved but is inactive.",
+        description: config.isActive ? "Auth0 is now active and ready to use." : "Auth0 configuration saved but is inactive.",
       });
+
+      // Trigger a page reload if Auth0 is activated to initialize the provider
+      if (config.isActive) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -56,6 +65,46 @@ const Auth0Tab = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const testConnection = async () => {
+    setIsTestingConnection(true);
+    
+    try {
+      if (!config.domain || !config.clientId) {
+        toast({
+          title: "Test Failed",
+          description: "Please enter domain and client ID before testing.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Simple validation test - check if domain is reachable
+      const testUrl = `https://${config.domain}/.well-known/openid_configuration`;
+      const response = await fetch(testUrl);
+      
+      if (response.ok) {
+        toast({
+          title: "Connection Test Successful",
+          description: "Auth0 configuration appears to be valid.",
+        });
+      } else {
+        toast({
+          title: "Connection Test Failed",
+          description: "Unable to reach Auth0 domain. Please check your configuration.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Connection Test Failed",
+        description: "Network error or invalid Auth0 domain.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTestingConnection(false);
     }
   };
 
@@ -70,7 +119,7 @@ const Auth0Tab = () => {
               </div>
               <div>
                 <CardTitle className="text-xl font-bold text-slate-900">Auth0 Configuration</CardTitle>
-                <CardDescription>Configure Auth0 for authentication and identity management</CardDescription>
+                <CardDescription>Configure Auth0 for user authentication and management</CardDescription>
               </div>
             </div>
             <Badge variant={config.isActive ? "default" : "secondary"}>
@@ -82,7 +131,7 @@ const Auth0Tab = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="domain">Domain</Label>
+                <Label htmlFor="domain">Auth0 Domain *</Label>
                 <Input
                   id="domain"
                   placeholder="your-domain.auth0.com"
@@ -91,7 +140,7 @@ const Auth0Tab = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="clientId">Client ID</Label>
+                <Label htmlFor="clientId">Client ID *</Label>
                 <Input
                   id="clientId"
                   placeholder="Your Auth0 Client ID"
@@ -138,18 +187,28 @@ const Auth0Tab = () => {
                 checked={config.isActive}
                 onCheckedChange={(checked) => setConfig({ ...config, isActive: checked })}
               />
-              <Label htmlFor="auth0Active">Activate Auth0</Label>
+              <Label htmlFor="auth0Active">Activate Auth0 Authentication</Label>
             </div>
           </div>
 
-          <Button 
-            onClick={saveConfiguration} 
-            disabled={isLoading}
-            className="bg-gradient-to-r from-orange-600 to-orange-700"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {isLoading ? 'Saving...' : 'Save Configuration'}
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={saveConfiguration} 
+              disabled={isLoading}
+              className="bg-gradient-to-r from-orange-600 to-orange-700 flex-1"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {isLoading ? 'Saving...' : 'Save Configuration'}
+            </Button>
+            <Button 
+              onClick={testConnection} 
+              disabled={isTestingConnection || !config.domain}
+              variant="outline"
+            >
+              <TestTube className="w-4 h-4 mr-2" />
+              {isTestingConnection ? 'Testing...' : 'Test'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -166,23 +225,24 @@ const Auth0Tab = () => {
               <div className="w-6 h-6 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-medium">1</div>
               <div>
                 <h4 className="font-medium">Create Auth0 Account</h4>
-                <p className="text-sm text-gray-600">Sign up at auth0.com and create a new application</p>
+                <p className="text-sm text-gray-600">Sign up at auth0.com and create a new Single Page Application</p>
               </div>
             </div>
             
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-medium">2</div>
               <div>
-                <h4 className="font-medium">Configure Application</h4>
-                <p className="text-sm text-gray-600">Set application type to "Single Page Application"</p>
+                <h4 className="font-medium">Configure Application Settings</h4>
+                <p className="text-sm text-gray-600">Set Allowed Callback URLs to: {window.location.origin}</p>
+                <p className="text-sm text-gray-600">Set Allowed Logout URLs to: {window.location.origin}</p>
               </div>
             </div>
             
             <div className="flex items-start space-x-3">
               <div className="w-6 h-6 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-medium">3</div>
               <div>
-                <h4 className="font-medium">Copy Credentials</h4>
-                <p className="text-sm text-gray-600">Get Domain and Client ID from your Auth0 dashboard</p>
+                <h4 className="font-medium">Copy Configuration</h4>
+                <p className="text-sm text-gray-600">Copy Domain and Client ID from your Auth0 application settings</p>
               </div>
             </div>
           </div>
