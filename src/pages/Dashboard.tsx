@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { DashboardTab } from "@/types/dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,11 +26,6 @@ import SocialMediaTab from "@/components/dashboard/SocialMediaTab";
 import StatsManagement from "@/components/dashboard/StatsManagement";
 import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
 import GoogleSheetsTab from "@/components/dashboard/GoogleSheetsTab";
-import AmplifyTab from "@/components/dashboard/AmplifyTab";
-import CognitoTab from "@/components/dashboard/CognitoTab";
-import DynamoDBTab from "@/components/dashboard/DynamoDBTab";
-import S3Tab from "@/components/dashboard/S3Tab";
-import SESTab from "@/components/dashboard/SESTab";
 import CloudflareTab from "@/components/dashboard/CloudflareTab";
 import UserManagementTab from "@/components/dashboard/UserManagementTab";
 import WebsitePreviewTab from "@/components/dashboard/WebsitePreviewTab";
@@ -136,14 +132,12 @@ const Dashboard = () => {
     {
       category: "Infrastructure",
       tabs: [
-        { value: 'amplify', label: 'Amplify', icon: '⚡' },
-        { value: 'cognito', label: 'Cognito', icon: '🔐' },
-        { value: 'dynamodb', label: 'DynamoDB', icon: '🗄️' },
-        { value: 's3', label: 'S3', icon: '☁️' },
-        { value: 'ses', label: 'SES', icon: '📧' },
         { value: 'cloudflare', label: 'Cloudflare', icon: '🛡️' },
         { value: 'user-management', label: 'Users', icon: '👥' },
-        { value: 'website-preview', label: 'Preview', icon: '👁️' }
+        { value: 'website-preview', label: 'Preview', icon: '👁️' },
+        { value: 'integration-status', label: 'Integrations', icon: '🔗' },
+        { value: 'integration-test', label: 'Tests', icon: '🧪' },
+        { value: 'chatgpt', label: 'ChatGPT', icon: '🤖' }
       ]
     }
   ];
@@ -196,16 +190,6 @@ const Dashboard = () => {
         return <PolicyPagesTab />;
       case 'google-sheets':
         return <GoogleSheetsTab />;
-      case 'amplify':
-        return <AmplifyTab />;
-      case 'cognito':
-        return <CognitoTab />;
-      case 'dynamodb':
-        return <DynamoDBTab />;
-      case 's3':
-        return <S3Tab />;
-      case 'ses':
-        return <SESTab />;
       case 'cloudflare':
         return <CloudflareTab />;
       case 'user-management':

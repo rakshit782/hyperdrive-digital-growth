@@ -1,6 +1,4 @@
 
-import { sesManager } from '@/utils/sesManager';
-
 export interface EmailTemplate {
   subject: string;
   htmlBody: string;
@@ -30,18 +28,17 @@ class EmailService {
     textBody?: string
   ): Promise<EmailResult> {
     try {
-      if (!sesManager.isActive()) {
-        return {
-          success: false,
-          error: 'Email service (SES) is not configured. Please configure Amazon SES in the dashboard.'
-        };
-      }
-
-      const result = await sesManager.sendEmail(to, subject, htmlBody, textBody);
+      // For demo purposes, log the email instead of actually sending
+      console.log('Email would be sent:', {
+        to,
+        subject,
+        htmlBody,
+        textBody
+      });
       
       return {
-        success: true,
-        messageId: result.MessageId
+        success: false,
+        error: 'Email service not configured. Please configure an email provider (SES, SendGrid, etc.) in the dashboard.'
       };
     } catch (error) {
       console.error('Email sending error:', error);

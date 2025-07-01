@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,6 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { cognitoManager } from "@/utils/cognitoManager";
-import { amplifyManager } from "@/utils/amplifyManager";
 import { useAuth } from "@/contexts/AuthContext";
 import { Users, UserPlus, Shield, Settings, Key, Mail, Lock, Eye, EyeOff } from "lucide-react";
 
@@ -169,7 +168,7 @@ const UserManagementTab = () => {
 
     setIsLoading(true);
     try {
-      // Try to create user with Auth context (Amplify/Cognito)
+      // Try to create user with Auth context (Auth0)
       const authResult = await signUp(newUserEmail, newUserPassword, newUserFullName);
       
       if (authResult.success) {
@@ -205,20 +204,48 @@ const UserManagementTab = () => {
 
         toast({
           title: "User Created Successfully",
-          description: `User ${newUserEmail} has been created and added to ${amplifyManager.isActive() ? 'AWS Amplify' : cognitoManager.isActive() ? 'AWS Cognito' : 'local storage'}.`,
+          description: `User ${newUserEmail} has been created and stored locally.`,
         });
       } else {
+        // Create user locally if Auth0 fails
+        const newProfile = {
+          id: `profile_${Date.now()}`,
+          email: newUserEmail,
+          fullName: newUserFullName || newUserEmail,
+          role: selectedUserRole,
+          createdAt: new Date().toISOString(),
+          status: 'active' as const
+        };
+
+        const updatedProfiles = [...userProfiles, newProfile];
+        saveUserManagementData(undefined, undefined, undefined, updatedProfiles);
+
+        const newUser: User = {
+          id: `user_${Date.now()}`,
+          email: newUserEmail,
+          roles: [selectedUserRole],
+          status: 'active',
+          createdAt: new Date().toISOString()
+        };
+
+        const updatedUsers = [...users, newUser];
+        saveUserManagementData(updatedUsers);
+
+        setNewUserEmail('');
+        setNewUserPassword('');
+        setNewUserFullName('');
+        setSelectedUserRole('viewer');
+
         toast({
-          title: "User Creation Failed",
-          description: authResult.error || "Failed to create user. Please check your AWS configuration.",
-          variant: "destructive",
+          title: "User Created Locally",
+          description: `User ${newUserEmail} has been created and stored locally. Configure Auth0 for full authentication.`,
         });
       }
     } catch (error) {
       console.error('Error creating user:', error);
       toast({
         title: "Error",
-        description: "Failed to create user. Check your AWS Amplify/Cognito configuration.",
+        description: "Failed to create user. User stored locally instead.",
         variant: "destructive",
       });
     } finally {
@@ -260,18 +287,6 @@ const UserManagementTab = () => {
     saveUserManagementData(undefined, undefined, updatedPermissions);
   };
 
-  const getAuthProviderStatus = () => {
-    if (amplifyManager.isActive()) {
-      return { provider: 'AWS Amplify', status: 'connected', color: 'default' };
-    } else if (cognitoManager.isActive()) {
-      return { provider: 'AWS Cognito', status: 'connected', color: 'default' };
-    } else {
-      return { provider: 'Local Storage', status: 'offline', color: 'secondary' };
-    }
-  };
-
-  const authStatus = getAuthProviderStatus();
-
   return (
     <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
       <CardHeader>
@@ -282,12 +297,12 @@ const UserManagementTab = () => {
             </div>
             <div>
               <CardTitle className="text-xl font-bold text-slate-900">User Management</CardTitle>
-              <CardDescription>Create and manage user accounts with AWS integration</CardDescription>
+              <CardDescription>Create and manage user accounts with local storage</CardDescription>
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge variant={authStatus.color as any}>
-              {authStatus.provider} - {authStatus.status}
+            <Badge variant="secondary">
+              Local Storage - Active
             </Badge>
           </div>
         </div>
@@ -322,7 +337,7 @@ const UserManagementTab = () => {
                   Create New User Account
                 </CardTitle>
                 <CardDescription>
-                  Create a new user account that will be added to {authStatus.provider}
+                  Create a new user account (stored locally with Auth0 integration)
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -393,14 +408,11 @@ const UserManagementTab = () => {
                   </div>
                 </div>
                 
-                {!amplifyManager.isActive() && !cognitoManager.isActive() && (
-                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <p className="text-sm text-yellow-800">
-                      <strong>Note:</strong> No AWS authentication provider is configured. Users will be stored locally only. 
-                      Configure AWS Amplify or Cognito for full authentication features.
-                    </p>
-                  </div>
-                )}
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Note:</strong> Users are stored locally. Configure Auth0 in the Auth0 tab for full authentication features.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 

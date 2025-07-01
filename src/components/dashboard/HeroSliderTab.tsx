@@ -9,7 +9,6 @@ import { Trash2, Plus, Upload, Eye, EyeOff } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { fileUploadService } from "@/services/fileUploadService";
 import { useToast } from "@/hooks/use-toast";
 
 interface BackgroundImage {
@@ -79,19 +78,25 @@ const HeroSliderTab = () => {
     try {
       let imageUrl = data.url;
       
-      // If a file is uploaded, use the file upload service
+      // If a file is uploaded, create a local URL (for demo purposes)
       if (data.file) {
         setUploading(true);
-        const result = await fileUploadService.uploadImage(data.file);
-        if (!result.success) {
-          toast({
-            title: "Upload Failed",
-            description: result.error,
-            variant: "destructive"
-          });
-          return;
-        }
-        imageUrl = result.url;
+        // Create a blob URL for the uploaded file (local only)
+        imageUrl = URL.createObjectURL(data.file);
+        
+        toast({
+          title: "Image Added",
+          description: "Image has been added locally. Note: For production, configure a file storage service.",
+        });
+      }
+
+      if (!imageUrl) {
+        toast({
+          title: "No Image",
+          description: "Please provide either a URL or upload a file.",
+          variant: "destructive"
+        });
+        return;
       }
 
       const newImage: BackgroundImage = {
@@ -106,11 +111,8 @@ const HeroSliderTab = () => {
       saveSettings(newSettings);
       setIsDialogOpen(false);
       form.reset();
+      setPreviewImage(null);
       
-      toast({
-        title: "Image Added",
-        description: "New background image has been added to the slider.",
-      });
     } catch (error) {
       toast({
         title: "Error",
@@ -205,7 +207,7 @@ const HeroSliderTab = () => {
                               </div>
                             </FormControl>
                             <FormDescription>
-                              Upload a high-quality image (WebP, JPG, PNG)
+                              Upload a high-quality image (WebP, JPG, PNG) - stored locally
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -259,7 +261,7 @@ const HeroSliderTab = () => {
                           {uploading ? (
                             <>
                               <Upload className="w-4 h-4 mr-2 animate-spin" />
-                              Uploading...
+                              Adding...
                             </>
                           ) : (
                             <>

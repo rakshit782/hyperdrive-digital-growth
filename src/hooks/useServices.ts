@@ -1,50 +1,96 @@
 
 import { useCallback } from 'react';
-import { fileUploadService, UploadResult } from '@/services/fileUploadService';
 import { emailService, EmailResult } from '@/services/emailService';
 import { cdnService, CacheResult, AnalyticsResult } from '@/services/cdnService';
 import { useToast } from '@/hooks/use-toast';
+
+export interface UploadResult {
+  success: boolean;
+  url?: string;
+  error?: string;
+}
 
 export const useServices = () => {
   const { toast } = useToast();
 
   const uploadFile = useCallback(async (file: File, folder?: string): Promise<UploadResult> => {
-    const result = await fileUploadService.uploadFile(file, folder);
-    
-    if (result.success) {
+    try {
+      // Create a local blob URL for the file (demo purposes)
+      const url = URL.createObjectURL(file);
+      
       toast({
-        title: "File Uploaded",
-        description: "Your file has been uploaded successfully.",
+        title: "File Uploaded Locally",
+        description: "Your file has been processed locally. Configure a file storage service for production.",
       });
-    } else {
+      
+      return {
+        success: true,
+        url: url
+      };
+    } catch (error) {
       toast({
         title: "Upload Failed",
-        description: result.error,
+        description: "Failed to process file locally.",
         variant: "destructive",
       });
+      
+      return {
+        success: false,
+        error: "Failed to process file"
+      };
     }
-    
-    return result;
   }, [toast]);
 
   const uploadImage = useCallback(async (file: File): Promise<UploadResult> => {
-    const result = await fileUploadService.uploadImage(file);
-    
-    if (result.success) {
+    try {
+      // Create a local blob URL for the image (demo purposes)
+      const url = URL.createObjectURL(file);
+      
       toast({
-        title: "Image Uploaded",
-        description: "Your image has been uploaded successfully.",
+        title: "Image Uploaded Locally",
+        description: "Your image has been processed locally. Configure a file storage service for production.",
       });
-    } else {
+      
+      return {
+        success: true,
+        url: url
+      };
+    } catch (error) {
       toast({
         title: "Upload Failed",
-        description: result.error,
+        description: "Failed to process image locally.",
         variant: "destructive",
       });
+      
+      return {
+        success: false,
+        error: "Failed to process image"
+      };
     }
-    
-    return result;
   }, [toast]);
+
+  const deleteFile = useCallback(async (fileUrl: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      // Revoke the blob URL if it's a local blob
+      if (fileUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(fileUrl);
+      }
+      
+      toast({
+        title: "File Deleted",
+        description: "File has been removed locally.",
+      });
+      
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: "Failed to delete file" };
+    }
+  }, [toast]);
+
+  const listFiles = useCallback(async (folder?: string): Promise<{ success: boolean; files?: string[]; error?: string }> => {
+    // Return empty list for local storage
+    return { success: true, files: [] };
+  }, []);
 
   const sendEmail = useCallback(async (
     to: string[],
@@ -104,7 +150,7 @@ export const useServices = () => {
 
   const getServiceStatus = useCallback(() => {
     return {
-      fileUpload: fileUploadService,
+      fileUpload: { isActive: () => true }, // Mock service status
       email: emailService,
       cdn: cdnService.getStatus(),
     };
@@ -114,8 +160,8 @@ export const useServices = () => {
     // File operations
     uploadFile,
     uploadImage,
-    deleteFile: fileUploadService.deleteFile.bind(fileUploadService),
-    listFiles: fileUploadService.listFiles.bind(fileUploadService),
+    deleteFile,
+    listFiles,
     
     // Email operations
     sendEmail,
