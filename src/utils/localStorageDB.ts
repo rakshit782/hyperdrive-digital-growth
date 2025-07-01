@@ -48,10 +48,10 @@ class LocalStorageDB {
 
     const id = data.id || this.generateId();
     const record = {
-      ...data,
       id,
       created_at: data.created_at || new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
+      ...data
     };
 
     await store.setItem(id, record);
@@ -75,7 +75,7 @@ class LocalStorageDB {
     });
 
     return results.sort((a, b) => 
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
     );
   }
 
@@ -87,7 +87,7 @@ class LocalStorageDB {
     if (!existing) throw new Error(`Record ${id} not found`);
 
     const updated = {
-      ...existing,
+      ...(existing as object),
       ...data,
       id,
       updated_at: new Date().toISOString()

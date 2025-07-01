@@ -5,10 +5,15 @@ import { chatGPTManager } from './chatGPTManager';
 import { cloudflareManager } from './cloudflareManager';
 import { auth0ConfigManager } from './auth0Config';
 
-interface IntegrationStatus {
+export interface IntegrationStatus {
   name: string;
   status: 'active' | 'inactive' | 'error';
   lastCheck: string;
+  lastChecked: Date;
+  isActive: boolean;
+  hasConfig: boolean;
+  features?: string[];
+  errors?: string[];
   error?: string;
 }
 
@@ -78,7 +83,7 @@ class IntegrationManager {
   private async initializeCloudflare(): Promise<void> {
     try {
       const config = cloudflareManager.getConfig();
-      if (config && config.accountId && config.apiToken && config.isActive) {
+      if (config && config.accountId && config.apiToken) {
         this.setIntegrationStatus('cloudflare', 'active');
       } else {
         this.setIntegrationStatus('cloudflare', 'inactive');
@@ -102,12 +107,19 @@ class IntegrationManager {
       name,
       status,
       lastCheck: new Date().toISOString(),
+      lastChecked: new Date(),
+      isActive: status === 'active',
+      hasConfig: status !== 'inactive',
       error
     });
   }
 
-  getIntegrationStatus(name: string): IntegrationStatus | undefined {
-    return this.integrations.get(name);
+  getIntegrationStatus(name?: string): IntegrationStatus[] {
+    if (name) {
+      const integration = this.integrations.get(name);
+      return integration ? [integration] : [];
+    }
+    return Array.from(this.integrations.values());
   }
 
   getAllIntegrationStatuses(): IntegrationStatus[] {
@@ -134,6 +146,11 @@ class IntegrationManager {
       console.error(`Failed to test integration ${name}:`, error);
       return false;
     }
+  }
+
+  notifyIntegrationUpdate(): void {
+    // Trigger a custom event to notify components about integration updates
+    window.dispatchEvent(new CustomEvent('integrationStatusChanged'));
   }
 }
 

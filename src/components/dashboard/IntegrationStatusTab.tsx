@@ -23,7 +23,7 @@ const IntegrationStatusTab = () => {
   }, []);
 
   const loadIntegrationStatus = () => {
-    const status = integrationManager.getIntegrationStatus();
+    const status = integrationManager.getAllIntegrationStatuses();
     setIntegrations(status);
     console.log('Integration Status:', status);
   };
