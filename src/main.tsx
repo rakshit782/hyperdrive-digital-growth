@@ -3,6 +3,10 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+import { integrationManager } from './utils/integrationManager';
+
+// Initialize all integrations on app start
+integrationManager.initializeAllIntegrations();
 
 // Optimize rendering
 const container = document.getElementById("root");

@@ -28,8 +28,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <TrackingScriptInjector />
       <BrowserRouter>
+        <TrackingScriptInjector />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
