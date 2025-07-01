@@ -19,10 +19,10 @@ const ShopifyDevelopment = () => {
         primaryButtonUrl="/contact"
         secondaryButtonUrl="/case-studies"
         stats={[
-          { label: 'Page Speed', value: '+300%', description: 'Performance improvement' },
-          { label: 'Conversion Rate', value: '+85%', description: 'Average increase' },
-          { label: 'Projects', value: '200+', description: 'Completed developments' },
-          { label: 'Client Rating', value: '4.9/5', description: 'Average satisfaction' }
+          { id: '1', service_type: 'shopify-development', stat_label: 'Page Speed', stat_value: '+300%', stat_description: 'Performance improvement' },
+          { id: '2', service_type: 'shopify-development', stat_label: 'Conversion Rate', stat_value: '+85%', stat_description: 'Average increase' },
+          { id: '3', service_type: 'shopify-development', stat_label: 'Projects', stat_value: '200+', stat_description: 'Completed developments' },
+          { id: '4', service_type: 'shopify-development', stat_label: 'Client Rating', stat_value: '4.9/5', stat_description: 'Average satisfaction' }
         ]}
         caseStudies={selectedContent.caseStudies}
         reviews={selectedContent.reviews}

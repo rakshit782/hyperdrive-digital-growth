@@ -19,10 +19,10 @@ const AccountManagement = () => {
         primaryButtonUrl="/contact"
         secondaryButtonUrl="/case-studies"
         stats={[
-          { label: 'Client Retention', value: '98%', description: 'Long-term partnerships' },
-          { label: 'Account Growth', value: '250%', description: 'Average annual growth' },
-          { label: 'Response Time', value: '<2hr', description: 'Average response time' },
-          { label: 'Success Rate', value: '95%', description: 'Goal achievement rate' }
+          { id: '1', service_type: 'account-management', stat_label: 'Client Retention', stat_value: '98%', stat_description: 'Long-term partnerships' },
+          { id: '2', service_type: 'account-management', stat_label: 'Account Growth', stat_value: '250%', stat_description: 'Average annual growth' },
+          { id: '3', service_type: 'account-management', stat_label: 'Response Time', stat_value: '<2hr', stat_description: 'Average response time' },
+          { id: '4', service_type: 'account-management', stat_label: 'Success Rate', stat_value: '95%', stat_description: 'Goal achievement rate' }
         ]}
         caseStudies={selectedContent.caseStudies}
         reviews={selectedContent.reviews}

@@ -19,10 +19,10 @@ const ShopifyIntegration = () => {
         primaryButtonUrl="/contact"
         secondaryButtonUrl="/case-studies"
         stats={[
-          { label: 'Integrations', value: '50+', description: 'Platform connections' },
-          { label: 'Data Accuracy', value: '99.9%', description: 'Synchronization accuracy' },
-          { label: 'Setup Time', value: '24hr', description: 'Average setup time' },
-          { label: 'Uptime', value: '99.9%', description: 'System reliability' }
+          { id: '1', service_type: 'shopify-integration', stat_label: 'Integrations', stat_value: '50+', stat_description: 'Platform connections' },
+          { id: '2', service_type: 'shopify-integration', stat_label: 'Data Accuracy', stat_value: '99.9%', stat_description: 'Synchronization accuracy' },
+          { id: '3', service_type: 'shopify-integration', stat_label: 'Setup Time', stat_value: '24hr', stat_description: 'Average setup time' },
+          { id: '4', service_type: 'shopify-integration', stat_label: 'Uptime', stat_value: '99.9%', stat_description: 'System reliability' }
         ]}
         caseStudies={selectedContent.caseStudies}
         reviews={selectedContent.reviews}
