@@ -61,6 +61,9 @@ export function useServiceData(serviceType: string): ServiceData {
       try {
         setData(prev => ({ ...prev, loading: true, error: null }));
 
+        // Initialize local database with default data if needed
+        await localDB.seedDefaultData();
+
         // Fetch case studies for this service
         const allCaseStudies = await localDB.findAll('case_studies');
         const serviceCaseStudies = allCaseStudies.filter((cs: any) => 
@@ -71,8 +74,8 @@ export function useServiceData(serviceType: string): ServiceData {
         const allStats = await localDB.findAll('stats');
         const serviceStats = allStats.filter((stat: any) => stat.service_type === serviceType);
 
-        // If no specific stats exist, create default ones
-        const defaultStats: ServiceStat[] = serviceStats.length > 0 ? serviceStats : [
+        // Create default stats for all service types
+        const defaultStats: ServiceStat[] = [
           {
             id: `${serviceType}-1`,
             service_type: serviceType,
@@ -107,7 +110,10 @@ export function useServiceData(serviceType: string): ServiceData {
           }
         ];
 
-        // Fetch reviews (general reviews for now)
+        // Use service-specific stats if available, otherwise use defaults
+        const finalStats = serviceStats.length > 0 ? serviceStats : defaultStats;
+
+        // Fetch reviews
         const allReviews = await localDB.findAll('reviews');
         const serviceReviews: ServiceReview[] = allReviews.length > 0 ? allReviews.slice(0, 6) : [
           {
@@ -115,7 +121,7 @@ export function useServiceData(serviceType: string): ServiceData {
             client_name: 'Sarah Johnson',
             company: 'TechCorp Inc.',
             rating: 5,
-            review_text: 'Outstanding service and exceptional results. Highly recommend!',
+            review_text: 'Outstanding service and exceptional results. The team exceeded our expectations and delivered measurable growth.',
             service_type: serviceType
           },
           {
@@ -123,14 +129,42 @@ export function useServiceData(serviceType: string): ServiceData {
             client_name: 'Michael Chen',
             company: 'GrowthCo',
             rating: 5,
-            review_text: 'Professional team with excellent communication and delivery.',
+            review_text: 'Professional team with excellent communication and delivery. Our ROI improved significantly within the first month.',
+            service_type: serviceType
+          },
+          {
+            id: '3',
+            client_name: 'Emily Rodriguez',
+            company: 'Scale Ventures',
+            rating: 5,
+            review_text: 'Incredible expertise and attention to detail. They transformed our entire approach and the results speak for themselves.',
             service_type: serviceType
           }
         ];
 
+        // Create default case studies for services that don't have any
+        const defaultCaseStudies: ServiceCaseStudy[] = serviceCaseStudies.length > 0 ? serviceCaseStudies : [
+          {
+            id: `${serviceType}-case-1`,
+            title: 'Transforming Digital Presence',
+            description: 'How we helped a growing business achieve remarkable results through strategic optimization and expert management.',
+            industry: 'E-commerce',
+            client_name: 'Confidential Client',
+            service_type: serviceType,
+            results: {
+              'Revenue Growth': '+250%',
+              'Cost Reduction': '-40%',
+              'Conversion Rate': '+180%',
+              'ROI': '+320%'
+            },
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ];
+
         setData({
-          caseStudies: serviceCaseStudies,
-          stats: defaultStats,
+          caseStudies: defaultCaseStudies,
+          stats: finalStats,
           reviews: serviceReviews,
           loading: false,
           error: null
@@ -146,7 +180,9 @@ export function useServiceData(serviceType: string): ServiceData {
       }
     };
 
-    fetchServiceData();
+    if (serviceType) {
+      fetchServiceData();
+    }
   }, [serviceType]);
 
   return data;
