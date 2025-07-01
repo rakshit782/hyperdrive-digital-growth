@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, Database, Sync, CheckCircle, AlertCircle } from "lucide-react";
+import { RefreshCw, Database, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface SyncStatus {
@@ -157,7 +157,7 @@ const DataSyncTab = () => {
             Refresh
           </Button>
           <Button onClick={handleSyncAll} disabled={isLoading}>
-            <Sync className="w-4 h-4 mr-2" />
+            <RefreshCw className="w-4 h-4 mr-2" />
             Sync All
           </Button>
         </div>
@@ -206,7 +206,7 @@ const DataSyncTab = () => {
                     </>
                   ) : (
                     <>
-                      <Sync className="w-4 h-4 mr-2" />
+                      <RefreshCw className="w-4 h-4 mr-2" />
                       Sync Now
                     </>
                   )}

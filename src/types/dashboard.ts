@@ -6,6 +6,17 @@ export interface ServiceCard {
   features: string[];
   icon?: string;
   gradient?: string;
+  bgGradient?: string;
+  link?: string;
+}
+
+export interface Review {
+  id: string;
+  name: string;
+  company: string;
+  rating: number;
+  review: string;
+  avatar?: string;
 }
 
 export interface ReviewCard {
