@@ -48,6 +48,7 @@ import WebsiteAuditTab from "@/components/dashboard/WebsiteAuditTab";
 import ZapierIntegrationTab from "@/components/dashboard/ZapierIntegrationTab";
 import EmailAutomationTab from "@/components/dashboard/EmailAutomationTab";
 import FAQManagementTab from "@/components/dashboard/FAQManagementTab";
+import DataSyncTab from "@/components/dashboard/DataSyncTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<DashboardTab>('services');
@@ -130,9 +131,10 @@ const Dashboard = () => {
       ]
     },
     {
-      category: "Infrastructure",
+      category: "Infrastructure & Data",
       tabs: [
         { value: 'cloudflare', label: 'Cloudflare', icon: '🛡️' },
+        { value: 'data-sync', label: 'Data Sync', icon: '🔄' },
         { value: 'user-management', label: 'Users', icon: '👥' },
         { value: 'website-preview', label: 'Preview', icon: '👁️' },
         { value: 'integration-status', label: 'Integrations', icon: '🔗' },
@@ -192,6 +194,8 @@ const Dashboard = () => {
         return <GoogleSheetsTab />;
       case 'cloudflare':
         return <CloudflareTab />;
+      case 'data-sync':
+        return <DataSyncTab />;
       case 'user-management':
         return <UserManagementTab />;
       case 'website-preview':
@@ -343,7 +347,6 @@ const Dashboard = () => {
         {!sidebarCollapsed && (
           <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setSidebarCollapsed(true)}>
             <aside className="bg-white w-80 h-full overflow-y-auto">
-              {/* Same sidebar content for mobile */}
               <div className="p-4 border-b border-slate-200">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">

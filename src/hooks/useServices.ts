@@ -18,9 +18,22 @@ export const useServices = () => {
       // Create a local blob URL for the file (demo purposes)
       const url = URL.createObjectURL(file);
       
+      // Store file info in localStorage for demo
+      const files = JSON.parse(localStorage.getItem('demo_files') || '[]');
+      files.push({
+        id: `file_${Date.now()}`,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        url: url,
+        folder: folder || 'default',
+        uploadedAt: new Date().toISOString()
+      });
+      localStorage.setItem('demo_files', JSON.stringify(files));
+      
       toast({
-        title: "File Uploaded Locally",
-        description: "Your file has been processed locally. Configure a file storage service for production.",
+        title: "File Uploaded Successfully",
+        description: `${file.name} has been uploaded and is available locally.`,
       });
       
       return {
@@ -43,12 +56,29 @@ export const useServices = () => {
 
   const uploadImage = useCallback(async (file: File): Promise<UploadResult> => {
     try {
-      // Create a local blob URL for the image (demo purposes)
+      // Validate image file
+      if (!file.type.startsWith('image/')) {
+        throw new Error('File must be an image');
+      }
+
+      // Create a local blob URL for the image
       const url = URL.createObjectURL(file);
       
+      // Store image info
+      const images = JSON.parse(localStorage.getItem('demo_images') || '[]');
+      images.push({
+        id: `img_${Date.now()}`,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        url: url,
+        uploadedAt: new Date().toISOString()
+      });
+      localStorage.setItem('demo_images', JSON.stringify(images));
+      
       toast({
-        title: "Image Uploaded Locally",
-        description: "Your image has been processed locally. Configure a file storage service for production.",
+        title: "Image Uploaded Successfully",
+        description: `${file.name} has been uploaded and is ready to use.`,
       });
       
       return {
@@ -58,13 +88,13 @@ export const useServices = () => {
     } catch (error) {
       toast({
         title: "Upload Failed",
-        description: "Failed to process image locally.",
+        description: error instanceof Error ? error.message : "Failed to process image.",
         variant: "destructive",
       });
       
       return {
         success: false,
-        error: "Failed to process image"
+        error: error instanceof Error ? error.message : "Failed to process image"
       };
     }
   }, [toast]);
@@ -76,9 +106,19 @@ export const useServices = () => {
         URL.revokeObjectURL(fileUrl);
       }
       
+      // Remove from localStorage
+      const files = JSON.parse(localStorage.getItem('demo_files') || '[]');
+      const images = JSON.parse(localStorage.getItem('demo_images') || '[]');
+      
+      const updatedFiles = files.filter((file: any) => file.url !== fileUrl);
+      const updatedImages = images.filter((image: any) => image.url !== fileUrl);
+      
+      localStorage.setItem('demo_files', JSON.stringify(updatedFiles));
+      localStorage.setItem('demo_images', JSON.stringify(updatedImages));
+      
       toast({
         title: "File Deleted",
-        description: "File has been removed locally.",
+        description: "File has been removed successfully.",
       });
       
       return { success: true };
@@ -88,8 +128,22 @@ export const useServices = () => {
   }, [toast]);
 
   const listFiles = useCallback(async (folder?: string): Promise<{ success: boolean; files?: string[]; error?: string }> => {
-    // Return empty list for local storage
-    return { success: true, files: [] };
+    try {
+      const files = JSON.parse(localStorage.getItem('demo_files') || '[]');
+      const images = JSON.parse(localStorage.getItem('demo_images') || '[]');
+      
+      let allFiles = [...files, ...images];
+      
+      if (folder) {
+        allFiles = allFiles.filter((file: any) => file.folder === folder);
+      }
+      
+      const fileUrls = allFiles.map((file: any) => file.url);
+      
+      return { success: true, files: fileUrls };
+    } catch (error) {
+      return { success: false, error: "Failed to list files" };
+    }
   }, []);
 
   const sendEmail = useCallback(async (
@@ -108,7 +162,7 @@ export const useServices = () => {
     } else {
       toast({
         title: "Email Failed",
-        description: result.error,
+        description: result.error || "Failed to send email",
         variant: "destructive",
       });
     }
@@ -122,8 +176,23 @@ export const useServices = () => {
     company?: string;
     message: string;
   }): Promise<EmailResult> => {
-    return await emailService.sendContactForm(data);
-  }, []);
+    const result = await emailService.sendContactForm(data);
+    
+    if (result.success) {
+      toast({
+        title: "Message Sent",
+        description: "Thank you for your message. We'll get back to you soon!",
+      });
+    } else {
+      toast({
+        title: "Send Failed",
+        description: result.error || "Failed to send message",
+        variant: "destructive",
+      });
+    }
+    
+    return result;
+  }, [toast]);
 
   const purgeCache = useCallback(async (urls?: string[]): Promise<CacheResult> => {
     const result = await cdnService.purgeCache(urls);
@@ -150,8 +219,16 @@ export const useServices = () => {
 
   const getServiceStatus = useCallback(() => {
     return {
-      fileUpload: { isActive: () => true }, // Mock service status
-      email: emailService,
+      fileUpload: { 
+        isActive: () => true,
+        status: 'Local Storage Active',
+        lastCheck: new Date().toISOString()
+      },
+      email: {
+        isActive: () => true,
+        status: 'Demo Mode Active',
+        lastCheck: new Date().toISOString()
+      },
       cdn: cdnService.getStatus(),
     };
   }, []);

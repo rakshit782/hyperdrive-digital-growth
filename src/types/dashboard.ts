@@ -1,4 +1,22 @@
 
+export interface ServiceCard {
+  id: string;
+  title: string;
+  description: string;
+  features: string[];
+  icon?: string;
+  gradient?: string;
+}
+
+export interface ReviewCard {
+  id: string;
+  name: string;
+  company: string;
+  rating: number;
+  text: string;
+  avatar?: string;
+}
+
 export type DashboardTab = 
   | 'services'
   | 'service-pages'
@@ -12,15 +30,15 @@ export type DashboardTab =
   | 'pricing'
   | 'blog'
   | 'header'
-  | 'menu-management'
   | 'footer'
   | 'social-media'
   | 'stats'
   | 'policy-pages'
   | 'google-sheets'
+  | 'cloudflare'
+  | 'data-sync'
   | 'user-management'
   | 'website-preview'
-  | 'website-audit'
   | 'integration-status'
   | 'integration-test'
   | 'facebook-pixel'
@@ -33,28 +51,14 @@ export type DashboardTab =
   | 'lead-management'
   | 'automation-settings'
   | 'content-management'
+  | 'menu-management'
+  | 'website-audit'
   | 'zapier-integration'
   | 'email-automation'
-  | 'faq-management'
-  | 'auth0'
-  | 'cloudflare';
+  | 'faq-management';
 
-export interface ServiceCard {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-  features: string[];
-  gradient: string;
-  bgGradient: string;
-  link: string;
-}
-
-export interface Review {
-  id: string;
-  name: string;
-  company: string;
-  rating: number;
-  review: string;
-  avatar?: string;
+export interface DashboardConfig {
+  theme: 'light' | 'dark';
+  sidebarCollapsed: boolean;
+  activeTab: DashboardTab;
 }

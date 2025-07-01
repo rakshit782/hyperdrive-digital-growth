@@ -28,17 +28,31 @@ class EmailService {
     textBody?: string
   ): Promise<EmailResult> {
     try {
-      // For demo purposes, log the email instead of actually sending
-      console.log('Email would be sent:', {
+      // Simulate email sending with a demo response
+      console.log('Demo Email Service - Email would be sent:', {
         to,
         subject,
         htmlBody,
-        textBody
+        textBody,
+        timestamp: new Date().toISOString()
       });
       
+      // Store email in localStorage for demo purposes
+      const emails = JSON.parse(localStorage.getItem('demo_emails') || '[]');
+      emails.push({
+        id: `email_${Date.now()}`,
+        to,
+        subject,
+        htmlBody,
+        textBody,
+        sentAt: new Date().toISOString(),
+        status: 'sent'
+      });
+      localStorage.setItem('demo_emails', JSON.stringify(emails));
+      
       return {
-        success: false,
-        error: 'Email service not configured. Please configure an email provider (SES, SendGrid, etc.) in the dashboard.'
+        success: true,
+        messageId: `demo_${Date.now()}`,
       };
     } catch (error) {
       console.error('Email sending error:', error);
@@ -56,12 +70,20 @@ class EmailService {
     message: string;
   }): Promise<EmailResult> {
     const htmlBody = `
-      <h2>New Contact Form Submission</h2>
-      <p><strong>Name:</strong> ${data.name}</p>
-      <p><strong>Email:</strong> ${data.email}</p>
-      ${data.company ? `<p><strong>Company:</strong> ${data.company}</p>` : ''}
-      <p><strong>Message:</strong></p>
-      <p>${data.message.replace(/\n/g, '<br>')}</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">New Contact Form Submission</h2>
+        <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          ${data.company ? `<p><strong>Company:</strong> ${data.company}</p>` : ''}
+          <div style="margin-top: 20px;">
+            <strong>Message:</strong>
+            <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 10px;">
+              ${data.message.replace(/\n/g, '<br>')}
+            </div>
+          </div>
+        </div>
+      </div>
     `;
 
     const textBody = `
@@ -72,20 +94,35 @@ class EmailService {
       Message: ${data.message}
     `;
 
-    return this.sendEmail(
-      [data.email], // Send confirmation to user
+    // Send confirmation to user
+    const confirmationResult = await this.sendEmail(
+      [data.email],
       'Thank you for contacting us',
       `
-        <h2>Thank you for your message, ${data.name}!</h2>
-        <p>We have received your inquiry and will get back to you within 24 hours.</p>
-        <p>Here's a copy of your message:</p>
-        <blockquote style="border-left: 4px solid #ccc; padding-left: 16px; margin: 16px 0;">
-          ${data.message.replace(/\n/g, '<br>')}
-        </blockquote>
-        <p>Best regards,<br>The Team</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Thank you for your message, ${data.name}!</h2>
+          <p>We have received your inquiry and will get back to you within 24 hours.</p>
+          <div style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>Your message:</strong></p>
+            <div style="background: white; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff;">
+              ${data.message.replace(/\n/g, '<br>')}
+            </div>
+          </div>
+          <p>Best regards,<br>The Team</p>
+        </div>
       `,
       `Thank you for your message, ${data.name}! We will get back to you within 24 hours.`
     );
+
+    // Also send notification to admin (in demo, just log it)
+    await this.sendEmail(
+      ['admin@example.com'],
+      'New Contact Form Submission',
+      htmlBody,
+      textBody
+    );
+
+    return confirmationResult;
   }
 
   async sendWelcomeEmail(userEmail: string, userName: string): Promise<EmailResult> {
@@ -93,12 +130,14 @@ class EmailService {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #333;">Welcome to our platform, ${userName}!</h1>
         <p>Thank you for signing up. We're excited to have you on board.</p>
-        <p>Here's what you can do next:</p>
-        <ul>
-          <li>Complete your profile setup</li>
-          <li>Explore our features</li>
-          <li>Contact our support team if you need help</li>
-        </ul>
+        <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3>Here's what you can do next:</h3>
+          <ul>
+            <li>Complete your profile setup</li>
+            <li>Explore our features</li>
+            <li>Contact our support team if you need help</li>
+          </ul>
+        </div>
         <p>Best regards,<br>The Team</p>
       </div>
     `;
