@@ -50,26 +50,26 @@ const AmazonAdvertising = () => {
       />
       <Header />
       
-      <div className="space-y-20 md:space-y-32">
-        {/* Enhanced Hero Section with New Typography */}
-        <section className="pt-24 pb-16 md:pt-32 md:pb-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+      <div className="space-y-32">
+        {/* Enhanced Hero Section with proper spacing */}
+        <section className="pt-32 pb-20 bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/20 relative overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-          <div className="container-minimal relative">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="container-standard relative px-8">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div className="animate-fade-in-up">
-                <div className="mb-6">
-                  <span className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium font-body">
+                <div className="mb-8">
+                  <span className="inline-flex items-center px-6 py-3 bg-blue-50 text-primary rounded-full text-sm font-medium font-body border border-blue-100">
                     🚀 Amazon PPC Experts
                   </span>
                 </div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6 leading-tight">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-dark mb-8 leading-tight">
                   {config?.title || 'Dominate Amazon with Expert PPC Management'}
                 </h1>
-                <p className="text-xl text-minimal leading-relaxed mb-8 max-w-xl font-body">
+                <p className="text-xl text-minimal leading-relaxed mb-10 max-w-xl font-body">
                   {config?.heroDescription || 'Transform your Amazon presence with data-driven advertising strategies that deliver 350% average sales growth and 4.2x ROAS.'}
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <div className="flex flex-col sm:flex-row gap-6 mb-12">
                   <Button 
                     size="lg" 
                     className="bg-gradient-primary hover:shadow-lg text-white px-8 py-4 text-lg font-semibold font-body rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
@@ -82,25 +82,25 @@ const AmazonAdvertising = () => {
                   <Button 
                     variant="outline" 
                     size="lg"
-                    className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold font-body rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+                    className="border-2 border-gray-200 bg-white/80 backdrop-blur-sm hover:bg-white text-dark px-8 py-4 text-lg font-semibold font-body rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
                     onClick={() => window.location.href = '/case-studies'}
                   >
                     {config?.secondaryButtonText || 'View Success Stories'}
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-200">
+                <div className="grid grid-cols-3 gap-8 pt-8 border-t border-gray-200/60">
                   <div className="text-center">
-                    <div className="text-2xl font-bold font-heading text-slate-900">350%</div>
-                    <div className="text-sm text-minimal font-body">Avg Sales Growth</div>
+                    <div className="text-3xl font-bold font-heading text-dark">350%</div>
+                    <div className="text-sm text-minimal font-body mt-1">Avg Sales Growth</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold font-heading text-slate-900">4.2x</div>
-                    <div className="text-sm text-minimal font-body">Average ROAS</div>
+                    <div className="text-3xl font-bold font-heading text-dark">4.2x</div>
+                    <div className="text-sm text-minimal font-body mt-1">Average ROAS</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold font-heading text-slate-900">98%</div>
-                    <div className="text-sm text-minimal font-body">Client Satisfaction</div>
+                    <div className="text-3xl font-bold font-heading text-dark">98%</div>
+                    <div className="text-sm text-minimal font-body mt-1">Client Satisfaction</div>
                   </div>
                 </div>
               </div>
@@ -118,26 +118,26 @@ const AmazonAdvertising = () => {
         </section>
 
         {/* Features Section with Enhanced Typography */}
-        <section className="py-16 bg-white">
-          <div className="container-minimal">
-            <div className="text-center mb-16 animate-fade-in">
-              <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-900 mb-4">
+        <section className="py-20 bg-white">
+          <div className="container-standard px-8">
+            <div className="text-center mb-20 animate-fade-in">
+              <h2 className="text-4xl md:text-5xl font-heading font-bold text-dark mb-6">
                 Why Choose Our Amazon Advertising Services?
               </h2>
-              <p className="text-xl text-minimal max-w-3xl mx-auto font-body">
+              <p className="text-xl text-minimal max-w-3xl mx-auto font-body leading-relaxed">
                 We combine cutting-edge technology with proven strategies to deliver exceptional results for your Amazon business.
               </p>
             </div>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
               {features.map((feature, index) => {
                 const IconComponent = feature.icon;
                 return (
-                  <div key={index} className="text-center p-6 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-2 animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
-                    <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <div key={index} className="text-center p-8 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-2 animate-scale-in bg-white border border-gray-100" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-heading font-semibold text-slate-900 mb-3">{feature.title}</h3>
+                    <h3 className="text-xl font-heading font-semibold text-dark mb-4">{feature.title}</h3>
                     <p className="text-minimal leading-relaxed font-body">{feature.description}</p>
                   </div>
                 );
