@@ -144,7 +144,7 @@ const WalmartAdvertising = () => {
         {/* Hero Section */}
         <section className="pt-40 pb-20 bg-agency-gradient-light relative overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-          <div className="container-standard relative">
+          <div className="container-standard relative px-6 sm:px-8 lg:px-12">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <div className="mb-8">
@@ -198,8 +198,8 @@ const WalmartAdvertising = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-agency-gradient rounded-3xl blur-3xl opacity-20"></div>
                 <img
-                  src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop&crop=center"
-                  alt="Walmart Advertising Management"
+                  src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&crop=center"
+                  alt="Walmart Store and Shopping Experience"
                   className="relative w-full rounded-3xl shadow-2xl object-cover h-96"
                 />
               </div>

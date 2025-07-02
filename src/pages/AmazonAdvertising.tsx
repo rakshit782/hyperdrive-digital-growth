@@ -1,15 +1,15 @@
+
 import React, { useState } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import ServiceStatsGrid from "@/components/ServiceStatsGrid";
-import ServiceReviewsGrid from "@/components/ServiceReviewsGrid";
 import ServiceCTA from "@/components/ServiceCTA";
 import CaseStudyPopup from "@/components/CaseStudyPopup";
 import { useServicePageConfig } from '@/hooks/useServicePageConfig';
 import { useServiceData } from '@/hooks/useServiceData';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ShoppingCart, TrendingUp, Target, BarChart3, ArrowUpRight, Star } from 'lucide-react';
+import { ArrowRight, Package, TrendingUp, Target, BarChart3, ArrowUpRight, Star } from 'lucide-react';
 
 const AmazonAdvertising = () => {
   const { configs, loading: configLoading } = useServicePageConfig();
@@ -20,7 +20,7 @@ const AmazonAdvertising = () => {
   const config = configs['amazon-advertising'] || configs['amazon'] || {
     title: 'Amazon Advertising Management',
     subtitle: 'Expert Amazon PPC & Marketplace Optimization',
-    heroDescription: 'Dominate Amazon with strategic PPC campaigns and listing optimization. We help brands achieve exceptional ROI through expert Amazon advertising management and marketplace strategies.',
+    heroDescription: 'Dominate Amazon with strategic advertising campaigns and marketplace optimization. We help brands achieve exceptional ROI through expert Amazon PPC management and listing optimization.',
     primaryButtonText: 'Get Free Amazon Audit',
     secondaryButtonText: 'View Success Stories',
     primaryButtonUrl: '/free-audit',
@@ -33,7 +33,7 @@ const AmazonAdvertising = () => {
 
   const features = [
     {
-      icon: ShoppingCart,
+      icon: Package,
       title: 'Amazon PPC Management',
       description: 'Strategic campaign optimization for maximum visibility and sales growth.',
       gradient: 'bg-agency-primary'
@@ -55,144 +55,6 @@ const AmazonAdvertising = () => {
       title: 'Performance Analytics',
       description: 'Detailed reporting and insights to optimize your campaigns.',
       gradient: 'bg-agency-primary'
-    }
-  ];
-
-  const amazonCaseStudies = [
-    {
-      id: "amazon-case-1",
-      title: "Fashion Brand Scales to $2M Revenue",
-      description: "Strategic PPC campaigns and listing optimization that increased Amazon sales by 400% in 6 months through advanced keyword targeting and bid optimization strategies.",
-      industry: "Fashion & Apparel",
-      client_name: "StyleHub Fashion",
-      results: {
-        "Revenue Increase": "400%",
-        "ROAS Improvement": "5.2x",
-        "Market Share Growth": "25%"
-      },
-      image_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
-      service_type: "amazon"
-    },
-    {
-      id: "amazon-case-2",
-      title: "Electronics Brand Dominates Search",
-      description: "Comprehensive keyword strategy and campaign restructuring that resulted in 300% sales growth and category leadership position.",
-      industry: "Electronics",
-      client_name: "TechGear Pro",
-      results: {
-        "Sales Growth": "300%",
-        "Search Ranking": "#1 Position",
-        "Market Share": "+45%"
-      },
-      image_url: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop",
-      service_type: "amazon"
-    },
-    {
-      id: "amazon-case-3",
-      title: "Beauty Brand Market Leadership",
-      description: "Brand-focused campaign strategy with sponsored brand ads that established market dominance and drove exceptional brand awareness.",
-      industry: "Beauty & Cosmetics",
-      client_name: "Pure Beauty",
-      results: {
-        "Brand Awareness": "+380%",
-        "Sales Growth": "+250%",
-        "Customer Acquisition": "+190%"
-      },
-      image_url: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop",
-      service_type: "amazon"
-    },
-    {
-      id: "amazon-case-4",
-      title: "Sports Equipment Market Expansion",
-      description: "Multi-category expansion strategy with targeted campaigns that drove massive growth across sports and recreation segments.",
-      industry: "Sports & Recreation",
-      client_name: "Elite Athletic",
-      results: {
-        "Market Expansion": "+380%",
-        "Cross-Category Growth": "+250%",
-        "Customer Lifetime Value": "+140%"
-      },
-      image_url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
-      service_type: "amazon"
-    },
-    {
-      id: "amazon-case-5",
-      title: "Kitchen Appliance Revenue Breakthrough",
-      description: "Dynamic campaign scheduling and inventory-based bidding that transformed kitchen brand performance and customer engagement.",
-      industry: "Kitchen & Home",
-      client_name: "Chef's Choice Pro",
-      results: {
-        "Revenue Growth": "+365%",
-        "Inventory Turnover": "+180%",
-        "Profit Margin": "+90%"
-      },
-      image_url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop",
-      service_type: "amazon"
-    },
-    {
-      id: "amazon-case-6",
-      title: "Pet Supplies Category Domination",
-      description: "Campaign consolidation and automated bidding implementation that established category leadership and drove exceptional growth.",
-      industry: "Pet Supplies",
-      client_name: "Happy Pets Co",
-      results: {
-        "Category Ranking": "#1 Position",
-        "Sales Growth": "+430%",
-        "Customer Retention": "+200%"
-      },
-      image_url: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop",
-      service_type: "amazon"
-    }
-  ];
-
-  const amazonReviews = [
-    {
-      id: "amazon-review-1",
-      client_name: "Sarah Mitchell",
-      company: "StyleHub Fashion",
-      rating: 5,
-      review_text: "Incredible Amazon advertising management that transformed our business. Sales increased 400% in just 6 months with their strategic approach to PPC and listing optimization.",
-      results_achieved: "400% sales increase, 5.2x ROAS improvement"
-    },
-    {
-      id: "amazon-review-2", 
-      client_name: "Michael Chen",
-      company: "TechGear Pro",
-      rating: 5,
-      review_text: "Outstanding Amazon expertise that helped us dominate our category. The keyword strategy and campaign restructuring delivered exceptional results beyond our expectations.",
-      results_achieved: "300% sales growth, #1 category ranking"
-    },
-    {
-      id: "amazon-review-3",
-      client_name: "Jessica Rodriguez",
-      company: "Pure Beauty",
-      rating: 5,
-      review_text: "Professional team with deep Amazon knowledge. Our brand awareness and sales grew dramatically through their sponsored brand campaigns and strategic targeting.",
-      results_achieved: "380% brand awareness increase, 250% sales growth"
-    },
-    {
-      id: "amazon-review-4",
-      client_name: "David Thompson",
-      company: "Elite Athletic",
-      rating: 5,
-      review_text: "Exceptional Amazon advertising services that expanded our market reach across multiple categories. The multi-category strategy delivered outstanding growth.",
-      results_achieved: "380% market expansion, 250% cross-category growth"
-    },
-    {
-      id: "amazon-review-5",
-      client_name: "Amanda Foster",
-      company: "Chef's Choice Pro",
-      rating: 5,
-      review_text: "Strategic Amazon management that transformed our kitchen brand performance. Dynamic bidding and inventory optimization drove incredible revenue growth.",
-      results_achieved: "365% revenue growth, 180% inventory turnover"
-    },
-    {
-      id: "amazon-review-6",
-      client_name: "Robert Kim",
-      company: "Happy Pets Co",
-      rating: 5,
-      review_text: "Top-tier Amazon advertising that established our category leadership. Campaign consolidation and automated bidding delivered exceptional results.",
-      results_achieved: "#1 category position, 430% sales growth"
     }
   ];
 
@@ -219,6 +81,57 @@ const AmazonAdvertising = () => {
 
   const loading = configLoading || dataLoading;
 
+  const amazonReviews = [
+    {
+      id: "amazon-review-1",
+      client_name: "Sarah Johnson",
+      company: "TechGear Pro",
+      rating: 5,
+      review_text: "Outstanding Amazon PPC management that transformed our product visibility and sales performance. The keyword optimization and bid management exceeded all expectations.",
+      results_achieved: "340% sales increase, 5.2x ROAS"
+    },
+    {
+      id: "amazon-review-2",
+      client_name: "Michael Chen",
+      company: "HomeStyle Solutions",
+      rating: 5,
+      review_text: "Professional Amazon advertising strategy that established our brand as a category leader. The listing optimization and sponsored ad campaigns delivered incredible growth.",
+      results_achieved: "280% revenue growth, #1 BSR ranking"
+    },
+    {
+      id: "amazon-review-3",
+      client_name: "Lisa Rodriguez",
+      company: "FitLife Essentials",  
+      rating: 5,
+      review_text: "Exceptional Amazon marketplace expertise that maximized our health & wellness brand performance. The strategic campaign management was game-changing.",
+      results_achieved: "450% organic sales boost, 180% conversion rate"
+    },
+    {
+      id: "amazon-review-4",
+      client_name: "David Thompson",
+      company: "Urban Tech",
+      rating: 5,
+      review_text: "Expert Amazon advertising that achieved remarkable market penetration in competitive electronics category. The data-driven approach delivered outstanding results.",
+      results_achieved: "390% market share growth, 220% profit increase"
+    },
+    {
+      id: "amazon-review-5",
+      client_name: "Jennifer Foster",
+      company: "Beauty Bliss Co",
+      rating: 5,
+      review_text: "Strategic Amazon campaign management that transformed our beauty brand presence and customer acquisition across multiple product lines.",
+      results_achieved: "520% brand awareness, 165% customer lifetime value"  
+    },
+    {
+      id: "amazon-review-6",
+      client_name: "Robert Kim",
+      company: "Outdoor Adventures",
+      rating: 5,
+      review_text: "Outstanding seasonal campaign optimization that maximized our outdoor gear performance during peak seasons and maintained year-round growth.",
+      results_achieved: "380% seasonal revenue, 195% inventory turnover"
+    }
+  ];
+
   return (
     <>
       <SEOHead 
@@ -231,12 +144,12 @@ const AmazonAdvertising = () => {
         {/* Hero Section */}
         <section className="pt-40 pb-20 bg-agency-gradient-light relative overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-          <div className="container-standard relative">
+          <div className="container-standard relative px-6 sm:px-8 lg:px-12">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <div className="mb-8">
                   <span className="inline-flex items-center px-6 py-3 bg-agency-neutral text-agency-primary rounded-full text-sm font-medium font-body border border-agency-primary/20">
-                    🚀 Amazon Ads Certified
+                    📦 Amazon PPC Certified
                   </span>
                 </div>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-agency-dark mb-8 leading-tight">
@@ -268,15 +181,15 @@ const AmazonAdvertising = () => {
 
                 <div className="grid grid-cols-3 gap-8 pt-8 border-t border-gray-200/60">
                   <div className="text-center">
-                    <div className="text-3xl font-bold font-heading text-agency-dark">450%</div>
+                    <div className="text-3xl font-bold font-heading text-agency-dark">420%</div>
                     <div className="text-sm text-minimal font-body mt-1">Avg ROI Increase</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold font-heading text-agency-dark">9.0+</div>
-                    <div className="text-sm text-minimal font-body mt-1">Listing Quality Score</div>
+                    <div className="text-3xl font-bold font-heading text-agency-dark">8.5+</div>
+                    <div className="text-sm text-minimal font-body mt-1">Quality Score</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold font-heading text-agency-dark">70%</div>
+                    <div className="text-3xl font-bold font-heading text-agency-dark">65%</div>
                     <div className="text-sm text-minimal font-body mt-1">Conversion Boost</div>
                   </div>
                 </div>
@@ -285,8 +198,8 @@ const AmazonAdvertising = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-agency-gradient rounded-3xl blur-3xl opacity-20"></div>
                 <img
-                  src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&crop=center"
-                  alt="Amazon Advertising Management"
+                  src="https://images.unsplash.com/photo-1523474438810-b04a6f72e20f?w=600&h=400&fit=crop&crop=center"
+                  alt="Amazon Packages and Logistics"
                   className="relative w-full rounded-3xl shadow-2xl object-cover h-96"
                 />
               </div>
@@ -296,13 +209,13 @@ const AmazonAdvertising = () => {
 
         {/* Features Section */}
         <section className="py-20 bg-white">
-          <div className="container-standard">
+          <div className="container-standard px-6 sm:px-8 lg:px-12">
             <div className="text-center mb-20">
               <h2 className="text-4xl md:text-5xl font-heading font-bold text-agency-dark mb-6">
                 Master Amazon Advertising
               </h2>
               <p className="text-xl text-minimal max-w-3xl mx-auto font-body leading-relaxed">
-                Dominate the marketplace and drive sales with our comprehensive Amazon advertising management services.
+                Dominate the Amazon marketplace and drive qualified traffic with our comprehensive PPC management services.
               </p>
             </div>
             
@@ -325,18 +238,18 @@ const AmazonAdvertising = () => {
 
         {/* Case Studies Section */}
         <section className="py-20 bg-agency-gradient-light">
-          <div className="container-standard">
+          <div className="container-standard px-6 sm:px-8 lg:px-12">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-heading font-bold text-agency-dark mb-6">
-                Amazon Ads Success Stories
+                Amazon PPC Success Stories
               </h2>
               <p className="text-xl text-minimal max-w-3xl mx-auto font-body leading-relaxed">
-                See how our Amazon Ads expertise has driven exceptional results across diverse industries.
+                See how our Amazon PPC expertise has driven exceptional results across diverse industries.
               </p>
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {amazonCaseStudies.map((study, index) => (
+              {caseStudies.map((study, index) => (
                 <div 
                   key={study.id}
                   className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer group"
@@ -393,13 +306,13 @@ const AmazonAdvertising = () => {
 
         {/* Reviews Section */}
         <section className="py-20 bg-white">
-          <div className="container-standard">
+          <div className="container-standard px-6 sm:px-8 lg:px-12">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-heading font-bold text-agency-dark mb-6">
                 What Our Amazon Clients Say
               </h2>
               <p className="text-xl text-minimal max-w-3xl mx-auto font-body leading-relaxed">
-                Hear from businesses that have transformed their Amazon presence with our expert advertising management.
+                Discover how businesses have achieved remarkable growth with our Amazon advertising expertise.
               </p>
             </div>
             
