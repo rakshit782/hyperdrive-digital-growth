@@ -1,11 +1,12 @@
+
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { useRouter } from "next/router";
+import { useNavigate } from "react-router-dom";
 
 const Services = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const services = [
     {
@@ -74,7 +75,7 @@ const Services = () => {
           <Card
             key={index}
             className={`group cursor-pointer hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 bg-white/80 backdrop-blur-sm`}
-            onClick={() => router.push(service.link)}
+            onClick={() => navigate(service.link)}
           >
             <div
               className={`h-48 rounded-t-xl bg-gradient-to-r ${service.bgGradient} flex items-center justify-center overflow-hidden`}
@@ -93,7 +94,7 @@ const Services = () => {
                 className="flex items-center justify-center w-full"
                 onClick={(e) => {
                   e.stopPropagation();
-                  router.push(service.link);
+                  navigate(service.link);
                 }}
               >
                 Learn More

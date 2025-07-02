@@ -22,6 +22,7 @@ import ShopifyIntegration from "./pages/ShopifyIntegration";
 import ShopifyDevelopment from "./pages/ShopifyDevelopment";
 import Auth from "./pages/Auth";
 import TrackingScriptInjector from "./components/TrackingScriptInjector";
+import GoogleAdvertising from "./pages/GoogleAdvertising";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
             <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
+            <Route path="/google-advertising" element={<GoogleAdvertising />} />
             <Route path="/meta-advertising" element={<MetaAdvertising />} />
             <Route path="/website-development" element={<WebsiteDevelopment />} />
             <Route path="/account-management" element={<AccountManagement />} />
