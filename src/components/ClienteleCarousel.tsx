@@ -1,5 +1,8 @@
+
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import useEmblaCarousel from "embla-carousel-react";
+import AutoPlay from "embla-carousel-autoplay";
 
 interface ClienteleLogo {
   id: string;
@@ -87,29 +90,37 @@ const ClienteleCarousel = () => {
   if (clienteleLogos.length === 0) return null;
 
   return (
-    <section className="py-8 bg-white border-b border-gray-100">
+    <section className="py-4 bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-200/50">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-6">
-          <h3 className="text-sm font-medium text-gray-500 mb-2">Trusted by Leading Brands</h3>
+        <div className="text-center mb-3">
+          <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">Trusted by Leading Brands</h3>
+          <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto"></div>
         </div>
         
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <Carousel
             opts={{
               align: "start",
               loop: true,
             }}
+            plugins={[
+              AutoPlay({
+                delay: 2000,
+                stopOnInteraction: false,
+                stopOnMouseEnter: true,
+              })
+            ]}
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-3">
               {clienteleLogos.map((logo) => (
                 <CarouselItem key={logo.id} className="pl-2 md:pl-3 basis-1/3 md:basis-1/5 lg:basis-1/6">
                   <div className="group relative">
-                    <div className="flex items-center justify-center p-3 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+                    <div className="flex items-center justify-center p-2 bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200/50 hover:bg-white hover:border-slate-300/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                       <img
                         src={logo.imageUrl}
                         alt={logo.name}
-                        className="h-8 w-auto object-contain opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+                        className="h-6 w-auto object-contain opacity-60 group-hover:opacity-100 transition-all duration-300 filter grayscale group-hover:grayscale-0"
                         onError={(e) => {
                           e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAzMkg4MFY0OEg0MFYzMloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                         }}
@@ -119,10 +130,6 @@ const ClienteleCarousel = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="flex justify-center mt-4 gap-2">
-              <CarouselPrevious className="relative inset-auto translate-y-0 bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 w-8 h-8" />
-              <CarouselNext className="relative inset-auto translate-y-0 bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 w-8 h-8" />
-            </div>
           </Carousel>
         </div>
       </div>
