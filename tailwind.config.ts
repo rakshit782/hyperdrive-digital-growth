@@ -63,6 +63,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// Digital Marketing Agency Theme Colors
+				'agency-primary': 'hsl(var(--agency-primary))',
+				'agency-secondary': 'hsl(var(--agency-secondary))',
+				'agency-accent': 'hsl(var(--agency-accent))',
+				'agency-neutral': 'hsl(var(--agency-neutral))',
+				'agency-dark': 'hsl(var(--agency-dark))',
 				// Modern color palette
 				gray: {
 					50: '#f9fafb',
