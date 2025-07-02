@@ -1,5 +1,5 @@
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -38,8 +38,9 @@
   }
   
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-body;
     font-feature-settings: "rlig" 1, "calt" 1;
+    letter-spacing: -0.01em;
   }
 }
 
@@ -49,38 +50,61 @@
   }
 }
 
-/* Minimalist Design System */
+/* Enhanced Typography System with Google Fonts */
+.heading-minimal {
+  @apply font-heading font-medium tracking-tight text-foreground;
+  letter-spacing: -0.02em;
+}
+
+.heading-display {
+  @apply font-heading font-semibold tracking-tight text-foreground;
+  letter-spacing: -0.03em;
+}
+
+.text-minimal {
+  @apply text-muted-foreground leading-relaxed font-body;
+  letter-spacing: -0.01em;
+}
+
+.text-body {
+  @apply font-body text-foreground leading-relaxed;
+  letter-spacing: -0.005em;
+}
+
+.text-display {
+  @apply font-display font-medium text-foreground;
+  letter-spacing: -0.01em;
+}
+
+/* Enhanced Minimalist Design System */
 .container-minimal {
   @apply max-w-6xl mx-auto px-6 sm:px-8 lg:px-12;
 }
 
-.heading-minimal {
-  @apply font-medium tracking-tight text-foreground;
-  font-family: 'Inter', sans-serif;
-}
-
-.text-minimal {
-  @apply text-muted-foreground leading-relaxed;
-  font-family: 'Inter', sans-serif;
-}
-
 .card-minimal {
-  @apply bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+  @apply bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300;
+  backdrop-filter: blur(10px);
 }
 
 .btn-minimal-primary {
-  @apply bg-primary text-primary-foreground hover:bg-primary/90 border-0 shadow-none transition-colors duration-200;
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 border-0 shadow-none transition-all duration-300 font-medium;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
 }
 
 .btn-minimal-secondary {
-  @apply bg-transparent border border-border text-foreground hover:bg-muted transition-colors duration-200;
+  @apply bg-transparent border border-border text-foreground hover:bg-muted transition-all duration-300 font-medium;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
 }
 
 .btn-minimal-ghost {
-  @apply bg-transparent border-0 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200;
+  @apply bg-transparent border-0 text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300 font-medium;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
 }
 
-/* Subtle animations */
+/* Enhanced animations with modern easing */
 @keyframes fadeInUp {
   from { 
     opacity: 0; 
@@ -97,58 +121,115 @@
   to { opacity: 1; }
 }
 
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* Minimal spacing system */
+.animate-slide-in-left {
+  animation: slideInLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Typography scale with better font assignments */
+.text-minimal-xs { @apply text-xs font-body; }
+.text-minimal-sm { @apply text-sm font-body; }
+.text-minimal-base { @apply text-base font-body; }
+.text-minimal-lg { @apply text-lg font-body; }
+.text-minimal-xl { @apply text-xl font-heading; }
+.text-minimal-2xl { @apply text-2xl font-heading; }
+.text-minimal-3xl { @apply text-3xl font-heading; }
+.text-minimal-4xl { @apply text-4xl font-heading; }
+.text-minimal-5xl { @apply text-5xl font-heading; }
+
+/* Enhanced spacing system */
 .space-minimal-xs { @apply space-y-2; }
 .space-minimal-sm { @apply space-y-4; }
 .space-minimal-md { @apply space-y-6; }
 .space-minimal-lg { @apply space-y-8; }
 .space-minimal-xl { @apply space-y-12; }
 
-/* Clean focus states */
+/* Modern focus states */
 .focus-minimal:focus {
   @apply outline-none ring-2 ring-ring ring-offset-2;
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Minimal form elements */
+/* Enhanced form elements */
 .form-minimal input,
 .form-minimal textarea,
 .form-minimal select {
-  @apply bg-background border border-input focus:border-ring focus:ring-1 focus:ring-ring transition-colors duration-200 rounded-md;
+  @apply bg-background border border-input focus:border-ring focus:ring-1 focus:ring-ring transition-all duration-300 rounded-md font-body;
+  letter-spacing: -0.01em;
 }
 
 .form-minimal label {
-  @apply text-sm font-medium text-foreground;
+  @apply text-sm font-medium text-foreground font-body;
+  letter-spacing: -0.01em;
 }
 
-/* Dashboard improvements */
+/* Dashboard improvements with better typography */
 .dashboard-minimal {
   @apply bg-muted/30;
 }
 
 .dashboard-card-minimal {
-  @apply bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+  @apply bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300;
+  backdrop-filter: blur(10px);
 }
 
 .dashboard-header-minimal {
   @apply bg-card border-b border-border;
 }
 
-/* Minimalist gradients */
+/* Enhanced gradients */
 .bg-gradient-minimal {
   background: linear-gradient(135deg, 
     hsl(var(--background)) 0%, 
     hsl(var(--muted)) 100%);
 }
 
-/* Clean shadows */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, 
+    #3b82f6 0%, 
+    #6366f1 100%);
+}
+
+.bg-gradient-secondary {
+  background: linear-gradient(135deg, 
+    #8b5cf6 0%, 
+    #a855f7 100%);
+}
+
+/* Modern shadows with subtle depth */
 .shadow-minimal {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
@@ -157,30 +238,24 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
-/* Typography scale */
-.text-minimal-xs { @apply text-xs; }
-.text-minimal-sm { @apply text-sm; }
-.text-minimal-base { @apply text-base; }
-.text-minimal-lg { @apply text-lg; }
-.text-minimal-xl { @apply text-xl; }
-.text-minimal-2xl { @apply text-2xl; }
-.text-minimal-3xl { @apply text-3xl; }
+.shadow-minimal-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
 
-/* Clean hover states */
+.shadow-minimal-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Enhanced hover states */
 .hover-minimal {
-  @apply transition-colors duration-200 hover:text-foreground;
+  @apply transition-all duration-300 hover:text-foreground;
 }
 
-/* Minimal borders */
-.border-minimal {
-  @apply border border-border;
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
 }
 
-.border-minimal-dashed {
-  @apply border border-dashed border-border;
-}
-
-/* Icon styling */
+/* Icon styling with better positioning */
 .icon-minimal {
   @apply w-4 h-4 text-muted-foreground;
 }
@@ -189,26 +264,36 @@
   @apply w-5 h-5 text-muted-foreground;
 }
 
-/* Navigation styling */
+/* Navigation with enhanced typography */
 .nav-minimal {
-  @apply text-muted-foreground hover:text-foreground transition-colors duration-200;
+  @apply text-muted-foreground hover:text-foreground transition-all duration-300 font-medium;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
 }
 
 .nav-minimal-active {
-  @apply text-foreground font-medium;
+  @apply text-foreground font-semibold;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
 }
 
-/* Responsive utilities */
+/* Enhanced responsive utilities */
 @media (max-width: 768px) {
   .container-minimal {
     @apply px-4;
   }
+  
+  .text-minimal-3xl { @apply text-2xl; }
+  .text-minimal-4xl { @apply text-3xl; }
+  .text-minimal-5xl { @apply text-4xl; }
 }
 
-/* Accessibility */
+/* Accessibility with reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in-up,
-  .animate-fade-in {
+  .animate-fade-in,
+  .animate-slide-in-left,
+  .animate-scale-in {
     animation: none;
   }
   
@@ -219,25 +304,58 @@
   }
 }
 
-/* Remove visual noise */
-.minimal-reset {
-  @apply shadow-none border-0 bg-transparent;
-}
-
-/* Clean list styling */
+/* Clean list styling with better typography */
 .list-minimal {
-  @apply space-y-1;
+  @apply space-y-2;
 }
 
 .list-minimal li {
-  @apply text-muted-foreground hover:text-foreground transition-colors duration-200;
+  @apply text-muted-foreground hover:text-foreground transition-colors duration-300 font-body;
+  letter-spacing: -0.01em;
 }
 
-/* Minimal button groups */
+/* Button groups with enhanced styling */
 .btn-group-minimal {
   @apply flex rounded-md border border-border overflow-hidden;
 }
 
 .btn-group-minimal button {
-  @apply border-0 border-r border-border last:border-r-0 hover:bg-muted transition-colors duration-200;
+  @apply border-0 border-r border-border last:border-r-0 hover:bg-muted transition-all duration-300 font-medium;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Modern card variations */
+.card-glass {
+  @apply bg-white/90 backdrop-blur-md border border-white/20 rounded-xl shadow-lg;
+}
+
+.card-elevated {
+  @apply bg-card border border-border rounded-xl shadow-lg hover:shadow-xl transition-all duration-300;
+}
+
+/* Text selection styling */
+::selection {
+  @apply bg-blue-100 text-blue-900;
+}
+
+::-moz-selection {
+  @apply bg-blue-100 text-blue-900;
+}
+
+/* Scrollbar styling for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
 }

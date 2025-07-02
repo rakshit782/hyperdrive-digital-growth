@@ -106,8 +106,11 @@ export default {
 			},
 			fontFamily: {
 				sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				serif: ['Playfair Display', 'Georgia', 'serif'],
 				display: ['Space Grotesk', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-				mono: ['ui-monospace', 'SFMono-Regular', 'monospace']
+				mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
+				heading: ['Playfair Display', 'Georgia', 'serif'],
+				body: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif']
 			},
 			fontSize: {
 				'xs': ['0.75rem', { lineHeight: '1rem' }],
