@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -10,6 +9,7 @@ import { useServicePageConfig } from '@/hooks/useServicePageConfig';
 import { useServiceData } from '@/hooks/useServiceData';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ShoppingCart, TrendingUp, Target, BarChart3, ArrowUpRight, Star } from 'lucide-react';
+import { useServiceHeaderImages } from '@/hooks/useServiceHeaderImages';
 
 const WalmartAdvertising = () => {
   const { configs, loading: configLoading } = useServicePageConfig();
@@ -17,6 +17,8 @@ const WalmartAdvertising = () => {
   const [selectedCaseStudy, setSelectedCaseStudy] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   
+  const { imageUrl, altText } = useServiceHeaderImages('walmart-advertising');
+
   const config = configs['walmart-advertising'] || configs['walmart'] || {
     title: 'Walmart Advertising Management',
     subtitle: 'Expert Walmart Connect & Marketplace Optimization',
@@ -198,8 +200,8 @@ const WalmartAdvertising = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-agency-gradient rounded-3xl blur-3xl opacity-20"></div>
                 <img
-                  src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&crop=center"
-                  alt="Walmart Store and Shopping Experience"
+                  src={imageUrl || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&crop=center"}
+                  alt={altText || "Walmart Store and Shopping Experience"}
                   className="relative w-full rounded-3xl shadow-2xl object-cover h-96"
                 />
               </div>

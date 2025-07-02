@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -10,6 +9,7 @@ import { useServicePageConfig } from '@/hooks/useServicePageConfig';
 import { useServiceData } from '@/hooks/useServiceData';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Package, TrendingUp, Target, BarChart3, ArrowUpRight, Star } from 'lucide-react';
+import { useServiceHeaderImages } from '@/hooks/useServiceHeaderImages';
 
 const AmazonAdvertising = () => {
   const { configs, loading: configLoading } = useServicePageConfig();
@@ -17,6 +17,8 @@ const AmazonAdvertising = () => {
   const [selectedCaseStudy, setSelectedCaseStudy] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   
+  const { imageUrl, altText } = useServiceHeaderImages('amazon-advertising');
+
   const config = configs['amazon-advertising'] || configs['amazon'] || {
     title: 'Amazon Advertising Management',
     subtitle: 'Expert Amazon PPC & Marketplace Optimization',
@@ -198,8 +200,8 @@ const AmazonAdvertising = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-agency-gradient rounded-3xl blur-3xl opacity-20"></div>
                 <img
-                  src="https://images.unsplash.com/photo-1523474438810-b04a6f72e20f?w=600&h=400&fit=crop&crop=center"
-                  alt="Amazon Packages and Logistics"
+                  src={imageUrl || "https://images.unsplash.com/photo-1523474438810-b04a6f72e20f?w=600&h=400&fit=crop&crop=center"}
+                  alt={altText || "Amazon Packages and Logistics"}
                   className="relative w-full rounded-3xl shadow-2xl object-cover h-96"
                 />
               </div>
