@@ -1,6 +1,8 @@
 
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import AuthorizedPartners from "@/components/AuthorizedPartners";
+import ClienteleCarousel from "@/components/ClienteleCarousel";
 import ModernServices from "@/components/ModernServices";
 import ModernFeatures from "@/components/ModernFeatures";
 import CircularReviews from "@/components/CircularReviews";
@@ -18,8 +20,10 @@ const Index = () => {
       />
       <div className="min-h-screen">
         <Header />
+        <AuthorizedPartners />
         <div className="space-y-20 md:space-y-32">
           <Hero />
+          <ClienteleCarousel />
           <ModernServices />
           <ModernFeatures />
           <CircularReviews />

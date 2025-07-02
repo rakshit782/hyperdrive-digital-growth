@@ -13,6 +13,7 @@ import WebsiteTab from "@/components/dashboard/WebsiteTab";
 import HeroSliderTab from "@/components/dashboard/HeroSliderTab";
 import ServiceHeaderImagesTab from "@/components/dashboard/ServiceHeaderImagesTab";
 import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
+import ClienteleManagementTab from "@/components/dashboard/ClienteleManagementTab";
 import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 
 const Dashboard = () => {
@@ -67,6 +68,12 @@ const Dashboard = () => {
       label: "Service Images",  
       icon: "🖼️",
       component: <ServiceHeaderImagesTab />
+    },
+    {
+      id: "clientele-management",
+      label: "Clientele Logos",
+      icon: "👥",
+      component: <ClienteleManagementTab />
     },
     {
       id: "footer-management",
