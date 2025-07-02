@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus, Upload, Users } from "lucide-react";
+import { Trash2, Plus, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ClienteleLogo {
@@ -111,103 +110,100 @@ const ClienteleManagementTab = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
-        <CardHeader>
-          <div className="flex items-center">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mr-3">
-              <Users className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-xl font-bold text-slate-900">Clientele Logos</CardTitle>
-              <CardDescription>Manage the client logos displayed in the carousel</CardDescription>
-            </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+            <Users className="w-5 h-5 text-white" />
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-slate-900">Client Logos</h3>
-              <Button onClick={addClienteleLogo} variant="outline" className="bg-white/50">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Client Logo
-              </Button>
-            </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Clientele Logos</h2>
+            <p className="text-gray-600">Manage the client logos displayed in the carousel</p>
+          </div>
+        </div>
+        <Button onClick={addClienteleLogo} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Client Logo
+        </Button>
+      </div>
 
-            <div className="grid gap-4">
-              {clienteleLogos.map((logo, index) => (
-                <div key={logo.id} className="border border-white/30 rounded-lg p-4 space-y-4 bg-white/30">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium text-slate-700">Client {index + 1}</h4>
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm text-slate-600">Active:</Label>
-                      <input
-                        type="checkbox"
-                        checked={logo.isActive}
-                        onChange={(e) => updateClienteleLogo(logo.id, 'isActive', e.target.checked)}
-                        className="w-4 h-4"
-                      />
-                      <Button 
-                        onClick={() => removeClienteleLogo(logo.id)} 
-                        size="sm" 
-                        variant="outline"
-                        className="text-red-600 hover:text-red-700 bg-white/50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+      <div className="grid gap-4">
+        {clienteleLogos.map((logo, index) => (
+          <Card key={logo.id} className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-semibold text-gray-900">Client {index + 1}</h4>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Label className="text-sm text-gray-600">Active:</Label>
+                    <input
+                      type="checkbox"
+                      checked={logo.isActive}
+                      onChange={(e) => updateClienteleLogo(logo.id, 'isActive', e.target.checked)}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                    />
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium text-slate-700">Client Name</Label>
-                      <Input
-                        value={logo.name}
-                        onChange={(e) => updateClienteleLogo(logo.id, 'name', e.target.value)}
-                        placeholder="Client Name"
-                        className="bg-white/50 border-white/30"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium text-slate-700">Logo URL</Label>
-                      <Input
-                        value={logo.imageUrl}
-                        onChange={(e) => updateClienteleLogo(logo.id, 'imageUrl', e.target.value)}
-                        placeholder="https://example.com/logo.png"
-                        className="bg-white/50 border-white/30"
-                      />
-                    </div>
-                  </div>
-                  
-                  {logo.imageUrl && (
-                    <div className="flex justify-center">
-                      <img
-                        src={logo.imageUrl}
-                        alt={logo.name}
-                        className="h-16 w-auto object-contain border border-gray-200 rounded p-2 bg-white"
-                        onError={(e) => {
-                          e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAzMkg4MFY0OEg0MFYzMloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
-                        }}
-                      />
-                    </div>
-                  )}
+                  <Button 
+                    onClick={() => removeClienteleLogo(logo.id)} 
+                    size="sm" 
+                    variant="outline"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
-              ))}
-            </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Client Name</Label>
+                  <Input
+                    value={logo.name}
+                    onChange={(e) => updateClienteleLogo(logo.id, 'name', e.target.value)}
+                    placeholder="Client Name"
+                    className="bg-white/70 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Logo URL</Label>
+                  <Input
+                    value={logo.imageUrl}
+                    onChange={(e) => updateClienteleLogo(logo.id, 'imageUrl', e.target.value)}
+                    placeholder="https://example.com/logo.png"
+                    className="bg-white/70 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              
+              {logo.imageUrl && (
+                <div className="mt-4 flex justify-center">
+                  <div className="p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
+                    <img
+                      src={logo.imageUrl}
+                      alt={logo.name}
+                      className="h-12 w-auto object-contain"
+                      onError={(e) => {
+                        e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAzMkg4MFY0OEg0MFYzMloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-            <Button 
-              onClick={handleSave} 
-              className={`w-full transition-all duration-300 ${
-                isSaved 
-                  ? "bg-green-600 hover:bg-green-700" 
-                  : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-              } shadow-lg`}
-            >
-              {isSaved ? "✓ Saved!" : "Save Clientele Logos"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Button 
+        onClick={handleSave} 
+        className={`w-full py-3 transition-all duration-300 ${
+          isSaved 
+            ? "bg-green-600 hover:bg-green-700" 
+            : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+        } shadow-lg`}
+      >
+        {isSaved ? "✓ Saved Successfully!" : "Save Clientele Logos"}
+      </Button>
     </div>
   );
 };
