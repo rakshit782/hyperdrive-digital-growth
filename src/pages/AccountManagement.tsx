@@ -141,9 +141,12 @@ const AccountManagement = () => {
               
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {stats.map((stat, index) => {
-                  const IconComponent = stat.icon_name ? (
-                    { Users, TrendingUp, Clock, Shield }[stat.icon_name as keyof typeof { Users: any, TrendingUp: any, Clock: any, Shield: any }] || Users
-                  ) : Users;
+                  const getIconComponent = (iconName: string) => {
+                    const iconMap = { Users, TrendingUp, Clock, Shield };
+                    return iconMap[iconName as keyof typeof iconMap] || Users;
+                  };
+                  
+                  const IconComponent = getIconComponent(stat.icon_name || 'Users');
                   
                   return (
                     <Card key={stat.id} className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2">

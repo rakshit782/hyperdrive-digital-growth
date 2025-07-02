@@ -145,9 +145,12 @@ const ShopifyIntegration = () => {
               
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {stats.map((stat, index) => {
-                  const IconComponent = stat.icon_name ? (
-                    { Link, RefreshCw, Zap, Settings }[stat.icon_name as keyof typeof { Link: any, RefreshCw: any, Zap: any, Settings: any }] || Link
-                  ) : Link;
+                  const getIconComponent = (iconName: string) => {
+                    const iconMap = { Link, RefreshCw, Zap, Settings };
+                    return iconMap[iconName as keyof typeof iconMap] || Link;
+                  };
+                  
+                  const IconComponent = getIconComponent(stat.icon_name || 'Link');
                   
                   return (
                     <Card key={stat.id} className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2">

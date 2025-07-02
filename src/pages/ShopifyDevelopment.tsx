@@ -166,9 +166,12 @@ const ShopifyDevelopment = () => {
               
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {stats.map((stat, index) => {
-                  const IconComponent = stat.icon_name ? (
-                    { Zap, Code, Palette, Monitor }[stat.icon_name as keyof typeof { Zap: any, Code: any, Palette: any, Monitor: any }] || Zap
-                  ) : Zap;
+                  const getIconComponent = (iconName: string) => {
+                    const iconMap = { Zap, Code, Palette, Monitor };
+                    return iconMap[iconName as keyof typeof iconMap] || Zap;
+                  };
+                  
+                  const IconComponent = getIconComponent(stat.icon_name || 'Zap');
                   
                   return (
                     <Card key={stat.id} className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
