@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge";
-import { Cog, Users, BarChart3, LayoutDashboard, Image, Globe, Slider, Star, Settings, Link2, Zap } from "lucide-react";
+import { Cog, Users, BarChart3, LayoutDashboard, Image, Globe, Sliders, Star, Settings, Link2, Zap } from "lucide-react";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useToast } from "@/hooks/use-toast";
 import ServiceCardsTab from "@/components/dashboard/ServiceCardsTab";
@@ -23,18 +23,6 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState(localStorage.getItem('activeDashboardTab') || 'website');
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      toast({
-        title: "Unauthorized",
-        description: "Please log in to access the dashboard.",
-        variant: "destructive"
-      });
-      navigate('/login');
-    }
-  }, [navigate, toast]);
-
-  useEffect(() => {
     localStorage.setItem('activeDashboardTab', activeTab);
   }, [activeTab]);
 
@@ -49,7 +37,7 @@ const Dashboard = () => {
     {
       id: "hero-slider",
       label: "Hero Slider",
-      icon: Slider,
+      icon: Sliders,
       color: "from-purple-500 to-purple-600",
       component: <HeroSliderTab />
     },
