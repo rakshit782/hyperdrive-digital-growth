@@ -6,26 +6,35 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { 
   Settings, 
   Plus, 
   Edit, 
   Trash2, 
   Save,
-  Eye,
+  Image,
   BarChart3,
   Star,
   FileText,
-  CheckCircle
+  CheckCircle,
+  Upload
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ServicePageCustomizerProps {
   serviceType: string;
   onClose: () => void;
+}
+
+interface HeroSection {
+  title: string;
+  subtitle: string;
+  description: string;
+  primaryButtonText: string;
+  secondaryButtonText: string;
+  heroImage: string;
+  badge: string;
 }
 
 interface StatBlock {
@@ -37,40 +46,71 @@ interface StatBlock {
   isActive: boolean;
 }
 
-interface CaseStudy {
-  id: string;
-  title: string;
-  client: string;
-  industry: string;
-  description: string;
-  results: Record<string, string>;
-  isSelected: boolean;
-}
-
-interface Review {
-  id: string;
-  clientName: string;
-  company: string;
-  rating: number;
-  reviewText: string;
-  isSelected: boolean;
-}
-
-interface WhyChooseUsItem {
+interface ServiceItem {
   id: string;
   title: string;
   description: string;
   icon: string;
+  gradient: string;
+  features: string[];
   isActive: boolean;
 }
 
+interface BenefitItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+  isActive: boolean;
+}
+
+interface ProcessStep {
+  id: string;
+  stepNumber: string;
+  title: string;
+  description: string;
+  isActive: boolean;
+}
+
+interface IntegrationPlatform {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  isActive: boolean;
+}
+
+interface CTASection {
+  title: string;
+  description: string;
+  buttonText: string;
+  backgroundImage: string;
+}
+
 const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceType, onClose }) => {
+  const [heroSection, setHeroSection] = useState<HeroSection>({
+    title: '',
+    subtitle: '',
+    description: '',
+    primaryButtonText: '',
+    secondaryButtonText: '',
+    heroImage: '',
+    badge: ''
+  });
   const [statBlocks, setStatBlocks] = useState<StatBlock[]>([]);
-  const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [whyChooseUsItems, setWhyChooseUsItems] = useState<WhyChooseUsItem[]>([]);
+  const [serviceItems, setServiceItems] = useState<ServiceItem[]>([]);
+  const [benefitItems, setBenefitItems] = useState<BenefitItem[]>([]);
+  const [processSteps, setProcessSteps] = useState<ProcessStep[]>([]);
+  const [integrationPlatforms, setIntegrationPlatforms] = useState<IntegrationPlatform[]>([]);
+  const [ctaSection, setCTASection] = useState<CTASection>({
+    title: '',
+    description: '',
+    buttonText: '',
+    backgroundImage: ''
+  });
   const [editingItem, setEditingItem] = useState<any>(null);
-  const [editingType, setEditingType] = useState<'stat' | 'case-study' | 'review' | 'why-choose-us' | null>(null);
+  const [editingType, setEditingType] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -78,19 +118,24 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
   }, [serviceType]);
 
   const loadServiceData = () => {
-    // Load from localStorage or API
+    const savedHero = localStorage.getItem(`service_hero_${serviceType}`);
     const savedStats = localStorage.getItem(`service_stats_${serviceType}`);
-    const savedCaseStudies = localStorage.getItem(`service_case_studies_${serviceType}`);
-    const savedReviews = localStorage.getItem(`service_reviews_${serviceType}`);
-    const savedWhyChooseUs = localStorage.getItem(`service_why_choose_us_${serviceType}`);
+    const savedServices = localStorage.getItem(`service_items_${serviceType}`);
+    const savedBenefits = localStorage.getItem(`service_benefits_${serviceType}`);
+    const savedProcess = localStorage.getItem(`service_process_${serviceType}`);
+    const savedIntegrations = localStorage.getItem(`service_integrations_${serviceType}`);
+    const savedCTA = localStorage.getItem(`service_cta_${serviceType}`);
 
+    if (savedHero) setHeroSection(JSON.parse(savedHero));
     if (savedStats) setStatBlocks(JSON.parse(savedStats));
-    if (savedCaseStudies) setCaseStudies(JSON.parse(savedCaseStudies));
-    if (savedReviews) setReviews(JSON.parse(savedReviews));
-    if (savedWhyChooseUs) setWhyChooseUsItems(JSON.parse(savedWhyChooseUs));
+    if (savedServices) setServiceItems(JSON.parse(savedServices));
+    if (savedBenefits) setBenefitItems(JSON.parse(savedBenefits));
+    if (savedProcess) setProcessSteps(JSON.parse(savedProcess));
+    if (savedIntegrations) setIntegrationPlatforms(JSON.parse(savedIntegrations));
+    if (savedCTA) setCTASection(JSON.parse(savedCTA));
   };
 
-  const saveData = (type: string, data: any[]) => {
+  const saveData = (type: string, data: any) => {
     localStorage.setItem(`service_${type}_${serviceType}`, JSON.stringify(data));
     toast({
       title: "Success",
@@ -98,25 +143,27 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
     });
   };
 
-  const handleAddNew = (type: 'stat' | 'case-study' | 'review' | 'why-choose-us') => {
+  const handleAddNew = (type: string) => {
     const newItem = {
       id: Math.random().toString(36).substring(2, 15),
       isActive: true,
-      isSelected: true,
     };
 
     switch (type) {
       case 'stat':
         setEditingItem({ ...newItem, label: '', value: '', description: '', icon: 'BarChart3' });
         break;
-      case 'case-study':
-        setEditingItem({ ...newItem, title: '', client: '', industry: '', description: '', results: {} });
+      case 'service':
+        setEditingItem({ ...newItem, title: '', description: '', icon: 'Star', gradient: 'bg-gradient-to-r from-blue-500 to-indigo-500', features: [] });
         break;
-      case 'review':
-        setEditingItem({ ...newItem, clientName: '', company: '', rating: 5, reviewText: '' });
+      case 'benefit':
+        setEditingItem({ ...newItem, title: '', description: '', icon: 'CheckCircle', color: 'bg-gradient-to-r from-green-500 to-emerald-500' });
         break;
-      case 'why-choose-us':
-        setEditingItem({ ...newItem, title: '', description: '', icon: 'CheckCircle' });
+      case 'process':
+        setEditingItem({ ...newItem, stepNumber: '1', title: '', description: '' });
+        break;
+      case 'integration':
+        setEditingItem({ ...newItem, name: '', logo: '🔗', description: '' });
         break;
     }
     setEditingType(type);
@@ -127,32 +174,39 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
 
     switch (editingType) {
       case 'stat':
-        const newStats = editingItem.id ? 
+        const newStats = editingItem.id && statBlocks.find(item => item.id === editingItem.id) ? 
           statBlocks.map(item => item.id === editingItem.id ? editingItem : item) :
           [...statBlocks, editingItem];
         setStatBlocks(newStats);
         saveData('stats', newStats);
         break;
-      case 'case-study':
-        const newCaseStudies = editingItem.id ? 
-          caseStudies.map(item => item.id === editingItem.id ? editingItem : item) :
-          [...caseStudies, editingItem];
-        setCaseStudies(newCaseStudies);
-        saveData('case_studies', newCaseStudies);
+      case 'service':
+        const newServices = editingItem.id && serviceItems.find(item => item.id === editingItem.id) ? 
+          serviceItems.map(item => item.id === editingItem.id ? editingItem : item) :
+          [...serviceItems, editingItem];
+        setServiceItems(newServices);
+        saveData('items', newServices);
         break;
-      case 'review':
-        const newReviews = editingItem.id ? 
-          reviews.map(item => item.id === editingItem.id ? editingItem : item) :
-          [...reviews, editingItem];
-        setReviews(newReviews);
-        saveData('reviews', newReviews);
+      case 'benefit':
+        const newBenefits = editingItem.id && benefitItems.find(item => item.id === editingItem.id) ? 
+          benefitItems.map(item => item.id === editingItem.id ? editingItem : item) :
+          [...benefitItems, editingItem];
+        setBenefitItems(newBenefits);
+        saveData('benefits', newBenefits);
         break;
-      case 'why-choose-us':
-        const newWhyChooseUs = editingItem.id ? 
-          whyChooseUsItems.map(item => item.id === editingItem.id ? editingItem : item) :
-          [...whyChooseUsItems, editingItem];
-        setWhyChooseUsItems(newWhyChooseUs);
-        saveData('why_choose_us', newWhyChooseUs);
+      case 'process':
+        const newProcess = editingItem.id && processSteps.find(item => item.id === editingItem.id) ? 
+          processSteps.map(item => item.id === editingItem.id ? editingItem : item) :
+          [...processSteps, editingItem];
+        setProcessSteps(newProcess);
+        saveData('process', newProcess);
+        break;
+      case 'integration':
+        const newIntegrations = editingItem.id && integrationPlatforms.find(item => item.id === editingItem.id) ? 
+          integrationPlatforms.map(item => item.id === editingItem.id ? editingItem : item) :
+          [...integrationPlatforms, editingItem];
+        setIntegrationPlatforms(newIntegrations);
+        saveData('integrations', newIntegrations);
         break;
     }
 
@@ -160,7 +214,7 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
     setEditingType(null);
   };
 
-  const handleDelete = (type: 'stat' | 'case-study' | 'review' | 'why-choose-us', id: string) => {
+  const handleDelete = (type: string, id: string) => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
 
     switch (type) {
@@ -169,20 +223,25 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
         setStatBlocks(filteredStats);
         saveData('stats', filteredStats);
         break;
-      case 'case-study':
-        const filteredCaseStudies = caseStudies.filter(item => item.id !== id);
-        setCaseStudies(filteredCaseStudies);
-        saveData('case_studies', filteredCaseStudies);
+      case 'service':
+        const filteredServices = serviceItems.filter(item => item.id !== id);
+        setServiceItems(filteredServices);
+        saveData('items', filteredServices);
         break;
-      case 'review':
-        const filteredReviews = reviews.filter(item => item.id !== id);
-        setReviews(filteredReviews);
-        saveData('reviews', filteredReviews);
+      case 'benefit':
+        const filteredBenefits = benefitItems.filter(item => item.id !== id);
+        setBenefitItems(filteredBenefits);
+        saveData('benefits', filteredBenefits);
         break;
-      case 'why-choose-us':
-        const filteredWhyChooseUs = whyChooseUsItems.filter(item => item.id !== id);
-        setWhyChooseUsItems(filteredWhyChooseUs);
-        saveData('why_choose_us', filteredWhyChooseUs);
+      case 'process':
+        const filteredProcess = processSteps.filter(item => item.id !== id);
+        setProcessSteps(filteredProcess);
+        saveData('process', filteredProcess);
+        break;
+      case 'integration':
+        const filteredIntegrations = integrationPlatforms.filter(item => item.id !== id);
+        setIntegrationPlatforms(filteredIntegrations);
+        saveData('integrations', filteredIntegrations);
         break;
     }
   };
@@ -201,7 +260,7 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
                   Customize {serviceType} Service Page
                 </CardTitle>
                 <CardDescription>
-                  Manage stats, case studies, reviews, and features for your service page
+                  Manage all sections, images, and content for your service page
                 </CardDescription>
               </div>
             </div>
@@ -212,13 +271,92 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
         </CardHeader>
         
         <CardContent>
-          <Tabs defaultValue="stats" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="stats">Stat Blocks</TabsTrigger>
-              <TabsTrigger value="case-studies">Case Studies</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
-              <TabsTrigger value="features">Features</TabsTrigger>
+          <Tabs defaultValue="hero" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-7">
+              <TabsTrigger value="hero">Hero</TabsTrigger>
+              <TabsTrigger value="stats">Stats</TabsTrigger>
+              <TabsTrigger value="services">Services</TabsTrigger>
+              <TabsTrigger value="benefits">Benefits</TabsTrigger>
+              <TabsTrigger value="process">Process</TabsTrigger>
+              <TabsTrigger value="integrations">Integrations</TabsTrigger>
+              <TabsTrigger value="cta">CTA</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="hero" className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Hero Section</h3>
+                <Button onClick={() => saveData('hero', heroSection)} className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Hero
+                </Button>
+              </div>
+
+              <div className="grid gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Title</Label>
+                    <Input
+                      value={heroSection.title}
+                      onChange={(e) => setHeroSection(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Service Title"
+                    />
+                  </div>
+                  <div>
+                    <Label>Subtitle</Label>
+                    <Input
+                      value={heroSection.subtitle}
+                      onChange={(e) => setHeroSection(prev => ({ ...prev, subtitle: e.target.value }))}
+                      placeholder="Service Subtitle"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Description</Label>
+                  <Textarea
+                    value={heroSection.description}
+                    onChange={(e) => setHeroSection(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Hero description"
+                    rows={3}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Primary Button Text</Label>
+                    <Input
+                      value={heroSection.primaryButtonText}
+                      onChange={(e) => setHeroSection(prev => ({ ...prev, primaryButtonText: e.target.value }))}
+                      placeholder="Get Started"
+                    />
+                  </div>
+                  <div>
+                    <Label>Secondary Button Text</Label>
+                    <Input
+                      value={heroSection.secondaryButtonText}
+                      onChange={(e) => setHeroSection(prev => ({ ...prev, secondaryButtonText: e.target.value }))}
+                      placeholder="Learn More"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Hero Image URL</Label>
+                    <Input
+                      value={heroSection.heroImage}
+                      onChange={(e) => setHeroSection(prev => ({ ...prev, heroImage: e.target.value }))}
+                      placeholder="https://images.unsplash.com/..."
+                    />
+                  </div>
+                  <div>
+                    <Label>Badge Text</Label>
+                    <Input
+                      value={heroSection.badge}
+                      onChange={(e) => setHeroSection(prev => ({ ...prev, badge: e.target.value }))}
+                      placeholder="Expert Service"
+                    />
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
 
             <TabsContent value="stats" className="space-y-6">
               <div className="flex justify-between items-center">
@@ -269,45 +407,45 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
               </div>
             </TabsContent>
 
-            <TabsContent value="case-studies" className="space-y-6">
+            <TabsContent value="services" className="space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Case Studies</h3>
-                <Button onClick={() => handleAddNew('case-study')} className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                <h3 className="text-lg font-semibold">Service Items</h3>
+                <Button onClick={() => handleAddNew('service')} className="bg-gradient-to-r from-blue-600 to-indigo-600">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Case Study
+                  Add Service
                 </Button>
               </div>
 
               <div className="grid gap-4">
-                {caseStudies.map((caseStudy) => (
-                  <Card key={caseStudy.id} className="hover:shadow-md transition-shadow">
+                {serviceItems.map((service) => (
+                  <Card key={service.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <FileText className="w-5 h-5 text-green-600" />
+                          <Star className="w-5 h-5 text-orange-600" />
                           <div>
-                            <h4 className="font-semibold">{caseStudy.title}</h4>
-                            <p className="text-sm text-gray-600">{caseStudy.client} - {caseStudy.industry}</p>
+                            <h4 className="font-semibold">{service.title}</h4>
+                            <p className="text-sm text-gray-600">{service.description}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <Switch 
-                            checked={caseStudy.isSelected} 
+                            checked={service.isActive} 
                             onCheckedChange={(checked) => {
-                              const updated = caseStudies.map(item => 
-                                item.id === caseStudy.id ? { ...item, isSelected: checked } : item
+                              const updated = serviceItems.map(item => 
+                                item.id === service.id ? { ...item, isActive: checked } : item
                               );
-                              setCaseStudies(updated);
-                              saveData('case_studies', updated);
+                              setServiceItems(updated);
+                              saveData('items', updated);
                             }}
                           />
                           <Button variant="outline" size="sm" onClick={() => {
-                            setEditingItem(caseStudy);
-                            setEditingType('case-study');
+                            setEditingItem(service);
+                            setEditingType('service');
                           }}>
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDelete('case-study', caseStudy.id)}>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete('service', service.id)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
@@ -318,45 +456,45 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
               </div>
             </TabsContent>
 
-            <TabsContent value="reviews" className="space-y-6">
+            <TabsContent value="benefits" className="space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Customer Reviews</h3>
-                <Button onClick={() => handleAddNew('review')} className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                <h3 className="text-lg font-semibold">Benefits</h3>
+                <Button onClick={() => handleAddNew('benefit')} className="bg-gradient-to-r from-blue-600 to-indigo-600">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Review
+                  Add Benefit
                 </Button>
               </div>
 
               <div className="grid gap-4">
-                {reviews.map((review) => (
-                  <Card key={review.id} className="hover:shadow-md transition-shadow">
+                {benefitItems.map((benefit) => (
+                  <Card key={benefit.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <Star className="w-5 h-5 text-yellow-600" />
+                          <CheckCircle className="w-5 h-5 text-green-600" />
                           <div>
-                            <h4 className="font-semibold">{review.clientName}</h4>
-                            <p className="text-sm text-gray-600">{review.company} - {review.rating}/5 stars</p>
+                            <h4 className="font-semibold">{benefit.title}</h4>
+                            <p className="text-sm text-gray-600">{benefit.description}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <Switch 
-                            checked={review.isSelected} 
+                            checked={benefit.isActive} 
                             onCheckedChange={(checked) => {
-                              const updated = reviews.map(item => 
-                                item.id === review.id ? { ...item, isSelected: checked } : item
+                              const updated = benefitItems.map(item => 
+                                item.id === benefit.id ? { ...item, isActive: checked } : item
                               );
-                              setReviews(updated);
-                              saveData('reviews', updated);
+                              setBenefitItems(updated);
+                              saveData('benefits', updated);
                             }}
                           />
                           <Button variant="outline" size="sm" onClick={() => {
-                            setEditingItem(review);
-                            setEditingType('review');
+                            setEditingItem(benefit);
+                            setEditingType('benefit');
                           }}>
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDelete('review', review.id)}>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete('benefit', benefit.id)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
@@ -367,45 +505,47 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
               </div>
             </TabsContent>
 
-            <TabsContent value="features" className="space-y-6">
+            <TabsContent value="process" className="space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Why Choose Us Features</h3>
-                <Button onClick={() => handleAddNew('why-choose-us')} className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                <h3 className="text-lg font-semibold">Process Steps</h3>
+                <Button onClick={() => handleAddNew('process')} className="bg-gradient-to-r from-blue-600 to-indigo-600">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Feature
+                  Add Step
                 </Button>
               </div>
 
               <div className="grid gap-4">
-                {whyChooseUsItems.map((feature) => (
-                  <Card key={feature.id} className="hover:shadow-md transition-shadow">
+                {processSteps.map((step) => (
+                  <Card key={step.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <CheckCircle className="w-5 h-5 text-purple-600" />
+                          <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                            {step.stepNumber}
+                          </div>
                           <div>
-                            <h4 className="font-semibold">{feature.title}</h4>
-                            <p className="text-sm text-gray-600">{feature.description}</p>
+                            <h4 className="font-semibold">{step.title}</h4>
+                            <p className="text-sm text-gray-600">{step.description}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <Switch 
-                            checked={feature.isActive} 
+                            checked={step.isActive} 
                             onCheckedChange={(checked) => {
-                              const updated = whyChooseUsItems.map(item => 
-                                item.id === feature.id ? { ...item, isActive: checked } : item
+                              const updated = processSteps.map(item => 
+                                item.id === step.id ? { ...item, isActive: checked } : item
                               );
-                              setWhyChooseUsItems(updated);
-                              saveData('why_choose_us', updated);
+                              setProcessSteps(updated);
+                              saveData('process', updated);
                             }}
                           />
                           <Button variant="outline" size="sm" onClick={() => {
-                            setEditingItem(feature);
-                            setEditingType('why-choose-us');
+                            setEditingItem(step);
+                            setEditingType('process');
                           }}>
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDelete('why-choose-us', feature.id)}>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete('process', step.id)}>
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
@@ -413,179 +553,300 @@ const ServicePageCustomizer: React.FC<ServicePageCustomizerProps> = ({ serviceTy
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="integrations" className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Integration Platforms</h3>
+                <Button onClick={() => handleAddNew('integration')} className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Integration
+                </Button>
+              </div>
+
+              <div className="grid gap-4">
+                {integrationPlatforms.map((platform) => (
+                  <Card key={platform.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="text-2xl">{platform.logo}</div>
+                          <div>
+                            <h4 className="font-semibold">{platform.name}</h4>
+                            <p className="text-sm text-gray-600">{platform.description}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Switch 
+                            checked={platform.isActive} 
+                            onCheckedChange={(checked) => {
+                              const updated = integrationPlatforms.map(item => 
+                                item.id === platform.id ? { ...item, isActive: checked } : item
+                              );
+                              setIntegrationPlatforms(updated);
+                              saveData('integrations', updated);
+                            }}
+                          />
+                          <Button variant="outline" size="sm" onClick={() => {
+                            setEditingItem(platform);
+                            setEditingType('integration');
+                          }}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete('integration', platform.id)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="cta" className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Call to Action Section</h3>
+                <Button onClick={() => saveData('cta', ctaSection)} className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                  <Save className="w-4 h-4 mr-2" />
+                  Save CTA
+                </Button>
+              </div>
+
+              <div className="grid gap-4">
+                <div>
+                  <Label>CTA Title</Label>
+                  <Input
+                    value={ctaSection.title}
+                    onChange={(e) => setCTASection(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="Ready to Get Started?"
+                  />
+                </div>
+                <div>
+                  <Label>CTA Description</Label>
+                  <Textarea
+                    value={ctaSection.description}
+                    onChange={(e) => setCTASection(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Contact us today for a free consultation"
+                    rows={2}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Button Text</Label>
+                    <Input
+                      value={ctaSection.buttonText}
+                      onChange={(e) => setCTASection(prev => ({ ...prev, buttonText: e.target.value }))}
+                      placeholder="Get Started Today"
+                    />
+                  </div>
+                  <div>
+                    <Label>Background Image URL</Label>
+                    <Input
+                      value={ctaSection.backgroundImage}
+                      onChange={(e) => setCTASection(prev => ({ ...prev, backgroundImage: e.target.value }))}
+                      placeholder="https://images.unsplash.com/..."
+                    />
+                  </div>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* Edit Modal */}
+          {editingItem && editingType && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <Card className="w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+                <CardHeader>
+                  <CardTitle>Edit {editingType}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {editingType === 'stat' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Label</Label>
+                          <Input
+                            value={editingItem.label}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, label: e.target.value }))}
+                          />
+                        </div>
+                        <div>
+                          <Label>Value</Label>
+                          <Input
+                            value={editingItem.value}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, value: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea
+                          value={editingItem.description}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, description: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Icon</Label>
+                        <Input
+                          value={editingItem.icon}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, icon: e.target.value }))}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {editingType === 'service' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Title</Label>
+                          <Input
+                            value={editingItem.title}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, title: e.target.value }))}
+                          />
+                        </div>
+                        <div>
+                          <Label>Icon</Label>
+                          <Input
+                            value={editingItem.icon}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, icon: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea
+                          value={editingItem.description}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, description: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Gradient Classes</Label>
+                        <Input
+                          value={editingItem.gradient}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, gradient: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Features (comma separated)</Label>
+                        <Textarea
+                          value={Array.isArray(editingItem.features) ? editingItem.features.join(', ') : ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, features: e.target.value.split(', ').filter(f => f.trim()) }))}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {editingType === 'benefit' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Title</Label>
+                          <Input
+                            value={editingItem.title}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, title: e.target.value }))}
+                          />
+                        </div>
+                        <div>
+                          <Label>Icon</Label>
+                          <Input
+                            value={editingItem.icon}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, icon: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea
+                          value={editingItem.description}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, description: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Color Classes</Label>
+                        <Input
+                          value={editingItem.color}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, color: e.target.value }))}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {editingType === 'process' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Step Number</Label>
+                          <Input
+                            value={editingItem.stepNumber}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, stepNumber: e.target.value }))}
+                          />
+                        </div>
+                        <div>
+                          <Label>Title</Label>
+                          <Input
+                            value={editingItem.title}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, title: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea
+                          value={editingItem.description}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, description: e.target.value }))}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {editingType === 'integration' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Name</Label>
+                          <Input
+                            value={editingItem.name}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, name: e.target.value }))}
+                          />
+                        </div>
+                        <div>
+                          <Label>Logo (emoji or text)</Label>
+                          <Input
+                            value={editingItem.logo}
+                            onChange={(e) => setEditingItem(prev => ({ ...prev, logo: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea
+                          value={editingItem.description}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, description: e.target.value }))}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => {
+                      setEditingItem(null);
+                      setEditingType(null);
+                    }}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSave}>
+                      Save
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </CardContent>
       </Card>
-
-      {/* Editing Modal */}
-      {editingItem && editingType && (
-        <Card className="border-2 border-blue-200">
-          <CardHeader>
-            <CardTitle className="text-lg">
-              {editingItem.id ? 'Edit' : 'Add New'} {editingType.replace('-', ' ').toUpperCase()}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {editingType === 'stat' && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Label</Label>
-                    <Input
-                      value={editingItem.label || ''}
-                      onChange={(e) => setEditingItem({...editingItem, label: e.target.value})}
-                      placeholder="Conversion Rate"
-                    />
-                  </div>
-                  <div>
-                    <Label>Value</Label>
-                    <Input
-                      value={editingItem.value || ''}
-                      onChange={(e) => setEditingItem({...editingItem, value: e.target.value})}
-                      placeholder="4.5x"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label>Description</Label>
-                  <Input
-                    value={editingItem.description || ''}
-                    onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
-                    placeholder="Average improvement"
-                  />
-                </div>
-              </>
-            )}
-
-            {editingType === 'case-study' && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Title</Label>
-                    <Input
-                      value={editingItem.title || ''}
-                      onChange={(e) => setEditingItem({...editingItem, title: e.target.value})}
-                      placeholder="Case Study Title"
-                    />
-                  </div>
-                  <div>
-                    <Label>Client</Label>
-                    <Input
-                      value={editingItem.client || ''}
-                      onChange={(e) => setEditingItem({...editingItem, client: e.target.value})}
-                      placeholder="Client Name"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label>Industry</Label>
-                  <Input
-                    value={editingItem.industry || ''}
-                    onChange={(e) => setEditingItem({...editingItem, industry: e.target.value})}
-                    placeholder="E-commerce"
-                  />
-                </div>
-                <div>
-                  <Label>Description</Label>
-                  <Textarea
-                    value={editingItem.description || ''}
-                    onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
-                    placeholder="Case study description"
-                    rows={4}
-                  />
-                </div>
-              </>
-            )}
-
-            {editingType === 'review' && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Client Name</Label>
-                    <Input
-                      value={editingItem.clientName || ''}
-                      onChange={(e) => setEditingItem({...editingItem, clientName: e.target.value})}
-                      placeholder="John Doe"
-                    />
-                  </div>
-                  <div>
-                    <Label>Company</Label>
-                    <Input
-                      value={editingItem.company || ''}
-                      onChange={(e) => setEditingItem({...editingItem, company: e.target.value})}
-                      placeholder="ABC Corp"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label>Rating</Label>
-                  <Select 
-                    value={editingItem.rating?.toString() || '5'}
-                    onValueChange={(value) => setEditingItem({...editingItem, rating: parseInt(value)})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5">5 Stars</SelectItem>
-                      <SelectItem value="4">4 Stars</SelectItem>
-                      <SelectItem value="3">3 Stars</SelectItem>
-                      <SelectItem value="2">2 Stars</SelectItem>
-                      <SelectItem value="1">1 Star</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Review Text</Label>
-                  <Textarea
-                    value={editingItem.reviewText || ''}
-                    onChange={(e) => setEditingItem({...editingItem, reviewText: e.target.value})}
-                    placeholder="Review text"
-                    rows={4}
-                  />
-                </div>
-              </>
-            )}
-
-            {editingType === 'why-choose-us' && (
-              <>
-                <div>
-                  <Label>Title</Label>
-                  <Input
-                    value={editingItem.title || ''}
-                    onChange={(e) => setEditingItem({...editingItem, title: e.target.value})}
-                    placeholder="Feature Title"
-                  />
-                </div>
-                <div>
-                  <Label>Description</Label>
-                  <Textarea
-                    value={editingItem.description || ''}
-                    onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
-                    placeholder="Feature description"
-                    rows={3}
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => {
-                setEditingItem(null);
-                setEditingType(null);
-              }}>
-                Cancel
-              </Button>
-              <Button onClick={handleSave} className="bg-gradient-to-r from-blue-600 to-indigo-600">
-                <Save className="w-4 h-4 mr-2" />
-                Save
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
