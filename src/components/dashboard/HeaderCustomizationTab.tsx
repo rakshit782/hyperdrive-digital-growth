@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { Menu, Save, RotateCcw, Palette } from "lucide-react";
+import ModernDashboardLayout from "./ModernDashboardLayout";
 
 interface HeaderSettings {
   logoSize: string;
@@ -73,7 +72,6 @@ const HeaderCustomizationTab = () => {
   const saveSettings = () => {
     localStorage.setItem('headerSettings', JSON.stringify(settings));
     
-    // Dispatch event to update header
     const event = new CustomEvent('headerSettingsUpdated', { detail: settings });
     window.dispatchEvent(event);
     
@@ -97,47 +95,46 @@ const HeaderCustomizationTab = () => {
     updateSettings({ menuItems: newMenuItems });
   };
 
+  const actionButtons = (
+    <div className="flex items-center space-x-3">
+      {hasChanges && (
+        <span className="text-sm text-orange-600 font-medium animate-pulse">Unsaved changes</span>
+      )}
+      <Button variant="outline" onClick={resetToDefaults} className="btn-glass">
+        <RotateCcw className="w-4 h-4 mr-2" />
+        Reset
+      </Button>
+      <Button onClick={saveSettings} className="btn-primary">
+        <Save className="w-4 h-4 mr-2" />
+        Save Changes
+      </Button>
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
-      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg mr-3">
-                <Menu className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-xl font-bold text-slate-900">Header Customization</CardTitle>
-                <CardDescription>Customize your website header appearance and navigation</CardDescription>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              {hasChanges && (
-                <span className="text-sm text-orange-600 font-medium">Unsaved changes</span>
-              )}
-              <Button variant="outline" onClick={resetToDefaults}>
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Reset
-              </Button>
-              <Button onClick={saveSettings} className="bg-gradient-to-r from-indigo-500 to-purple-600">
-                <Save className="w-4 h-4 mr-2" />
-                Save Changes
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-8">
-          {/* Logo Settings */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">Logo Settings</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <ModernDashboardLayout 
+      title="Header Customization" 
+      description="Customize your website header appearance and navigation"
+      action={actionButtons}
+    >
+      <div className="space-y-8">
+        {/* Logo Settings */}
+        <Card className="glass-effect animate-fade-in">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+              <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mr-3"></div>
+              Logo Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="form-modern">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="logoSize">Logo Size</Label>
                 <Select
                   value={settings.logoSize}
                   onValueChange={(value) => updateSettings({ logoSize: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="focus-modern">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -164,25 +161,31 @@ const HeaderCustomizationTab = () => {
                   value={settings.logoAlt}
                   onChange={(e) => updateSettings({ logoAlt: e.target.value })}
                   placeholder="Logo description for accessibility"
+                  className="focus-modern"
                 />
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Header Bar Color */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Palette className="w-5 h-5 text-slate-700" />
-              <h3 className="text-lg font-semibold text-slate-900">Header Bar Color</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Header Bar Color */}
+        <Card className="glass-effect animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+              <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full mr-3"></div>
+              <Palette className="w-5 h-5 mr-2" />
+              Header Bar Color
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="form-modern">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="headerBarColor">Color Preset</Label>
                 <Select
                   value={settings.headerBarColor}
                   onValueChange={(value) => updateSettings({ headerBarColor: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="focus-modern">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -207,116 +210,133 @@ const HeaderCustomizationTab = () => {
                       type="color"
                       value={settings.headerCustomColor}
                       onChange={(e) => updateSettings({ headerCustomColor: e.target.value })}
-                      className="w-16 h-10 p-1 border rounded"
+                      className="w-16 h-10 p-1 border rounded focus-modern"
                     />
                     <Input
                       value={settings.headerCustomColor}
                       onChange={(e) => updateSettings({ headerCustomColor: e.target.value })}
                       placeholder="#ffffff"
-                      className="flex-1"
+                      className="flex-1 focus-modern"
                     />
                   </div>
                 </div>
               )}
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Spacing Controls */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">Element Spacing</h3>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Gap Between Logo and Menu: {settings.logoMenuGap * 0.25}rem</Label>
-                <Slider
-                  value={[settings.logoMenuGap]}
-                  onValueChange={(value) => updateSettings({ logoMenuGap: value[0] })}
-                  max={20}
-                  min={0}
-                  step={1}
-                  className="w-full"
-                />
-                <p className="text-xs text-gray-500">Controls spacing between logo and navigation menu</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Gap Between Menu Items: {settings.menuGap * 0.25}rem</Label>
-                <Slider
-                  value={[settings.menuGap]}
-                  onValueChange={(value) => updateSettings({ menuGap: value[0] })}
-                  max={8}
-                  min={0}
-                  step={1}
-                  className="w-full"
-                />
-                <p className="text-xs text-gray-500">Controls spacing between individual navigation items</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Gap Between Menu and CTA Button: {settings.ctaMenuGap * 0.25}rem</Label>
-                <Slider
-                  value={[settings.ctaMenuGap]}
-                  onValueChange={(value) => updateSettings({ ctaMenuGap: value[0] })}
-                  max={20}
-                  min={0}
-                  step={1}
-                  className="w-full"
-                />
-                <p className="text-xs text-gray-500">Controls spacing between navigation menu and CTA button</p>
-              </div>
+        {/* Spacing Controls */}
+        <Card className="glass-effect animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+              <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full mr-3"></div>
+              Element Spacing
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label>Gap Between Logo and Menu: {settings.logoMenuGap * 0.25}rem</Label>
+              <Slider
+                value={[settings.logoMenuGap]}
+                onValueChange={(value) => updateSettings({ logoMenuGap: value[0] })}
+                max={20}
+                min={0}
+                step={1}
+                className="w-full"
+              />
+              <p className="text-xs text-gray-500">Controls spacing between logo and navigation menu</p>
             </div>
-          </div>
 
-          {/* Navigation Settings */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">Navigation Settings</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="servicesDropdown">Services Dropdown</Label>
-                <Switch
-                  id="servicesDropdown"
-                  checked={settings.servicesDropdownEnabled}
-                  onCheckedChange={(checked) => updateSettings({ servicesDropdownEnabled: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="mobileMenu">Mobile Menu</Label>
-                <Switch
-                  id="mobileMenu"
-                  checked={settings.mobileMenuEnabled}
-                  onCheckedChange={(checked) => updateSettings({ mobileMenuEnabled: checked })}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label>Gap Between Menu Items: {settings.menuGap * 0.25}rem</Label>
+              <Slider
+                value={[settings.menuGap]}
+                onValueChange={(value) => updateSettings({ menuGap: value[0] })}
+                max={8}
+                min={0}
+                step={1}
+                className="w-full"
+              />
+              <p className="text-xs text-gray-500">Controls spacing between individual navigation items</p>
             </div>
-          </div>
 
-          {/* Menu Items */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">Menu Items</h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
+              <Label>Gap Between Menu and CTA Button: {settings.ctaMenuGap * 0.25}rem</Label>
+              <Slider
+                value={[settings.ctaMenuGap]}
+                onValueChange={(value) => updateSettings({ ctaMenuGap: value[0] })}
+                max={20}
+                min={0}
+                step={1}
+                className="w-full"
+              />
+              <p className="text-xs text-gray-500">Controls spacing between navigation menu and CTA button</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Navigation Settings */}
+        <Card className="glass-effect animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+              <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-red-500 rounded-full mr-3"></div>
+              Navigation Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+              <Label htmlFor="servicesDropdown" className="font-medium">Services Dropdown</Label>
+              <Switch
+                id="servicesDropdown"
+                checked={settings.servicesDropdownEnabled}
+                onCheckedChange={(checked) => updateSettings({ servicesDropdownEnabled: checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+              <Label htmlFor="mobileMenu" className="font-medium">Mobile Menu</Label>
+              <Switch
+                id="mobileMenu"
+                checked={settings.mobileMenuEnabled}
+                onCheckedChange={(checked) => updateSettings({ mobileMenuEnabled: checked })}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Menu Items */}
+        <Card className="glass-effect animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+              <div className="w-2 h-8 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full mr-3"></div>
+              Menu Items
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
               {settings.menuItems.map((item, index) => (
-                <Card key={index} className="bg-white/50 border border-gray-200/50">
+                <Card key={index} className="bg-white/60 border border-gray-200/50 hover:shadow-md transition-all duration-200">
                   <CardContent className="p-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                       <div className="space-y-1">
-                        <Label className="text-xs">Title</Label>
+                        <Label className="text-xs font-medium">Title</Label>
                         <Input
                           value={item.title}
                           onChange={(e) => updateMenuItem(index, { title: e.target.value })}
-                          className="h-8"
+                          className="h-9 focus-modern"
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Link</Label>
+                        <Label className="text-xs font-medium">Link</Label>
                         <Input
                           value={item.href}
                           onChange={(e) => updateMenuItem(index, { href: e.target.value })}
-                          className="h-8"
+                          className="h-9 focus-modern"
                         />
                       </div>
                       <div className="flex items-center justify-center">
                         <div className="flex items-center space-x-2">
-                          <Label className="text-xs">Enabled</Label>
+                          <Label className="text-xs font-medium">Enabled</Label>
                           <Switch
                             checked={item.enabled}
                             onCheckedChange={(checked) => updateMenuItem(index, { enabled: checked })}
@@ -328,12 +348,19 @@ const HeaderCustomizationTab = () => {
                 </Card>
               ))}
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* CTA Button Settings */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">CTA Button Settings</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* CTA Button Settings */}
+        <Card className="glass-effect animate-fade-in" style={{ animationDelay: '0.5s' }}>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+              <div className="w-2 h-8 bg-gradient-to-b from-yellow-500 to-orange-500 rounded-full mr-3"></div>
+              CTA Button Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="form-modern">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="ctaText">Button Text</Label>
                 <Input
@@ -341,6 +368,7 @@ const HeaderCustomizationTab = () => {
                   value={settings.ctaButtonText}
                   onChange={(e) => updateSettings({ ctaButtonText: e.target.value })}
                   placeholder="Get Free Audit"
+                  className="focus-modern"
                 />
               </div>
               <div className="space-y-2">
@@ -349,7 +377,7 @@ const HeaderCustomizationTab = () => {
                   value={settings.ctaButtonStyle}
                   onValueChange={(value) => updateSettings({ ctaButtonStyle: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="focus-modern">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -360,19 +388,26 @@ const HeaderCustomizationTab = () => {
                 </Select>
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Header Appearance */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">Header Background Style</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Header Appearance */}
+        <Card className="glass-effect animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-slate-900 flex items-center">
+              <div className="w-2 h-8 bg-gradient-to-b from-pink-500 to-red-500 rounded-full mr-3"></div>
+              Header Background Style
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="form-modern">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="headerBg">Background Effect</Label>
                 <Select
                   value={settings.headerBackground}
                   onValueChange={(value) => updateSettings({ headerBackground: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="focus-modern">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -394,10 +429,10 @@ const HeaderCustomizationTab = () => {
                 />
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ModernDashboardLayout>
   );
 };
 

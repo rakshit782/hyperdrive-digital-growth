@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Image, Eye, Upload, Link } from "lucide-react";
+import ModernDashboardLayout from "./ModernDashboardLayout";
 
 interface LogoSettings {
   logoUrl: string;
@@ -66,25 +67,19 @@ const LogoManagement = () => {
   const convertGoogleDriveUrl = (url: string) => {
     console.log('Converting Google Drive URL:', url);
     
-    // Clean up the URL
     const cleanUrl = url.trim();
-    
-    // Handle different Google Drive URL formats
     let fileId = '';
     
-    // Format 1: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
     let match = cleanUrl.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
     if (match) {
       fileId = match[1];
       console.log('Found file ID from /file/d/ format:', fileId);
     } else {
-      // Format 2: https://drive.google.com/open?id=FILE_ID
       match = cleanUrl.match(/[?&]id=([a-zA-Z0-9-_]+)/);
       if (match) {
         fileId = match[1];
         console.log('Found file ID from ?id= format:', fileId);
       } else {
-        // Format 3: https://drive.google.com/uc?id=FILE_ID (already direct)
         match = cleanUrl.match(/\/uc\?.*id=([a-zA-Z0-9-_]+)/);
         if (match) {
           fileId = match[1];
@@ -94,7 +89,6 @@ const LogoManagement = () => {
     }
     
     if (fileId) {
-      // Use the thumbnail endpoint which works better for images
       const directUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
       console.log('Converted to direct URL:', directUrl);
       return directUrl;
@@ -130,10 +124,8 @@ const LogoManagement = () => {
     console.error('Image failed to load:', e.currentTarget.src);
     console.log('Trying fallback URL conversion...');
     
-    // Try alternative URL format if the first one fails
     const currentUrl = e.currentTarget.src;
     if (currentUrl.includes('thumbnail')) {
-      // Try the uc?export=view format as fallback
       const fileIdMatch = currentUrl.match(/id=([a-zA-Z0-9-_]+)/);
       if (fileIdMatch) {
         const fileId = fileIdMatch[1];
@@ -144,174 +136,180 @@ const LogoManagement = () => {
       }
     }
     
-    // Final fallback
     e.currentTarget.src = "/placeholder.svg";
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Settings Panel */}
-      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
-        <CardHeader>
-          <div className="flex items-center">
-            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg mr-3">
-              <Image className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-xl font-bold text-slate-900">Logo Settings</CardTitle>
-              <CardDescription>Customize your website logo and display settings</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="logoUrl" className="text-sm font-medium text-slate-700">Logo URL</Label>
-            <Input
-              id="logoUrl"
-              value={logoSettings.logoUrl}
-              onChange={(e) => handleInputChange('logoUrl', e.target.value)}
-              placeholder="https://example.com/logo.png"
-              className="bg-white/50 border-white/30 focus:border-indigo-500"
-            />
-          </div>
-
-          {/* Google Drive Upload Section */}
-          <div className="space-y-3 p-4 bg-blue-50/50 rounded-lg border border-blue-200/30">
+    <ModernDashboardLayout 
+      title="Logo Management" 
+      description="Customize your website logo and display settings"
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Settings Panel */}
+        <Card className="glass-effect shadow-modern animate-fade-in">
+          <CardHeader>
             <div className="flex items-center">
-              <Upload className="w-4 h-4 mr-2 text-blue-600" />
-              <Label className="text-sm font-medium text-blue-700">Upload from Google Drive</Label>
+              <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl mr-4 animate-pulse-glow">
+                <Image className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-bold text-slate-900">Logo Settings</CardTitle>
+                <CardDescription className="text-slate-600">Configure your brand logo</CardDescription>
+              </div>
             </div>
-            <div className="space-y-2">
+          </CardHeader>
+          <CardContent className="space-y-6 form-modern">
+            <div className="space-y-3">
+              <Label htmlFor="logoUrl" className="text-sm font-semibold text-slate-700">Logo URL</Label>
               <Input
-                value={googleDriveUrl}
-                onChange={(e) => setGoogleDriveUrl(e.target.value)}
-                placeholder="Paste Google Drive sharing link here..."
-                className="bg-white/70 border-blue-200/50 focus:border-blue-500"
+                id="logoUrl"
+                value={logoSettings.logoUrl}
+                onChange={(e) => handleInputChange('logoUrl', e.target.value)}
+                placeholder="https://example.com/logo.png"
+                className="focus-modern"
               />
-              <Button 
-                onClick={handleGoogleDriveUpload}
-                variant="outline"
-                size="sm"
-                className="w-full bg-blue-100/50 border-blue-200 text-blue-700 hover:bg-blue-200/50"
-                disabled={!googleDriveUrl.trim()}
+            </div>
+
+            {/* Google Drive Upload Section */}
+            <div className="space-y-4 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200/30">
+              <div className="flex items-center">
+                <Upload className="w-5 h-5 mr-3 text-blue-600" />
+                <Label className="text-sm font-semibold text-blue-700">Upload from Google Drive</Label>
+              </div>
+              <div className="space-y-3">
+                <Input
+                  value={googleDriveUrl}
+                  onChange={(e) => setGoogleDriveUrl(e.target.value)}
+                  placeholder="Paste Google Drive sharing link here..."
+                  className="bg-white/80 border-blue-200/50 focus:border-blue-500"
+                />
+                <Button 
+                  onClick={handleGoogleDriveUpload}
+                  variant="outline"
+                  size="sm"
+                  className="w-full btn-gradient-hover"
+                  disabled={!googleDriveUrl.trim()}
+                >
+                  <Link className="w-4 h-4 mr-2" />
+                  Use Google Drive Image
+                </Button>
+              </div>
+              <div className="text-xs text-blue-600/80 space-y-1">
+                <p>Share your image from Google Drive and paste the link above.</p>
+                <p className="font-medium">Supported formats:</p>
+                <p>• https://drive.google.com/file/d/FILE_ID/view?usp=sharing</p>
+                <p>• https://drive.google.com/open?id=FILE_ID</p>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <Label htmlFor="logoAlt" className="text-sm font-semibold text-slate-700">Logo Alt Text</Label>
+              <Input
+                id="logoAlt"
+                value={logoSettings.logoAlt}
+                onChange={(e) => handleInputChange('logoAlt', e.target.value)}
+                placeholder="Your company name"
+                className="focus-modern"
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <Label htmlFor="logoSize" className="text-sm font-semibold text-slate-700">Logo Size</Label>
+              <select
+                id="logoSize"
+                value={logoSettings.logoSize}
+                onChange={(e) => handleInputChange('logoSize', e.target.value)}
+                className="w-full h-11 px-4 py-2 bg-white/80 border border-slate-200 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
               >
-                <Link className="w-4 h-4 mr-2" />
-                Use Google Drive Image
-              </Button>
-            </div>
-            <div className="text-xs text-blue-600/70 space-y-1">
-              <p>Share your image from Google Drive and paste the link above. Works with PNG, JPEG, and other formats.</p>
-              <p className="font-medium">Supported formats:</p>
-              <p>• https://drive.google.com/file/d/FILE_ID/view?usp=sharing</p>
-              <p>• https://drive.google.com/open?id=FILE_ID</p>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="logoAlt" className="text-sm font-medium text-slate-700">Logo Alt Text</Label>
-            <Input
-              id="logoAlt"
-              value={logoSettings.logoAlt}
-              onChange={(e) => handleInputChange('logoAlt', e.target.value)}
-              placeholder="Your company name"
-              className="bg-white/50 border-white/30 focus:border-indigo-500"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="logoSize" className="text-sm font-medium text-slate-700">Logo Size</Label>
-            <select
-              id="logoSize"
-              value={logoSettings.logoSize}
-              onChange={(e) => handleInputChange('logoSize', e.target.value)}
-              className="w-full h-10 px-3 py-2 bg-white/50 border border-white/30 rounded-md text-sm focus:border-indigo-500 focus:outline-none"
-            >
-              {sizeOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <Button 
-            onClick={handleSave} 
-            className={`w-full transition-all duration-300 ${
-              isSaved 
-                ? "bg-green-600 hover:bg-green-700" 
-                : "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
-            } shadow-lg`}
-          >
-            {isSaved ? "✓ Saved!" : "Save Logo Settings"}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Live Preview Panel */}
-      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
-        <CardHeader>
-          <div className="flex items-center">
-            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg mr-3">
-              <Eye className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-xl font-bold text-slate-900">Live Preview</CardTitle>
-              <CardDescription>See how your logo will appear</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* Header Preview */}
-            <div className="bg-gradient-to-r from-slate-900 to-blue-900 rounded-xl p-6">
-              <div className="flex items-center justify-between">
-                <img 
-                  src={logoSettings.logoUrl}
-                  alt={logoSettings.logoAlt}
-                  className={`${logoSettings.logoSize} w-auto object-contain`}
-                  onError={handleImageError}
-                  onLoad={() => console.log('Preview logo loaded successfully:', logoSettings.logoUrl)}
-                />
-                <div className="text-white text-sm">Navigation Menu</div>
-              </div>
-            </div>
-
-            {/* Footer Preview */}
-            <div className="bg-slate-800 rounded-xl p-6">
-              <div className="flex items-center justify-center">
-                <img 
-                  src={logoSettings.logoUrl}
-                  alt={logoSettings.logoAlt}
-                  className={`${logoSettings.logoSize} w-auto object-contain opacity-80`}
-                  onError={handleImageError}
-                />
-              </div>
-              <p className="text-center text-slate-400 text-sm mt-4">Footer Context</p>
-            </div>
-
-            {/* Size Comparison */}
-            <div className="bg-gray-50 rounded-xl p-6">
-              <h4 className="font-medium text-slate-700 mb-4">Size Comparison</h4>
-              <div className="grid grid-cols-5 gap-4">
-                {sizeOptions.map((size, index) => (
-                  <div key={size.value} className="text-center">
-                    <img 
-                      src={logoSettings.logoUrl}
-                      alt={logoSettings.logoAlt}
-                      className={`${size.value} w-auto object-contain mx-auto ${
-                        logoSettings.logoSize === size.value ? 'ring-2 ring-indigo-500 rounded' : 'opacity-50'
-                      }`}
-                      onError={handleImageError}
-                    />
-                    <p className="text-xs text-slate-500 mt-1">{size.label.split(' ')[0]}</p>
-                  </div>
+                {sizeOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
+              </select>
+            </div>
+
+            <Button 
+              onClick={handleSave} 
+              className={`w-full transition-all duration-300 ${
+                isSaved 
+                  ? "bg-green-600 hover:bg-green-700" 
+                  : "btn-primary"
+              } shadow-lg`}
+            >
+              {isSaved ? "✓ Saved!" : "Save Logo Settings"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Live Preview Panel */}
+        <Card className="glass-effect shadow-modern animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <CardHeader>
+            <div className="flex items-center">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl mr-4">
+                <Eye className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-bold text-slate-900">Live Preview</CardTitle>
+                <CardDescription className="text-slate-600">See how your logo appears</CardDescription>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {/* Header Preview */}
+              <div className="bg-gradient-to-r from-slate-900 to-blue-900 rounded-xl p-6 animate-scale-in">
+                <div className="flex items-center justify-between">
+                  <img 
+                    src={logoSettings.logoUrl}
+                    alt={logoSettings.logoAlt}
+                    className={`${logoSettings.logoSize} w-auto object-contain`}
+                    onError={handleImageError}
+                    onLoad={() => console.log('Preview logo loaded successfully:', logoSettings.logoUrl)}
+                  />
+                  <div className="text-white text-sm font-medium">Navigation Menu</div>
+                </div>
+              </div>
+
+              {/* Footer Preview */}
+              <div className="bg-slate-800 rounded-xl p-6 animate-scale-in" style={{ animationDelay: '0.1s' }}>
+                <div className="flex items-center justify-center">
+                  <img 
+                    src={logoSettings.logoUrl}
+                    alt={logoSettings.logoAlt}
+                    className={`${logoSettings.logoSize} w-auto object-contain opacity-80`}
+                    onError={handleImageError}
+                  />
+                </div>
+                <p className="text-center text-slate-400 text-sm mt-4">Footer Context</p>
+              </div>
+
+              {/* Size Comparison */}
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 animate-scale-in" style={{ animationDelay: '0.2s' }}>
+                <h4 className="font-semibold text-slate-700 mb-4">Size Comparison</h4>
+                <div className="grid grid-cols-5 gap-4">
+                  {sizeOptions.slice(0, 5).map((size) => (
+                    <div key={size.value} className="text-center">
+                      <img 
+                        src={logoSettings.logoUrl}
+                        alt={logoSettings.logoAlt}
+                        className={`${size.value} w-auto object-contain mx-auto transition-all duration-300 ${
+                          logoSettings.logoSize === size.value 
+                            ? 'ring-2 ring-indigo-500 rounded p-1 animate-pulse-glow' 
+                            : 'opacity-50 hover:opacity-75'
+                        }`}
+                        onError={handleImageError}
+                      />
+                      <p className="text-xs text-slate-500 mt-2">{size.label.split(' ')[0]}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ModernDashboardLayout>
   );
 };
 
