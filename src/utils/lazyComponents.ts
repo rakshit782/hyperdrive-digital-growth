@@ -1,9 +1,9 @@
 
 import { lazy } from 'react';
 
-// Performance optimization utilities
+// Performance optimization utilities with modern lazy loading
 export const performanceOptimizations = {
-  // Lazy load heavy dashboard components
+  // Lazy load heavy dashboard components with preloading
   lazyDashboardComponents: {
     ServicesTab: lazy(() => import('@/components/dashboard/ServicesTab')),
     ReviewsTab: lazy(() => import('@/components/dashboard/ReviewsTab')),
@@ -12,86 +12,151 @@ export const performanceOptimizations = {
     IntegrationStatusTab: lazy(() => import('@/components/dashboard/IntegrationStatusTab')),
     SocialMediaTab: lazy(() => import('@/components/dashboard/SocialMediaTab')),
     ChatGPTTab: lazy(() => import('@/components/dashboard/ChatGPTTab')),
+    WebsiteTab: lazy(() => import('@/components/dashboard/WebsiteTab')),
+    ServicePageCustomizer: lazy(() => import('@/components/dashboard/ServicePageCustomizer')),
   },
 
-  // Image optimization
-  convertToWebP: (imageUrl: string): string => {
-    // In a real implementation, this would convert images to WebP format
-    // For now, return the original URL with a note for manual conversion
-    console.log(`Consider converting ${imageUrl} to WebP format for better performance`);
-    return imageUrl;
+  // Preload critical components
+  preloadCriticalComponents: () => {
+    const preloadComponents = [
+      () => import('@/components/ModernServices'),
+      () => import('@/components/ModernFeatures'),
+      () => import('@/components/CircularReviews'),
+    ];
+    
+    preloadComponents.forEach(componentLoader => {
+      componentLoader().catch(console.error);
+    });
   },
 
-  // Font optimization
+  // Image optimization with lazy loading
+  optimizeImages: () => {
+    // Add intersection observer for lazy image loading
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target as HTMLImageElement;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.classList.add('fade-in');
+            imageObserver.unobserve(img);
+          }
+        }
+      });
+    });
+
+    // Apply to all images with data-src
+    document.querySelectorAll('img[data-src]').forEach(img => {
+      imageObserver.observe(img);
+    });
+  },
+
+  // Font optimization with preload
   optimizeFonts: () => {
-    // Apply font-display: swap to custom fonts
     const style = document.createElement('style');
     style.textContent = `
       @font-face {
-        font-family: 'CustomFont';
+        font-family: 'Inter';
         font-display: swap;
-        /* Add your custom font declarations here */
+        src: local('Inter');
       }
       
-      /* Optimize web font loading */
       .font-loading {
         font-display: swap;
       }
     `;
     document.head.appendChild(style);
+
+    // Preload critical fonts
+    const fontPreload = document.createElement('link');
+    fontPreload.rel = 'preload';
+    fontPreload.as = 'font';
+    fontPreload.type = 'font/woff2';
+    fontPreload.crossOrigin = 'anonymous';
+    document.head.appendChild(fontPreload);
   },
 
-  // Preload critical resources
+  // Enhanced resource preloading
   preloadCriticalResources: () => {
     const criticalResources = [
-      '/placeholder.svg',
-      // Add other critical resources
+      { href: '/placeholder.svg', as: 'image' },
+      { href: '/api/website-settings', as: 'fetch' },
     ];
 
     criticalResources.forEach(resource => {
       const link = document.createElement('link');
       link.rel = 'preload';
-      link.href = resource;
-      link.as = resource.endsWith('.svg') ? 'image' : 'fetch';
+      link.href = resource.href;
+      link.as = resource.as;
+      if (resource.as === 'fetch') {
+        link.crossOrigin = 'anonymous';
+      }
       document.head.appendChild(link);
     });
   },
 
-  // Bundle analysis helper
-  logBundleSize: () => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Bundle analysis tips:');
-      console.log('1. Use "npm run build -- --analyze" to analyze bundle size');
-      console.log('2. Consider code splitting for routes');
-      console.log('3. Lazy load non-critical components');
-      console.log('4. Use dynamic imports for large libraries');
+  // Service worker for caching
+  registerServiceWorker: () => {
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('SW registered: ', registration);
+        })
+        .catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
     }
   },
 
-  // Performance monitoring
-  measurePerformance: (markName: string) => {
+  // Performance monitoring with Web Vitals
+  measureWebVitals: () => {
     if (typeof performance !== 'undefined' && performance.mark) {
-      performance.mark(markName);
-      console.log(`Performance mark: ${markName}`);
+      // Core Web Vitals tracking
+      const observer = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          console.log(`${entry.name}: ${entry.value}ms`);
+        });
+      });
+      
+      observer.observe({ entryTypes: ['measure', 'navigation'] });
+      
+      // Mark critical rendering points
+      performance.mark('app-start');
+      performance.mark('header-rendered');
+      performance.mark('content-loaded');
+    }
+  },
+
+  // Bundle optimization hints
+  logBundleOptimizations: () => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚀 Performance optimizations active:');
+      console.log('• Lazy loading enabled for dashboard components');
+      console.log('• Image lazy loading with intersection observer');
+      console.log('• Font preloading with display: swap');
+      console.log('• Critical resource preloading');
+      console.log('• Service worker caching (production only)');
     }
   },
 
   // Memory optimization
   optimizeMemory: () => {
-    // Clear unnecessary data from localStorage periodically
+    // Enhanced localStorage cleanup
     const clearOldData = () => {
       const keys = Object.keys(localStorage);
+      const now = Date.now();
+      const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+      
       keys.forEach(key => {
         if (key.includes('temp_') || key.includes('cache_')) {
           const item = localStorage.getItem(key);
           if (item) {
             try {
               const parsed = JSON.parse(item);
-              if (parsed.timestamp && Date.now() - parsed.timestamp > 24 * 60 * 60 * 1000) {
+              if (parsed.timestamp && now - parsed.timestamp > maxAge) {
                 localStorage.removeItem(key);
               }
             } catch {
-              // Remove invalid items
               localStorage.removeItem(key);
             }
           }
@@ -99,88 +164,83 @@ export const performanceOptimizations = {
       });
     };
 
-    // Run cleanup every hour
-    setInterval(clearOldData, 60 * 60 * 1000);
+    // Run cleanup on app start and periodically
+    clearOldData();
+    setInterval(clearOldData, 60 * 60 * 1000); // Every hour
   },
 
-  // Network optimization
+  // Network optimization with request deduplication
   optimizeNetworkRequests: () => {
-    // Add request deduplication
     const requestCache = new Map();
+    const pendingRequests = new Map();
     
     const originalFetch = window.fetch;
     window.fetch = function(input: RequestInfo | URL, init?: RequestInit) {
       const key = typeof input === 'string' ? input : input.toString();
+      const method = init?.method || 'GET';
       
-      if (requestCache.has(key) && init?.method !== 'POST' && init?.method !== 'PUT') {
-        return requestCache.get(key);
+      // Only cache GET requests
+      if (method === 'GET') {
+        // Return cached result if available
+        if (requestCache.has(key)) {
+          return Promise.resolve(requestCache.get(key).clone());
+        }
+        
+        // Return pending request if in progress
+        if (pendingRequests.has(key)) {
+          return pendingRequests.get(key);
+        }
+        
+        // Make new request
+        const promise = originalFetch(input, init).then(response => {
+          const clonedResponse = response.clone();
+          requestCache.set(key, clonedResponse);
+          pendingRequests.delete(key);
+          
+          // Clear cache after 5 minutes
+          setTimeout(() => requestCache.delete(key), 5 * 60 * 1000);
+          
+          return response;
+        }).catch(error => {
+          pendingRequests.delete(key);
+          throw error;
+        });
+        
+        pendingRequests.set(key, promise);
+        return promise;
       }
       
-      const promise = originalFetch(input, init);
-      requestCache.set(key, promise);
-      
-      // Clear cache after 5 minutes
-      setTimeout(() => requestCache.delete(key), 5 * 60 * 1000);
-      
-      return promise;
+      return originalFetch(input, init);
     };
   }
 };
 
-// Initialize performance optimizations
+// Initialize all performance optimizations
 export const initializePerformanceOptimizations = () => {
+  // Critical path optimizations
+  performanceOptimizations.preloadCriticalComponents();
   performanceOptimizations.optimizeFonts();
   performanceOptimizations.preloadCriticalResources();
+  
+  // Memory and network optimizations
   performanceOptimizations.optimizeMemory();
   performanceOptimizations.optimizeNetworkRequests();
-  performanceOptimizations.logBundleSize();
   
-  console.log('Performance optimizations initialized');
-};
-
-// Security utilities
-export const securityUtils = {
-  // Validate environment variables
-  validateEnvironmentVariables: () => {
-    const requiredEnvVars = [
-      'VITE_APP_NAME',
-      // Add other required environment variables
-    ];
-
-    const missing = requiredEnvVars.filter(envVar => !import.meta.env[envVar]);
-    
-    if (missing.length > 0) {
-      console.warn('Missing environment variables:', missing);
-      return false;
-    }
-    
-    return true;
-  },
-
-  // CORS validation helper
-  validateCORSPolicy: (apiUrl: string) => {
-    console.log(`Ensure CORS is properly configured for: ${apiUrl}`);
-    console.log('Required CORS headers:');
-    console.log('- Access-Control-Allow-Origin');
-    console.log('- Access-Control-Allow-Methods');
-    console.log('- Access-Control-Allow-Headers');
-  },
-
-  // Content Security Policy helper
-  setupCSP: () => {
-    const cspMeta = document.createElement('meta');
-    cspMeta.httpEquiv = 'Content-Security-Policy';
-    cspMeta.content = `
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://connect.facebook.net https://www.googletagmanager.com;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      img-src 'self' data: https:;
-      font-src 'self' https://fonts.gstatic.com;
-      connect-src 'self' https://api.openai.com https://graph.facebook.com https://www.google-analytics.com;
-    `.replace(/\s+/g, ' ').trim();
-    
-    document.head.appendChild(cspMeta);
+  // Monitoring
+  performanceOptimizations.measureWebVitals();
+  performanceOptimizations.logBundleOptimizations();
+  
+  // Service worker (production only)
+  performanceOptimizations.registerServiceWorker();
+  
+  // Image lazy loading when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', performanceOptimizations.optimizeImages);
+  } else {
+    performanceOptimizations.optimizeImages();
   }
+  
+  console.log('🚀 Performance optimizations initialized');
 };
 
 export default performanceOptimizations;

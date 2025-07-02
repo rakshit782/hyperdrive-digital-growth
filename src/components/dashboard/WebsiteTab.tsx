@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Globe, Palette, Type, Eye } from "lucide-react";
+import { Globe, Palette, Type, Eye, RefreshCw } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface WebsiteSettings {
   companyName: string;
@@ -16,22 +17,26 @@ interface WebsiteSettings {
   heroTitle: string;
   heroSubtitle: string;
   ctaText: string;
+  logoUrl?: string;
+  faviconUrl?: string;
 }
 
 const defaultSettings: WebsiteSettings = {
-  companyName: "AMZ Ad Scout",
-  tagline: "Scale Your Amazon Success",
-  description: "Expert Amazon advertising and e-commerce solutions that drive results",
+  companyName: "AdRevenueBoost",
+  tagline: "Scale Your Success",
+  description: "Expert advertising and e-commerce solutions that drive results",
   primaryColor: "#3B82F6",
   secondaryColor: "#8B5CF6",
-  heroTitle: "Scale Your Amazon Success with Expert PPC Management",
-  heroSubtitle: "Maximize your ROI with data-driven Amazon advertising strategies from certified experts",
-  ctaText: "Get Free Audit"
+  heroTitle: "Scale Your Success with Expert Advertising Management",
+  heroSubtitle: "Maximize your ROI with data-driven strategies from certified experts",
+  ctaText: "Get Free Account Audit"
 };
 
 const WebsiteTab = () => {
   const [settings, setSettings] = useState<WebsiteSettings>(defaultSettings);
   const [isSaved, setIsSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const savedSettings = localStorage.getItem('websiteSettings');
@@ -41,17 +46,46 @@ const WebsiteTab = () => {
         setSettings({ ...defaultSettings, ...parsed });
       } catch (error) {
         console.error('Failed to parse website settings:', error);
+        toast({
+          title: "Error loading settings",
+          description: "Using default settings instead.",
+          variant: "destructive"
+        });
       }
     }
-  }, []);
+  }, [toast]);
 
-  const handleSave = () => {
-    localStorage.setItem('websiteSettings', JSON.stringify(settings));
-    setIsSaved(true);
-    
-    window.dispatchEvent(new CustomEvent('websiteSettingsUpdated', { detail: settings }));
-    
-    setTimeout(() => setIsSaved(false), 2000);
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      localStorage.setItem('websiteSettings', JSON.stringify(settings));
+      
+      // Dispatch custom event to update website immediately
+      window.dispatchEvent(new CustomEvent('websiteSettingsUpdated', { 
+        detail: settings 
+      }));
+      
+      // Update CSS custom properties for real-time theme changes
+      document.documentElement.style.setProperty('--primary-color', settings.primaryColor);
+      document.documentElement.style.setProperty('--secondary-color', settings.secondaryColor);
+      
+      setIsSaved(true);
+      toast({
+        title: "Settings saved!",
+        description: "Your website has been updated with the new settings.",
+      });
+      
+      setTimeout(() => setIsSaved(false), 3000);
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      toast({
+        title: "Save failed",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (field: keyof WebsiteSettings, value: string) => {
@@ -61,7 +95,23 @@ const WebsiteTab = () => {
   const handleReset = () => {
     setSettings(defaultSettings);
     localStorage.removeItem('websiteSettings');
-    window.dispatchEvent(new CustomEvent('websiteSettingsUpdated', { detail: defaultSettings }));
+    
+    // Reset CSS custom properties
+    document.documentElement.style.setProperty('--primary-color', defaultSettings.primaryColor);
+    document.documentElement.style.setProperty('--secondary-color', defaultSettings.secondaryColor);
+    
+    window.dispatchEvent(new CustomEvent('websiteSettingsUpdated', { 
+      detail: defaultSettings 
+    }));
+    
+    toast({
+      title: "Settings reset",
+      description: "All settings have been reset to defaults.",
+    });
+  };
+
+  const previewChanges = () => {
+    window.open('/', '_blank');
   };
 
   return (
@@ -71,11 +121,18 @@ const WebsiteTab = () => {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold text-slate-900">Website Settings</h2>
-            <p className="text-slate-600 mt-1">Configure basic website information and styling</p>
+            <p className="text-slate-600 mt-1">Configure your website appearance and content</p>
           </div>
-          <Button onClick={handleReset} variant="outline" className="bg-white/50">
-            Reset to Defaults
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={previewChanges} variant="outline" className="bg-white/50">
+              <Eye className="w-4 h-4 mr-2" />
+              Preview
+            </Button>
+            <Button onClick={handleReset} variant="outline" className="bg-white/50">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Reset
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-6">
@@ -93,25 +150,27 @@ const WebsiteTab = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="companyName" className="text-sm font-medium text-slate-700">Company Name</Label>
-                <Input
-                  id="companyName"
-                  value={settings.companyName}
-                  onChange={(e) => handleInputChange('companyName', e.target.value)}
-                  placeholder="Your company name"
-                  className="bg-white/50 border-white/30 focus:border-blue-500"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="tagline" className="text-sm font-medium text-slate-700">Tagline</Label>
-                <Input
-                  id="tagline"
-                  value={settings.tagline}
-                  onChange={(e) => handleInputChange('tagline', e.target.value)}
-                  placeholder="Your company tagline"
-                  className="bg-white/50 border-white/30 focus:border-blue-500"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="companyName" className="text-sm font-medium text-slate-700">Company Name</Label>
+                  <Input
+                    id="companyName"
+                    value={settings.companyName}
+                    onChange={(e) => handleInputChange('companyName', e.target.value)}
+                    placeholder="Your company name"
+                    className="bg-white/50 border-white/30 focus:border-blue-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tagline" className="text-sm font-medium text-slate-700">Tagline</Label>
+                  <Input
+                    id="tagline"
+                    value={settings.tagline}
+                    onChange={(e) => handleInputChange('tagline', e.target.value)}
+                    placeholder="Your company tagline"
+                    className="bg-white/50 border-white/30 focus:border-blue-500"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description" className="text-sm font-medium text-slate-700">Description</Label>
@@ -141,40 +200,42 @@ const WebsiteTab = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="primaryColor" className="text-sm font-medium text-slate-700">Primary Color</Label>
-                <div className="flex items-center space-x-3">
-                  <Input
-                    id="primaryColor"
-                    type="color"
-                    value={settings.primaryColor}
-                    onChange={(e) => handleInputChange('primaryColor', e.target.value)}
-                    className="w-16 h-10 p-1 rounded border-white/30"
-                  />
-                  <Input
-                    value={settings.primaryColor}
-                    onChange={(e) => handleInputChange('primaryColor', e.target.value)}
-                    placeholder="#3B82F6"
-                    className="flex-1 bg-white/50 border-white/30 focus:border-purple-500"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="primaryColor" className="text-sm font-medium text-slate-700">Primary Color</Label>
+                  <div className="flex items-center space-x-3">
+                    <Input
+                      id="primaryColor"
+                      type="color"
+                      value={settings.primaryColor}
+                      onChange={(e) => handleInputChange('primaryColor', e.target.value)}
+                      className="w-16 h-10 p-1 rounded border-white/30"
+                    />
+                    <Input
+                      value={settings.primaryColor}
+                      onChange={(e) => handleInputChange('primaryColor', e.target.value)}
+                      placeholder="#3B82F6"
+                      className="flex-1 bg-white/50 border-white/30 focus:border-purple-500"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="secondaryColor" className="text-sm font-medium text-slate-700">Secondary Color</Label>
-                <div className="flex items-center space-x-3">
-                  <Input
-                    id="secondaryColor"
-                    type="color"
-                    value={settings.secondaryColor}
-                    onChange={(e) => handleInputChange('secondaryColor', e.target.value)}
-                    className="w-16 h-10 p-1 rounded border-white/30"
-                  />
-                  <Input
-                    value={settings.secondaryColor}
-                    onChange={(e) => handleInputChange('secondaryColor', e.target.value)}
-                    placeholder="#8B5CF6"
-                    className="flex-1 bg-white/50 border-white/30 focus:border-purple-500"
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="secondaryColor" className="text-sm font-medium text-slate-700">Secondary Color</Label>
+                  <div className="flex items-center space-x-3">
+                    <Input
+                      id="secondaryColor"
+                      type="color"
+                      value={settings.secondaryColor}
+                      onChange={(e) => handleInputChange('secondaryColor', e.target.value)}
+                      className="w-16 h-10 p-1 rounded border-white/30"
+                    />
+                    <Input
+                      value={settings.secondaryColor}
+                      onChange={(e) => handleInputChange('secondaryColor', e.target.value)}
+                      placeholder="#8B5CF6"
+                      className="flex-1 bg-white/50 border-white/30 focus:border-purple-500"
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -231,13 +292,20 @@ const WebsiteTab = () => {
 
           <Button 
             onClick={handleSave} 
+            disabled={isLoading}
             className={`w-full transition-all duration-300 ${
               isSaved 
                 ? "bg-green-600 hover:bg-green-700" 
                 : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
             } shadow-lg`}
           >
-            {isSaved ? "✓ Saved!" : "Save Website Settings"}
+            {isLoading ? (
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            ) : isSaved ? (
+              "✓ Saved!"
+            ) : (
+              "Save Website Settings"
+            )}
           </Button>
         </div>
       </div>
@@ -246,20 +314,28 @@ const WebsiteTab = () => {
       <div className="xl:col-span-1">
         <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl sticky top-6">
           <CardHeader>
-            <div className="flex items-center">
-              <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg mr-3">
-                <Eye className="w-5 h-5 text-white" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg mr-3">
+                  <Eye className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle>Live Preview</CardTitle>
+                  <CardDescription>Real-time preview</CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle>Live Preview</CardTitle>
-                <CardDescription>How your changes will appear</CardDescription>
-              </div>
+              <Button onClick={previewChanges} size="sm" variant="outline">
+                <Eye className="w-4 h-4" />
+              </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-lg">
+            <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-lg border">
               <div className="text-center max-w-full mx-auto">
-                <h1 className="text-2xl md:text-3xl font-bold mb-3 text-slate-900 leading-tight">
+                <h1 
+                  className="text-2xl md:text-3xl font-bold mb-3 leading-tight"
+                  style={{ color: settings.primaryColor }}
+                >
                   {settings.heroTitle}
                 </h1>
                 <p className="text-sm text-slate-600 mb-6 leading-relaxed">
@@ -267,18 +343,26 @@ const WebsiteTab = () => {
                 </p>
                 <Button 
                   style={{ backgroundColor: settings.primaryColor }}
-                  className="text-white px-6 py-2 text-sm font-semibold rounded-xl mb-6"
+                  className="text-white px-6 py-2 text-sm font-semibold rounded-xl mb-6 hover:opacity-90"
                 >
                   {settings.ctaText}
                 </Button>
-                <div className="text-center">
-                  <h2 className="text-xl font-bold mb-2" style={{ color: settings.primaryColor }}>
+                <div className="text-center border-t pt-4">
+                  <h2 
+                    className="text-xl font-bold mb-2" 
+                    style={{ color: settings.primaryColor }}
+                  >
                     {settings.companyName}
                   </h2>
-                  <p className="text-sm font-medium" style={{ color: settings.secondaryColor }}>
+                  <p 
+                    className="text-sm font-medium" 
+                    style={{ color: settings.secondaryColor }}
+                  >
                     {settings.tagline}
                   </p>
-                  <p className="text-slate-600 text-xs mt-2 leading-relaxed">{settings.description}</p>
+                  <p className="text-slate-600 text-xs mt-2 leading-relaxed">
+                    {settings.description}
+                  </p>
                 </div>
               </div>
             </div>

@@ -1,10 +1,12 @@
 
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Auth0ProviderWrapper from "@/components/Auth0ProviderWrapper";
+import { initializePerformanceOptimizations } from "@/utils/lazyComponents";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import About from "./pages/About";
@@ -30,41 +32,60 @@ const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes (renamed from cacheTime)
       refetchOnWindowFocus: false,
+      retry: (failureCount, error) => {
+        // Don't retry on 4xx errors
+        if (error instanceof Error && error.message.includes('4')) {
+          return false;
+        }
+        return failureCount < 3;
+      },
     },
   },
 });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <Auth0ProviderWrapper>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <TrackingScriptInjector />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/case-studies" element={<CaseStudies />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/free-audit" element={<FreeAudit />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
-            <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
-            <Route path="/google-advertising" element={<GoogleAdvertising />} />
-            <Route path="/meta-advertising" element={<MetaAdvertising />} />
-            <Route path="/website-development" element={<WebsiteDevelopment />} />
-            <Route path="/account-management" element={<AccountManagement />} />
-            <Route path="/shopify-integration" element={<ShopifyIntegration />} />
-            <Route path="/shopify-development" element={<ShopifyDevelopment />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </Auth0ProviderWrapper>
-  </QueryClientProvider>
-);
+const App = () => {
+  useEffect(() => {
+    // Initialize performance optimizations on app startup
+    initializePerformanceOptimizations();
+    
+    // Mark app initialization
+    if (typeof performance !== 'undefined' && performance.mark) {
+      performance.mark('app-initialized');
+    }
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Auth0ProviderWrapper>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <TrackingScriptInjector />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/case-studies" element={<CaseStudies />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/free-audit" element={<FreeAudit />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
+              <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
+              <Route path="/google-advertising" element={<GoogleAdvertising />} />
+              <Route path="/meta-advertising" element={<MetaAdvertising />} />
+              <Route path="/website-development" element={<WebsiteDevelopment />} />
+              <Route path="/account-management" element={<AccountManagement />} />
+              <Route path="/shopify-integration" element={<ShopifyIntegration />} />
+              <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </Auth0ProviderWrapper>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

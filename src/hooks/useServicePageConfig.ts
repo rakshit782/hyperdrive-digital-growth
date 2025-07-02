@@ -1,99 +1,9 @@
 import { useState, useEffect } from 'react';
-
-interface ServicePageConfig {
-  serviceType: string;
-  title: string;
-  subtitle: string;
-  heroDescription: string;
-  primaryButtonText: string;
-  secondaryButtonText: string;
-  primaryButtonUrl: string;
-  secondaryButtonUrl: string;
-  services: Array<{
-    title: string;
-    description: string;
-    icon: string;
-    gradient: string;
-  }>;
-  benefits: Array<{
-    title: string;
-    description: string;
-    icon: string;
-    color: string;
-  }>;
-  ctaTitle: string;
-  ctaDescription: string;
-  ctaButtonText: string;
-  ctaButtonUrl: string;
-}
+import { ServicePageConfig, amazonConfig, googleConfig } from '@/config/serviceConfigs';
 
 const defaultConfigs: Record<string, ServicePageConfig> = {
-  amazon: {
-    serviceType: 'amazon',
-    title: 'Amazon Advertising Management',
-    subtitle: 'Expert Amazon PPC & Marketplace Optimization',
-    heroDescription: 'Maximize your Amazon sales with our proven advertising strategies. We help brands achieve 350% average sales growth through expert PPC management, listing optimization, and strategic campaign planning.',
-    primaryButtonText: 'Get Free Amazon Audit',
-    secondaryButtonText: 'View Success Stories',
-    primaryButtonUrl: '/free-audit',
-    secondaryButtonUrl: '/amazon-case-studies',
-    services: [
-      {
-        title: 'Amazon PPC Management',
-        description: 'Strategic campaign setup and optimization for maximum ROI and visibility.',
-        icon: 'Target',
-        gradient: 'bg-gradient-to-r from-orange-500 to-red-500'
-      },
-      {
-        title: 'Listing Optimization',
-        description: 'Optimize product titles, descriptions, and images for better conversions.',
-        icon: 'FileText',
-        gradient: 'bg-gradient-to-r from-blue-500 to-indigo-500'
-      },
-      {
-        title: 'Keyword Research',
-        description: 'Advanced keyword analysis to dominate search results and increase visibility.',
-        icon: 'Search',
-        gradient: 'bg-gradient-to-r from-green-500 to-emerald-500'
-      },
-      {
-        title: 'Competitor Analysis',
-        description: 'Deep competitor insights to gain strategic advantages and market positioning.',
-        icon: 'BarChart3',
-        gradient: 'bg-gradient-to-r from-purple-500 to-pink-500'
-      }
-    ],
-    benefits: [
-      {
-        title: 'Proven Results',
-        description: '350% average sales increase across all client accounts within 90 days.',
-        icon: 'TrendingUp',
-        color: 'bg-gradient-to-r from-green-500 to-emerald-500'
-      },
-      {
-        title: 'Expert Team',
-        description: 'Certified Amazon advertising specialists with years of marketplace experience.',
-        icon: 'Users',
-        color: 'bg-gradient-to-r from-blue-500 to-indigo-500'
-      },
-      {
-        title: 'Data-Driven Approach',
-        description: 'Advanced analytics and AI-powered optimization for maximum performance.',
-        icon: 'BarChart3',
-        color: 'bg-gradient-to-r from-purple-500 to-pink-500'
-      },
-      {
-        title: '24/7 Monitoring',
-        description: 'Continuous campaign monitoring and optimization for peak performance.',
-        icon: 'Clock',
-        color: 'bg-gradient-to-r from-orange-500 to-red-500'
-      }
-    ],
-    ctaTitle: 'Ready to Dominate Amazon?',
-    ctaDescription: 'Get your free Amazon advertising audit and discover how we can triple your sales in 90 days.',
-    ctaButtonText: 'Get Free Audit',
-    ctaButtonUrl: '/free-audit'
-  },
+  amazon: amazonConfig,
+  'google-advertising': googleConfig,
   walmart: {
     serviceType: 'walmart',
     title: 'Walmart Advertising Management',
@@ -574,7 +484,6 @@ export const useServicePageConfig = () => {
   const refetch = () => {
     setLoading(true);
     try {
-      // Ensure we start with default configs
       let newConfigs = { ...defaultConfigs };
       
       Object.keys(defaultConfigs).forEach(serviceType => {
@@ -595,7 +504,6 @@ export const useServicePageConfig = () => {
       setConfigs(newConfigs);
     } catch (error) {
       console.error('Error in refetch:', error);
-      // Keep default configs on error
       setConfigs(defaultConfigs);
     } finally {
       setLoading(false);
