@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -10,7 +9,7 @@ import CaseStudyPopup from "@/components/CaseStudyPopup";
 import { useServicePageConfig } from '@/hooks/useServicePageConfig';
 import { useServiceData } from '@/hooks/useServiceData';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Target, Search, FileText, BarChart3, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, Target, Search, FileText, BarChart3, ArrowUpRight, Star } from 'lucide-react';
 
 const GoogleAdvertising = () => {
   const { configs, loading: configLoading } = useServicePageConfig();
@@ -152,6 +151,57 @@ const GoogleAdvertising = () => {
     }
   ];
 
+  const googleReviews = [
+    {
+      id: "google-review-1",
+      client_name: "Jennifer Martinez",
+      company: "Premier Services",
+      rating: 5,
+      review_text: "Outstanding Google Ads campaigns with local targeting that drove massive foot traffic and online conversions. The strategic approach exceeded expectations.",
+      results_achieved: "380% lead generation, 220% conversion rate"
+    },
+    {
+      id: "google-review-2",
+      client_name: "David Chen",
+      company: "CloudTech Enterprise",
+      rating: 5,
+      review_text: "Comprehensive search marketing strategy that established our market leadership and drove high-quality enterprise leads through expert optimization.",
+      results_achieved: "450% search visibility, 320% enterprise leads"
+    },
+    {
+      id: "google-review-3",
+      client_name: "Sarah Rodriguez",
+      company: "Digital Commerce Pro",
+      rating: 5,
+      review_text: "Strategic Google Shopping campaigns with product listing optimization that transformed our online retail performance and drove exceptional ROAS.",
+      results_achieved: "520% shopping revenue, 6.8x ROAS"
+    },
+    {
+      id: "google-review-4",
+      client_name: "Michael Thompson",
+      company: "Elite Medical Group",
+      rating: 5,
+      review_text: "Medical practice Google Ads campaigns with compliance-focused approach that drove patient acquisition and appointment bookings effectively.",
+      results_achieved: "420% patient leads, 310% appointment bookings"
+    },
+    {
+      id: "google-review-5",
+      client_name: "Amanda Foster",
+      company: "Premium Realty Group",
+      rating: 5,
+      review_text: "Real estate Google Ads campaigns with advanced targeting that generated high-quality leads and property inquiries for our top realtors.",
+      results_achieved: "380% qualified leads, 290% property inquiries"
+    },
+    {
+      id: "google-review-6",
+      client_name: "Robert Kim",
+      company: "Justice Law Partners",
+      rating: 5,
+      review_text: "Law firm Google Ads strategy with reputation management that established market authority and drove high-value client acquisitions.",
+      results_achieved: "350% client inquiries, 240% case value"
+    }
+  ];
+
   const handleCaseStudyClick = (caseStudy) => {
     setSelectedCaseStudy(caseStudy);
     setIsPopupOpen(true);
@@ -160,6 +210,17 @@ const GoogleAdvertising = () => {
   const handleClosePopup = () => {
     setIsPopupOpen(false);
     setSelectedCaseStudy(null);
+  };
+
+  const renderStars = (rating) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${
+          i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+        }`}
+      />
+    ));
   };
 
   const loading = configLoading || dataLoading;
@@ -336,11 +397,54 @@ const GoogleAdvertising = () => {
           </div>
         </section>
 
+        {/* Reviews Section */}
+        <section className="py-20 bg-white">
+          <div className="container-standard px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-heading font-bold text-dark mb-6">
+                What Our Google Clients Say
+              </h2>
+              <p className="text-xl text-minimal max-w-3xl mx-auto font-body leading-relaxed">
+                Discover how businesses have dominated search results with our Google advertising expertise.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {googleReviews.map((review) => (
+                <div key={review.id} className="bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-white font-semibold text-lg">
+                        {review.client_name.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-slate-900">{review.client_name}</h4>
+                      <p className="text-slate-600 text-sm">{review.company}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center mb-4">
+                    {renderStars(review.rating)}
+                  </div>
+                  
+                  <p className="text-slate-700 leading-relaxed mb-4 text-sm">
+                    "{review.review_text}"
+                  </p>
+                  
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-green-800 text-sm font-medium">
+                      Results: {review.results_achieved}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Stats Section */}
         <ServiceStatsGrid stats={stats} serviceType="Google Advertising" />
-
-        {/* Reviews Section */}
-        <ServiceReviewsGrid reviews={reviews} />
 
         {/* CTA Section */}
         <ServiceCTA 
