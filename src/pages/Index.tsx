@@ -2,7 +2,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import ClienteleCarousel from "@/components/ClienteleCarousel";
-import AuthorizedPartners from "@/components/AuthorizedPartners";
 import Services from "@/components/Services";
 import CircularReviews from "@/components/CircularReviews";
 import Footer from "@/components/Footer";
@@ -21,7 +20,6 @@ const Index = () => {
         <div className="space-y-12">
           <Hero />
           <ClienteleCarousel />
-          <AuthorizedPartners />
           <Services />
           <CircularReviews />
         </div>
