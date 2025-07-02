@@ -13,6 +13,7 @@ import WebsiteTab from "@/components/dashboard/WebsiteTab";
 import HeroSliderTab from "@/components/dashboard/HeroSliderTab";
 import ServiceHeaderImagesTab from "@/components/dashboard/ServiceHeaderImagesTab";
 import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
+import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ const Dashboard = () => {
       id: "reviews",
       label: "Reviews",
       icon: "⭐",
-      component: <ReviewsTab reviews={reviews} />
+      component: <ReviewsTab reviews={reviews} updateReviews={updateReviews} />
     },
     {
       id: "service-header-images",
@@ -73,6 +74,12 @@ const Dashboard = () => {
       icon: "🔗",
       component: <FooterManagementTab />
     },
+    {
+      id: "integration-status",
+      label: "Integration Status",
+      icon: "⚡",
+      component: <IntegrationStatusTab />
+    }
   ];
 
   return (

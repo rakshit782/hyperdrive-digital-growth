@@ -19,8 +19,11 @@ export interface IntegrationStatus {
 
 class IntegrationManager {
   private integrations: Map<string, IntegrationStatus> = new Map();
+  private initialized = false;
 
   async initializeAllIntegrations(): Promise<void> {
+    if (this.initialized) return;
+    
     console.log('Integration Manager: Initializing all integrations...');
 
     try {
@@ -39,6 +42,7 @@ class IntegrationManager {
       // Initialize Auth0
       await this.initializeAuth0();
 
+      this.initialized = true;
       console.log('Integration Manager: All integrations initialized');
     } catch (error) {
       console.error('Integration Manager: Failed to initialize integrations:', error);
@@ -47,11 +51,14 @@ class IntegrationManager {
 
   private async initializeFacebookPixel(): Promise<void> {
     try {
+      // Load saved config first
+      facebookPixel.loadSavedConfig();
       const config = facebookPixel.getConfig();
+      
       if (config && config.pixelId && config.isActive) {
-        this.setIntegrationStatus('facebook-pixel', 'active');
+        this.setIntegrationStatus('facebook-pixel', 'active', undefined, ['Page View Tracking', 'Custom Events', 'Conversion API']);
       } else {
-        this.setIntegrationStatus('facebook-pixel', 'inactive');
+        this.setIntegrationStatus('facebook-pixel', 'inactive', undefined, ['Page View Tracking', 'Custom Events', 'Conversion API']);
       }
     } catch (error) {
       this.setIntegrationStatus('facebook-pixel', 'error', error instanceof Error ? error.message : 'Unknown error');
@@ -62,9 +69,9 @@ class IntegrationManager {
     try {
       const config = googleAnalyticsManager.getConfig();
       if (config && config.measurementId && config.isActive) {
-        this.setIntegrationStatus('google-analytics', 'active');
+        this.setIntegrationStatus('google-analytics', 'active', undefined, ['Page Views', 'Events', 'Conversions']);
       } else {
-        this.setIntegrationStatus('google-analytics', 'inactive');
+        this.setIntegrationStatus('google-analytics', 'inactive', undefined, ['Page Views', 'Events', 'Conversions']);
       }
     } catch (error) {
       this.setIntegrationStatus('google-analytics', 'error', error instanceof Error ? error.message : 'Unknown error');
@@ -74,7 +81,7 @@ class IntegrationManager {
   private async initializeChatGPT(): Promise<void> {
     try {
       const isActive = chatGPTManager.isActive();
-      this.setIntegrationStatus('chatgpt', isActive ? 'active' : 'inactive');
+      this.setIntegrationStatus('chatgpt', isActive ? 'active' : 'inactive', undefined, ['AI Chat Support', 'Content Generation']);
     } catch (error) {
       this.setIntegrationStatus('chatgpt', 'error', error instanceof Error ? error.message : 'Unknown error');
     }
@@ -84,9 +91,9 @@ class IntegrationManager {
     try {
       const config = cloudflareManager.getConfig();
       if (config && config.accountId && config.apiToken) {
-        this.setIntegrationStatus('cloudflare', 'active');
+        this.setIntegrationStatus('cloudflare', 'active', undefined, ['CDN', 'Security', 'DNS']);
       } else {
-        this.setIntegrationStatus('cloudflare', 'inactive');
+        this.setIntegrationStatus('cloudflare', 'inactive', undefined, ['CDN', 'Security', 'DNS']);
       }
     } catch (error) {
       this.setIntegrationStatus('cloudflare', 'error', error instanceof Error ? error.message : 'Unknown error');
@@ -96,25 +103,41 @@ class IntegrationManager {
   private async initializeAuth0(): Promise<void> {
     try {
       const isConfigured = auth0ConfigManager.isConfigured();
-      this.setIntegrationStatus('auth0', isConfigured ? 'active' : 'inactive');
+      this.setIntegrationStatus('auth0', isConfigured ? 'active' : 'inactive', undefined, ['User Authentication', 'SSO', 'User Management']);
     } catch (error) {
       this.setIntegrationStatus('auth0', 'error', error instanceof Error ? error.message : 'Unknown error');
     }
   }
 
-  private setIntegrationStatus(name: string, status: 'active' | 'inactive' | 'error', error?: string): void {
+  private setIntegrationStatus(name: string, status: 'active' | 'inactive' | 'error', error?: string, features?: string[]): void {
     this.integrations.set(name, {
-      name,
+      name: this.getDisplayName(name),
       status,
       lastCheck: new Date().toISOString(),
       lastChecked: new Date(),
       isActive: status === 'active',
       hasConfig: status !== 'inactive',
+      features: features || [],
       error
     });
   }
 
+  private getDisplayName(name: string): string {
+    const displayNames: { [key: string]: string } = {
+      'facebook-pixel': 'Facebook Pixel',
+      'google-analytics': 'Google Analytics',
+      'chatgpt': 'ChatGPT',
+      'cloudflare': 'Cloudflare',
+      'auth0': 'Auth0'
+    };
+    return displayNames[name] || name;
+  }
+
   getIntegrationStatus(name?: string): IntegrationStatus[] {
+    if (!this.initialized) {
+      this.initializeAllIntegrations();
+    }
+    
     if (name) {
       const integration = this.integrations.get(name);
       return integration ? [integration] : [];
@@ -123,6 +146,9 @@ class IntegrationManager {
   }
 
   getAllIntegrationStatuses(): IntegrationStatus[] {
+    if (!this.initialized) {
+      this.initializeAllIntegrations();
+    }
     return Array.from(this.integrations.values());
   }
 
@@ -155,3 +181,6 @@ class IntegrationManager {
 }
 
 export const integrationManager = new IntegrationManager();
+
+// Initialize integrations when the module is loaded
+integrationManager.initializeAllIntegrations();
