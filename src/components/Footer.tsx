@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Facebook, Instagram, Linkedin, Twitter, Youtube, Mail, Phone, MapPin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AuthorizedPartners from "./AuthorizedPartners";
 
 interface SocialMediaLink {
   id: string;
@@ -261,6 +262,9 @@ const Footer = () => {
 
   return (
     <footer className="bg-slate-900 text-white">
+      {/* Authorized Partners at the top */}
+      <AuthorizedPartners />
+      
       {/* Main Footer Content */}
       <div className="container mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
