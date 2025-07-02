@@ -262,32 +262,6 @@ const Footer = () => {
 
   return (
     <footer className="bg-slate-900 text-white">
-      {/* Partner Images Section */}
-      {footerSettings.showPartners && activePartners.length > 0 && (
-        <div className="border-b border-slate-700">
-          <div className="container mx-auto px-6 py-8">
-            <h4 className="text-center text-lg font-semibold mb-6 text-white">{footerSettings.partnersTitle}</h4>
-            <div className="flex flex-wrap justify-center items-center gap-8">
-              {activePartners.map((partner) => (
-                <div key={partner.id} className="flex-shrink-0">
-                  <img
-                    src={partner.imageUrl}
-                    alt={partner.name}
-                    className="h-12 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200 bg-white/10 rounded p-2"
-                    onError={(e) => {
-                      console.error(`Failed to load partner image: ${partner.name}`, e);
-                      // Fallback to a placeholder
-                      e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAyNEg4MFYzNkg0MFYyNFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
-                      e.currentTarget.alt = `${partner.name} - Logo unavailable`;
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Footer Content */}
       <div className="container mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -371,24 +345,50 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
+        {/* Newsletter Signup with Partner Logos */}
         {footerSettings.showNewsletter && (
           <div className="mt-16 pt-8 border-t border-slate-700">
-            <div className="text-center">
-              <h4 className="text-xl font-semibold mb-4">{footerSettings.newsletterTitle}</h4>
-              <p className="text-slate-300 mb-6">
-                {footerSettings.newsletterDescription}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3">
-                  Subscribe
-                </Button>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              {/* Newsletter Section */}
+              <div>
+                <h4 className="text-xl font-semibold mb-4">{footerSettings.newsletterTitle}</h4>
+                <p className="text-slate-300 mb-6">
+                  {footerSettings.newsletterDescription}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="flex-1 px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3">
+                    Subscribe
+                  </Button>
+                </div>
               </div>
+
+              {/* Partner Logos Section */}
+              {footerSettings.showPartners && activePartners.length > 0 && (
+                <div className="text-center lg:text-right">
+                  <h4 className="text-lg font-semibold mb-6 text-white">{footerSettings.partnersTitle}</h4>
+                  <div className="flex flex-wrap justify-center lg:justify-end items-center gap-6">
+                    {activePartners.map((partner) => (
+                      <div key={partner.id} className="flex-shrink-0">
+                        <img
+                          src={partner.imageUrl}
+                          alt={partner.name}
+                          className="h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200 bg-white/10 rounded p-2"
+                          onError={(e) => {
+                            console.error(`Failed to load partner image: ${partner.name}`, e);
+                            e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAyNEg4MFYzNkg0MFYyNFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                            e.currentTarget.alt = `${partner.name} - Logo unavailable`;
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
