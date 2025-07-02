@@ -111,14 +111,27 @@ export const performanceOptimizations = {
   // Performance monitoring with Web Vitals
   measureWebVitals: () => {
     if (typeof performance !== 'undefined' && performance.mark) {
-      // Core Web Vitals tracking
+      // Core Web Vitals tracking with proper performance API
       const observer = new PerformanceObserver((list) => {
         list.getEntries().forEach((entry) => {
-          console.log(`${entry.name}: ${entry.value}ms`);
+          // Handle different entry types properly
+          if (entry.entryType === 'measure') {
+            console.log(`${entry.name}: ${entry.duration}ms`);
+          } else if (entry.entryType === 'navigation') {
+            const navEntry = entry as PerformanceNavigationTiming;
+            console.log(`Navigation ${entry.name}: ${navEntry.loadEventEnd - navEntry.loadEventStart}ms`);
+          } else {
+            console.log(`${entry.name}: ${entry.duration || 0}ms`);
+          }
         });
       });
       
-      observer.observe({ entryTypes: ['measure', 'navigation'] });
+      // Observe different entry types based on browser support
+      try {
+        observer.observe({ entryTypes: ['measure', 'navigation'] });
+      } catch (e) {
+        console.warn('Performance observer not fully supported:', e);
+      }
       
       // Mark critical rendering points
       performance.mark('app-start');
