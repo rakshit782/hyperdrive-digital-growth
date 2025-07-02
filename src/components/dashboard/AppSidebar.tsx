@@ -31,7 +31,8 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
-  const { collapsed } = useSidebar();
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
   const [openGroups, setOpenGroups] = useState<{ [key: string]: boolean }>({
     content: true,
     crm: true,
