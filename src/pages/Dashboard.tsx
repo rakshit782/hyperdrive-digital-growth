@@ -1,14 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Cog, Users, BarChart3, LayoutDashboard, Image, Globe, Sliders, Star, Settings, Link2, Zap, Mail, Database, Shield, Bell, Search, User } from "lucide-react";
+import { 
+  LayoutDashboard, Search, Bell, User, Settings, Globe, Sliders, 
+  Star, Image, Users, Link2, Database, Mail, Shield, Cog, Zap
+} from "lucide-react";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useToast } from "@/hooks/use-toast";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import ServiceCardsTab from "@/components/dashboard/ServiceCardsTab";
 import ReviewsTab from "@/components/dashboard/ReviewsTab";
 import WebsiteTab from "@/components/dashboard/WebsiteTab";
@@ -135,45 +138,46 @@ const Dashboard = () => {
     }
   ];
 
-  const getTabsByCategory = (category: string) => {
-    return dashboardTabs.filter(tab => tab.category === category);
+  const getCurrentTab = () => {
+    return dashboardTabs.find(tab => tab.id === activeTab);
   };
 
-  const categories = ["Content", "CRM", "Media", "Business", "System"];
-
+  const currentTab = getCurrentTab();
   const getTabIcon = (tab: any) => {
     const IconComponent = tab.icon;
     return <IconComponent className="w-4 h-4" />;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      {/* Modern Header */}
-      <div className="bg-white border-b border-slate-200/60 shadow-sm sticky top-0 z-50 backdrop-blur-md bg-white/95">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+    <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 w-full">
+        {/* CRM Header */}
+        <div className="dashboard-header sticky top-0 z-50 shadow-sm">
+          <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center space-x-4">
+              <SidebarTrigger />
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <LayoutDashboard className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                  <LayoutDashboard className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    Dashboard
+                  <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                    CRM Dashboard
                   </h1>
                   <p className="text-slate-500 text-sm">Manage your digital presence</p>
                 </div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            {/* Header Actions */}
+            <div className="flex items-center space-x-3">
               <Button variant="outline" size="sm" className="h-9">
                 <Search className="w-4 h-4 mr-2" />
                 Search
               </Button>
               <Button variant="outline" size="sm" className="h-9">
                 <Bell className="w-4 h-4 mr-2" />
-                Notifications
+                Alerts
               </Button>
               <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 px-3 py-1">
                 <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
@@ -186,88 +190,49 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Dashboard Content */}
-      <div className="container mx-auto px-6 py-8">
-        <Card className="bg-white/80 backdrop-blur-sm border-slate-200/60 shadow-xl shadow-slate-200/20">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Enhanced Tab Navigation */}
-            <div className="border-b border-slate-200/60 bg-slate-50/30">
-              <div className="p-6 pb-0">
-                <div className="space-y-6">
-                  {categories.map((category) => {
-                    const categoryTabs = getTabsByCategory(category);
-                    if (categoryTabs.length === 0) return null;
-                    
-                    return (
-                      <div key={category} className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide">
-                            {category}
-                          </h3>
-                          <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent"></div>
-                        </div>
-                        
-                        <TabsList className="grid gap-2 bg-transparent p-0 h-auto" 
-                                 style={{ gridTemplateColumns: `repeat(${Math.min(categoryTabs.length, 6)}, minmax(0, 1fr))` }}>
-                          {categoryTabs.map((tab) => (
-                            <TabsTrigger
-                              key={tab.id}
-                              value={tab.id}
-                              className="flex flex-col items-center justify-center p-4 rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:shadow-slate-200/40 transition-all duration-300 hover:bg-white/60 group border border-transparent data-[state=active]:border-slate-200/60 min-h-[80px]"
-                            >
-                              <div className="p-2 rounded-lg bg-slate-100 group-data-[state=active]:bg-gradient-to-br group-data-[state=active]:from-blue-500 group-data-[state=active]:to-purple-600 group-data-[state=active]:text-white text-slate-600 mb-2 group-data-[state=active]:scale-110 transition-all duration-300">
-                                {getTabIcon(tab)}
-                              </div>
-                              <span className="font-medium text-xs text-center text-slate-700 group-data-[state=active]:text-slate-900 leading-tight">
-                                {tab.label}
-                              </span>
-                            </TabsTrigger>
-                          ))}
-                        </TabsList>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                <Separator className="mt-6 bg-slate-200/60" />
-              </div>
-            </div>
+        <div className="flex w-full">
+          {/* Sidebar */}
+          <AppSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-            {/* Tab Content Area */}
-            <div className="p-6">
-              {dashboardTabs.map((tab) => (
-                <TabsContent key={tab.id} value={tab.id} className="mt-0">
-                  <div className="bg-gradient-to-br from-slate-50/50 to-white rounded-2xl border border-slate-200/40 shadow-sm">
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center space-x-3">
-                          <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                            {getTabIcon(tab)}
-                          </div>
-                          <div>
-                            <h2 className="text-xl font-bold text-slate-900">{tab.label}</h2>
-                            <p className="text-slate-500 text-sm">Manage your {tab.label.toLowerCase()}</p>
-                          </div>
-                        </div>
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                          {tab.category}
-                        </Badge>
-                      </div>
-                      
-                      <div className="bg-white rounded-xl border border-slate-200/40 p-6 shadow-sm">
-                        {tab.component}
-                      </div>
+          {/* Main Content */}
+          <main className="flex-1 p-6">
+            <div className="max-w-7xl mx-auto">
+              {/* Content Header */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg">
+                      {currentTab && getTabIcon(currentTab)}
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+                        {currentTab?.label}
+                      </h2>
+                      <p className="text-slate-600 text-sm">
+                        Manage your {currentTab?.label.toLowerCase()}
+                      </p>
                     </div>
                   </div>
-                </TabsContent>
-              ))}
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                    {currentTab?.category}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Content Area */}
+              <Card className="crm-card border-0 shadow-xl">
+                <CardContent className="p-8">
+                  <div className="space-y-6">
+                    {currentTab?.component}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </Tabs>
-        </Card>
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
