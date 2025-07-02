@@ -8,23 +8,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Edit, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-interface Service {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  color: string;
-  isActive: boolean;
-}
+import { ServiceCard } from "@/types/dashboard";
 
 interface ServiceCardsTabProps {
-  services: Service[];
-  updateServices: (services: Service[]) => void;
+  services: ServiceCard[];
+  updateServices: (services: ServiceCard[]) => void;
 }
 
 const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => {
-  const [editingService, setEditingService] = useState<Service | null>(null);
+  const [editingService, setEditingService] = useState<ServiceCard | null>(null);
   const { toast } = useToast();
 
   const handleSave = () => {
@@ -34,11 +26,11 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
     });
   };
 
-  const handleEdit = (service: Service) => {
+  const handleEdit = (service: ServiceCard) => {
     setEditingService(service);
   };
 
-  const handleUpdate = (updatedService: Service) => {
+  const handleUpdate = (updatedService: ServiceCard) => {
     const updatedServices = services.map(s => 
       s.id === updatedService.id ? updatedService : s
     );
@@ -46,14 +38,44 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
     setEditingService(null);
   };
 
+  const handleDelete = (id: string) => {
+    const updatedServices = services.filter(s => s.id !== id);
+    updateServices(updatedServices);
+    toast({
+      title: "Service Deleted",
+      description: "Service has been removed successfully.",
+    });
+  };
+
+  const handleAdd = () => {
+    const newService: ServiceCard = {
+      id: `service-${Date.now()}`,
+      title: "New Service",
+      description: "Service description",
+      features: ["Feature 1", "Feature 2"],
+      icon: "💼",
+      gradient: "from-blue-500 to-purple-600"
+    };
+    updateServices([...services, newService]);
+    setEditingService(newService);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Service Cards Management</CardTitle>
-          <CardDescription>
-            Manage your service cards displayed on the homepage
-          </CardDescription>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Service Cards Management</CardTitle>
+              <CardDescription>
+                Manage your service cards displayed on the homepage
+              </CardDescription>
+            </div>
+            <Button onClick={handleAdd}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Service
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
@@ -64,18 +86,23 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
                   <div>
                     <h3 className="font-medium">{service.title}</h3>
                     <p className="text-sm text-gray-600">{service.description}</p>
+                    <p className="text-xs text-gray-500">Features: {service.features.join(', ')}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Badge variant={service.isActive ? "default" : "secondary"}>
-                    {service.isActive ? "Active" : "Inactive"}
-                  </Badge>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(service)}
                   >
                     <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDelete(service.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
               </div>

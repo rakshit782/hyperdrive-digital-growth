@@ -3,20 +3,41 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Edit } from "lucide-react";
 import { Review } from "@/types/dashboard";
+import { useToast } from "@/hooks/use-toast";
 
 interface ReviewsTabProps {
   reviews: Review[];
-  onEdit: (review: Review) => void;
-  onDelete: (id: string) => void;
-  onAdd: () => void;
 }
 
-const ReviewsTab = ({ reviews, onEdit, onDelete, onAdd }: ReviewsTabProps) => {
+const ReviewsTab = ({ reviews }: ReviewsTabProps) => {
+  const { toast } = useToast();
+
+  const handleEdit = (review: Review) => {
+    toast({
+      title: "Edit Review",
+      description: "Review editing functionality coming soon.",
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    toast({
+      title: "Delete Review",
+      description: "Review deletion functionality coming soon.",
+    });
+  };
+
+  const handleAdd = () => {
+    toast({
+      title: "Add Review",
+      description: "Add review functionality coming soon.",
+    });
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">Manage Reviews</h2>
-        <Button onClick={onAdd}>
+        <Button onClick={handleAdd}>
           <Plus className="w-4 h-4 mr-2" />
           Add Review
         </Button>
@@ -35,14 +56,14 @@ const ReviewsTab = ({ reviews, onEdit, onDelete, onAdd }: ReviewsTabProps) => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onEdit(review)}
+                    onClick={() => handleEdit(review)}
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onDelete(review.id)}
+                    onClick={() => handleDelete(review.id)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
