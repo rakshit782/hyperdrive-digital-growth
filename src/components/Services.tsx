@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingCart, TrendingUp, Target, Users, Settings, Monitor } from "lucide-react";
+import { ArrowRight, ShoppingCart, TrendingUp, Target, Users, Settings, Monitor, Code } from "lucide-react";
 
 interface ServiceCard {
   id: string;
@@ -22,6 +22,7 @@ const iconMap = {
   Users,
   Settings,
   Monitor,
+  Code,
 };
 
 const defaultServices: ServiceCard[] = [
@@ -54,6 +55,16 @@ const defaultServices: ServiceCard[] = [
     gradient: "from-purple-500 to-pink-500",
     bgGradient: "from-purple-50 to-pink-50",
     link: "/meta-advertising"
+  },
+  {
+    id: "website-development",
+    icon: "Code",
+    title: "Website Development",
+    description: "Custom web solutions with modern design, performance optimization, and SEO integration.",
+    features: ["Custom Development", "Responsive Design", "SEO Optimization", "Performance Tuning"],
+    gradient: "from-emerald-500 to-teal-500",
+    bgGradient: "from-emerald-50 to-teal-50",
+    link: "/website-development"
   },
   {
     id: "account-management",
