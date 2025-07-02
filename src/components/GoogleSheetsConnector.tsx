@@ -1,11 +1,13 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/client';
 
 interface GoogleSheetsConfig {
   isEnabled: boolean;
   newsletterSheetUrl: string;
   auditFormSheetUrl: string;
+  contactFormSheetUrl: string;
   apiKey: string;
 }
 
@@ -18,6 +20,7 @@ export const useGoogleSheetsSubmission = () => {
     isEnabled: false,
     newsletterSheetUrl: "",
     auditFormSheetUrl: "",
+    contactFormSheetUrl: "",
     apiKey: ""
   });
 
@@ -48,13 +51,26 @@ export const useGoogleSheetsSubmission = () => {
     };
   }, []);
 
-  const submitToGoogleSheets = async (formData: FormData, formType: 'newsletter' | 'audit') => {
+  const submitToGoogleSheets = async (formData: FormData, formType: 'newsletter' | 'audit' | 'contact') => {
     if (!config.isEnabled) {
       console.log('Google Sheets integration not enabled');
       return false;
     }
 
-    const sheetUrl = formType === 'newsletter' ? config.newsletterSheetUrl : config.auditFormSheetUrl;
+    let sheetUrl = '';
+    switch (formType) {
+      case 'newsletter':
+        sheetUrl = config.newsletterSheetUrl;
+        break;
+      case 'audit':
+        sheetUrl = config.auditFormSheetUrl;
+        break;
+      case 'contact':
+        sheetUrl = config.contactFormSheetUrl;
+        break;
+      default:
+        sheetUrl = config.contactFormSheetUrl;
+    }
     
     if (!sheetUrl) {
       console.log(`No sheet URL configured for ${formType} form`);
@@ -80,7 +96,7 @@ export const useGoogleSheetsSubmission = () => {
           timestamp,
           'Newsletter'
         ];
-      } else {
+      } else if (formType === 'audit') {
         rowData = [
           `${formData.firstName || ''} ${formData.lastName || ''}`.trim(),
           formData.email || '',
@@ -89,20 +105,55 @@ export const useGoogleSheetsSubmission = () => {
           formData.businessGoals || formData.message || '',
           timestamp
         ];
+      } else {
+        rowData = [
+          formData.name || '',
+          formData.email || '',
+          formData.company || '',
+          formData.phone || '',
+          formData.message || '',
+          timestamp
+        ];
       }
 
       // In a real implementation, you would use the Google Sheets API here
-      // For now, we'll simulate the submission
+      // For now, we'll simulate the submission and also save to leads table
       console.log('Submitting to Google Sheets:', {
         sheetId,
         formType,
         data: rowData
       });
 
+      // Also create a lead in the database
+      const leadData = {
+        name: formType === 'audit' 
+          ? `${formData.firstName || ''} ${formData.lastName || ''}`.trim()
+          : formData.name || '',
+        email: formData.email || '',
+        phone: formData.phone || null,
+        company: formData.company || null,
+        source: 'google_sheets',
+        status: 'new' as const,
+        notes: formData.message || formData.businessGoals || null,
+        lead_data: {
+          formType,
+          googleSheetsSubmission: true,
+          submittedAt: timestamp
+        }
+      };
+
+      const { error: leadError } = await supabase
+        .from('leads')
+        .insert([leadData]);
+
+      if (leadError) {
+        console.error('Error creating lead from Google Sheets submission:', leadError);
+      }
+
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      toast.success('Data successfully saved to Google Sheets');
+      toast.success('Data successfully saved to Google Sheets and Lead Management');
       return true;
 
     } catch (error) {

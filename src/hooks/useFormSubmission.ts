@@ -13,6 +13,9 @@ export interface FormSubmissionData {
   message?: string;
   source?: string;
   formType?: 'contact' | 'free_audit' | 'newsletter';
+  firstName?: string;
+  lastName?: string;
+  businessGoals?: string;
 }
 
 export const useFormSubmission = () => {
@@ -25,20 +28,33 @@ export const useFormSubmission = () => {
     setIsSubmitting(true);
     
     try {
+      // Prepare the full name from firstName and lastName if available
+      const fullName = data.firstName && data.lastName 
+        ? `${data.firstName} ${data.lastName}` 
+        : data.name || '';
+
       // First, create a lead in the leads table
       const leadData = {
-        name: data.name,
+        name: fullName,
         email: data.email,
         phone: data.phone || null,
         company: data.company || null,
         source: data.source || 'website',
         status: 'new' as const,
-        notes: data.message || null,
+        notes: data.message || data.businessGoals || null,
         lead_data: {
           formType: data.formType || 'contact',
-          submittedAt: new Date().toISOString()
+          firstName: data.firstName,
+          lastName: data.lastName,
+          businessGoals: data.businessGoals,
+          submittedAt: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
         }
       };
+
+      console.log('Creating lead with data:', leadData);
 
       const { data: leadResult, error: leadError } = await supabase
         .from('leads')
@@ -53,34 +69,59 @@ export const useFormSubmission = () => {
 
       console.log('Lead created successfully:', leadResult);
 
+      // Also store in contact_submissions for backward compatibility
+      const contactData = {
+        name: fullName,
+        email: data.email,
+        phone: data.phone || null,
+        company: data.company || null,
+        message: data.message || data.businessGoals || null,
+        form_type: data.formType || 'contact'
+      };
+
+      const { error: contactError } = await supabase
+        .from('contact_submissions')
+        .insert([contactData]);
+
+      if (contactError) {
+        console.error('Error creating contact submission:', contactError);
+        // Don't throw error as lead was created successfully
+      }
+
       // Trigger Zapier webhooks
-      const webhooks = getStoredWebhookUrls();
-      const formTypeWebhook = webhooks[data.formType || 'contact'];
-      const generalWebhook = webhooks['new_lead'];
+      try {
+        const webhooks = getStoredWebhookUrls();
+        const formTypeWebhook = webhooks[data.formType || 'contact'];
+        const generalWebhook = webhooks['new_lead'];
 
-      if (formTypeWebhook || generalWebhook) {
-        const zapierData = {
-          leadId: leadResult.id,
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          company: data.company,
-          source: data.source || 'website',
-          formType: data.formType || 'contact',
-          message: data.message,
-          timestamp: new Date().toISOString()
-        };
+        if (formTypeWebhook || generalWebhook) {
+          const zapierData = {
+            leadId: leadResult.id,
+            name: fullName,
+            email: data.email,
+            phone: data.phone,
+            company: data.company,
+            source: data.source || 'website',
+            formType: data.formType || 'contact',
+            message: data.message,
+            businessGoals: data.businessGoals,
+            timestamp: new Date().toISOString()
+          };
 
-        // Try form-specific webhook first, then general webhook
-        const webhookUrl = formTypeWebhook || generalWebhook;
-        await triggerZapierWebhook(webhookUrl, zapierData);
+          // Try form-specific webhook first, then general webhook
+          const webhookUrl = formTypeWebhook || generalWebhook;
+          await triggerZapierWebhook(webhookUrl, zapierData);
+        }
+      } catch (webhookError) {
+        console.error('Webhook error:', webhookError);
+        // Don't fail the entire submission if webhook fails
       }
 
       // Trigger automated emails
       try {
         await triggerAutomatedEmails(data.formType || 'contact', {
           email: data.email,
-          name: data.name,
+          name: fullName,
           company: data.company,
           phone: data.phone
         });
@@ -88,6 +129,11 @@ export const useFormSubmission = () => {
         console.error('Email automation error:', emailError);
         // Don't fail the entire submission if email fails
       }
+
+      // Dispatch custom event for real-time updates
+      window.dispatchEvent(new CustomEvent('leadCreated', {
+        detail: leadResult
+      }));
 
       toast({
         title: "Thank you for your submission!",
