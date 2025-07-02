@@ -1,4 +1,3 @@
-
 import { ArrowRight, TrendingUp, DollarSign, Target, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -115,113 +114,115 @@ const WalmartCaseStudies = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <Header />
         
-        {/* Hero Section */}
-        <section className="pt-20 pb-12">
-          <div className="container mx-auto px-6">
-            <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-100 mb-6">
-                <Star className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-700">Walmart Success Stories</span>
+        <div className="space-y-20 md:space-y-32">
+          {/* Hero Section */}
+          <section className="pt-24 pb-16 md:pt-32 md:pb-20">
+            <div className="container mx-auto px-6">
+              <div className="text-center max-w-4xl mx-auto">
+                <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-100 mb-6">
+                  <Star className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-700">Walmart Success Stories</span>
+                </div>
+                <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
+                  Walmart Connect
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent block">
+                    Case Studies
+                  </span>
+                </h1>
+                <p className="text-xl text-slate-600 leading-relaxed">
+                  Discover how our Walmart advertising expertise has helped brands dominate the marketplace with strategic campaigns that drive exceptional growth and ROI.
+                </p>
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
-                Walmart Connect
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent block">
-                  Case Studies
-                </span>
-              </h1>
-              <p className="text-xl text-slate-600 leading-relaxed">
-                Discover how our Walmart advertising expertise has helped brands dominate the marketplace with strategic campaigns that drive exceptional growth and ROI.
-              </p>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Case Studies Grid */}
-        <section className="pb-20">
-          <div className="container mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-8 mb-16">
-              {caseStudies.map((study, index) => (
-                <div 
-                  key={index}
-                  className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-blue-200 transform hover:-translate-y-2"
-                >
-                  <div className="flex flex-col h-full">
-                    {/* Image */}
-                    <div className="relative rounded-2xl overflow-hidden mb-6">
-                      <img 
-                        src={study.image} 
-                        alt={study.title}
-                        className="w-full h-48 object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                        {study.title}
-                      </h3>
-                      <p className="text-blue-600 font-medium mb-4">{study.client}</p>
-                      
-                      <div className="space-y-4 mb-6">
-                        <div>
-                          <h4 className="font-semibold text-slate-800 mb-1">Challenge:</h4>
-                          <p className="text-slate-600 text-sm">{study.challenge}</p>
-                        </div>
-                        
-                        <div>
-                          <h4 className="font-semibold text-slate-800 mb-1">Solution:</h4>
-                          <p className="text-slate-600 text-sm">{study.solution}</p>
-                        </div>
+          {/* Case Studies Grid */}
+          <section className="pb-20">
+            <div className="container mx-auto px-6">
+              <div className="grid lg:grid-cols-2 gap-8 mb-16">
+                {caseStudies.map((study, index) => (
+                  <div 
+                    key={index}
+                    className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-blue-200 transform hover:-translate-y-2"
+                  >
+                    <div className="flex flex-col h-full">
+                      {/* Image */}
+                      <div className="relative rounded-2xl overflow-hidden mb-6">
+                        <img 
+                          src={study.image} 
+                          alt={study.title}
+                          className="w-full h-48 object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                       </div>
 
-                      {/* Results */}
-                      <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
-                        <h4 className="font-semibold text-slate-800 mb-4 flex items-center">
-                          <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
-                          Results Achieved
-                        </h4>
-                        <div className="grid grid-cols-3 gap-4">
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-600">{study.results.roasIncrease}</div>
-                            <div className="text-xs text-slate-600">ROAS Increase</div>
+                      {/* Content */}
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                          {study.title}
+                        </h3>
+                        <p className="text-blue-600 font-medium mb-4">{study.client}</p>
+                        
+                        <div className="space-y-4 mb-6">
+                          <div>
+                            <h4 className="font-semibold text-slate-800 mb-1">Challenge:</h4>
+                            <p className="text-slate-600 text-sm">{study.challenge}</p>
                           </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-purple-600">{study.results.salesGrowth}</div>
-                            <div className="text-xs text-slate-600">Revenue Growth</div>
+                          
+                          <div>
+                            <h4 className="font-semibold text-slate-800 mb-1">Solution:</h4>
+                            <p className="text-slate-600 text-sm">{study.solution}</p>
                           </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-cyan-600">{study.results.timeline}</div>
-                            <div className="text-xs text-slate-600">Timeline</div>
+                        </div>
+
+                        {/* Results */}
+                        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
+                          <h4 className="font-semibold text-slate-800 mb-4 flex items-center">
+                            <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
+                            Results Achieved
+                          </h4>
+                          <div className="grid grid-cols-3 gap-4">
+                            <div className="text-center">
+                              <div className="text-2xl font-bold text-blue-600">{study.results.roasIncrease}</div>
+                              <div className="text-xs text-slate-600">ROAS Increase</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-2xl font-bold text-purple-600">{study.results.salesGrowth}</div>
+                              <div className="text-xs text-slate-600">Revenue Growth</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-2xl font-bold text-cyan-600">{study.results.timeline}</div>
+                              <div className="text-xs text-slate-600">Timeline</div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            {/* CTA Section */}
-            <div className="text-center">
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50 max-w-3xl mx-auto">
-                <h2 className="text-3xl font-bold text-slate-900 mb-4">
-                  Ready to Dominate Walmart Marketplace?
-                </h2>
-                <p className="text-xl text-slate-600 mb-8">
-                  Get your free Walmart Connect audit and discover how we can replicate these success stories for your brand.
-                </p>
-                <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                >
-                  Get Free Audit
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
+              {/* CTA Section */}
+              <div className="mt-20">
+                <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50 max-w-3xl mx-auto text-center">
+                  <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                    Ready to Dominate Walmart Marketplace?
+                  </h2>
+                  <p className="text-xl text-slate-600 mb-8">
+                    Get your free Walmart Connect audit and discover how we can replicate these success stories for your brand.
+                  </p>
+                  <Button 
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                  >
+                    Get Free Audit
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
       <Footer />
     </>
