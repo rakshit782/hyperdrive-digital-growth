@@ -2,10 +2,9 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import ClienteleCarousel from "@/components/ClienteleCarousel";
-import ModernServices from "@/components/ModernServices";
-import ModernFeatures from "@/components/ModernFeatures";
+import AuthorizedPartners from "@/components/AuthorizedPartners";
+import Services from "@/components/Services";
 import CircularReviews from "@/components/CircularReviews";
-import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 
@@ -19,13 +18,12 @@ const Index = () => {
       />
       <div className="min-h-screen">
         <Header />
-        <div className="space-y-20 md:space-y-32">
+        <div className="space-y-12">
           <Hero />
           <ClienteleCarousel />
-          <ModernServices />
-          <ModernFeatures />
+          <AuthorizedPartners />
+          <Services />
           <CircularReviews />
-          <FAQ />
         </div>
         <Footer />
       </div>

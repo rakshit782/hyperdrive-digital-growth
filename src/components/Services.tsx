@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShoppingCart, Store, Users, Settings, Link2, Code } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Services = () => {
@@ -11,100 +11,143 @@ const Services = () => {
   const services = [
     {
       title: 'Amazon Advertising',
-      description: 'Maximize your Amazon sales with expert PPC management and optimization strategies.',
-      image: 'https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=400&h=250',
+      description: 'Expert PPC management, keyword optimization, and campaign strategies that maximize your Amazon sales and ROI.',
+      icon: ShoppingCart,
       link: '/amazon-advertising',
-      bgGradient: 'from-orange-500 via-red-500 to-pink-500'
+      bgGradient: 'from-orange-500 via-red-500 to-pink-500',
+      features: ['Sponsored Products', 'Sponsored Brands', 'Keyword Research', 'Performance Analytics']
     },
     {
       title: 'Walmart Advertising',
-      description: 'Grow your business on Walmart marketplace with targeted advertising solutions.',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=250',
+      description: 'Comprehensive Walmart Connect advertising solutions to boost your visibility and sales on the growing marketplace.',
+      icon: Store,
       link: '/walmart-advertising',
-      bgGradient: 'from-blue-500 via-indigo-500 to-purple-500'
+      bgGradient: 'from-blue-500 via-indigo-500 to-purple-500',
+      features: ['Search Ads', 'Display Campaigns', 'Video Advertising', 'Performance Analytics']
     },
     {
       title: 'Google Advertising',
-      description: 'Drive targeted traffic and conversions with strategic Google Ads campaigns.',
-      image: 'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=400&h=250',
+      description: 'Drive targeted traffic and conversions with strategic Google Ads campaigns that deliver measurable results.',
+      icon: Settings,
       link: '/google-advertising',
-      bgGradient: 'from-green-500 via-teal-500 to-blue-500'
+      bgGradient: 'from-green-500 via-teal-500 to-blue-500',
+      features: ['Search Campaigns', 'Display Network', 'Shopping Ads', 'Performance Max']
     },
     {
       title: 'Meta Advertising',
-      description: 'Reach your audience on Facebook and Instagram with compelling ad campaigns.',
-      image: 'https://images.unsplash.com/photo-1611926653458-09294b3142bf?w=400&h=250',
+      description: 'Facebook and Instagram ad campaigns that drive traffic, generate leads, and increase conversions for your business.',
+      icon: Users,
       link: '/meta-advertising',
-      bgGradient: 'from-purple-500 via-pink-500 to-red-500'
+      bgGradient: 'from-purple-500 via-pink-500 to-red-500',
+      features: ['Facebook Ads', 'Instagram Campaigns', 'Audience Targeting', 'Creative Optimization']
     },
     {
       title: 'Account Management',
-      description: 'Professional account management services to optimize your advertising performance.',
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250',
+      description: 'Full-service account management with dedicated specialists monitoring and optimizing your campaigns 24/7.',
+      icon: Settings,
       link: '/account-management',
-      bgGradient: 'from-indigo-500 via-purple-500 to-pink-500'
+      bgGradient: 'from-indigo-500 via-purple-500 to-pink-500',
+      features: ['24/7 Monitoring', 'Performance Reports', 'Strategy Optimization', 'Dedicated Manager']
     },
     {
       title: 'Website Development',
-      description: 'Custom website development and design solutions that convert visitors into customers.',
-      image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250',
+      description: 'Custom website development and design solutions that convert visitors into customers and drive business growth.',
+      icon: Code,
       link: '/website-development',
-      bgGradient: 'from-cyan-500 via-blue-500 to-indigo-500'
+      bgGradient: 'from-cyan-500 via-blue-500 to-indigo-500',
+      features: ['Custom Design', 'Mobile Optimization', 'SEO Integration', 'Performance Optimization']
     },
     {
       title: 'Shopify Development',
-      description: 'Expert Shopify store development and customization for e-commerce success.',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=250',
+      description: 'Expert Shopify store development and customization to create a powerful e-commerce presence that drives sales.',
+      icon: Code,
       link: '/shopify-development',
-      bgGradient: 'from-emerald-500 via-green-500 to-teal-500'
+      bgGradient: 'from-emerald-500 via-green-500 to-teal-500',
+      features: ['Custom Themes', 'App Integration', 'Mobile Optimization', 'Speed Enhancement']
     },
     {
       title: 'Shopify Integration',
-      description: 'Seamlessly integrate your Shopify store with marketplaces and third-party platforms.',
-      image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=250',
+      description: 'Seamlessly integrate your Shopify store with Amazon and Walmart marketplaces for unified inventory management.',
+      icon: Link2,
       link: '/shopify-integration',
-      bgGradient: 'from-teal-500 via-cyan-500 to-blue-500'
+      bgGradient: 'from-teal-500 via-cyan-500 to-blue-500',
+      features: ['Inventory Sync', 'Order Management', 'Product Listing', 'Multi-channel Setup']
     }
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16">
-      <h2 className="text-4xl font-bold text-center mb-12">Our Services</h2>
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {services.map((service, index) => (
-          <Card
-            key={index}
-            className={`group cursor-pointer hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 bg-white/80 backdrop-blur-sm`}
-            onClick={() => navigate(service.link)}
-          >
-            <div
-              className={`h-48 rounded-t-xl bg-gradient-to-r ${service.bgGradient} flex items-center justify-center overflow-hidden`}
-            >
-              <img
-                src={service.image}
-                alt={service.title}
-                className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
-              />
-            </div>
-            <CardContent>
-              <CardTitle className="text-xl font-bold text-slate-900 mb-2">{service.title}</CardTitle>
-              <CardDescription className="text-slate-600 mb-4">{service.description}</CardDescription>
-              <Button
-                variant="outline"
-                className="flex items-center justify-center w-full"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(service.link);
-                }}
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+            Our <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Services</span>
+          </h2>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            Comprehensive digital marketing solutions designed to grow your business across all major platforms
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {services.map((service, index) => {
+            const IconComponent = service.icon;
+            return (
+              <Card
+                key={index}
+                className="group cursor-pointer hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border-0 shadow-lg overflow-hidden"
+                onClick={() => navigate(service.link)}
               >
-                Learn More
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+                <div className={`h-2 bg-gradient-to-r ${service.bgGradient}`}></div>
+                
+                <CardHeader className="pb-4">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${service.bgGradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <IconComponent className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-300">
+                    {service.title}
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent className="pt-0">
+                  <CardDescription className="text-slate-600 mb-4 leading-relaxed">
+                    {service.description}
+                  </CardDescription>
+                  
+                  <div className="mb-6">
+                    <div className="flex flex-wrap gap-2">
+                      {service.features.slice(0, 2).map((feature, idx) => (
+                        <span 
+                          key={idx}
+                          className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-full"
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                      {service.features.length > 2 && (
+                        <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-full">
+                          +{service.features.length - 2} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between group-hover:bg-blue-50 group-hover:text-blue-600 transition-all duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(service.link);
+                    }}
+                  >
+                    Learn More
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 
