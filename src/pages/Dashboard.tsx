@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   LayoutDashboard, Search, Bell, User, Settings, Globe, Sliders, 
-  Star, Image, Users, Link2, Database, Mail, Shield, Cog, Zap
+  Star, Image, Users, Link2, Database, Mail, Shield, Cog, Zap, Target
 } from "lucide-react";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +25,7 @@ import ContactManagement from "@/components/dashboard/ContactManagement";
 import BlogManagement from "@/components/dashboard/BlogManagement";
 import FAQManagementTab from "@/components/dashboard/FAQManagementTab";
 import PricingManagement from "@/components/dashboard/PricingManagement";
+import CTAManagementTab from "@/components/dashboard/CTAManagementTab";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -74,6 +74,20 @@ const Dashboard = () => {
       component: <ReviewsTab reviews={reviews} updateReviews={updateReviews} />
     },
     {
+      id: "faq-management",
+      label: "FAQ Management",
+      icon: Shield,
+      category: "Content",
+      component: <FAQManagementTab />
+    },
+    {
+      id: "cta-management",
+      label: "CTA Section",
+      icon: Target,
+      category: "Content",
+      component: <CTAManagementTab />
+    },
+    {
       id: "service-header-images",
       label: "Service Images",  
       icon: Image,
@@ -114,13 +128,6 @@ const Dashboard = () => {
       icon: LayoutDashboard,
       category: "Content",
       component: <BlogManagement />
-    },
-    {
-      id: "faq-management",
-      label: "FAQ Management",
-      icon: Shield,
-      category: "Content",
-      component: <FAQManagementTab />
     },
     {
       id: "pricing-management",

@@ -4,6 +4,8 @@ import Hero from "@/components/Hero";
 import ClienteleCarousel from "@/components/ClienteleCarousel";
 import Services from "@/components/Services";
 import CircularReviews from "@/components/CircularReviews";
+import FAQ from "@/components/FAQ";
+import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 
@@ -22,6 +24,8 @@ const Index = () => {
           <ClienteleCarousel />
           <Services />
           <CircularReviews />
+          <FAQ />
+          <CTA />
         </div>
         <Footer />
       </div>

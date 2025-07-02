@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { 
   Globe, Sliders, Settings, LayoutDashboard, Star, Image, Users, Link2, 
-  Database, Mail, Shield, Cog, Zap, ChevronDown, Menu 
+  Database, Mail, Shield, Cog, Zap, ChevronDown, Menu, Target 
 } from "lucide-react";
 import {
   Sidebar,
@@ -73,6 +72,18 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       category: "content",
     },
     {
+      id: "faq-management",
+      label: "FAQ Management",
+      icon: Shield,
+      category: "content",
+    },
+    {
+      id: "cta-management",
+      label: "CTA Section",
+      icon: Target,
+      category: "content",
+    },
+    {
       id: "footer-management",
       label: "Footer & Partners",
       icon: Link2,
@@ -82,12 +93,6 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       id: "blog-management",
       label: "Blog Posts",
       icon: LayoutDashboard,
-      category: "content",
-    },
-    {
-      id: "faq-management",
-      label: "FAQ Management",
-      icon: Shield,
       category: "content",
     },
     {

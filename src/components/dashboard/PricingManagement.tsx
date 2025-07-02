@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { DollarSign, Plus, Trash2, Check, Star, ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface PricingTier {
   id: string;
@@ -18,6 +19,7 @@ interface PricingTier {
   features: string[];
   popular: boolean;
   buttonText: string;
+  ctaLink: string;
 }
 
 const defaultPricing: PricingTier[] = [
@@ -35,7 +37,8 @@ const defaultPricing: PricingTier[] = [
       "Campaign Setup & Optimization"
     ],
     popular: false,
-    buttonText: "Get Started"
+    buttonText: "Get Started",
+    ctaLink: "/free-audit"
   },
   {
     id: "professional",
@@ -53,7 +56,8 @@ const defaultPricing: PricingTier[] = [
       "Landing Page Optimization"
     ],
     popular: true,
-    buttonText: "Most Popular"
+    buttonText: "Most Popular",
+    ctaLink: "/free-audit"
   },
   {
     id: "enterprise",
@@ -72,17 +76,19 @@ const defaultPricing: PricingTier[] = [
       "Monthly Strategy Calls"
     ],
     popular: false,
-    buttonText: "Contact Sales"
+    buttonText: "Contact Sales",
+    ctaLink: "/contact"
   }
 ];
 
 const PricingManagement = () => {
+  const { toast } = useToast();
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>(defaultPricing);
   const [activeTab, setActiveTab] = useState<string>("");
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
-    const savedPricing = localStorage.getItem('pricingData');
+    const savedPricing = localStorage.getItem('pricingPlansData');
     if (savedPricing) {
       try {
         const parsed = JSON.parse(savedPricing);
@@ -101,10 +107,19 @@ const PricingManagement = () => {
   }, [activeTab, pricingTiers.length]);
 
   const handleSave = () => {
-    localStorage.setItem('pricingData', JSON.stringify(pricingTiers));
-    window.dispatchEvent(new CustomEvent('pricingUpdated', { detail: pricingTiers }));
+    // Save to localStorage with correct key
+    localStorage.setItem('pricingPlansData', JSON.stringify(pricingTiers));
+    
+    // Dispatch custom event to update pricing page
+    window.dispatchEvent(new CustomEvent('pricingPlansUpdated', { detail: pricingTiers }));
+    
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
+    
+    toast({
+      title: "Pricing Updated",
+      description: "Your pricing plans have been saved successfully."
+    });
   };
 
   const updateTier = (id: string, field: keyof PricingTier, value: string | boolean | string[]) => {
@@ -127,7 +142,8 @@ const PricingManagement = () => {
       description: "Description for new plan",
       features: ["Feature 1", "Feature 2"],
       popular: false,
-      buttonText: "Get Started"
+      buttonText: "Get Started",
+      ctaLink: "/free-audit"
     };
     setPricingTiers(prev => [...prev, newTier]);
     setActiveTab(newTier.id);
@@ -298,6 +314,16 @@ const PricingManagement = () => {
                             onChange={(e) => updateFeatures(tier.id, e.target.value)}
                             placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
                             rows={6}
+                            className="bg-white/50 border-white/30 focus:border-cyan-500"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-slate-700">CTA Link</Label>
+                          <Input
+                            value={tier.ctaLink}
+                            onChange={(e) => updateTier(tier.id, 'ctaLink', e.target.value)}
+                            placeholder="/free-audit"
                             className="bg-white/50 border-white/30 focus:border-cyan-500"
                           />
                         </div>

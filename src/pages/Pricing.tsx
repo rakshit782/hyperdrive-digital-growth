@@ -10,70 +10,75 @@ interface PricingPlan {
   id: string;
   name: string;
   price: string;
+  period?: string;
   description: string;
   features: string[];
   popular?: boolean;
-  ctaText: string;
+  buttonText: string;
   ctaLink: string;
 }
 
+const defaultPricingPlans: PricingPlan[] = [
+  {
+    id: "starter",
+    name: "Starter",
+    price: "$2,500/mo",
+    description: "Perfect for small businesses looking to get started with professional advertising.",
+    features: [
+      "Up to $10K monthly ad spend",
+      "Amazon PPC management",
+      "Monthly strategy calls",
+      "Performance reporting",
+      "Account setup & optimization"
+    ],
+    buttonText: "Get Started",
+    ctaLink: "/free-audit"
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    price: "$4,500/mo",
+    description: "Ideal for growing businesses ready to scale across multiple platforms.",
+    features: [
+      "Up to $25K monthly ad spend",
+      "Amazon + Walmart advertising",
+      "Bi-weekly strategy calls",
+      "Advanced reporting & analytics",
+      "Listing optimization",
+      "Competitor analysis",
+      "A/B testing campaigns"
+    ],
+    popular: true,
+    buttonText: "Start Growing",
+    ctaLink: "/free-audit"
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    price: "Custom",
+    description: "Full-service solution for established brands with complex needs.",
+    features: [
+      "Unlimited ad spend management",
+      "Amazon + Walmart + Meta",
+      "Weekly strategy calls",
+      "Real-time dashboard access",
+      "Dedicated account manager",
+      "Creative development",
+      "Advanced attribution tracking",
+      "Custom integrations",
+      "Priority support"
+    ],
+    buttonText: "Contact Sales",
+    ctaLink: "/contact"
+  }
+];
+
 const Pricing = () => {
-  const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([
-    {
-      id: "starter",
-      name: "Starter",
-      price: "$2,500/mo",
-      description: "Perfect for small businesses looking to get started with professional advertising.",
-      features: [
-        "Up to $10K monthly ad spend",
-        "Amazon PPC management",
-        "Monthly strategy calls",
-        "Performance reporting",
-        "Account setup & optimization"
-      ],
-      ctaText: "Get Started",
-      ctaLink: "/free-audit"
-    },
-    {
-      id: "growth",
-      name: "Growth",
-      price: "$4,500/mo",
-      description: "Ideal for growing businesses ready to scale across multiple platforms.",
-      features: [
-        "Up to $25K monthly ad spend",
-        "Amazon + Walmart advertising",
-        "Bi-weekly strategy calls",
-        "Advanced reporting & analytics",
-        "Listing optimization",
-        "Competitor analysis",
-        "A/B testing campaigns"
-      ],
-      popular: true,
-      ctaText: "Start Growing",
-      ctaLink: "/free-audit"
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise",
-      price: "Custom",
-      description: "Full-service solution for established brands with complex needs.",
-      features: [
-        "Unlimited ad spend management",
-        "Amazon + Walmart + Meta",
-        "Weekly strategy calls",
-        "Real-time dashboard access",
-        "Dedicated account manager",
-        "Creative development",
-        "Advanced attribution tracking",
-        "Custom integrations",
-        "Priority support"
-      ],
-      ctaText: "Contact Sales",
-      ctaLink: "/contact"
-    }
-  ]);
+  const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>(defaultPricingPlans);
 
   useEffect(() => {
+    console.log("Pricing: Component mounted, initializing...");
+    
     // Load pricing plans from localStorage (dashboard settings)
     const loadPricingPlans = () => {
       const savedPlans = localStorage.getItem('pricingPlansData');
@@ -81,10 +86,26 @@ const Pricing = () => {
         try {
           const parsed = JSON.parse(savedPlans);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setPricingPlans(parsed);
+            console.log("Pricing: Loaded from localStorage:", parsed.length);
+            // Transform dashboard format to pricing page format
+            const transformedPlans = parsed.map((plan: any) => ({
+              id: plan.id,
+              name: plan.name,
+              price: plan.price + (plan.period || ''),
+              description: plan.description,
+              features: plan.features || [],
+              popular: plan.popular,
+              buttonText: plan.buttonText || 'Get Started',
+              ctaLink: plan.ctaLink || '/free-audit'
+            }));
+            setPricingPlans(transformedPlans);
+          } else {
+            console.log("Pricing: Invalid localStorage data, using defaults");
+            setPricingPlans(defaultPricingPlans);
           }
         } catch (error) {
-          console.error('Failed to parse pricing plans:', error);
+          console.error('Pricing: Failed to parse pricing plans:', error);
+          setPricingPlans(defaultPricingPlans);
         }
       }
     };
@@ -93,8 +114,20 @@ const Pricing = () => {
 
     // Listen for pricing updates from dashboard
     const handlePlansUpdate = (event: CustomEvent) => {
+      console.log("Pricing: Received update event:", event.detail);
       if (event.detail && Array.isArray(event.detail)) {
-        setPricingPlans(event.detail);
+        // Transform dashboard format to pricing page format
+        const transformedPlans = event.detail.map((plan: any) => ({
+          id: plan.id,
+          name: plan.name,
+          price: plan.price + (plan.period || ''),
+          description: plan.description,
+          features: plan.features || [],
+          popular: plan.popular,
+          buttonText: plan.buttonText || 'Get Started',
+          ctaLink: plan.ctaLink || '/free-audit'
+        }));
+        setPricingPlans(transformedPlans);
       }
     };
 
@@ -160,7 +193,7 @@ const Pricing = () => {
                       }`}
                       onClick={() => window.location.href = plan.ctaLink}
                     >
-                      {plan.ctaText}
+                      {plan.buttonText}
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </div>
