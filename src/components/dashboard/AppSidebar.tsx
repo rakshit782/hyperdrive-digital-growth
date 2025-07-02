@@ -126,6 +126,12 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       category: "business",
     },
     {
+      id: "website-integrations",
+      label: "Website Integrations",
+      icon: Zap,
+      category: "system",
+    },
+    {
       id: "integration-status",
       label: "Integration Status",
       icon: Zap,

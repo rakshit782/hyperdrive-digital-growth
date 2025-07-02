@@ -26,6 +26,7 @@ import BlogManagement from "@/components/dashboard/BlogManagement";
 import FAQManagementTab from "@/components/dashboard/FAQManagementTab";
 import PricingManagement from "@/components/dashboard/PricingManagement";
 import CTAManagementTab from "@/components/dashboard/CTAManagementTab";
+import WebsiteIntegrationsTab from "@/components/dashboard/WebsiteIntegrationsTab";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -135,6 +136,13 @@ const Dashboard = () => {
       icon: Cog,
       category: "Business",
       component: <PricingManagement />
+    },
+    {
+      id: "website-integrations",
+      label: "Website Integrations",
+      icon: Zap,
+      category: "System",
+      component: <WebsiteIntegrationsTab />
     },
     {
       id: "integration-status",
