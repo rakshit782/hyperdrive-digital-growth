@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +12,7 @@ import ReviewsTab from "@/components/dashboard/ReviewsTab";
 import WebsiteTab from "@/components/dashboard/WebsiteTab";
 import HeroSliderTab from "@/components/dashboard/HeroSliderTab";
 import ServiceHeaderImagesTab from "@/components/dashboard/ServiceHeaderImagesTab";
+import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -57,13 +59,19 @@ const Dashboard = () => {
       id: "reviews",
       label: "Reviews",
       icon: "⭐",
-      component: <ReviewsTab reviews={reviews} updateReviews={updateReviews} />
+      component: <ReviewsTab reviews={reviews} />
     },
     {
       id: "service-header-images",
       label: "Service Images",  
       icon: "🖼️",
       component: <ServiceHeaderImagesTab />
+    },
+    {
+      id: "footer-management",
+      label: "Footer & Partners",
+      icon: "🔗",
+      component: <FooterManagementTab />
     },
   ];
 

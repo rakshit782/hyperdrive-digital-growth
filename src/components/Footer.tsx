@@ -24,6 +24,17 @@ interface PartnerImage {
   isActive: boolean;
 }
 
+interface FooterSettings {
+  companyName: string;
+  companyDescription: string;
+  copyrightText: string;
+  newsletterTitle: string;
+  newsletterDescription: string;
+  partnersTitle: string;
+  showPartners: boolean;
+  showNewsletter: boolean;
+}
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [socialLinks, setSocialLinks] = useState<SocialMediaLink[]>([]);
@@ -34,6 +45,16 @@ const Footer = () => {
     hours: "Monday - Friday: 9AM - 6PM EST"
   });
   const [partnerImages, setPartnerImages] = useState<PartnerImage[]>([]);
+  const [footerSettings, setFooterSettings] = useState<FooterSettings>({
+    companyName: "Your Agency",
+    companyDescription: "Driving digital growth through strategic advertising across Amazon, Walmart, Meta, and beyond. Your success is our mission.",
+    copyrightText: "Your Agency. All rights reserved.",
+    newsletterTitle: "Stay Updated",
+    newsletterDescription: "Get the latest insights, tips, and strategies delivered to your inbox.",
+    partnersTitle: "Authorized Partners",
+    showPartners: true,
+    showNewsletter: true,
+  });
 
   useEffect(() => {
     console.log("Footer: Component mounted, loading data...");
@@ -82,6 +103,73 @@ const Footer = () => {
         } catch (error) {
           console.error('Footer: Failed to parse partner images:', error);
         }
+      } else {
+        // Set default partner logos
+        const defaultPartners: PartnerImage[] = [
+          {
+            id: "shopify-partner",
+            name: "Shopify Partner",
+            imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop&crop=center",
+            isActive: true
+          },
+          {
+            id: "meta-partner",
+            name: "Meta Business Partner",
+            imageUrl: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=120&h=60&fit=crop&crop=center",
+            isActive: true
+          },
+          {
+            id: "amazon-partner",
+            name: "Amazon Advertising Partner",
+            imageUrl: "https://images.unsplash.com/photo-1523474438810-b04a6f72e20f?w=120&h=60&fit=crop&crop=center",
+            isActive: true
+          },
+          {
+            id: "walmart-partner",
+            name: "Walmart Connect Partner",
+            imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop&crop=center",
+            isActive: true
+          },
+          {
+            id: "google-ads-partner",
+            name: "Google Ads Partner",
+            imageUrl: "https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=120&h=60&fit=crop&crop=center",
+            isActive: true
+          },
+          {
+            id: "google-analytics-partner",
+            name: "Google Analytics Certified",
+            imageUrl: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=120&h=60&fit=crop&crop=center",
+            isActive: true
+          },
+          {
+            id: "tiktok-partner",
+            name: "TikTok Marketing Partner",
+            imageUrl: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=120&h=60&fit=crop&crop=center",
+            isActive: true
+          },
+          {
+            id: "klaviyo-partner",
+            name: "Klaviyo Partner",
+            imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=120&h=60&fit=crop&crop=center",
+            isActive: true
+          }
+        ];
+        setPartnerImages(defaultPartners);
+        localStorage.setItem('partnerImages', JSON.stringify(defaultPartners));
+      }
+    };
+
+    const loadFooterSettings = () => {
+      const savedSettings = localStorage.getItem('footerSettings');
+      if (savedSettings) {
+        try {
+          const parsed = JSON.parse(savedSettings);
+          setFooterSettings(prev => ({ ...prev, ...parsed }));
+          console.log("Footer: Loaded footer settings:", parsed);
+        } catch (error) {
+          console.error('Footer: Failed to parse footer settings:', error);
+        }
       }
     };
 
@@ -89,6 +177,7 @@ const Footer = () => {
     loadSocialLinks();
     loadContactInfo();
     loadPartnerImages();
+    loadFooterSettings();
 
     // Listen for updates
     const handleSocialMediaUpdate = () => {
@@ -106,14 +195,21 @@ const Footer = () => {
       loadPartnerImages();
     };
 
+    const handleFooterSettingsUpdate = () => {
+      console.log("Footer: Received footer settings update");
+      loadFooterSettings();
+    };
+
     window.addEventListener('socialMediaUpdated', handleSocialMediaUpdate);
     window.addEventListener('contactUpdated', handleContactUpdate);
     window.addEventListener('partnerImagesUpdated', handlePartnerImagesUpdate);
+    window.addEventListener('footerSettingsUpdated', handleFooterSettingsUpdate);
     
     return () => {
       window.removeEventListener('socialMediaUpdated', handleSocialMediaUpdate);
       window.removeEventListener('contactUpdated', handleContactUpdate);
       window.removeEventListener('partnerImagesUpdated', handlePartnerImagesUpdate);
+      window.removeEventListener('footerSettingsUpdated', handleFooterSettingsUpdate);
     };
   }, []);
 
@@ -155,10 +251,10 @@ const Footer = () => {
   return (
     <footer className="bg-slate-900 text-white">
       {/* Partner Images Section */}
-      {partnerImages.length > 0 && (
+      {footerSettings.showPartners && partnerImages.length > 0 && (
         <div className="border-b border-slate-700">
           <div className="container mx-auto px-6 py-8">
-            <h4 className="text-center text-lg font-semibold mb-6 text-white">Trusted Partners</h4>
+            <h4 className="text-center text-lg font-semibold mb-6 text-white">{footerSettings.partnersTitle}</h4>
             <div className="flex flex-wrap justify-center items-center gap-8">
               {partnerImages.map((partner) => (
                 <div key={partner.id} className="flex-shrink-0">
@@ -166,6 +262,9 @@ const Footer = () => {
                     src={partner.imageUrl}
                     alt={partner.name}
                     className="h-12 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                    }}
                   />
                 </div>
               ))}
@@ -181,11 +280,10 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <div className="mb-6">
               <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Your Agency
+                {footerSettings.companyName}
               </h3>
               <p className="text-slate-300 mt-4 leading-relaxed">
-                Driving digital growth through strategic advertising across Amazon, Walmart, Meta, and beyond. 
-                Your success is our mission.
+                {footerSettings.companyDescription}
               </p>
             </div>
             
@@ -258,16 +356,15 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Newsletter Signup and Partner Logos Row */}
-        <div className="mt-16 pt-8 border-t border-slate-700">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Newsletter Signup */}
-            <div className="text-center md:text-left">
-              <h4 className="text-xl font-semibold mb-4">Stay Updated</h4>
+        {/* Newsletter Signup */}
+        {footerSettings.showNewsletter && (
+          <div className="mt-16 pt-8 border-t border-slate-700">
+            <div className="text-center">
+              <h4 className="text-xl font-semibold mb-4">{footerSettings.newsletterTitle}</h4>
               <p className="text-slate-300 mb-6">
-                Get the latest insights, tips, and strategies delivered to your inbox.
+                {footerSettings.newsletterDescription}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                 <input
                   type="email"
                   placeholder="Enter your email"
@@ -278,26 +375,8 @@ const Footer = () => {
                 </Button>
               </div>
             </div>
-
-            {/* Authorized Partners Section */}
-            {partnerImages.length > 0 && (
-              <div className="text-center md:text-right">
-                <h4 className="text-xl font-semibold mb-4">Authorized Partners</h4>
-                <div className="flex flex-wrap justify-center md:justify-end items-center gap-6">
-                  {partnerImages.slice(0, 4).map((partner) => (
-                    <div key={partner.id} className="flex-shrink-0">
-                      <img
-                        src={partner.imageUrl}
-                        alt={partner.name}
-                        className="h-10 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity duration-200 filter grayscale hover:grayscale-0"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
-        </div>
+        )}
       </div>
 
       {/* Bottom Footer */}
@@ -306,7 +385,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             {/* Copyright */}
             <div className="text-slate-400 text-sm mb-4 md:mb-0">
-              © {currentYear} Your Agency. All rights reserved.
+              © {currentYear} {footerSettings.copyrightText}
             </div>
 
             {/* Dynamic Social Links */}
