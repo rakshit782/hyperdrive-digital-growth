@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Facebook, Instagram, Linkedin, Twitter, Youtube, Mail, Phone, MapPin, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,58 @@ const Footer = () => {
     showNewsletter: true,
   });
 
+  // Default partner logos data
+  const getDefaultPartners = (): PartnerImage[] => [
+    {
+      id: "shopify-partner",
+      name: "Shopify Partner",
+      imageUrl: "https://cdn.shopify.com/assets/images/logos/shopify-bag.svg",
+      isActive: true
+    },
+    {
+      id: "meta-partner",
+      name: "Meta Business Partner",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg",
+      isActive: true
+    },
+    {
+      id: "amazon-partner",
+      name: "Amazon Advertising Partner",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+      isActive: true
+    },
+    {
+      id: "walmart-partner",
+      name: "Walmart Connect Partner", 
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg",
+      isActive: true
+    },
+    {
+      id: "google-ads-partner",
+      name: "Google Ads Partner",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
+      isActive: true
+    },
+    {
+      id: "google-analytics-partner",
+      name: "Google Analytics Certified",
+      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
+      isActive: true
+    },
+    {
+      id: "tiktok-partner",
+      name: "TikTok Marketing Partner",
+      imageUrl: "https://sf16-website-login.neutral.ttwstatic.com/obj/tiktok_web_login_static/tiktok/webapp/main/webapp-desktop/8152caf0c8e8bc67ae0d.svg",
+      isActive: true
+    },
+    {
+      id: "klaviyo-partner", 
+      name: "Klaviyo Partner",
+      imageUrl: "https://www.klaviyo.com/wp-content/uploads/2020/02/klaviyo-logo.svg",
+      isActive: true
+    }
+  ];
+
   useEffect(() => {
     console.log("Footer: Component mounted, loading data...");
     
@@ -98,65 +151,21 @@ const Footer = () => {
       if (savedPartners) {
         try {
           const parsed = JSON.parse(savedPartners);
-          setPartnerImages(parsed.filter((partner: PartnerImage) => partner.isActive));
+          setPartnerImages(parsed);
           console.log("Footer: Loaded partner images:", parsed.length);
         } catch (error) {
           console.error('Footer: Failed to parse partner images:', error);
+          // Set default partners on error
+          const defaultPartners = getDefaultPartners();
+          setPartnerImages(defaultPartners);
+          localStorage.setItem('partnerImages', JSON.stringify(defaultPartners));
         }
       } else {
-        // Set default partner logos
-        const defaultPartners: PartnerImage[] = [
-          {
-            id: "shopify-partner",
-            name: "Shopify Partner",
-            imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop&crop=center",
-            isActive: true
-          },
-          {
-            id: "meta-partner",
-            name: "Meta Business Partner",
-            imageUrl: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=120&h=60&fit=crop&crop=center",
-            isActive: true
-          },
-          {
-            id: "amazon-partner",
-            name: "Amazon Advertising Partner",
-            imageUrl: "https://images.unsplash.com/photo-1523474438810-b04a6f72e20f?w=120&h=60&fit=crop&crop=center",
-            isActive: true
-          },
-          {
-            id: "walmart-partner",
-            name: "Walmart Connect Partner",
-            imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop&crop=center",
-            isActive: true
-          },
-          {
-            id: "google-ads-partner",
-            name: "Google Ads Partner",
-            imageUrl: "https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=120&h=60&fit=crop&crop=center",
-            isActive: true
-          },
-          {
-            id: "google-analytics-partner",
-            name: "Google Analytics Certified",
-            imageUrl: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=120&h=60&fit=crop&crop=center",
-            isActive: true
-          },
-          {
-            id: "tiktok-partner",
-            name: "TikTok Marketing Partner",
-            imageUrl: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=120&h=60&fit=crop&crop=center",
-            isActive: true
-          },
-          {
-            id: "klaviyo-partner",
-            name: "Klaviyo Partner",
-            imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=120&h=60&fit=crop&crop=center",
-            isActive: true
-          }
-        ];
+        // Set default partner logos if none exist
+        const defaultPartners = getDefaultPartners();
         setPartnerImages(defaultPartners);
         localStorage.setItem('partnerImages', JSON.stringify(defaultPartners));
+        console.log("Footer: Set default partner images:", defaultPartners.length);
       }
     };
 
@@ -248,22 +257,28 @@ const Footer = () => {
     { name: "Terms & Conditions", href: "/terms-conditions" },
   ];
 
+  // Filter active partners for display
+  const activePartners = partnerImages.filter(partner => partner.isActive);
+
   return (
     <footer className="bg-slate-900 text-white">
       {/* Partner Images Section */}
-      {footerSettings.showPartners && partnerImages.length > 0 && (
+      {footerSettings.showPartners && activePartners.length > 0 && (
         <div className="border-b border-slate-700">
           <div className="container mx-auto px-6 py-8">
             <h4 className="text-center text-lg font-semibold mb-6 text-white">{footerSettings.partnersTitle}</h4>
             <div className="flex flex-wrap justify-center items-center gap-8">
-              {partnerImages.map((partner) => (
+              {activePartners.map((partner) => (
                 <div key={partner.id} className="flex-shrink-0">
                   <img
                     src={partner.imageUrl}
                     alt={partner.name}
-                    className="h-12 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200"
+                    className="h-12 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-200 bg-white/10 rounded p-2"
                     onError={(e) => {
-                      e.currentTarget.src = '/placeholder.svg';
+                      console.error(`Failed to load partner image: ${partner.name}`, e);
+                      // Fallback to a placeholder
+                      e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAyNEg4MFYzNkg0MFYyNFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                      e.currentTarget.alt = `${partner.name} - Logo unavailable`;
                     }}
                   />
                 </div>
