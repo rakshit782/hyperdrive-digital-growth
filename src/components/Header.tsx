@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, Star, ChevronDown } from "lucide-react";
@@ -112,26 +111,34 @@ const Header = () => {
               <ChevronDown className="ml-1 h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
               <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-80 bg-white border border-gray-200 shadow-2xl rounded-xl p-3 mt-2 z-50">
-              {services.slice(0, 4).map((service, index) => (
-                <DropdownMenuItem key={service.title} className="rounded-lg p-4 hover:bg-blue-50 transition-all duration-200 cursor-pointer border-0 focus:bg-blue-50">
-                  <Link to={service.url} className="flex flex-col w-full">
-                    <span className="font-medium font-heading text-slate-800 mb-1 hover:text-blue-600 transition-colors">{service.title}</span>
-                    <span className="text-sm text-slate-600 font-body">{service.description}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-              
-              <DropdownMenuSeparator className="bg-gray-200 my-2" />
-              
-              {services.slice(4).map((service, index) => (
-                <DropdownMenuItem key={service.title} className="rounded-lg p-4 hover:bg-blue-50 transition-all duration-200 cursor-pointer border-0 focus:bg-blue-50">
-                  <Link to={service.url} className="flex flex-col w-full">
-                    <span className="font-medium font-heading text-slate-800 mb-1 hover:text-blue-600 transition-colors">{service.title}</span>
-                    <span className="text-sm text-slate-600 font-body">{service.description}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
+            <DropdownMenuContent className="w-[600px] bg-white border border-gray-200 shadow-2xl rounded-xl p-6 mt-2 z-50">
+              <div className="grid grid-cols-2 gap-6">
+                {/* First Column */}
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3 px-2">Advertising Services</h3>
+                  {services.slice(0, 4).map((service) => (
+                    <DropdownMenuItem key={service.title} className="rounded-lg p-3 hover:bg-blue-50 transition-all duration-200 cursor-pointer border-0 focus:bg-blue-50">
+                      <Link to={service.url} className="flex flex-col w-full">
+                        <span className="font-medium font-heading text-slate-800 mb-1 hover:text-blue-600 transition-colors">{service.title}</span>
+                        <span className="text-sm text-slate-600 font-body">{service.description}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+                
+                {/* Second Column */}
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3 px-2">Development Services</h3>
+                  {services.slice(4).map((service) => (
+                    <DropdownMenuItem key={service.title} className="rounded-lg p-3 hover:bg-blue-50 transition-all duration-200 cursor-pointer border-0 focus:bg-blue-50">
+                      <Link to={service.url} className="flex flex-col w-full">
+                        <span className="font-medium font-heading text-slate-800 mb-1 hover:text-blue-600 transition-colors">{service.title}</span>
+                        <span className="text-sm text-slate-600 font-body">{service.description}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
