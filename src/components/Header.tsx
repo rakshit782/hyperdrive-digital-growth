@@ -112,23 +112,23 @@ const Header = () => {
               <ChevronDown className="ml-1 h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
               <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-80 bg-white/98 backdrop-blur-lg border border-gray-100 shadow-xl rounded-2xl p-2 mt-2">
+            <DropdownMenuContent className="w-80 bg-white border border-gray-200 shadow-2xl rounded-xl p-3 mt-2 z-50">
               {services.slice(0, 4).map((service, index) => (
-                <DropdownMenuItem key={service.title} className="rounded-xl p-4 hover:bg-gray-50/80 transition-all duration-200 cursor-pointer">
+                <DropdownMenuItem key={service.title} className="rounded-lg p-4 hover:bg-blue-50 transition-all duration-200 cursor-pointer border-0 focus:bg-blue-50">
                   <Link to={service.url} className="flex flex-col w-full">
-                    <span className="font-medium font-heading text-dark mb-1">{service.title}</span>
-                    <span className="text-sm text-minimal font-body">{service.description}</span>
+                    <span className="font-medium font-heading text-slate-800 mb-1 hover:text-blue-600 transition-colors">{service.title}</span>
+                    <span className="text-sm text-slate-600 font-body">{service.description}</span>
                   </Link>
                 </DropdownMenuItem>
               ))}
               
-              <DropdownMenuSeparator className="bg-gray-100 my-2" />
+              <DropdownMenuSeparator className="bg-gray-200 my-2" />
               
               {services.slice(4).map((service, index) => (
-                <DropdownMenuItem key={service.title} className="rounded-xl p-4 hover:bg-gray-50/80 transition-all duration-200 cursor-pointer">
+                <DropdownMenuItem key={service.title} className="rounded-lg p-4 hover:bg-blue-50 transition-all duration-200 cursor-pointer border-0 focus:bg-blue-50">
                   <Link to={service.url} className="flex flex-col w-full">
-                    <span className="font-medium font-heading text-dark mb-1">{service.title}</span>
-                    <span className="text-sm text-minimal font-body">{service.description}</span>
+                    <span className="font-medium font-heading text-slate-800 mb-1 hover:text-blue-600 transition-colors">{service.title}</span>
+                    <span className="text-sm text-slate-600 font-body">{service.description}</span>
                   </Link>
                 </DropdownMenuItem>
               ))}
@@ -179,8 +179,8 @@ const Header = () => {
             <div className="border-t border-gray-100 pt-4 mt-4">
               <p className="text-sm font-semibold font-heading text-minimal mb-3 px-4">Services</p>
               {services.map((service) => (
-                <Link key={service.title} to={service.url} className="text-minimal hover:text-primary transition-colors py-2 px-6 block rounded-xl hover:bg-gray-50">
-                  <div className="font-medium font-body">{service.title}</div>
+                <Link key={service.title} to={service.url} className="text-minimal hover:text-primary transition-colors py-2 px-6 block rounded-xl hover:bg-blue-50">
+                  <div className="font-medium font-body hover:text-blue-600 transition-colors">{service.title}</div>
                   <div className="text-xs text-minimal mt-1">{service.description}</div>
                 </Link>
               ))}
