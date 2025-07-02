@@ -97,6 +97,48 @@ const CaseStudies = () => {
       client_name: "Pure Beauty",
       imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop"
     },
+    {
+      id: "amazon-case-4",
+      title: "Sports Equipment Market Expansion",
+      description: "Multi-category expansion strategy with targeted campaigns that drove massive growth across sports and recreation segments.",
+      results: {
+        metric1: { label: "Market Expansion", value: "+380%" },
+        metric2: { label: "Cross-Category Growth", value: "+250%" },
+        metric3: { label: "Customer Lifetime Value", value: "+140%" }
+      },
+      industry: "Sports & Recreation",
+      platform: "Amazon Advertising",
+      client_name: "Elite Athletic",
+      imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
+    },
+    {
+      id: "amazon-case-5",
+      title: "Kitchen Appliance Revenue Breakthrough",
+      description: "Dynamic campaign scheduling and inventory-based bidding that transformed kitchen brand performance and customer engagement.",
+      results: {
+        metric1: { label: "Revenue Growth", value: "+365%" },
+        metric2: { label: "Inventory Turnover", value: "+180%" },
+        metric3: { label: "Profit Margin", value: "+90%" }
+      },
+      industry: "Kitchen & Home",
+      platform: "Amazon Advertising",
+      client_name: "Chef's Choice Pro",
+      imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop"
+    },
+    {
+      id: "amazon-case-6",
+      title: "Pet Supplies Category Domination",
+      description: "Campaign consolidation and automated bidding implementation that established category leadership and drove exceptional growth.",
+      results: {
+        metric1: { label: "Category Ranking", value: "#1 Position" },
+        metric2: { label: "Sales Growth", value: "+430%" },
+        metric3: { label: "Customer Retention", value: "+200%" }
+      },
+      industry: "Pet Supplies",
+      platform: "Amazon Advertising",
+      client_name: "Happy Pets Co",
+      imageUrl: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop"
+    },
     
     // Walmart Case Studies
     {
@@ -126,6 +168,62 @@ const CaseStudies = () => {
       platform: "Walmart Advertising",
       client_name: "TechSmart Pro",
       imageUrl: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop"
+    },
+    {
+      id: "walmart-case-3",
+      title: "Fashion Brand Seasonal Success",
+      description: "Seasonal campaign strategies and trend-based targeting that maximized fashion brand performance across all seasons.",
+      results: {
+        metric1: { label: "Seasonal Revenue", value: "+420%" },
+        metric2: { label: "Brand Recognition", value: "+180%" },
+        metric3: { label: "Customer Retention", value: "+95%" }
+      },
+      industry: "Fashion & Apparel",
+      platform: "Walmart Advertising",
+      client_name: "Urban Trends",
+      imageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop"
+    },
+    {
+      id: "walmart-case-4",
+      title: "Health & Beauty Category Leadership",
+      description: "Comprehensive brand strategy and customer acquisition campaigns that established category leadership and drove sustainable growth.",
+      results: {
+        metric1: { label: "Category Ranking", value: "#1 Position" },
+        metric2: { label: "Customer Acquisition", value: "+310%" },
+        metric3: { label: "Brand Loyalty", value: "+220%" }
+      },
+      industry: "Health & Beauty",
+      platform: "Walmart Advertising",
+      client_name: "Wellness Essentials",
+      imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop"
+    },
+    {
+      id: "walmart-case-5",
+      title: "Sports Equipment Market Expansion",
+      description: "Multi-category expansion strategy with targeted campaigns that drove massive growth across sports and recreation segments.",
+      results: {
+        metric1: { label: "Market Expansion", value: "+380%" },
+        metric2: { label: "Cross-Category Growth", value: "+250%" },
+        metric3: { label: "Customer Lifetime Value", value: "+140%" }
+      },
+      industry: "Sports & Recreation",
+      platform: "Walmart Advertising",
+      client_name: "Elite Athletic",
+      imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
+    },
+    {
+      id: "walmart-case-6",
+      title: "Kitchen & Dining Revenue Breakthrough",
+      description: "Strategic product bundling and cross-selling campaigns that transformed kitchen brand performance and customer engagement.",
+      results: {
+        metric1: { label: "Bundle Sales", value: "+460%" },
+        metric2: { label: "Cross-Sell Rate", value: "+195%" },
+        metric3: { label: "Customer Satisfaction", value: "4.9/5" }
+      },
+      industry: "Kitchen & Dining",
+      platform: "Walmart Advertising",
+      client_name: "Culinary Masters",
+      imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop"
     },
     
     // Meta Case Studies
@@ -157,6 +255,62 @@ const CaseStudies = () => {
       client_name: "CloudTech Solutions",
       imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop"
     },
+    {
+      id: "meta-case-3",
+      title: "Local Restaurant Chain Growth",
+      description: "Location-based targeting with dynamic product ads and event promotion that drove foot traffic and online orders across multiple locations.",
+      results: {
+        metric1: { label: "Foot Traffic", value: "+380%" },
+        metric2: { label: "Online Orders", value: "+250%" },
+        metric3: { label: "Brand Awareness", value: "+190%" }
+      },
+      industry: "Food & Hospitality",
+      platform: "Meta Advertising",
+      client_name: "Gourmet Bites",
+      imageUrl: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=300&fit=crop"
+    },
+    {
+      id: "meta-case-4",
+      title: "Fitness Brand Community Building",
+      description: "Community-focused campaigns with user-generated content and influencer partnerships that built a loyal fitness community and drove sales.",
+      results: {
+        metric1: { label: "Community Growth", value: "+410%" },
+        metric2: { label: "Engagement Rate", value: "+290%" },
+        metric3: { label: "Subscription Sales", value: "$1.3M" }
+      },
+      industry: "Health & Fitness",
+      platform: "Meta Advertising",
+      client_name: "FitLife Pro",
+      imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
+    },
+    {
+      id: "meta-case-5",
+      title: "Beauty Brand Influencer Success",
+      description: "Micro-influencer campaigns with authentic content and social proof that broke through market saturation and established brand authority.",
+      results: {
+        metric1: { label: "Influencer ROI", value: "+480%" },
+        metric2: { label: "Brand Mentions", value: "+350%" },
+        metric3: { label: "Sales Growth", value: "$1.6M" }
+      },
+      industry: "Beauty & Cosmetics",
+      platform: "Meta Advertising",
+      client_name: "Radiant Beauty",
+      imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop"
+    },
+    {
+      id: "meta-case-6",
+      title: "Home Services Lead Generation",
+      description: "Geo-targeted campaigns with seasonal messaging and lead nurturing that solved seasonal business challenges and ensured consistent growth.",
+      results: {
+        metric1: { label: "Lead Generation", value: "+350%" },
+        metric2: { label: "Service Bookings", value: "+240%" },
+        metric3: { label: "Customer Acquisition", value: "$780K" }
+      },
+      industry: "Home Services",
+      platform: "Meta Advertising",
+      client_name: "Elite Contractors",
+      imageUrl: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop"
+    },
     
     // Google Advertising Case Studies
     {
@@ -186,6 +340,62 @@ const CaseStudies = () => {
       platform: "Google Advertising",
       client_name: "CloudTech Enterprise",
       imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop"
+    },
+    {
+      id: "google-case-3",
+      title: "E-commerce Shopping Campaign Success",
+      description: "Strategic Google Shopping campaigns with product feed optimization that drove exceptional e-commerce performance and ROI.",
+      results: {
+        metric1: { label: "Shopping Revenue", value: "+420%" },
+        metric2: { label: "Product Visibility", value: "+280%" },
+        metric3: { label: "ROAS", value: "6.8x" }
+      },
+      industry: "E-commerce Retail",
+      platform: "Google Advertising",
+      client_name: "ShopTech Pro",
+      imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"
+    },
+    {
+      id: "google-case-4",
+      title: "Healthcare Practice Growth",
+      description: "Local search optimization with targeted healthcare campaigns that drove patient acquisition and appointment bookings.",
+      results: {
+        metric1: { label: "Patient Leads", value: "+350%" },
+        metric2: { label: "Appointment Bookings", value: "+240%" },
+        metric3: { label: "Local Rankings", value: "Top 3" }
+      },
+      industry: "Healthcare",
+      platform: "Google Advertising",
+      client_name: "Premier Health",
+      imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop"
+    },
+    {
+      id: "google-case-5",
+      title: "Real Estate Lead Generation",
+      description: "Geo-targeted campaigns with landing page optimization that revolutionized real estate lead generation and conversion rates.",
+      results: {
+        metric1: { label: "Property Leads", value: "+390%" },
+        metric2: { label: "Qualified Inquiries", value: "+250%" },
+        metric3: { label: "Cost Per Lead", value: "-55%" }
+      },
+      industry: "Real Estate",
+      platform: "Google Advertising",
+      client_name: "Prime Realty",
+      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop"
+    },
+    {
+      id: "google-case-6",
+      title: "Legal Services Marketing Success",
+      description: "Strategic legal marketing campaigns with compliance-focused targeting that drove high-value client acquisition.",
+      results: {
+        metric1: { label: "Client Acquisition", value: "+320%" },
+        metric2: { label: "Case Value", value: "+180%" },
+        metric3: { label: "Consultation Bookings", value: "+275%" }
+      },
+      industry: "Legal Services",
+      platform: "Google Advertising",
+      client_name: "Elite Legal Group",
+      imageUrl: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=300&fit=crop"
     },
     
     // Account Management Case Studies
