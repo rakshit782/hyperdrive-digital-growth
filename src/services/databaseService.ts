@@ -27,6 +27,15 @@ export interface Lead {
   updated_at: string | null;
 }
 
+export interface WebsiteSetting {
+  id: string;
+  setting_key: string;
+  setting_value: any;
+  setting_type: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
 class DatabaseService {
   private apiUrl: string;
 
@@ -148,6 +157,43 @@ class DatabaseService {
     } catch (error) {
       console.error('Database error - fetch contact submissions:', error);
       return [];
+    }
+  }
+
+  async getWebsiteSettings(): Promise<WebsiteSetting[]> {
+    try {
+      const response = await fetch(`${this.apiUrl}/website-settings`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch website settings');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Database error - fetch website settings:', error);
+      return [];
+    }
+  }
+
+  async updateWebsiteSetting(key: string, value: any): Promise<void> {
+    try {
+      const response = await fetch(`${this.apiUrl}/website-settings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          setting_key: key,
+          setting_value: value
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update website setting');
+      }
+    } catch (error) {
+      console.error('Database error - update website setting:', error);
+      throw error;
     }
   }
 }
