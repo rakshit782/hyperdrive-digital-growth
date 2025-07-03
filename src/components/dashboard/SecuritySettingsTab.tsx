@@ -93,7 +93,7 @@ export const SecuritySettingsTab = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Shield className="h-5 w-5 text-blue-600" />
-              <CardTitle>reCAPTCHA v3 Configuration</CardTitle>
+              <CardTitle>reCAPTCHA v2 Configuration</CardTitle>
               {isConfigured ? (
                 <Badge variant="default" className="bg-green-100 text-green-700">
                   <CheckCircle className="w-3 h-3 mr-1" />
@@ -108,7 +108,7 @@ export const SecuritySettingsTab = () => {
             </div>
           </div>
           <CardDescription>
-            Configure Google reCAPTCHA v3 to protect your forms from spam and abuse.
+            Configure Google reCAPTCHA v2 to protect your forms with the "I'm not a robot" checkbox.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -123,7 +123,7 @@ export const SecuritySettingsTab = () => {
               className="font-mono"
             />
             <p className="text-sm text-slate-500">
-              Enter your Google reCAPTCHA v3 site key. This is the public key that identifies your site.
+              Enter your Google reCAPTCHA v2 site key. This displays the "I'm not a robot" checkbox.
             </p>
           </div>
 
@@ -163,7 +163,7 @@ export const SecuritySettingsTab = () => {
                   <h4 className="text-sm font-medium text-yellow-800">Setup Required</h4>
                   <p className="text-sm text-yellow-700 mt-1">
                     Forms will work without reCAPTCHA but won't have spam protection. 
-                    Configure reCAPTCHA to enable full security features.
+                    Configure reCAPTCHA v2 to enable the "I'm not a robot" checkbox verification.
                   </p>
                 </div>
               </div>
@@ -207,9 +207,9 @@ export const SecuritySettingsTab = () => {
                 <Shield className={`w-4 h-4 ${isConfigured ? 'text-green-600' : 'text-gray-400'}`} />
               </div>
               <div>
-                <h4 className="font-medium">reCAPTCHA v3</h4>
+                <h4 className="font-medium">reCAPTCHA v2</h4>
                 <p className="text-sm text-slate-600">
-                  {isConfigured ? 'Advanced bot detection enabled' : 'Not configured'}
+                  {isConfigured ? '"I\'m not a robot" checkbox enabled' : 'Not configured'}
                 </p>
               </div>
             </div>

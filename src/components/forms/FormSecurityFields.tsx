@@ -1,18 +1,36 @@
 
 import React from 'react';
 import { Input } from '@/components/ui/input';
+import { RecaptchaV2 } from './RecaptchaV2';
+import { useFormSecurity } from '@/hooks/useFormSecurity';
 
 interface FormSecurityFieldsProps {
   csrfToken: string;
   honeypotValue: string;
   onHoneypotChange: (value: string) => void;
+  showRecaptcha?: boolean;
 }
 
 export const FormSecurityFields: React.FC<FormSecurityFieldsProps> = ({
   csrfToken,
   honeypotValue,
-  onHoneypotChange
+  onHoneypotChange,
+  showRecaptcha = true
 }) => {
+  const { recaptchaSiteKey, isRecaptchaLoaded, resetRecaptcha } = useFormSecurity();
+
+  const handleRecaptchaVerify = (token: string) => {
+    console.log('reCAPTCHA verified:', token);
+  };
+
+  const handleRecaptchaExpire = () => {
+    console.log('reCAPTCHA expired');
+  };
+
+  const handleRecaptchaError = () => {
+    console.error('reCAPTCHA error occurred');
+  };
+
   return (
     <>
       {/* CSRF Token - Hidden field */}
@@ -40,6 +58,20 @@ export const FormSecurityFields: React.FC<FormSecurityFieldsProps> = ({
         name="formTimestamp"
         value={Date.now()}
       />
+
+      {/* reCAPTCHA v2 Checkbox */}
+      {showRecaptcha && isRecaptchaLoaded && recaptchaSiteKey && (
+        <div className="my-4">
+          <RecaptchaV2
+            siteKey={recaptchaSiteKey}
+            onVerify={handleRecaptchaVerify}
+            onExpire={handleRecaptchaExpire}
+            onError={handleRecaptchaError}
+            theme="light"
+            size="normal"
+          />
+        </div>
+      )}
     </>
   );
 };

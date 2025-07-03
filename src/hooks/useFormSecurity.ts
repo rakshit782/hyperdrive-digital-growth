@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { databaseService } from '@/services/databaseService';
 
@@ -52,7 +53,7 @@ export const useFormSecurity = () => {
     sessionStorage.setItem('csrf_token', token);
   }, []);
 
-  // Load reCAPTCHA v3
+  // Load reCAPTCHA v2
   useEffect(() => {
     if (!recaptchaSiteKey) return;
 
@@ -63,16 +64,13 @@ export const useFormSecurity = () => {
         return;
       }
 
-      console.log('Loading reCAPTCHA...');
+      console.log('Loading reCAPTCHA v2...');
       const script = document.createElement('script');
-      script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`;
+      script.src = 'https://www.google.com/recaptcha/api.js';
       script.onload = () => {
-        console.log('reCAPTCHA script loaded');
-        window.grecaptcha.ready(() => {
-          console.log('reCAPTCHA ready');
-          setIsRecaptchaLoaded(true);
-          setRecaptchaError(null);
-        });
+        console.log('reCAPTCHA v2 script loaded');
+        setIsRecaptchaLoaded(true);
+        setRecaptchaError(null);
       };
       script.onerror = (error) => {
         console.error('Failed to load reCAPTCHA:', error);
@@ -113,24 +111,26 @@ export const useFormSecurity = () => {
     }
   };
 
-  const getRecaptchaToken = async (action: string): Promise<string> => {
+  const getRecaptchaToken = async (): Promise<string> => {
     if (!isRecaptchaLoaded || !window.grecaptcha || !recaptchaSiteKey) {
       throw new Error('reCAPTCHA not loaded or configured');
     }
 
     return new Promise((resolve, reject) => {
-      window.grecaptcha.ready(() => {
-        window.grecaptcha.execute(recaptchaSiteKey, { action })
-          .then((token) => {
-            console.log('reCAPTCHA token generated successfully');
-            resolve(token);
-          })
-          .catch((error) => {
-            console.error('reCAPTCHA execution failed:', error);
-            reject(error);
-          });
-      });
+      const response = window.grecaptcha.getResponse();
+      if (response) {
+        console.log('reCAPTCHA token retrieved successfully');
+        resolve(response);
+      } else {
+        reject(new Error('Please complete the reCAPTCHA verification'));
+      }
     });
+  };
+
+  const resetRecaptcha = () => {
+    if (window.grecaptcha) {
+      window.grecaptcha.reset();
+    }
   };
 
   const validateSecurity = async (
@@ -162,27 +162,26 @@ export const useFormSecurity = () => {
       errors.push('Honeypot triggered - potential spam');
     }
 
-    // Validate reCAPTCHA
+    // Validate reCAPTCHA v2
     try {
       if (isRecaptchaLoaded && recaptchaSiteKey) {
-        const recaptchaToken = await getRecaptchaToken(formType);
-        console.log('reCAPTCHA token generated:', recaptchaToken.substring(0, 20) + '...');
+        const recaptchaToken = await getRecaptchaToken();
+        console.log('reCAPTCHA token retrieved:', recaptchaToken.substring(0, 20) + '...');
         
-        // For now, we'll simulate a good score since we can't verify server-side
+        // For now, we'll simulate validation since we can't verify server-side
         // In production, you should verify this token on your backend
         recaptchaScore = 0.8;
         
-        if (recaptchaScore < 0.5) {
-          errors.push('reCAPTCHA validation failed');
+        if (!recaptchaToken) {
+          errors.push('Please complete the reCAPTCHA verification');
         }
       } else {
         console.warn('reCAPTCHA not loaded or configured, skipping validation');
-        // Allow form submission but log the issue
-        recaptchaScore = 0.5; // Neutral score
+        errors.push('reCAPTCHA verification required');
       }
     } catch (error) {
       console.error('reCAPTCHA error:', error);
-      errors.push('reCAPTCHA verification error');
+      errors.push('Please complete the reCAPTCHA verification');
     }
 
     // Log security event using database service
@@ -209,8 +208,8 @@ export const useFormSecurity = () => {
     };
   };
 
-  const getSecurityData = async (action: string): Promise<FormSecurityData> => {
-    const recaptchaToken = await getRecaptchaToken(action);
+  const getSecurityData = async (): Promise<FormSecurityData> => {
+    const recaptchaToken = await getRecaptchaToken();
     
     return {
       recaptchaToken,
@@ -225,18 +224,21 @@ export const useFormSecurity = () => {
     csrfToken,
     isRecaptchaLoaded: isRecaptchaLoaded && !!recaptchaSiteKey,
     recaptchaError,
+    recaptchaSiteKey,
     validateSecurity,
     getSecurityData,
-    generateFingerprint
+    generateFingerprint,
+    resetRecaptcha
   };
 };
 
-// Global type declaration for reCAPTCHA
+// Global type declaration for reCAPTCHA v2
 declare global {
   interface Window {
     grecaptcha: {
-      ready: (callback: () => void) => void;
-      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+      render: (element: string | HTMLElement, options: any) => number;
+      getResponse: (widgetId?: number) => string;
+      reset: (widgetId?: number) => void;
     };
   }
 }
