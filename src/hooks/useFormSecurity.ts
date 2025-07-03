@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { databaseService } from '@/services/databaseService';
 
@@ -18,13 +17,33 @@ export interface SecurityValidationResult {
   errors: string[];
 }
 
-// Replace with your actual reCAPTCHA site key
-const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // This is a test key, replace with your actual key
-
 export const useFormSecurity = () => {
   const [csrfToken, setCsrfToken] = useState<string>('');
   const [isRecaptchaLoaded, setIsRecaptchaLoaded] = useState(false);
   const [recaptchaError, setRecaptchaError] = useState<string | null>(null);
+  const [recaptchaSiteKey, setRecaptchaSiteKey] = useState<string>('');
+
+  // Load reCAPTCHA site key from settings
+  useEffect(() => {
+    const loadRecaptchaKey = async () => {
+      try {
+        const settings = await databaseService.getWebsiteSettings();
+        const recaptchaKey = settings.find(s => s.setting_key === 'recaptcha_site_key')?.setting_value as string;
+        
+        if (recaptchaKey) {
+          setRecaptchaSiteKey(recaptchaKey);
+        } else {
+          console.warn('reCAPTCHA site key not found in settings. Please configure it in the dashboard.');
+          setRecaptchaError('reCAPTCHA not configured');
+        }
+      } catch (error) {
+        console.error('Failed to load reCAPTCHA key:', error);
+        setRecaptchaError('Failed to load reCAPTCHA configuration');
+      }
+    };
+
+    loadRecaptchaKey();
+  }, []);
 
   // Generate CSRF token
   useEffect(() => {
@@ -35,6 +54,8 @@ export const useFormSecurity = () => {
 
   // Load reCAPTCHA v3
   useEffect(() => {
+    if (!recaptchaSiteKey) return;
+
     const loadRecaptcha = () => {
       if (window.grecaptcha) {
         console.log('reCAPTCHA already loaded');
@@ -44,7 +65,7 @@ export const useFormSecurity = () => {
 
       console.log('Loading reCAPTCHA...');
       const script = document.createElement('script');
-      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`;
       script.onload = () => {
         console.log('reCAPTCHA script loaded');
         window.grecaptcha.ready(() => {
@@ -62,7 +83,7 @@ export const useFormSecurity = () => {
     };
 
     loadRecaptcha();
-  }, []);
+  }, [recaptchaSiteKey]);
 
   const generateFingerprint = (): string => {
     try {
@@ -93,13 +114,13 @@ export const useFormSecurity = () => {
   };
 
   const getRecaptchaToken = async (action: string): Promise<string> => {
-    if (!isRecaptchaLoaded || !window.grecaptcha) {
-      throw new Error('reCAPTCHA not loaded');
+    if (!isRecaptchaLoaded || !window.grecaptcha || !recaptchaSiteKey) {
+      throw new Error('reCAPTCHA not loaded or configured');
     }
 
     return new Promise((resolve, reject) => {
       window.grecaptcha.ready(() => {
-        window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
+        window.grecaptcha.execute(recaptchaSiteKey, { action })
           .then((token) => {
             console.log('reCAPTCHA token generated successfully');
             resolve(token);
@@ -127,7 +148,8 @@ export const useFormSecurity = () => {
       honeypotTriggered,
       csrfValid,
       formType,
-      isRecaptchaLoaded
+      isRecaptchaLoaded,
+      hasRecaptchaKey: !!recaptchaSiteKey
     });
 
     // Validate CSRF
@@ -142,7 +164,7 @@ export const useFormSecurity = () => {
 
     // Validate reCAPTCHA
     try {
-      if (isRecaptchaLoaded) {
+      if (isRecaptchaLoaded && recaptchaSiteKey) {
         const recaptchaToken = await getRecaptchaToken(formType);
         console.log('reCAPTCHA token generated:', recaptchaToken.substring(0, 20) + '...');
         
@@ -154,7 +176,7 @@ export const useFormSecurity = () => {
           errors.push('reCAPTCHA validation failed');
         }
       } else {
-        console.warn('reCAPTCHA not loaded, skipping validation');
+        console.warn('reCAPTCHA not loaded or configured, skipping validation');
         // Allow form submission but log the issue
         recaptchaScore = 0.5; // Neutral score
       }
@@ -201,7 +223,7 @@ export const useFormSecurity = () => {
 
   return {
     csrfToken,
-    isRecaptchaLoaded,
+    isRecaptchaLoaded: isRecaptchaLoaded && !!recaptchaSiteKey,
     recaptchaError,
     validateSecurity,
     getSecurityData,

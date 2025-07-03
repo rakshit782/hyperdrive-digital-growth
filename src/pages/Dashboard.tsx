@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -22,6 +21,7 @@ import WebsiteIntegrationsTab from "@/components/dashboard/WebsiteIntegrationsTa
 import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 import { FormSecurityTab } from "@/components/dashboard/FormSecurityTab";
 import HomepageCustomizationTab from "@/components/dashboard/HomepageCustomizationTab";
+import { SecuritySettingsTab } from "@/components/dashboard/SecuritySettingsTab";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
 import { 
@@ -81,6 +81,7 @@ const Dashboard = () => {
       'contact-management': Mail,
       'email-workflow': Mail,
       'form-security': Shield,
+      'security-settings': Shield,
       'service-header-images': Image,
       'clientele-management': Users,
       'pricing-management': Cog,
@@ -105,7 +106,8 @@ const Dashboard = () => {
       'leads': 'Lead Management',
       'contact-management': 'Contact Management',
       'email-workflow': 'Email Workflow',
-      'form-security': 'Form Security',
+      'form-security': 'Form Security Monitor',
+      'security-settings': 'Security Settings',
       'service-header-images': 'Service Images',
       'clientele-management': 'Clientele Management',
       'pricing-management': 'Pricing Management',
@@ -131,6 +133,7 @@ const Dashboard = () => {
       'contact-management': 'Handle contact form submissions and messages',
       'email-workflow': 'Set up automated email sequences and campaigns',
       'form-security': 'Monitor form security and spam protection',
+      'security-settings': 'Configure security features and reCAPTCHA',
       'service-header-images': 'Upload and manage service page header images',
       'clientele-management': 'Manage client logos and testimonials',
       'pricing-management': 'Configure pricing plans and packages',
@@ -181,6 +184,8 @@ const Dashboard = () => {
         return <EmailWorkflowTab />;
       case 'form-security':
         return <FormSecurityTab />;
+      case 'security-settings':
+        return <SecuritySettingsTab />;
       case 'service-header-images':
         return <ServiceHeaderImagesTab />;
       case 'clientele-management':

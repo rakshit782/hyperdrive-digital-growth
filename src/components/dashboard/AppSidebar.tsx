@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
   Globe, Sliders, Settings, LayoutDashboard, Star, Image, Users, Link2, 
-  Database, Mail, Shield, Cog, Zap, ChevronDown, Menu, Target 
+  Database, Mail, Shield, Cog, Zap, ChevronDown, Menu, Target, Activity 
 } from "lucide-react";
 import {
   Sidebar,
@@ -174,6 +174,29 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
     const IconComponent = tab.icon;
     return <IconComponent className="w-4 h-4" />;
   };
+
+  const securityAndIntegrations = [
+    {
+      title: "Form Security Monitor",
+      icon: Shield,
+      id: "form-security"
+    },
+    {
+      title: "Security Settings",
+      icon: Shield,
+      id: "security-settings"
+    },
+    {
+      title: "Website Integrations",
+      icon: Zap,
+      id: "website-integrations"
+    },
+    {
+      title: "Integration Status",
+      icon: Activity,
+      id: "integration-status"
+    }
+  ];
 
   return (
     <Sidebar className="border-r border-slate-200/60 bg-white/95 backdrop-blur-md">
