@@ -4,20 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, CheckCircle, XCircle, Shield, Eye } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-interface SecurityLog {
-  id: string;
-  form_type: string;
-  ip_address: unknown; // Changed from string to unknown to match Supabase types
-  user_agent: string | null;
-  recaptcha_score: number | null;
-  honeypot_triggered: boolean | null;
-  csrf_valid: boolean | null;
-  submission_data: any;
-  created_at: string;
-}
+import { databaseService, type SecurityLog } from '@/services/databaseService';
 
 export const FormSecurityTab = () => {
   const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>([]);
@@ -36,16 +24,9 @@ export const FormSecurityTab = () => {
 
   const fetchSecurityLogs = async () => {
     try {
-      const { data, error } = await supabase
-        .from('form_security_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-
-      if (error) throw error;
-
-      setSecurityLogs(data || []);
-      calculateStats(data || []);
+      const data = await databaseService.getSecurityLogs(100);
+      setSecurityLogs(data);
+      calculateStats(data);
     } catch (error) {
       console.error('Error fetching security logs:', error);
       toast({
@@ -83,10 +64,8 @@ export const FormSecurityTab = () => {
     return { status: 'valid', reason: 'Passed all checks' };
   };
 
-  const formatIpAddress = (ip: unknown): string => {
-    if (typeof ip === 'string') return ip;
-    if (ip === null || ip === undefined) return 'Unknown';
-    return String(ip);
+  const formatIpAddress = (ip: string | null): string => {
+    return ip || 'Unknown';
   };
 
   if (loading) {

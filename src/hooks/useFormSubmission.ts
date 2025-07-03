@@ -1,10 +1,10 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useZapierIntegration } from './useZapierIntegration';
 import { useZeptoMailAutomation } from './useZeptoMailAutomation';
 import { useFormSecurity, type SecurityValidationResult } from './useFormSecurity';
+import { databaseService } from '@/services/databaseService';
 
 export interface FormSubmissionData {
   name: string;
@@ -105,16 +105,11 @@ Current Challenges: ${data.currentChallenges || 'Not provided'}`;
 
       console.log('Creating lead with data:', leadData);
 
-      // Insert lead data
-      const { data: leadResult, error: leadError } = await supabase
-        .from('leads')
-        .insert([leadData])
-        .select()
-        .single();
+      // Insert lead data using database service
+      const leadResult = await databaseService.insertLead(leadData);
 
-      if (leadError) {
-        console.error('Error creating lead:', leadError);
-        throw leadError;
+      if (!leadResult) {
+        throw new Error('Failed to create lead');
       }
 
       console.log('Lead created successfully:', leadResult);
@@ -129,14 +124,7 @@ Current Challenges: ${data.currentChallenges || 'Not provided'}`;
         form_type: data.formType || 'contact'
       };
 
-      const { error: contactError } = await supabase
-        .from('contact_submissions')
-        .insert([contactData]);
-
-      if (contactError) {
-        console.error('Warning: Failed to create contact submission backup:', contactError);
-        // Don't throw error as lead was created successfully
-      }
+      await databaseService.insertContactSubmission(contactData);
 
       // Trigger Zapier webhooks
       try {

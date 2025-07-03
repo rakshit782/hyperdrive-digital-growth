@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { databaseService } from '@/services/databaseService';
 
 export interface FormSecurityData {
   recaptchaToken: string;
@@ -119,15 +119,16 @@ export const useFormSecurity = () => {
       errors.push('reCAPTCHA verification error');
     }
 
-    // Log security event
+    // Log security event using database service
     try {
-      await supabase.from('form_security_logs').insert({
+      await databaseService.insertSecurityLog({
         form_type: formType,
         recaptcha_score: recaptchaScore,
         honeypot_triggered: honeypotTriggered,
         csrf_valid: csrfValid,
         submission_data: formData,
-        user_agent: navigator.userAgent
+        user_agent: navigator.userAgent,
+        ip_address: null // IP address should be captured on backend
       });
     } catch (error) {
       console.error('Failed to log security event:', error);
