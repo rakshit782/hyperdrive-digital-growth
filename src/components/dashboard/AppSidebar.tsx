@@ -30,8 +30,8 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
-  const { state } = useSidebar();
-  const collapsed = state === "collapsed";
+  const { open } = useSidebar();
+  const collapsed = !open;
   const [openGroups, setOpenGroups] = useState<{ [key: string]: boolean }>({
     content: true,
     crm: true,
@@ -104,6 +104,12 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
     {
       id: "contact-management",
       label: "Contact Forms",
+      icon: Mail,
+      category: "crm",
+    },
+    {
+      id: "email-workflow",
+      label: "Email Automation",
       icon: Mail,
       category: "crm",
     },

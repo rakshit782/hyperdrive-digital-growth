@@ -27,6 +27,7 @@ import FAQManagementTab from "@/components/dashboard/FAQManagementTab";
 import PricingManagement from "@/components/dashboard/PricingManagement";
 import CTAManagementTab from "@/components/dashboard/CTAManagementTab";
 import WebsiteIntegrationsTab from "@/components/dashboard/WebsiteIntegrationsTab";
+import EmailWorkflowTab from "@/components/dashboard/EmailWorkflowTab";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -122,6 +123,13 @@ const Dashboard = () => {
       icon: Mail,
       category: "CRM",
       component: <ContactManagement />
+    },
+    {
+      id: "email-workflow",
+      label: "Email Automation",
+      icon: Mail,
+      category: "CRM",
+      component: <EmailWorkflowTab />
     },
     {
       id: "blog-management",
