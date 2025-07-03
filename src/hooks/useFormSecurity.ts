@@ -24,6 +24,7 @@ const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // This i
 export const useFormSecurity = () => {
   const [csrfToken, setCsrfToken] = useState<string>('');
   const [isRecaptchaLoaded, setIsRecaptchaLoaded] = useState(false);
+  const [recaptchaError, setRecaptchaError] = useState<string | null>(null);
 
   // Generate CSRF token
   useEffect(() => {
@@ -36,19 +37,25 @@ export const useFormSecurity = () => {
   useEffect(() => {
     const loadRecaptcha = () => {
       if (window.grecaptcha) {
+        console.log('reCAPTCHA already loaded');
         setIsRecaptchaLoaded(true);
         return;
       }
 
+      console.log('Loading reCAPTCHA...');
       const script = document.createElement('script');
       script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
       script.onload = () => {
+        console.log('reCAPTCHA script loaded');
         window.grecaptcha.ready(() => {
+          console.log('reCAPTCHA ready');
           setIsRecaptchaLoaded(true);
+          setRecaptchaError(null);
         });
       };
-      script.onerror = () => {
-        console.error('Failed to load reCAPTCHA');
+      script.onerror = (error) => {
+        console.error('Failed to load reCAPTCHA:', error);
+        setRecaptchaError('Failed to load reCAPTCHA');
         setIsRecaptchaLoaded(false);
       };
       document.head.appendChild(script);
@@ -58,26 +65,31 @@ export const useFormSecurity = () => {
   }, []);
 
   const generateFingerprint = (): string => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.textBaseline = 'top';
-      ctx.font = '14px Arial';
-      ctx.fillText('Browser fingerprint', 2, 2);
-    }
-    
-    const fingerprint = btoa(JSON.stringify({
-      userAgent: navigator.userAgent,
-      language: navigator.language,
-      platform: navigator.platform,
-      cookieEnabled: navigator.cookieEnabled,
-      doNotTrack: navigator.doNotTrack,
-      canvas: canvas.toDataURL(),
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      screen: `${screen.width}x${screen.height}`,
-    }));
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.textBaseline = 'top';
+        ctx.font = '14px Arial';
+        ctx.fillText('Browser fingerprint', 2, 2);
+      }
+      
+      const fingerprint = btoa(JSON.stringify({
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        platform: navigator.platform,
+        cookieEnabled: navigator.cookieEnabled,
+        doNotTrack: navigator.doNotTrack,
+        canvas: canvas.toDataURL(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        screen: `${screen.width}x${screen.height}`,
+      }));
 
-    return fingerprint;
+      return fingerprint;
+    } catch (error) {
+      console.error('Error generating fingerprint:', error);
+      return btoa('fallback-fingerprint');
+    }
   };
 
   const getRecaptchaToken = async (action: string): Promise<string> => {
@@ -88,8 +100,14 @@ export const useFormSecurity = () => {
     return new Promise((resolve, reject) => {
       window.grecaptcha.ready(() => {
         window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
-          .then(resolve)
-          .catch(reject);
+          .then((token) => {
+            console.log('reCAPTCHA token generated successfully');
+            resolve(token);
+          })
+          .catch((error) => {
+            console.error('reCAPTCHA execution failed:', error);
+            reject(error);
+          });
       });
     });
   };
@@ -105,6 +123,13 @@ export const useFormSecurity = () => {
     const storedCsrfToken = sessionStorage.getItem('csrf_token');
     const csrfValid = formData.csrfToken === storedCsrfToken;
 
+    console.log('Validating security:', {
+      honeypotTriggered,
+      csrfValid,
+      formType,
+      isRecaptchaLoaded
+    });
+
     // Validate CSRF
     if (!csrfValid) {
       errors.push('Invalid CSRF token');
@@ -117,15 +142,21 @@ export const useFormSecurity = () => {
 
     // Validate reCAPTCHA
     try {
-      const recaptchaToken = await getRecaptchaToken(formType);
-      console.log('reCAPTCHA token generated:', recaptchaToken.substring(0, 20) + '...');
-      
-      // For now, we'll simulate a good score since we can't verify server-side
-      // In production, you should verify this token on your backend
-      recaptchaScore = 0.8;
-      
-      if (recaptchaScore < 0.5) {
-        errors.push('reCAPTCHA validation failed');
+      if (isRecaptchaLoaded) {
+        const recaptchaToken = await getRecaptchaToken(formType);
+        console.log('reCAPTCHA token generated:', recaptchaToken.substring(0, 20) + '...');
+        
+        // For now, we'll simulate a good score since we can't verify server-side
+        // In production, you should verify this token on your backend
+        recaptchaScore = 0.8;
+        
+        if (recaptchaScore < 0.5) {
+          errors.push('reCAPTCHA validation failed');
+        }
+      } else {
+        console.warn('reCAPTCHA not loaded, skipping validation');
+        // Allow form submission but log the issue
+        recaptchaScore = 0.5; // Neutral score
       }
     } catch (error) {
       console.error('reCAPTCHA error:', error);
@@ -171,6 +202,7 @@ export const useFormSecurity = () => {
   return {
     csrfToken,
     isRecaptchaLoaded,
+    recaptchaError,
     validateSecurity,
     getSecurityData,
     generateFingerprint

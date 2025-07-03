@@ -50,11 +50,13 @@ export const useFormSubmission = () => {
         data.honeypotValue || ''
       );
 
+      console.log('Security validation result:', securityResult);
+
       if (!securityResult.isValid) {
         console.error('Security validation failed:', securityResult.errors);
         toast({
           title: "Security Check Failed",
-          description: "Your submission was blocked for security reasons.",
+          description: "Your submission was blocked for security reasons. Please try again.",
           variant: "destructive",
         });
         return { success: false, error: 'Security validation failed' };
@@ -120,22 +122,28 @@ Uploaded Files:
       const leadResult = await databaseService.insertLead(leadData);
 
       if (!leadResult) {
-        throw new Error('Failed to create lead');
+        throw new Error('Failed to create lead - database service returned null');
       }
 
       console.log('Lead created successfully:', leadResult);
       
       // Also store in contact_submissions for backward compatibility
-      const contactData = {
-        name: fullName,
-        email: data.email,
-        phone: data.phone || null,
-        company: data.company || null,
-        message: detailedMessage,
-        form_type: data.formType || 'contact'
-      };
+      try {
+        const contactData = {
+          name: fullName,
+          email: data.email,
+          phone: data.phone || null,
+          company: data.company || null,
+          message: detailedMessage,
+          form_type: data.formType || 'contact'
+        };
 
-      await databaseService.insertContactSubmission(contactData);
+        await databaseService.insertContactSubmission(contactData);
+        console.log('Contact submission stored successfully');
+      } catch (contactError) {
+        console.error('Failed to store contact submission:', contactError);
+        // Don't fail the entire submission if contact submission fails
+      }
 
       // Trigger Zapier webhooks
       try {
@@ -164,6 +172,7 @@ Uploaded Files:
 
           const webhookUrl = formTypeWebhook || generalWebhook;
           await triggerZapierWebhook(webhookUrl, zapierData);
+          console.log('Zapier webhook triggered successfully');
         }
       } catch (webhookError) {
         console.error('Webhook error:', webhookError);
@@ -178,6 +187,7 @@ Uploaded Files:
           company: data.company,
           phone: data.phone
         });
+        console.log('Automated emails triggered successfully');
       } catch (emailError) {
         console.error('Email automation error:', emailError);
         // Don't fail the entire submission if email fails
@@ -197,13 +207,18 @@ Uploaded Files:
     } catch (error) {
       console.error('Form submission error:', error);
       
+      let errorMessage = "There was an error submitting your form. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your form. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
 
-      return { success: false, error };
+      return { success: false, error: errorMessage };
     } finally {
       setIsSubmitting(false);
     }

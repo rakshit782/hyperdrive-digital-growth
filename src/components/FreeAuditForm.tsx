@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Send, Target, TrendingUp, Zap, Upload, FileText } from "lucide-react";
+import { CheckCircle, Send, Target, TrendingUp, Zap, FileText } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
 import { useFormSecurity } from "@/hooks/useFormSecurity";
 import { FormSecurityFields } from "@/components/forms/FormSecurityFields";
@@ -31,53 +31,116 @@ const FreeAuditForm = () => {
   });
   const [honeypotValue, setHoneypotValue] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const { submitForm, isSubmitting } = useFormSubmission();
   const { csrfToken, isRecaptchaLoaded } = useFormSecurity();
   const { toast } = useToast();
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+
+    if (!formData.firstName.trim()) errors.firstName = 'First name is required';
+    if (!formData.lastName.trim()) errors.lastName = 'Last name is required';
+    if (!formData.email.trim()) errors.email = 'Email is required';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = 'Please enter a valid email';
+    if (!formData.phone.trim()) errors.phone = 'Phone number is required';
+    if (!formData.company.trim()) errors.company = 'Company name is required';
+    if (!formData.monthlyAdSpend) errors.monthlyAdSpend = 'Monthly ad spend is required';
+    if (!formData.primaryPlatform) errors.primaryPlatform = 'Primary platform is required';
+    if (!formData.businessGoals.trim()) errors.businessGoals = 'Business goals are required';
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Form submission started');
+    console.log('Form data:', formData);
+    console.log('Uploaded files:', uploadedFiles);
+    console.log('reCAPTCHA loaded:', isRecaptchaLoaded);
+    
+    if (!validateForm()) {
+      toast({
+        title: "Form Validation Failed",
+        description: "Please fill in all required fields correctly.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!isRecaptchaLoaded) {
-      alert('Security verification is loading. Please wait a moment and try again.');
+      toast({
+        title: "Security Check Loading",
+        description: "Please wait for security verification to load and try again.",
+        variant: "destructive",
+      });
       return;
     }
     
-    const result = await submitForm({
-      ...formData,
-      name: `${formData.firstName} ${formData.lastName}`.trim(),
-      formType: 'free_audit',
-      source: 'free_audit_form',
-      csrfToken,
-      honeypotValue,
-      uploadedFiles: {
-        businessSalesReport: uploadedFiles.businessSalesReport?.name || null,
-        searchTermReport: uploadedFiles.searchTermReport?.name || null,
-        advertisedProductReport: uploadedFiles.advertisedProductReport?.name || null
-      }
-    });
+    try {
+      const result = await submitForm({
+        ...formData,
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        formType: 'free_audit',
+        source: 'free_audit_form',
+        csrfToken,
+        honeypotValue,
+        uploadedFiles: {
+          businessSalesReport: uploadedFiles.businessSalesReport?.name || null,
+          searchTermReport: uploadedFiles.searchTermReport?.name || null,
+          advertisedProductReport: uploadedFiles.advertisedProductReport?.name || null
+        }
+      });
 
-    if (result.success) {
-      setIsSubmitted(true);
-      // Reset form
-      setFormData({
-        firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
-        monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
+      console.log('Form submission result:', result);
+
+      if (result.success) {
+        setIsSubmitted(true);
+        // Reset form
+        setFormData({
+          firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
+          monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
+        });
+        setUploadedFiles({
+          businessSalesReport: null,
+          searchTermReport: null,
+          advertisedProductReport: null
+        });
+        setHoneypotValue('');
+        setFormErrors({});
+        
+        toast({
+          title: "Success!",
+          description: "Your audit request has been submitted successfully.",
+        });
+      } else {
+        throw new Error(result.error || 'Form submission failed');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      toast({
+        title: "Submission Failed",
+        description: "There was an error submitting your form. Please try again.",
+        variant: "destructive",
       });
-      setUploadedFiles({
-        businessSalesReport: null,
-        searchTermReport: null,
-        advertisedProductReport: null
-      });
-      setHoneypotValue('');
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleSelectChange = (name: string, value: string) => {
@@ -85,6 +148,13 @@ const FreeAuditForm = () => {
       ...prev,
       [name]: value
     }));
+    // Clear error when user selects
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof typeof uploadedFiles) => {
@@ -201,9 +271,10 @@ const FreeAuditForm = () => {
                     value={formData.firstName}
                     onChange={handleChange}
                     required
-                    className="h-12 text-lg border-slate-300"
+                    className={`h-12 text-lg border-slate-300 ${formErrors.firstName ? 'border-red-500' : ''}`}
                     placeholder="John"
                   />
+                  {formErrors.firstName && <p className="text-red-500 text-sm mt-1">{formErrors.firstName}</p>}
                 </div>
                 
                 <div>
@@ -215,9 +286,10 @@ const FreeAuditForm = () => {
                     value={formData.lastName}
                     onChange={handleChange}
                     required
-                    className="h-12 text-lg border-slate-300"
+                    className={`h-12 text-lg border-slate-300 ${formErrors.lastName ? 'border-red-500' : ''}`}
                     placeholder="Doe"
                   />
+                  {formErrors.lastName && <p className="text-red-500 text-sm mt-1">{formErrors.lastName}</p>}
                 </div>
               </div>
               
@@ -232,9 +304,10 @@ const FreeAuditForm = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="h-12 text-lg border-slate-300"
+                    className={`h-12 text-lg border-slate-300 ${formErrors.email ? 'border-red-500' : ''}`}
                     placeholder="john@company.com"
                   />
+                  {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
                 </div>
                 
                 <div>
@@ -246,9 +319,10 @@ const FreeAuditForm = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     required
-                    className="h-12 text-lg border-slate-300"
+                    className={`h-12 text-lg border-slate-300 ${formErrors.phone ? 'border-red-500' : ''}`}
                     placeholder="+1 (555) 123-4567"
                   />
+                  {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
                 </div>
               </div>
 
@@ -262,9 +336,10 @@ const FreeAuditForm = () => {
                     value={formData.company}
                     onChange={handleChange}
                     required
-                    className="h-12 text-lg border-slate-300"
+                    className={`h-12 text-lg border-slate-300 ${formErrors.company ? 'border-red-500' : ''}`}
                     placeholder="Your Company"
                   />
+                  {formErrors.company && <p className="text-red-500 text-sm mt-1">{formErrors.company}</p>}
                 </div>
                 
                 <div>
@@ -287,7 +362,7 @@ const FreeAuditForm = () => {
                     Monthly Ad Spend *
                   </label>
                   <Select onValueChange={(value) => handleSelectChange('monthlyAdSpend', value)} required>
-                    <SelectTrigger className="h-12 text-lg">
+                    <SelectTrigger className={`h-12 text-lg ${formErrors.monthlyAdSpend ? 'border-red-500' : ''}`}>
                       <SelectValue placeholder="Select your monthly spend" />
                     </SelectTrigger>
                     <SelectContent>
@@ -299,6 +374,7 @@ const FreeAuditForm = () => {
                       <SelectItem value="over-50k">Over $50,000</SelectItem>
                     </SelectContent>
                   </Select>
+                  {formErrors.monthlyAdSpend && <p className="text-red-500 text-sm mt-1">{formErrors.monthlyAdSpend}</p>}
                 </div>
                 
                 <div>
@@ -306,7 +382,7 @@ const FreeAuditForm = () => {
                     Primary Advertising Platform *
                   </label>
                   <Select onValueChange={(value) => handleSelectChange('primaryPlatform', value)} required>
-                    <SelectTrigger className="h-12 text-lg">
+                    <SelectTrigger className={`h-12 text-lg ${formErrors.primaryPlatform ? 'border-red-500' : ''}`}>
                       <SelectValue placeholder="Select your main platform" />
                     </SelectTrigger>
                     <SelectContent>
@@ -318,6 +394,7 @@ const FreeAuditForm = () => {
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
+                  {formErrors.primaryPlatform && <p className="text-red-500 text-sm mt-1">{formErrors.primaryPlatform}</p>}
                 </div>
               </div>
 
@@ -407,9 +484,10 @@ const FreeAuditForm = () => {
                   onChange={handleChange}
                   required
                   rows={4}
-                  className="text-lg border-slate-300 resize-none"
+                  className={`text-lg border-slate-300 resize-none ${formErrors.businessGoals ? 'border-red-500' : ''}`}
                   placeholder="What are your main business objectives? (e.g., increase sales, improve ROAS, expand to new markets)"
                 />
+                {formErrors.businessGoals && <p className="text-red-500 text-sm mt-1">{formErrors.businessGoals}</p>}
               </div>
 
               <div>
