@@ -1,17 +1,29 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Send, Target, TrendingUp, Zap, FileText, TestTube } from "lucide-react";
-import { useFormSubmission } from "@/hooks/useFormSubmission";
-import { useFormSecurity } from "@/hooks/useFormSecurity";
-import { FormSecurityFields } from "@/components/forms/FormSecurityFields";
+import { CheckCircle, Send, Target, TrendingUp, Zap, TestTube } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  company: string;
+  website: string;
+  monthlyAdSpend: string;
+  primaryPlatform: string;
+  businessGoals: string;
+  currentChallenges: string;
+}
 
 const FreeAuditForm = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
     email: '',
@@ -23,16 +35,11 @@ const FreeAuditForm = () => {
     businessGoals: '',
     currentChallenges: ''
   });
-  const [uploadedFiles, setUploadedFiles] = useState({
-    businessSalesReport: null as File | null,
-    searchTermReport: null as File | null,
-    advertisedProductReport: null as File | null
-  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [honeypotValue, setHoneypotValue] = useState('');
-  const { submitForm, isSubmitting } = useFormSubmission();
-  const { validateInvisibleRecaptcha, isRecaptchaLoaded } = useFormSecurity();
   const { toast } = useToast();
 
   const fillTestData = () => {
@@ -56,7 +63,7 @@ const FreeAuditForm = () => {
     });
   };
 
-  const validateForm = () => {
+  const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
 
     if (!formData.firstName.trim()) errors.firstName = 'First name is required';
@@ -77,8 +84,6 @@ const FreeAuditForm = () => {
     e.preventDefault();
     
     console.log('Form submission started');
-    console.log('Form data:', formData);
-    console.log('Uploaded files:', uploadedFiles);
     
     // Check honeypot
     if (honeypotValue) {
@@ -95,66 +100,122 @@ const FreeAuditForm = () => {
       return;
     }
 
-    // Security validation
+    setIsSubmitting(true);
+
     try {
-      const securityResult = await validateInvisibleRecaptcha(formData, 'free_audit');
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
       
-      if (!securityResult.isValid) {
-        toast({
-          title: "Security Validation Failed",
-          description: "Please try again. If the problem persists, contact support.",
-          variant: "destructive",
-        });
-        return;
-      }
-    } catch (error) {
-      console.error('Security validation error:', error);
-      // Continue with submission even if reCAPTCHA fails (graceful degradation)
-    }
-    
-    try {
-      const result = await submitForm({
-        ...formData,
-        name: `${formData.firstName} ${formData.lastName}`.trim(),
-        formType: 'free_audit',
+      // Prepare detailed message for audit forms
+      const detailedMessage = `Free Audit Request Details:
+        
+Website: ${formData.website || 'Not provided'}
+Monthly Ad Spend: ${formData.monthlyAdSpend || 'Not provided'}
+Primary Platform: ${formData.primaryPlatform || 'Not provided'}
+Business Goals: ${formData.businessGoals || 'Not provided'}
+Current Challenges: ${formData.currentChallenges || 'Not provided'}`;
+
+      // Insert into leads table
+      const leadData = {
+        name: fullName,
+        email: formData.email,
+        phone: formData.phone || null,
+        company: formData.company || null,
         source: 'free_audit_form',
-        uploadedFiles: {
-          businessSalesReport: uploadedFiles.businessSalesReport?.name || null,
-          searchTermReport: uploadedFiles.searchTermReport?.name || null,
-          advertisedProductReport: uploadedFiles.advertisedProductReport?.name || null
+        status: 'new',
+        notes: detailedMessage,
+        form_security: {
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
+        },
+        lead_data: {
+          formType: 'free_audit',
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          businessGoals: formData.businessGoals,
+          website: formData.website,
+          monthlyAdSpend: formData.monthlyAdSpend,
+          primaryPlatform: formData.primaryPlatform,
+          currentChallenges: formData.currentChallenges,
+          submittedAt: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
         }
+      };
+
+      console.log('Inserting lead data:', leadData);
+
+      const { data: leadResult, error: leadError } = await supabase
+        .from('leads')
+        .insert([leadData])
+        .select()
+        .single();
+
+      if (leadError) {
+        console.error('Lead insertion error:', leadError);
+        throw new Error(`Failed to create lead: ${leadError.message}`);
+      }
+
+      console.log('Lead created successfully:', leadResult);
+      
+      // Also store in contact_submissions for backward compatibility
+      try {
+        const contactData = {
+          name: fullName,
+          email: formData.email,
+          phone: formData.phone || null,
+          company: formData.company || null,
+          message: detailedMessage,
+          form_type: 'free_audit'
+        };
+
+        const { error: contactError } = await supabase
+          .from('contact_submissions')
+          .insert([contactData]);
+
+        if (contactError) {
+          console.error('Contact submission error:', contactError);
+          // Don't fail the entire submission if contact submission fails
+        } else {
+          console.log('Contact submission stored successfully');
+        }
+      } catch (contactError) {
+        console.error('Failed to store contact submission:', contactError);
+        // Don't fail the entire submission if contact submission fails
+      }
+
+      // Success
+      setIsSubmitted(true);
+      
+      // Reset form
+      setFormData({
+        firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
+        monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
+      });
+      setFormErrors({});
+      
+      toast({
+        title: "Success!",
+        description: "Your audit request has been submitted successfully.",
       });
 
-      console.log('Form submission result:', result);
-
-      if (result.success) {
-        setIsSubmitted(true);
-        // Reset form
-        setFormData({
-          firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
-          monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
-        });
-        setUploadedFiles({
-          businessSalesReport: null,
-          searchTermReport: null,
-          advertisedProductReport: null
-        });
-        setFormErrors({});
-        
-        toast({
-          title: "Success!",
-          description: "Your audit request has been submitted successfully.",
-        });
-      } else {
-        throw new Error(result.error || 'Form submission failed');
-      }
     } catch (error) {
       console.error('Form submission error:', error);
+      let errorMessage = "There was an error submitting your form. Please try again.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your form. Please check your connection and try again.",
+        description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -184,42 +245,6 @@ const FreeAuditForm = () => {
         ...prev,
         [name]: ''
       }));
-    }
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof typeof uploadedFiles) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const maxSize = 10 * 1024 * 1024; // 10MB
-      const allowedTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
-      
-      if (file.size > maxSize) {
-        toast({
-          title: "File too large",
-          description: "Please select a file smaller than 10MB",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      if (!allowedTypes.includes(file.type)) {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload a PDF, Excel, or CSV file",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      setUploadedFiles(prev => ({
-        ...prev,
-        [fieldName]: file
-      }));
-      
-      toast({
-        title: "File uploaded",
-        description: `${file.name} has been uploaded successfully`,
-      });
     }
   };
 
@@ -298,13 +323,17 @@ const FreeAuditForm = () => {
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Form Security Fields */}
-              <FormSecurityFields
-                csrfToken="dummy-csrf-token"
-                honeypotValue={honeypotValue}
-                onHoneypotChange={setHoneypotValue}
-                showRecaptcha={false}
-              />
+              {/* Honeypot field - Hidden from users, visible to bots */}
+              <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
+                <Input
+                  name="website_url"
+                  value={honeypotValue}
+                  onChange={(e) => setHoneypotValue(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="nope"
+                  aria-hidden="true"
+                />
+              </div>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
@@ -442,82 +471,6 @@ const FreeAuditForm = () => {
                   {formErrors.primaryPlatform && <p className="text-red-500 text-sm mt-1">{formErrors.primaryPlatform}</p>}
                 </div>
               </div>
-
-              {/* File Upload Section */}
-              <div className="space-y-6 border-t pt-6">
-                <h3 className="text-xl font-bold text-slate-900 mb-4">Upload Your Reports (Optional but Recommended)</h3>
-                <p className="text-slate-600 text-sm mb-4">
-                  Upload your reports from the last 30-60 days for a more comprehensive audit. All files should be in PDF, Excel, or CSV format (Max 10MB each).
-                </p>
-                
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-slate-900">
-                      Business Sales Report
-                    </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
-                      <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <input
-                        type="file"
-                        accept=".pdf,.xlsx,.xls,.csv"
-                        onChange={(e) => handleFileUpload(e, 'businessSalesReport')}
-                        className="hidden"
-                        id="businessSalesReport"
-                      />
-                      <label htmlFor="businessSalesReport" className="cursor-pointer">
-                        <span className="text-sm text-blue-600 hover:text-blue-800">
-                          {uploadedFiles.businessSalesReport ? uploadedFiles.businessSalesReport.name : 'Upload File'}
-                        </span>
-                      </label>
-                      <p className="text-xs text-gray-500 mt-1">Last 30-60 Days</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-slate-900">
-                      Search Term Report
-                    </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
-                      <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <input
-                        type="file"
-                        accept=".pdf,.xlsx,.xls,.csv"
-                        onChange={(e) => handleFileUpload(e, 'searchTermReport')}
-                        className="hidden"
-                        id="searchTermReport"
-                      />
-                      <label htmlFor="searchTermReport" className="cursor-pointer">
-                        <span className="text-sm text-blue-600 hover:text-blue-800">
-                          {uploadedFiles.searchTermReport ? uploadedFiles.searchTermReport.name : 'Upload File'}
-                        </span>
-                      </label>
-                      <p className="text-xs text-gray-500 mt-1">Last 30-60 Days</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-slate-900">
-                      Advertised Product Report
-                    </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
-                      <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <input
-                        type="file"
-                        accept=".pdf,.xlsx,.xls,.csv"
-                        onChange={(e) => handleFileUpload(e, 'advertisedProductReport')}
-                        className="hidden"
-                        id="advertisedProductReport"
-                      />
-                      <label htmlFor="advertisedProductReport" className="cursor-pointer">
-                        <span className="text-sm text-blue-600 hover:text-blue-800">
-                          {uploadedFiles.advertisedProductReport ? uploadedFiles.advertisedProductReport.name : 'Upload File'}
-                        </span>
-                      </label>
-                      <p className="text-xs text-gray-500 mt-1">Last 30-60 Days</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
               
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -551,7 +504,7 @@ const FreeAuditForm = () => {
               
               <Button 
                 type="submit" 
-                disabled={isSubmitting || (!isRecaptchaLoaded && isRecaptchaLoaded !== null)}
+                disabled={isSubmitting}
                 className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 {isSubmitting ? (

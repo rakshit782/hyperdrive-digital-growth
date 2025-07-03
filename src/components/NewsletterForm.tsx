@@ -3,15 +3,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, ArrowRight } from "lucide-react";
-import { useFormSubmission } from "@/hooks/useFormSubmission";
-import { useFormSecurity } from "@/hooks/useFormSecurity";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [honeypotValue, setHoneypotValue] = useState("");
-  const { submitForm, isSubmitting } = useFormSubmission();
-  const { validateInvisibleRecaptcha, isRecaptchaLoaded } = useFormSecurity();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,49 +41,68 @@ const NewsletterForm = () => {
       return;
     }
 
-    // Security validation (graceful degradation if reCAPTCHA fails)
-    try {
-      if (isRecaptchaLoaded) {
-        const securityResult = await validateInvisibleRecaptcha({ email }, 'newsletter');
-        
-        if (!securityResult.isValid) {
-          toast({
-            title: "Security Check Failed",
-            description: "Please try again in a moment.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-    } catch (error) {
-      console.error('Security validation error:', error);
-      // Continue with submission even if reCAPTCHA fails
-    }
+    setIsSubmitting(true);
 
     try {
-      const result = await submitForm({
-        email,
+      const leadData = {
         name: email.split('@')[0], // Use email prefix as name for newsletter
-        formType: 'newsletter',
-        source: 'newsletter_form'
+        email: email,
+        phone: null,
+        company: null,
+        source: 'newsletter_form',
+        status: 'new',
+        notes: 'Newsletter subscription',
+        form_security: {
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
+        },
+        lead_data: {
+          formType: 'newsletter',
+          submittedAt: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
+        }
+      };
+
+      console.log('Inserting newsletter lead:', leadData);
+
+      const { data, error } = await supabase
+        .from('leads')
+        .insert([leadData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Newsletter submission error:', error);
+        throw new Error(`Failed to subscribe: ${error.message}`);
+      }
+
+      console.log('Newsletter subscription successful:', data);
+      
+      toast({
+        title: "Thank you for subscribing!",
+        description: "You'll receive our latest updates and insights.",
       });
       
-      if (result.success) {
-        toast({
-          title: "Thank you for subscribing!",
-          description: "You'll receive our latest updates and insights.",
-        });
-        setEmail("");
-      } else {
-        throw new Error(result.error || 'Newsletter subscription failed');
-      }
+      setEmail("");
     } catch (error) {
       console.error("Newsletter submission error:", error);
+      let errorMessage = "Please check your connection and try again.";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Subscription Failed",
-        description: "Please check your connection and try again.",
+        description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
