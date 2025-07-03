@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Send, Target, TrendingUp, Zap, TestTube } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { usePostgresFormSubmission } from "@/hooks/usePostgresFormSubmission";
 
 interface FormData {
   firstName: string;
@@ -36,11 +36,11 @@ const FreeAuditForm = () => {
     currentChallenges: ''
   });
   
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [honeypotValue, setHoneypotValue] = useState('');
   const { toast } = useToast();
+  const { submitForm, isSubmitting } = usePostgresFormSubmission();
 
   const fillTestData = () => {
     setFormData({
@@ -52,8 +52,8 @@ const FreeAuditForm = () => {
       website: 'https://example.com',
       monthlyAdSpend: '10k-25k',
       primaryPlatform: 'amazon',
-      businessGoals: 'We want to increase our Amazon sales by 50% while maintaining profitable ROAS. Our main goals include expanding to new product categories, improving our organic ranking, and optimizing our PPC campaigns for better performance.',
-      currentChallenges: 'We are struggling with high ACoS on our campaigns, poor organic ranking for key products, and difficulty managing inventory during peak seasons. Our main challenges include keyword optimization and competitor analysis.'
+      businessGoals: 'We want to increase our Amazon sales by 50% while maintaining profitable ROAS.',
+      currentChallenges: 'We are struggling with high ACoS on our campaigns and poor organic ranking.'
     });
     setFormErrors({});
     
@@ -83,7 +83,7 @@ const FreeAuditForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Form submission started');
+    console.log('Free audit form submission started');
     
     // Check honeypot
     if (honeypotValue) {
@@ -100,122 +100,47 @@ const FreeAuditForm = () => {
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
-      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-      
-      // Prepare detailed message for audit forms
-      const detailedMessage = `Free Audit Request Details:
-        
-Website: ${formData.website || 'Not provided'}
-Monthly Ad Spend: ${formData.monthlyAdSpend || 'Not provided'}
-Primary Platform: ${formData.primaryPlatform || 'Not provided'}
-Business Goals: ${formData.businessGoals || 'Not provided'}
-Current Challenges: ${formData.currentChallenges || 'Not provided'}`;
-
-      // Insert into leads table
-      const leadData = {
-        name: fullName,
+      const result = await submitForm({
+        name: `${formData.firstName} ${formData.lastName}`,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
         email: formData.email,
-        phone: formData.phone || null,
-        company: formData.company || null,
+        phone: formData.phone,
+        company: formData.company,
+        website: formData.website,
+        monthlyAdSpend: formData.monthlyAdSpend,
+        primaryPlatform: formData.primaryPlatform,
+        businessGoals: formData.businessGoals,
+        currentChallenges: formData.currentChallenges,
         source: 'free_audit_form',
-        status: 'new',
-        notes: detailedMessage,
-        form_security: {
-          timestamp: Date.now(),
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: document.referrer
-        },
-        lead_data: {
-          formType: 'free_audit',
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          businessGoals: formData.businessGoals,
-          website: formData.website,
-          monthlyAdSpend: formData.monthlyAdSpend,
-          primaryPlatform: formData.primaryPlatform,
-          currentChallenges: formData.currentChallenges,
-          submittedAt: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: document.referrer
-        }
-      };
-
-      console.log('Inserting lead data:', leadData);
-
-      const { data: leadResult, error: leadError } = await supabase
-        .from('leads')
-        .insert([leadData])
-        .select()
-        .single();
-
-      if (leadError) {
-        console.error('Lead insertion error:', leadError);
-        throw new Error(`Failed to create lead: ${leadError.message}`);
-      }
-
-      console.log('Lead created successfully:', leadResult);
-      
-      // Also store in contact_submissions for backward compatibility
-      try {
-        const contactData = {
-          name: fullName,
-          email: formData.email,
-          phone: formData.phone || null,
-          company: formData.company || null,
-          message: detailedMessage,
-          form_type: 'free_audit'
-        };
-
-        const { error: contactError } = await supabase
-          .from('contact_submissions')
-          .insert([contactData]);
-
-        if (contactError) {
-          console.error('Contact submission error:', contactError);
-          // Don't fail the entire submission if contact submission fails
-        } else {
-          console.log('Contact submission stored successfully');
-        }
-      } catch (contactError) {
-        console.error('Failed to store contact submission:', contactError);
-        // Don't fail the entire submission if contact submission fails
-      }
-
-      // Success
-      setIsSubmitted(true);
-      
-      // Reset form
-      setFormData({
-        firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
-        monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
-      });
-      setFormErrors({});
-      
-      toast({
-        title: "Success!",
-        description: "Your audit request has been submitted successfully.",
+        formType: 'free_audit'
       });
 
+      if (result.success) {
+        setIsSubmitted(true);
+        
+        // Reset form
+        setFormData({
+          firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
+          monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
+        });
+        setFormErrors({});
+        
+        toast({
+          title: "Success!",
+          description: "Your audit request has been submitted successfully.",
+        });
+      } else {
+        throw new Error(result.error || 'Submission failed');
+      }
     } catch (error) {
       console.error('Form submission error:', error);
-      let errorMessage = "There was an error submitting your form. Please try again.";
-      
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      
       toast({
         title: "Submission Failed",
-        description: errorMessage,
+        description: error instanceof Error ? error.message : "Please try again later.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

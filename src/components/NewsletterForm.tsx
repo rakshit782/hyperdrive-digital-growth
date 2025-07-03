@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { usePostgresFormSubmission } from "@/hooks/usePostgresFormSubmission";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [honeypotValue, setHoneypotValue] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { submitForm, isSubmitting } = usePostgresFormSubmission();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,68 +41,32 @@ const NewsletterForm = () => {
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
-      const leadData = {
+      const result = await submitForm({
         name: email.split('@')[0], // Use email prefix as name for newsletter
         email: email,
-        phone: null,
-        company: null,
         source: 'newsletter_form',
-        status: 'new',
-        notes: 'Newsletter subscription',
-        form_security: {
-          timestamp: Date.now(),
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: document.referrer
-        },
-        lead_data: {
-          formType: 'newsletter',
-          submittedAt: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: document.referrer
-        }
-      };
-
-      console.log('Inserting newsletter lead:', leadData);
-
-      const { data, error } = await supabase
-        .from('leads')
-        .insert([leadData])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Newsletter submission error:', error);
-        throw new Error(`Failed to subscribe: ${error.message}`);
-      }
-
-      console.log('Newsletter subscription successful:', data);
-      
-      toast({
-        title: "Thank you for subscribing!",
-        description: "You'll receive our latest updates and insights.",
+        formType: 'newsletter',
+        message: 'Newsletter subscription'
       });
-      
-      setEmail("");
+
+      if (result.success) {
+        toast({
+          title: "Thank you for subscribing!",
+          description: "You'll receive our latest updates and insights.",
+        });
+        
+        setEmail("");
+      } else {
+        throw new Error(result.error || 'Subscription failed');
+      }
     } catch (error) {
       console.error("Newsletter submission error:", error);
-      let errorMessage = "Please check your connection and try again.";
-      
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      
       toast({
         title: "Subscription Failed",
-        description: errorMessage,
+        description: error instanceof Error ? error.message : "Please check your connection and try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
