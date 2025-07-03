@@ -8,7 +8,7 @@ import { useFormSecurity } from '@/hooks/useFormSecurity';
 import { FormSecurityFields } from './FormSecurityFields';
 
 interface SecureContactFormProps {
-  formType?: 'contact' | 'newsletter' | 'support';
+  formType?: 'contact' | 'newsletter' | 'free_audit'; // Changed 'support' to 'free_audit'
   title?: string;
   description?: string;
   className?: string;

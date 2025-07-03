@@ -10,11 +10,11 @@ import { useToast } from '@/hooks/use-toast';
 interface SecurityLog {
   id: string;
   form_type: string;
-  ip_address: string;
-  user_agent: string;
-  recaptcha_score: number;
-  honeypot_triggered: boolean;
-  csrf_valid: boolean;
+  ip_address: unknown; // Changed from string to unknown to match Supabase types
+  user_agent: string | null;
+  recaptcha_score: number | null;
+  honeypot_triggered: boolean | null;
+  csrf_valid: boolean | null;
   submission_data: any;
   created_at: string;
 }
@@ -63,7 +63,7 @@ export const FormSecurityTab = () => {
     const valid = logs.filter(log => 
       !log.honeypot_triggered && 
       log.csrf_valid && 
-      log.recaptcha_score >= 0.5
+      (log.recaptcha_score || 0) >= 0.5
     ).length;
     const blocked = total - valid;
     const avgScore = logs.reduce((sum, log) => sum + (log.recaptcha_score || 0), 0) / total;
@@ -72,15 +72,21 @@ export const FormSecurityTab = () => {
       totalSubmissions: total,
       validSubmissions: valid,
       blockedSubmissions: blocked,
-      avgRecaptchaScore: avgScore
+      avgRecaptchaScore: avgScore || 0
     });
   };
 
   const getSecurityStatus = (log: SecurityLog) => {
     if (log.honeypot_triggered) return { status: 'blocked', reason: 'Honeypot triggered' };
     if (!log.csrf_valid) return { status: 'blocked', reason: 'Invalid CSRF token' };
-    if (log.recaptcha_score < 0.5) return { status: 'blocked', reason: 'Low reCAPTCHA score' };
+    if ((log.recaptcha_score || 0) < 0.5) return { status: 'blocked', reason: 'Low reCAPTCHA score' };
     return { status: 'valid', reason: 'Passed all checks' };
+  };
+
+  const formatIpAddress = (ip: unknown): string => {
+    if (typeof ip === 'string') return ip;
+    if (ip === null || ip === undefined) return 'Unknown';
+    return String(ip);
   };
 
   if (loading) {
@@ -184,12 +190,12 @@ export const FormSecurityTab = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
                       <p><span className="font-medium">Status:</span> {securityStatus.reason}</p>
-                      <p><span className="font-medium">IP:</span> {log.ip_address}</p>
+                      <p><span className="font-medium">IP:</span> {formatIpAddress(log.ip_address)}</p>
                     </div>
                     <div>
                       <p><span className="font-medium">User Agent:</span> 
                         <span className="text-slate-600 truncate block">
-                          {log.user_agent?.substring(0, 50)}...
+                          {log.user_agent ? log.user_agent.substring(0, 50) + '...' : 'Unknown'}
                         </span>
                       </p>
                     </div>

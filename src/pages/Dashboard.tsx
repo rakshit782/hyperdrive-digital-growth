@@ -1,23 +1,23 @@
 
 import React, { useState } from "react";
-import { ModernDashboardLayout } from "@/components/dashboard/ModernDashboardLayout";
-import { WebsiteTab } from "@/components/dashboard/WebsiteTab";
-import { HeroSliderTab } from "@/components/dashboard/HeroSliderTab";
-import { ServicesTab } from "@/components/dashboard/ServicesTab";
-import { ServicePagesManagementTab } from "@/components/dashboard/ServicePagesManagementTab";
-import { ReviewsTab } from "@/components/dashboard/ReviewsTab";
-import { FAQManagementTab } from "@/components/dashboard/FAQManagementTab";
-import { CTAManagementTab } from "@/components/dashboard/CTAManagementTab";
-import { FooterManagementTab } from "@/components/dashboard/FooterManagementTab";
-import { BlogManagement } from "@/components/dashboard/BlogManagement";
-import { LeadManagementTab } from "@/components/dashboard/LeadManagementTab";
-import { ContactManagement } from "@/components/dashboard/ContactManagement";
-import { EmailWorkflowTab } from "@/components/dashboard/EmailWorkflowTab";
-import { ServiceHeaderImagesTab } from "@/components/dashboard/ServiceHeaderImagesTab";
-import { ClienteleManagementTab } from "@/components/dashboard/ClienteleManagementTab";
-import { PricingManagement } from "@/components/dashboard/PricingManagement";
-import { WebsiteIntegrationsTab } from "@/components/dashboard/WebsiteIntegrationsTab";
-import { IntegrationStatusTab } from "@/components/dashboard/IntegrationStatusTab";
+import ModernDashboardLayout from "@/components/dashboard/ModernDashboardLayout";
+import WebsiteTab from "@/components/dashboard/WebsiteTab";
+import HeroSliderTab from "@/components/dashboard/HeroSliderTab";
+import ServicesTab from "@/components/dashboard/ServicesTab";
+import ServicePagesManagementTab from "@/components/dashboard/ServicePagesManagementTab";
+import ReviewsTab from "@/components/dashboard/ReviewsTab";
+import FAQManagementTab from "@/components/dashboard/FAQManagementTab";
+import CTAManagementTab from "@/components/dashboard/CTAManagementTab";
+import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
+import BlogManagement from "@/components/dashboard/BlogManagement";
+import LeadManagementTab from "@/components/dashboard/LeadManagementTab";
+import ContactManagement from "@/components/dashboard/ContactManagement";
+import EmailWorkflowTab from "@/components/dashboard/EmailWorkflowTab";
+import ServiceHeaderImagesTab from "@/components/dashboard/ServiceHeaderImagesTab";
+import ClienteleManagementTab from "@/components/dashboard/ClienteleManagementTab";
+import PricingManagement from "@/components/dashboard/PricingManagement";
+import WebsiteIntegrationsTab from "@/components/dashboard/WebsiteIntegrationsTab";
+import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 import { FormSecurityTab } from "@/components/dashboard/FormSecurityTab";
 
 const Dashboard = () => {
