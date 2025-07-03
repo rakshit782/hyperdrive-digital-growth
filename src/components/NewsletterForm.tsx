@@ -5,40 +5,64 @@ import { Input } from "@/components/ui/input";
 import { Mail, ArrowRight } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
 import { useFormSecurity } from "@/hooks/useFormSecurity";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
+  const [honeypotValue, setHoneypotValue] = useState("");
   const { submitForm, isSubmitting } = useFormSubmission();
-  const { isRecaptchaLoaded, validateInvisibleRecaptcha } = useFormSecurity();
+  const { validateInvisibleRecaptcha, isRecaptchaLoaded } = useFormSecurity();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Newsletter form submission started');
+    
+    // Check honeypot
+    if (honeypotValue) {
+      console.log('Honeypot triggered, blocking submission');
+      return;
+    }
+    
     if (!email.trim()) {
-      toast.error("Please enter your email address");
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address",
+        variant: "destructive",
+      });
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error("Please enter a valid email address");
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
       return;
     }
 
-    if (!isRecaptchaLoaded) {
-      toast.error("Security verification is loading. Please wait a moment and try again.");
-      return;
+    // Security validation (graceful degradation if reCAPTCHA fails)
+    try {
+      if (isRecaptchaLoaded) {
+        const securityResult = await validateInvisibleRecaptcha({ email }, 'newsletter');
+        
+        if (!securityResult.isValid) {
+          toast({
+            title: "Security Check Failed",
+            description: "Please try again in a moment.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Security validation error:', error);
+      // Continue with submission even if reCAPTCHA fails
     }
 
     try {
-      // Validate invisible reCAPTCHA
-      const securityResult = await validateInvisibleRecaptcha({ email }, 'newsletter');
-      
-      if (!securityResult.isValid) {
-        toast.error("Security verification failed. Please try again.");
-        return;
-      }
-
       const result = await submitForm({
         email,
         name: email.split('@')[0], // Use email prefix as name for newsletter
@@ -47,12 +71,21 @@ const NewsletterForm = () => {
       });
       
       if (result.success) {
-        toast.success("Thank you for subscribing! You'll receive our latest updates.");
+        toast({
+          title: "Thank you for subscribing!",
+          description: "You'll receive our latest updates and insights.",
+        });
         setEmail("");
+      } else {
+        throw new Error(result.error || 'Newsletter subscription failed');
       }
     } catch (error) {
       console.error("Newsletter submission error:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast({
+        title: "Subscription Failed",
+        description: "Please check your connection and try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -69,6 +102,18 @@ const NewsletterForm = () => {
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Honeypot field - Hidden from users, visible to bots */}
+        <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
+          <Input
+            name="website_url"
+            value={honeypotValue}
+            onChange={(e) => setHoneypotValue(e.target.value)}
+            tabIndex={-1}
+            autoComplete="nope"
+            aria-hidden="true"
+          />
+        </div>
+
         <div className="flex gap-2">
           <Input
             type="email"
@@ -77,10 +122,11 @@ const NewsletterForm = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="flex-1 border-slate-200 focus:border-blue-400 focus:ring-blue-400/20"
             disabled={isSubmitting}
+            required
           />
           <Button 
             type="submit" 
-            disabled={isSubmitting || !isRecaptchaLoaded}
+            disabled={isSubmitting}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300"
           >
             {isSubmitting ? (
@@ -91,12 +137,8 @@ const NewsletterForm = () => {
           </Button>
         </div>
         
-        {!isRecaptchaLoaded && (
-          <p className="text-xs text-slate-500">Loading security verification...</p>
-        )}
-        
         <p className="text-xs text-slate-500">
-          Protected by invisible reCAPTCHA. No spam, ever.
+          No spam, ever. Unsubscribe anytime.
         </p>
       </form>
     </div>

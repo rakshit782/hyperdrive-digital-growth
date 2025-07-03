@@ -39,6 +39,11 @@ export const useFormSubmission = () => {
     try {
       console.log('Starting form submission with data:', data);
 
+      // Validate required fields
+      if (!data.email || !data.name) {
+        throw new Error('Name and email are required');
+      }
+
       // Prepare the full name from firstName and lastName if available
       const fullName = data.firstName && data.lastName 
         ? `${data.firstName} ${data.lastName}` 
@@ -61,7 +66,7 @@ Uploaded Files:
 - Advertised Product Report: ${data.uploadedFiles?.advertisedProductReport || 'Not uploaded'}`;
       }
 
-      // Prepare lead data
+      // Prepare lead data with all required fields
       const leadData = {
         name: fullName,
         email: data.email,
@@ -70,7 +75,12 @@ Uploaded Files:
         source: data.source || 'website',
         status: 'new' as const,
         notes: detailedMessage || data.businessGoals || null,
-        form_security: {}, // Add empty form_security object
+        form_security: {
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
+        },
         lead_data: {
           formType: data.formType || 'contact',
           firstName: data.firstName,
@@ -117,7 +127,7 @@ Uploaded Files:
         // Don't fail the entire submission if contact submission fails
       }
 
-      // Trigger Zapier webhooks
+      // Trigger Zapier webhooks (non-blocking)
       try {
         const webhooks = getStoredWebhookUrls();
         const formTypeWebhook = webhooks[data.formType || 'contact'];
@@ -150,7 +160,7 @@ Uploaded Files:
         // Don't fail the entire submission if webhook fails
       }
 
-      // Trigger automated emails using ZeptoMail
+      // Trigger automated emails using ZeptoMail (non-blocking)
       try {
         await triggerAutomatedEmails(data.formType || 'form_submission', {
           email: data.email,
@@ -169,11 +179,6 @@ Uploaded Files:
         detail: leadResult
       }));
 
-      toast({
-        title: "Thank you for your submission!",
-        description: "We'll get back to you within 24 hours.",
-      });
-
       return { success: true, leadId: leadResult.id };
     } catch (error) {
       console.error('Form submission error:', error);
@@ -181,14 +186,15 @@ Uploaded Files:
       let errorMessage = "There was an error submitting your form. Please try again.";
       if (error instanceof Error) {
         errorMessage = error.message;
+        
+        // Provide more specific error messages for common issues
+        if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        } else if (error.message.includes('validation') || error.message.includes('required')) {
+          errorMessage = "Please fill in all required fields correctly.";
+        }
       }
       
-      toast({
-        title: "Submission Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-
       return { success: false, error: errorMessage };
     } finally {
       setIsSubmitting(false);

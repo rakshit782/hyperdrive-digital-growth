@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Send, Target, TrendingUp, Zap, FileText, TestTube } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
+import { useFormSecurity } from "@/hooks/useFormSecurity";
+import { FormSecurityFields } from "@/components/forms/FormSecurityFields";
 import { useToast } from "@/hooks/use-toast";
 
 const FreeAuditForm = () => {
@@ -29,7 +30,9 @@ const FreeAuditForm = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [honeypotValue, setHoneypotValue] = useState('');
   const { submitForm, isSubmitting } = useFormSubmission();
+  const { validateInvisibleRecaptcha, isRecaptchaLoaded } = useFormSecurity();
   const { toast } = useToast();
 
   const fillTestData = () => {
@@ -77,6 +80,12 @@ const FreeAuditForm = () => {
     console.log('Form data:', formData);
     console.log('Uploaded files:', uploadedFiles);
     
+    // Check honeypot
+    if (honeypotValue) {
+      console.log('Honeypot triggered, blocking submission');
+      return;
+    }
+    
     if (!validateForm()) {
       toast({
         title: "Form Validation Failed",
@@ -84,6 +93,23 @@ const FreeAuditForm = () => {
         variant: "destructive",
       });
       return;
+    }
+
+    // Security validation
+    try {
+      const securityResult = await validateInvisibleRecaptcha(formData, 'free_audit');
+      
+      if (!securityResult.isValid) {
+        toast({
+          title: "Security Validation Failed",
+          description: "Please try again. If the problem persists, contact support.",
+          variant: "destructive",
+        });
+        return;
+      }
+    } catch (error) {
+      console.error('Security validation error:', error);
+      // Continue with submission even if reCAPTCHA fails (graceful degradation)
     }
     
     try {
@@ -126,7 +152,7 @@ const FreeAuditForm = () => {
       console.error('Form submission error:', error);
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your form. Please try again.",
+        description: "There was an error submitting your form. Please check your connection and try again.",
         variant: "destructive",
       });
     }
@@ -272,6 +298,14 @@ const FreeAuditForm = () => {
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Form Security Fields */}
+              <FormSecurityFields
+                csrfToken="dummy-csrf-token"
+                honeypotValue={honeypotValue}
+                onHoneypotChange={setHoneypotValue}
+                showRecaptcha={false}
+              />
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -517,7 +551,7 @@ const FreeAuditForm = () => {
               
               <Button 
                 type="submit" 
-                disabled={isSubmitting}
+                disabled={isSubmitting || (!isRecaptchaLoaded && isRecaptchaLoaded !== null)}
                 className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 {isSubmitting ? (
