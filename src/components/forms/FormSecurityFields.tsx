@@ -17,7 +17,7 @@ export const FormSecurityFields: React.FC<FormSecurityFieldsProps> = ({
   onHoneypotChange,
   showRecaptcha = true
 }) => {
-  const { recaptchaSiteKey, isRecaptchaLoaded, resetRecaptcha } = useFormSecurity();
+  const { recaptchaSiteKey, isRecaptchaLoaded } = useFormSecurity();
 
   const handleRecaptchaVerify = (token: string) => {
     console.log('reCAPTCHA verified:', token);

@@ -70,6 +70,7 @@ Uploaded Files:
         source: data.source || 'website',
         status: 'new' as const,
         notes: detailedMessage || data.businessGoals || null,
+        form_security: {}, // Add empty form_security object
         lead_data: {
           formType: data.formType || 'contact',
           firstName: data.firstName,

@@ -10,6 +10,24 @@ interface RecaptchaV2Props {
   size?: 'normal' | 'compact';
 }
 
+// Global type declaration for reCAPTCHA v2
+declare global {
+  interface Window {
+    grecaptcha: {
+      render: (container: HTMLElement, options: {
+        sitekey: string;
+        theme?: 'light' | 'dark';
+        size?: 'normal' | 'compact';
+        callback?: (token: string) => void;
+        'expired-callback'?: () => void;
+        'error-callback'?: () => void;
+      }) => number;
+      reset: (widgetId?: number) => void;
+      execute: (siteKey: string, options?: { action?: string }) => Promise<string>;
+    };
+  }
+}
+
 export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
   siteKey,
   onVerify,
@@ -68,7 +86,7 @@ export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
 
     // Cleanup function
     return () => {
-      if (widgetIdRef.current !== null && window.grecaptcha) {
+      if (widgetIdRef.current !== null && window.grecaptcha && window.grecaptcha.reset) {
         try {
           window.grecaptcha.reset(widgetIdRef.current);
         } catch (error) {

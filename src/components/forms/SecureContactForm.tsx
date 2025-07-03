@@ -8,7 +8,7 @@ import { useFormSecurity } from '@/hooks/useFormSecurity';
 import { FormSecurityFields } from './FormSecurityFields';
 
 interface SecureContactFormProps {
-  formType?: 'contact' | 'newsletter' | 'free_audit'; // Changed 'support' to 'free_audit'
+  formType?: 'contact' | 'newsletter' | 'free_audit';
   title?: string;
   description?: string;
   className?: string;
@@ -31,7 +31,7 @@ export const SecureContactForm: React.FC<SecureContactFormProps> = ({
   const [isSubmitted, setIsSubmitted] = useState(false);
   
   const { submitForm, isSubmitting } = useFormSubmission();
-  const { csrfToken, isRecaptchaLoaded } = useFormSecurity();
+  const { isRecaptchaLoaded } = useFormSecurity();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,9 +44,7 @@ export const SecureContactForm: React.FC<SecureContactFormProps> = ({
     const result = await submitForm({
       ...formData,
       formType,
-      source: `${formType}_form`,
-      csrfToken,
-      honeypotValue
+      source: `${formType}_form`
     });
 
     if (result.success) {
@@ -85,7 +83,7 @@ export const SecureContactForm: React.FC<SecureContactFormProps> = ({
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <FormSecurityFields
-          csrfToken={csrfToken}
+          csrfToken=""
           honeypotValue={honeypotValue}
           onHoneypotChange={setHoneypotValue}
         />
