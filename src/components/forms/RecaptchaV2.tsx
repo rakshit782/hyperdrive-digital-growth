@@ -10,24 +10,6 @@ interface RecaptchaV2Props {
   size?: 'normal' | 'compact';
 }
 
-// Global type declaration for reCAPTCHA v2
-declare global {
-  interface Window {
-    grecaptcha: {
-      render: (container: HTMLElement, options: {
-        sitekey: string;
-        theme?: 'light' | 'dark';
-        size?: 'normal' | 'compact';
-        callback?: (token: string) => void;
-        'expired-callback'?: () => void;
-        'error-callback'?: () => void;
-      }) => number;
-      reset: (widgetId?: number) => void;
-      execute: (siteKey: string, options?: { action?: string }) => Promise<string>;
-    };
-  }
-}
-
 export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
   siteKey,
   onVerify,
@@ -43,14 +25,14 @@ export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
     if (!siteKey || !recaptchaRef.current) return;
 
     const renderRecaptcha = () => {
-      if (recaptchaRef.current && window.grecaptcha && window.grecaptcha.render) {
+      if (recaptchaRef.current && window.grecaptcha && (window.grecaptcha as any).render) {
         try {
           // Clear any existing widget
           if (widgetIdRef.current !== null) {
             return;
           }
 
-          widgetIdRef.current = window.grecaptcha.render(recaptchaRef.current, {
+          widgetIdRef.current = (window.grecaptcha as any).render(recaptchaRef.current, {
             sitekey: siteKey,
             theme,
             size,
@@ -67,12 +49,12 @@ export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
     };
 
     // Check if grecaptcha is ready
-    if (window.grecaptcha && window.grecaptcha.render) {
+    if (window.grecaptcha && (window.grecaptcha as any).render) {
       renderRecaptcha();
     } else {
       // Wait for grecaptcha to be ready
       const checkReady = setInterval(() => {
-        if (window.grecaptcha && window.grecaptcha.render) {
+        if (window.grecaptcha && (window.grecaptcha as any).render) {
           renderRecaptcha();
           clearInterval(checkReady);
         }
@@ -86,9 +68,9 @@ export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
 
     // Cleanup function
     return () => {
-      if (widgetIdRef.current !== null && window.grecaptcha && window.grecaptcha.reset) {
+      if (widgetIdRef.current !== null && window.grecaptcha && (window.grecaptcha as any).reset) {
         try {
-          window.grecaptcha.reset(widgetIdRef.current);
+          (window.grecaptcha as any).reset(widgetIdRef.current);
         } catch (error) {
           console.error('Error resetting reCAPTCHA:', error);
         }
