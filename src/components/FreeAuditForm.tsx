@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Send, Target, TrendingUp, Zap, FileText } from "lucide-react";
+import { CheckCircle, Send, Target, TrendingUp, Zap, FileText, TestTube } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
 import { useToast } from "@/hooks/use-toast";
 
@@ -31,6 +31,27 @@ const FreeAuditForm = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const { submitForm, isSubmitting } = useFormSubmission();
   const { toast } = useToast();
+
+  const fillTestData = () => {
+    setFormData({
+      firstName: 'John',
+      lastName: 'Smith',
+      email: 'john.smith@example.com',
+      phone: '+1 (555) 123-4567',
+      company: 'Example Corp',
+      website: 'https://example.com',
+      monthlyAdSpend: '10k-25k',
+      primaryPlatform: 'amazon',
+      businessGoals: 'We want to increase our Amazon sales by 50% while maintaining profitable ROAS. Our main goals include expanding to new product categories, improving our organic ranking, and optimizing our PPC campaigns for better performance.',
+      currentChallenges: 'We are struggling with high ACoS on our campaigns, poor organic ranking for key products, and difficulty managing inventory during peak seasons. Our main challenges include keyword optimization and competitor analysis.'
+    });
+    setFormErrors({});
+    
+    toast({
+      title: "Test data filled",
+      description: "Form has been populated with sample data for testing",
+    });
+  };
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -234,6 +255,19 @@ const FreeAuditForm = () => {
             <CardDescription className="text-lg text-slate-600">
               Discover hidden opportunities and get a custom roadmap to increase your ROAS by 300%
             </CardDescription>
+            
+            {/* Test Data Button */}
+            <div className="mt-4">
+              <Button 
+                type="button" 
+                onClick={fillTestData}
+                variant="outline"
+                className="bg-yellow-50 border-yellow-200 text-yellow-800 hover:bg-yellow-100"
+              >
+                <TestTube className="w-4 h-4 mr-2" />
+                Fill Test Data
+              </Button>
+            </div>
           </CardHeader>
           
           <CardContent>
@@ -338,7 +372,7 @@ const FreeAuditForm = () => {
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Monthly Ad Spend *
                   </label>
-                  <Select onValueChange={(value) => handleSelectChange('monthlyAdSpend', value)} required>
+                  <Select onValueChange={(value) => handleSelectChange('monthlyAdSpend', value)} value={formData.monthlyAdSpend} required>
                     <SelectTrigger className={`h-12 text-lg ${formErrors.monthlyAdSpend ? 'border-red-500' : ''}`}>
                       <SelectValue placeholder="Select your monthly spend" />
                     </SelectTrigger>
@@ -358,7 +392,7 @@ const FreeAuditForm = () => {
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Primary Advertising Platform *
                   </label>
-                  <Select onValueChange={(value) => handleSelectChange('primaryPlatform', value)} required>
+                  <Select onValueChange={(value) => handleSelectChange('primaryPlatform', value)} value={formData.primaryPlatform} required>
                     <SelectTrigger className={`h-12 text-lg ${formErrors.primaryPlatform ? 'border-red-500' : ''}`}>
                       <SelectValue placeholder="Select your main platform" />
                     </SelectTrigger>
