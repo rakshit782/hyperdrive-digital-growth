@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import ModernDashboardLayout from "@/components/dashboard/ModernDashboardLayout";
 import WebsiteTab from "@/components/dashboard/WebsiteTab";
 import HeroSliderTab from "@/components/dashboard/HeroSliderTab";
@@ -21,15 +21,32 @@ import PricingManagement from "@/components/dashboard/PricingManagement";
 import WebsiteIntegrationsTab from "@/components/dashboard/WebsiteIntegrationsTab";
 import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 import { FormSecurityTab } from "@/components/dashboard/FormSecurityTab";
+import HomepageCustomizationTab from "@/components/dashboard/HomepageCustomizationTab";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
+import { 
+  Globe, 
+  Sliders, 
+  Settings, 
+  LayoutDashboard, 
+  Star, 
+  Shield, 
+  Target,
+  Link2,
+  Database,
+  Mail,
+  Image,
+  Users,
+  Cog,
+  Zap,
+  Palette
+} from "lucide-react";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('website');
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
 
   const handleEditService = (service: ServiceCard) => {
-    // This would open an edit modal - for now just log
     console.log('Edit service:', service);
   };
 
@@ -47,6 +64,81 @@ const Dashboard = () => {
       icon: "🚀"
     };
     updateServices([...services, newService]);
+  };
+
+  const getTabIcon = (tabId: string) => {
+    const iconMap: { [key: string]: React.ComponentType<any> } = {
+      'website': Globe,
+      'hero-slider': Sliders,
+      'services': Settings,
+      'service-pages': LayoutDashboard,
+      'reviews': Star,
+      'faq-management': Shield,
+      'cta-management': Target,
+      'footer-management': Link2,
+      'blog-management': LayoutDashboard,
+      'leads': Database,
+      'contact-management': Mail,
+      'email-workflow': Mail,
+      'form-security': Shield,
+      'service-header-images': Image,
+      'clientele-management': Users,
+      'pricing-management': Cog,
+      'website-integrations': Zap,
+      'integration-status': Zap,
+      'homepage-customization': Palette,
+    };
+    return iconMap[tabId] || Globe;
+  };
+
+  const getTabTitle = (tabId: string) => {
+    const titleMap: { [key: string]: string } = {
+      'website': 'Website Settings',
+      'hero-slider': 'Hero Slider Management',
+      'services': 'Services Management',
+      'service-pages': 'Service Pages',
+      'reviews': 'Reviews Management',
+      'faq-management': 'FAQ Management',
+      'cta-management': 'CTA Management',
+      'footer-management': 'Footer Management',
+      'blog-management': 'Blog Management',
+      'leads': 'Lead Management',
+      'contact-management': 'Contact Management',
+      'email-workflow': 'Email Workflow',
+      'form-security': 'Form Security',
+      'service-header-images': 'Service Images',
+      'clientele-management': 'Clientele Management',
+      'pricing-management': 'Pricing Management',
+      'website-integrations': 'Website Integrations',
+      'integration-status': 'Integration Status',
+      'homepage-customization': 'Homepage Customization',
+    };
+    return titleMap[tabId] || 'Dashboard';
+  };
+
+  const getTabDescription = (tabId: string) => {
+    const descriptionMap: { [key: string]: string } = {
+      'website': 'Configure your website settings and general information',
+      'hero-slider': 'Manage hero slider content and presentation',
+      'services': 'Add, edit, and organize your service offerings',
+      'service-pages': 'Customize individual service page layouts and content',
+      'reviews': 'Manage customer reviews and testimonials',
+      'faq-management': 'Create and organize frequently asked questions',
+      'cta-management': 'Configure call-to-action sections and buttons',
+      'footer-management': 'Customize footer content and partner logos',
+      'blog-management': 'Create and manage blog posts and articles',
+      'leads': 'View and manage customer leads and inquiries',
+      'contact-management': 'Handle contact form submissions and messages',
+      'email-workflow': 'Set up automated email sequences and campaigns',
+      'form-security': 'Monitor form security and spam protection',
+      'service-header-images': 'Upload and manage service page header images',
+      'clientele-management': 'Manage client logos and testimonials',
+      'pricing-management': 'Configure pricing plans and packages',
+      'website-integrations': 'Manage third-party integrations and APIs',
+      'integration-status': 'Monitor integration health and status',
+      'homepage-customization': 'Customize homepage design and layout',
+    };
+    return descriptionMap[tabId] || 'Manage your dashboard settings';
   };
 
   const renderTabContent = () => {
@@ -99,40 +191,36 @@ const Dashboard = () => {
         return <WebsiteIntegrationsTab />;
       case 'integration-status':
         return <IntegrationStatusTab />;
+      case 'homepage-customization':
+        return <HomepageCustomizationTab />;
       default:
         return <WebsiteTab />;
     }
   };
 
+  const TabIcon = getTabIcon(activeTab);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card className="shadow-sm">
-          <CardContent className="p-6">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 gap-2 mb-6">
-                <TabsTrigger value="website" className="text-xs">Website</TabsTrigger>
-                <TabsTrigger value="hero-slider" className="text-xs">Hero</TabsTrigger>
-                <TabsTrigger value="services" className="text-xs">Services</TabsTrigger>
-                <TabsTrigger value="service-pages" className="text-xs">Pages</TabsTrigger>
-                <TabsTrigger value="reviews" className="text-xs">Reviews</TabsTrigger>
-                <TabsTrigger value="faq-management" className="text-xs">FAQ</TabsTrigger>
-                <TabsTrigger value="cta-management" className="text-xs">CTA</TabsTrigger>
-                <TabsTrigger value="footer-management" className="text-xs">Footer</TabsTrigger>
-                <TabsTrigger value="blog-management" className="text-xs">Blog</TabsTrigger>
-                <TabsTrigger value="leads" className="text-xs">Leads</TabsTrigger>
-                <TabsTrigger value="contact-management" className="text-xs">Contact</TabsTrigger>
-                <TabsTrigger value="form-security" className="text-xs">Security</TabsTrigger>
-              </TabsList>
-              
-              <div className="space-y-6">
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full crm-gradient">
+        <AppSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        
+        <main className="flex-1 overflow-hidden">
+          <div className="h-full overflow-y-auto">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <ModernDashboardLayout
+                title={getTabTitle(activeTab)}
+                description={getTabDescription(activeTab)}
+                icon={<TabIcon className="w-6 h-6" />}
+                category="Management"
+              >
                 {renderTabContent()}
-              </div>
-            </Tabs>
-          </CardContent>
-        </Card>
+              </ModernDashboardLayout>
+            </div>
+          </div>
+        </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 

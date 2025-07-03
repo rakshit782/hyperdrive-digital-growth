@@ -37,6 +37,7 @@ export type DashboardTab =
   | 'logo'
   | 'contact'
   | 'homepage'
+  | 'homepage-customization'
   | 'about-us'
   | 'pricing'
   | 'blog'
@@ -66,10 +67,34 @@ export type DashboardTab =
   | 'website-audit'
   | 'zapier-integration'
   | 'email-automation'
-  | 'faq-management';
+  | 'faq-management'
+  | 'hero-slider'
+  | 'cta-management'
+  | 'footer-management'
+  | 'blog-management'
+  | 'leads'
+  | 'contact-management'
+  | 'email-workflow'
+  | 'form-security'
+  | 'service-header-images'
+  | 'clientele-management'
+  | 'pricing-management'
+  | 'website-integrations';
 
 export interface DashboardConfig {
   theme: 'light' | 'dark';
   sidebarCollapsed: boolean;
   activeTab: DashboardTab;
+}
+
+export interface ServicesTabProps {
+  services: ServiceCard[];
+  onEdit: (service: ServiceCard) => void;
+  onDelete: (id: string) => void;
+  onAdd: () => void;
+}
+
+export interface ReviewsTabProps {
+  reviews: Review[];
+  updateReviews: (reviews: Review[]) => void;
 }
