@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Send, Target, TrendingUp, Zap } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
+import { useFormSecurity } from "@/hooks/useFormSecurity";
+import { FormSecurityFields } from "@/components/forms/FormSecurityFields";
 
 const FreeAuditForm = () => {
   const [formData, setFormData] = useState({
@@ -21,35 +22,26 @@ const FreeAuditForm = () => {
     businessGoals: '',
     currentChallenges: ''
   });
+  const [honeypotValue, setHoneypotValue] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { submitForm, isSubmitting } = useFormSubmission();
+  const { csrfToken, isRecaptchaLoaded } = useFormSecurity();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Construct the full name
-    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+    if (!isRecaptchaLoaded) {
+      alert('Security verification is loading. Please wait a moment and try again.');
+      return;
+    }
     
-    // Prepare the message with all form details
-    const detailedMessage = `Free Audit Request Details:
-    
-Website: ${formData.website}
-Monthly Ad Spend: ${formData.monthlyAdSpend}
-Primary Platform: ${formData.primaryPlatform}
-Business Goals: ${formData.businessGoals}
-Current Challenges: ${formData.currentChallenges}`;
-
     const result = await submitForm({
-      name: fullName,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phone: formData.phone,
-      company: formData.company,
-      message: detailedMessage,
-      businessGoals: formData.businessGoals,
+      ...formData,
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
       formType: 'free_audit',
-      source: 'free_audit_form'
+      source: 'free_audit_form',
+      csrfToken,
+      honeypotValue
     });
 
     if (result.success) {
@@ -59,6 +51,7 @@ Current Challenges: ${formData.currentChallenges}`;
         firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
         monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
       });
+      setHoneypotValue('');
     }
   };
 
@@ -138,6 +131,12 @@ Current Challenges: ${formData.currentChallenges}`;
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              <FormSecurityFields
+                csrfToken={csrfToken}
+                honeypotValue={honeypotValue}
+                onHoneypotChange={setHoneypotValue}
+              />
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -299,7 +298,7 @@ Current Challenges: ${formData.currentChallenges}`;
               
               <Button 
                 type="submit" 
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isRecaptchaLoaded}
                 className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 {isSubmitting ? (
@@ -307,6 +306,8 @@ Current Challenges: ${formData.currentChallenges}`;
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
                     Processing Your Request...
                   </div>
+                ) : !isRecaptchaLoaded ? (
+                  'Loading Security Check...'
                 ) : (
                   <>
                     Get My Free $2,000 Audit

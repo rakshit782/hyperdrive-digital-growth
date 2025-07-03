@@ -114,6 +114,12 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       category: "crm",
     },
     {
+      id: "form-security",
+      label: "Form Security",
+      icon: Shield,
+      category: "crm",
+    },
+    {
       id: "service-header-images",
       label: "Service Images",
       icon: Image,

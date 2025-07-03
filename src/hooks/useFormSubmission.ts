@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useZapierIntegration } from './useZapierIntegration';
 import { useZeptoMailAutomation } from './useZeptoMailAutomation';
+import { useFormSecurity, type SecurityValidationResult } from './useFormSecurity';
 
 export interface FormSubmissionData {
   name: string;
@@ -16,6 +17,12 @@ export interface FormSubmissionData {
   firstName?: string;
   lastName?: string;
   businessGoals?: string;
+  website?: string;
+  monthlyAdSpend?: string;
+  primaryPlatform?: string;
+  currentChallenges?: string;
+  csrfToken?: string;
+  honeypotValue?: string;
 }
 
 export const useFormSubmission = () => {
@@ -23,17 +30,49 @@ export const useFormSubmission = () => {
   const { toast } = useToast();
   const { triggerZapierWebhook, getStoredWebhookUrls } = useZapierIntegration();
   const { triggerAutomatedEmails } = useZeptoMailAutomation();
+  const { validateSecurity } = useFormSecurity();
 
   const submitForm = async (data: FormSubmissionData) => {
     setIsSubmitting(true);
     
     try {
+      console.log('Starting form submission with data:', data);
+
+      // Validate form security
+      const securityResult: SecurityValidationResult = await validateSecurity(
+        data,
+        data.formType || 'contact',
+        data.honeypotValue || ''
+      );
+
+      if (!securityResult.isValid) {
+        console.error('Security validation failed:', securityResult.errors);
+        toast({
+          title: "Security Check Failed",
+          description: "Your submission was blocked for security reasons.",
+          variant: "destructive",
+        });
+        return { success: false, error: 'Security validation failed' };
+      }
+
       // Prepare the full name from firstName and lastName if available
       const fullName = data.firstName && data.lastName 
         ? `${data.firstName} ${data.lastName}` 
         : data.name || '';
 
-      // First, create a lead in the leads table
+      // Prepare detailed message for audit forms
+      let detailedMessage = data.message || '';
+      if (data.formType === 'free_audit') {
+        detailedMessage = `Free Audit Request Details:
+        
+Website: ${data.website || 'Not provided'}
+Monthly Ad Spend: ${data.monthlyAdSpend || 'Not provided'}
+Primary Platform: ${data.primaryPlatform || 'Not provided'}
+Business Goals: ${data.businessGoals || 'Not provided'}
+Current Challenges: ${data.currentChallenges || 'Not provided'}`;
+      }
+
+      // Prepare lead data with enhanced security information
       const leadData = {
         name: fullName,
         email: data.email,
@@ -41,12 +80,22 @@ export const useFormSubmission = () => {
         company: data.company || null,
         source: data.source || 'website',
         status: 'new' as const,
-        notes: data.message || data.businessGoals || null,
+        notes: detailedMessage || data.businessGoals || null,
+        form_security: {
+          recaptchaScore: securityResult.recaptchaScore,
+          honeypotTriggered: securityResult.honeypotTriggered,
+          csrfValid: securityResult.csrfValid,
+          validatedAt: new Date().toISOString()
+        },
         lead_data: {
           formType: data.formType || 'contact',
           firstName: data.firstName,
           lastName: data.lastName,
           businessGoals: data.businessGoals,
+          website: data.website,
+          monthlyAdSpend: data.monthlyAdSpend,
+          primaryPlatform: data.primaryPlatform,
+          currentChallenges: data.currentChallenges,
           submittedAt: new Date().toISOString(),
           userAgent: navigator.userAgent,
           pageUrl: window.location.href,
@@ -56,7 +105,7 @@ export const useFormSubmission = () => {
 
       console.log('Creating lead with data:', leadData);
 
-      // Insert lead without RLS check - using service role for form submissions
+      // Insert lead data
       const { data: leadResult, error: leadError } = await supabase
         .from('leads')
         .insert([leadData])
@@ -65,49 +114,28 @@ export const useFormSubmission = () => {
 
       if (leadError) {
         console.error('Error creating lead:', leadError);
-        // Try to create contact submission as fallback
-        const contactData = {
-          name: fullName,
-          email: data.email,
-          phone: data.phone || null,
-          company: data.company || null,
-          message: data.message || data.businessGoals || null,
-          form_type: data.formType || 'contact'
-        };
+        throw leadError;
+      }
 
-        const { data: contactResult, error: contactError } = await supabase
-          .from('contact_submissions')
-          .insert([contactData])
-          .select()
-          .single();
+      console.log('Lead created successfully:', leadResult);
+      
+      // Also store in contact_submissions for backward compatibility
+      const contactData = {
+        name: fullName,
+        email: data.email,
+        phone: data.phone || null,
+        company: data.company || null,
+        message: detailedMessage,
+        form_type: data.formType || 'contact'
+      };
 
-        if (contactError) {
-          console.error('Error creating contact submission:', contactError);
-          throw contactError;
-        }
+      const { error: contactError } = await supabase
+        .from('contact_submissions')
+        .insert([contactData]);
 
-        console.log('Contact submission created as fallback:', contactResult);
-      } else {
-        console.log('Lead created successfully:', leadResult);
-        
-        // Also store in contact_submissions for backward compatibility
-        const contactData = {
-          name: fullName,
-          email: data.email,
-          phone: data.phone || null,
-          company: data.company || null,
-          message: data.message || data.businessGoals || null,
-          form_type: data.formType || 'contact'
-        };
-
-        const { error: contactError } = await supabase
-          .from('contact_submissions')
-          .insert([contactData]);
-
-        if (contactError) {
-          console.error('Error creating contact submission:', contactError);
-          // Don't throw error as lead was created successfully
-        }
+      if (contactError) {
+        console.error('Warning: Failed to create contact submission backup:', contactError);
+        // Don't throw error as lead was created successfully
       }
 
       // Trigger Zapier webhooks
@@ -118,19 +146,22 @@ export const useFormSubmission = () => {
 
         if (formTypeWebhook || generalWebhook) {
           const zapierData = {
-            leadId: leadResult?.id || 'contact-form',
+            leadId: leadResult.id,
             name: fullName,
             email: data.email,
             phone: data.phone,
             company: data.company,
             source: data.source || 'website',
             formType: data.formType || 'contact',
-            message: data.message,
+            message: detailedMessage,
             businessGoals: data.businessGoals,
-            timestamp: new Date().toISOString()
+            website: data.website,
+            monthlyAdSpend: data.monthlyAdSpend,
+            primaryPlatform: data.primaryPlatform,
+            timestamp: new Date().toISOString(),
+            securityScore: securityResult.recaptchaScore
           };
 
-          // Try form-specific webhook first, then general webhook
           const webhookUrl = formTypeWebhook || generalWebhook;
           await triggerZapierWebhook(webhookUrl, zapierData);
         }
@@ -154,7 +185,7 @@ export const useFormSubmission = () => {
 
       // Dispatch custom event for real-time updates
       window.dispatchEvent(new CustomEvent('leadCreated', {
-        detail: leadResult || { email: data.email, name: fullName }
+        detail: leadResult
       }));
 
       toast({
@@ -162,7 +193,7 @@ export const useFormSubmission = () => {
         description: "We'll get back to you within 24 hours.",
       });
 
-      return { success: true, leadId: leadResult?.id || 'contact-form' };
+      return { success: true, leadId: leadResult.id };
     } catch (error) {
       console.error('Form submission error:', error);
       

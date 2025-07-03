@@ -201,6 +201,42 @@ export type Database = {
         }
         Relationships: []
       }
+      form_security_logs: {
+        Row: {
+          created_at: string
+          csrf_valid: boolean | null
+          form_type: string
+          honeypot_triggered: boolean | null
+          id: string
+          ip_address: unknown | null
+          recaptcha_score: number | null
+          submission_data: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          csrf_valid?: boolean | null
+          form_type: string
+          honeypot_triggered?: boolean | null
+          id?: string
+          ip_address?: unknown | null
+          recaptcha_score?: number | null
+          submission_data?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          csrf_valid?: boolean | null
+          form_type?: string
+          honeypot_triggered?: boolean | null
+          id?: string
+          ip_address?: unknown | null
+          recaptcha_score?: number | null
+          submission_data?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       integrations: {
         Row: {
           api_keys: Json | null
@@ -246,6 +282,7 @@ export type Database = {
           company: string | null
           created_at: string | null
           email: string
+          form_security: Json | null
           id: string
           lead_data: Json | null
           name: string
@@ -260,6 +297,7 @@ export type Database = {
           company?: string | null
           created_at?: string | null
           email: string
+          form_security?: Json | null
           id?: string
           lead_data?: Json | null
           name: string
@@ -274,6 +312,7 @@ export type Database = {
           company?: string | null
           created_at?: string | null
           email?: string
+          form_security?: Json | null
           id?: string
           lead_data?: Json | null
           name?: string
