@@ -70,6 +70,8 @@ class DatabaseService {
 
   async insertLead(leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>): Promise<Lead | null> {
     try {
+      console.log('Inserting lead data:', leadData);
+      
       const response = await fetch(`${this.apiUrl}/leads`, {
         method: 'POST',
         headers: {
@@ -79,13 +81,32 @@ class DatabaseService {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to insert lead');
+        const errorText = await response.text();
+        console.error('Failed to insert lead:', response.status, errorText);
+        throw new Error(`Failed to insert lead: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Lead inserted successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('Database error - insert lead:', error);
+      return null;
+    }
+  }
+
+  async getLeads(limit: number = 100): Promise<Lead[]> {
+    try {
+      const response = await fetch(`${this.apiUrl}/leads?limit=${limit}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch leads');
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Database error - insert lead:', error);
-      return null;
+      console.error('Database error - fetch leads:', error);
+      return [];
     }
   }
 
@@ -112,6 +133,21 @@ class DatabaseService {
     } catch (error) {
       console.error('Database error - contact submission:', error);
       // Don't throw error to prevent form submission from failing
+    }
+  }
+
+  async getContactSubmissions(limit: number = 100): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.apiUrl}/contact-submissions?limit=${limit}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch contact submissions');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Database error - fetch contact submissions:', error);
+      return [];
     }
   }
 }

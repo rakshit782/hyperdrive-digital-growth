@@ -1,13 +1,15 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Send, Target, TrendingUp, Zap } from "lucide-react";
+import { CheckCircle, Send, Target, TrendingUp, Zap, Upload, FileText } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
 import { useFormSecurity } from "@/hooks/useFormSecurity";
 import { FormSecurityFields } from "@/components/forms/FormSecurityFields";
+import { useToast } from "@/hooks/use-toast";
 
 const FreeAuditForm = () => {
   const [formData, setFormData] = useState({
@@ -22,10 +24,16 @@ const FreeAuditForm = () => {
     businessGoals: '',
     currentChallenges: ''
   });
+  const [uploadedFiles, setUploadedFiles] = useState({
+    businessSalesReport: null as File | null,
+    searchTermReport: null as File | null,
+    advertisedProductReport: null as File | null
+  });
   const [honeypotValue, setHoneypotValue] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { submitForm, isSubmitting } = useFormSubmission();
   const { csrfToken, isRecaptchaLoaded } = useFormSecurity();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +49,12 @@ const FreeAuditForm = () => {
       formType: 'free_audit',
       source: 'free_audit_form',
       csrfToken,
-      honeypotValue
+      honeypotValue,
+      uploadedFiles: {
+        businessSalesReport: uploadedFiles.businessSalesReport?.name || null,
+        searchTermReport: uploadedFiles.searchTermReport?.name || null,
+        advertisedProductReport: uploadedFiles.advertisedProductReport?.name || null
+      }
     });
 
     if (result.success) {
@@ -50,6 +63,11 @@ const FreeAuditForm = () => {
       setFormData({
         firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
         monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
+      });
+      setUploadedFiles({
+        businessSalesReport: null,
+        searchTermReport: null,
+        advertisedProductReport: null
       });
       setHoneypotValue('');
     }
@@ -67,6 +85,42 @@ const FreeAuditForm = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof typeof uploadedFiles) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      const allowedTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
+      
+      if (file.size > maxSize) {
+        toast({
+          title: "File too large",
+          description: "Please select a file smaller than 10MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a PDF, Excel, or CSV file",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setUploadedFiles(prev => ({
+        ...prev,
+        [fieldName]: file
+      }));
+      
+      toast({
+        title: "File uploaded",
+        description: `${file.name} has been uploaded successfully`,
+      });
+    }
   };
 
   if (isSubmitted) {
@@ -264,6 +318,82 @@ const FreeAuditForm = () => {
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              {/* File Upload Section */}
+              <div className="space-y-6 border-t pt-6">
+                <h3 className="text-xl font-bold text-slate-900 mb-4">Upload Your Reports (Optional but Recommended)</h3>
+                <p className="text-slate-600 text-sm mb-4">
+                  Upload your reports from the last 30-60 days for a more comprehensive audit. All files should be in PDF, Excel, or CSV format (Max 10MB each).
+                </p>
+                
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-900">
+                      Business Sales Report
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
+                      <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <input
+                        type="file"
+                        accept=".pdf,.xlsx,.xls,.csv"
+                        onChange={(e) => handleFileUpload(e, 'businessSalesReport')}
+                        className="hidden"
+                        id="businessSalesReport"
+                      />
+                      <label htmlFor="businessSalesReport" className="cursor-pointer">
+                        <span className="text-sm text-blue-600 hover:text-blue-800">
+                          {uploadedFiles.businessSalesReport ? uploadedFiles.businessSalesReport.name : 'Upload File'}
+                        </span>
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">Last 30-60 Days</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-900">
+                      Search Term Report
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
+                      <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <input
+                        type="file"
+                        accept=".pdf,.xlsx,.xls,.csv"
+                        onChange={(e) => handleFileUpload(e, 'searchTermReport')}
+                        className="hidden"
+                        id="searchTermReport"
+                      />
+                      <label htmlFor="searchTermReport" className="cursor-pointer">
+                        <span className="text-sm text-blue-600 hover:text-blue-800">
+                          {uploadedFiles.searchTermReport ? uploadedFiles.searchTermReport.name : 'Upload File'}
+                        </span>
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">Last 30-60 Days</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-900">
+                      Advertised Product Report
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
+                      <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <input
+                        type="file"
+                        accept=".pdf,.xlsx,.xls,.csv"
+                        onChange={(e) => handleFileUpload(e, 'advertisedProductReport')}
+                        className="hidden"
+                        id="advertisedProductReport"
+                      />
+                      <label htmlFor="advertisedProductReport" className="cursor-pointer">
+                        <span className="text-sm text-blue-600 hover:text-blue-800">
+                          {uploadedFiles.advertisedProductReport ? uploadedFiles.advertisedProductReport.name : 'Upload File'}
+                        </span>
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">Last 30-60 Days</p>
+                    </div>
+                  </div>
                 </div>
               </div>
               

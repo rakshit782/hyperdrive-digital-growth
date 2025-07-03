@@ -23,6 +23,11 @@ export interface FormSubmissionData {
   currentChallenges?: string;
   csrfToken?: string;
   honeypotValue?: string;
+  uploadedFiles?: {
+    businessSalesReport?: string | null;
+    searchTermReport?: string | null;
+    advertisedProductReport?: string | null;
+  };
 }
 
 export const useFormSubmission = () => {
@@ -69,10 +74,15 @@ Website: ${data.website || 'Not provided'}
 Monthly Ad Spend: ${data.monthlyAdSpend || 'Not provided'}
 Primary Platform: ${data.primaryPlatform || 'Not provided'}
 Business Goals: ${data.businessGoals || 'Not provided'}
-Current Challenges: ${data.currentChallenges || 'Not provided'}`;
+Current Challenges: ${data.currentChallenges || 'Not provided'}
+
+Uploaded Files:
+- Business Sales Report: ${data.uploadedFiles?.businessSalesReport || 'Not uploaded'}
+- Search Term Report: ${data.uploadedFiles?.searchTermReport || 'Not uploaded'}
+- Advertised Product Report: ${data.uploadedFiles?.advertisedProductReport || 'Not uploaded'}`;
       }
 
-      // Prepare lead data with enhanced security information
+      // Prepare lead data with enhanced security information and file upload details
       const leadData = {
         name: fullName,
         email: data.email,
@@ -96,6 +106,7 @@ Current Challenges: ${data.currentChallenges || 'Not provided'}`;
           monthlyAdSpend: data.monthlyAdSpend,
           primaryPlatform: data.primaryPlatform,
           currentChallenges: data.currentChallenges,
+          uploadedFiles: data.uploadedFiles || {},
           submittedAt: new Date().toISOString(),
           userAgent: navigator.userAgent,
           pageUrl: window.location.href,
@@ -146,6 +157,7 @@ Current Challenges: ${data.currentChallenges || 'Not provided'}`;
             website: data.website,
             monthlyAdSpend: data.monthlyAdSpend,
             primaryPlatform: data.primaryPlatform,
+            uploadedFiles: data.uploadedFiles,
             timestamp: new Date().toISOString(),
             securityScore: securityResult.recaptchaScore
           };
