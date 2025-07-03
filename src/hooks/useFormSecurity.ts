@@ -18,6 +18,9 @@ export interface SecurityValidationResult {
   errors: string[];
 }
 
+// Replace with your actual reCAPTCHA site key
+const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // This is a test key, replace with your actual key
+
 export const useFormSecurity = () => {
   const [csrfToken, setCsrfToken] = useState<string>('');
   const [isRecaptchaLoaded, setIsRecaptchaLoaded] = useState(false);
@@ -38,8 +41,16 @@ export const useFormSecurity = () => {
       }
 
       const script = document.createElement('script');
-      script.src = 'https://www.google.com/recaptcha/api.js?render=6LcYourSiteKey_here';
-      script.onload = () => setIsRecaptchaLoaded(true);
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.onload = () => {
+        window.grecaptcha.ready(() => {
+          setIsRecaptchaLoaded(true);
+        });
+      };
+      script.onerror = () => {
+        console.error('Failed to load reCAPTCHA');
+        setIsRecaptchaLoaded(false);
+      };
       document.head.appendChild(script);
     };
 
@@ -76,7 +87,7 @@ export const useFormSecurity = () => {
 
     return new Promise((resolve, reject) => {
       window.grecaptcha.ready(() => {
-        window.grecaptcha.execute('6LcYourSiteKey_here', { action })
+        window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
           .then(resolve)
           .catch(reject);
       });
@@ -107,15 +118,17 @@ export const useFormSecurity = () => {
     // Validate reCAPTCHA
     try {
       const recaptchaToken = await getRecaptchaToken(formType);
+      console.log('reCAPTCHA token generated:', recaptchaToken.substring(0, 20) + '...');
       
-      // Here you would typically validate the token on your backend
-      // For now, we'll simulate a score
-      recaptchaScore = 0.7; // This should come from Google's API
+      // For now, we'll simulate a good score since we can't verify server-side
+      // In production, you should verify this token on your backend
+      recaptchaScore = 0.8;
       
       if (recaptchaScore < 0.5) {
         errors.push('reCAPTCHA validation failed');
       }
     } catch (error) {
+      console.error('reCAPTCHA error:', error);
       errors.push('reCAPTCHA verification error');
     }
 

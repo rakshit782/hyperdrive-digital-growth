@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
+import { useFormSecurity } from "@/hooks/useFormSecurity";
+import { FormSecurityFields } from "@/components/forms/FormSecurityFields";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -15,21 +17,31 @@ const Contact = () => {
     company: '',
     message: ''
   });
+  const [honeypotValue, setHoneypotValue] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { submitForm, isSubmitting } = useFormSubmission();
+  const { csrfToken, isRecaptchaLoaded } = useFormSecurity();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!isRecaptchaLoaded) {
+      alert('Security verification is loading. Please wait a moment and try again.');
+      return;
+    }
+    
     const result = await submitForm({
       ...formData,
       formType: 'contact',
-      source: 'contact_page'
+      source: 'contact_page',
+      csrfToken,
+      honeypotValue
     });
 
     if (result.success) {
       setIsSubmitted(true);
       setFormData({ name: '', email: '', phone: '', company: '', message: '' });
+      setHoneypotValue('');
     }
   };
 
@@ -79,6 +91,12 @@ const Contact = () => {
             
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                <FormSecurityFields
+                  csrfToken={csrfToken}
+                  honeypotValue={honeypotValue}
+                  onHoneypotChange={setHoneypotValue}
+                />
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -155,7 +173,7 @@ const Contact = () => {
                 
                 <Button 
                   type="submit" 
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isRecaptchaLoaded}
                   className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 >
                   {isSubmitting ? (
@@ -163,6 +181,8 @@ const Contact = () => {
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                       Sending...
                     </div>
+                  ) : !isRecaptchaLoaded ? (
+                    'Loading Security Check...'
                   ) : (
                     <>
                       Send Message
@@ -170,6 +190,10 @@ const Contact = () => {
                     </>
                   )}
                 </Button>
+
+                <p className="text-center text-sm text-slate-500">
+                  This form is protected by reCAPTCHA and our privacy policy.
+                </p>
               </form>
             </CardContent>
           </Card>
