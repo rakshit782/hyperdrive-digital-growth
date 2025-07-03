@@ -10,7 +10,8 @@ import { useFormSubmission } from "@/hooks/useFormSubmission";
 
 const FreeAuditForm = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     company: '',
@@ -26,20 +27,36 @@ const FreeAuditForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Construct the full name
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+    
+    // Prepare the message with all form details
+    const detailedMessage = `Free Audit Request Details:
+    
+Website: ${formData.website}
+Monthly Ad Spend: ${formData.monthlyAdSpend}
+Primary Platform: ${formData.primaryPlatform}
+Business Goals: ${formData.businessGoals}
+Current Challenges: ${formData.currentChallenges}`;
+
     const result = await submitForm({
-      name: formData.name,
+      name: fullName,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
       email: formData.email,
       phone: formData.phone,
       company: formData.company,
-      message: `Free Audit Request - Website: ${formData.website}, Monthly Spend: ${formData.monthlyAdSpend}, Platform: ${formData.primaryPlatform}, Goals: ${formData.businessGoals}, Challenges: ${formData.currentChallenges}`,
+      message: detailedMessage,
+      businessGoals: formData.businessGoals,
       formType: 'free_audit',
       source: 'free_audit_form'
     });
 
     if (result.success) {
       setIsSubmitted(true);
+      // Reset form
       setFormData({
-        name: '', email: '', phone: '', company: '', website: '',
+        firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
         monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
       });
     }
@@ -124,18 +141,34 @@ const FreeAuditForm = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Full Name *
+                    First Name *
                   </label>
                   <Input
-                    name="name"
-                    value={formData.name}
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleChange}
                     required
                     className="h-12 text-lg border-slate-300"
-                    placeholder="John Doe"
+                    placeholder="John"
                   />
                 </div>
                 
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Last Name *
+                  </label>
+                  <Input
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    className="h-12 text-lg border-slate-300"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Email Address *
@@ -150,37 +183,37 @@ const FreeAuditForm = () => {
                     placeholder="john@company.com"
                   />
                 </div>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
+                
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Phone Number
+                    Phone Number *
                   </label>
                   <Input
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    required
                     className="h-12 text-lg border-slate-300"
                     placeholder="+1 (555) 123-4567"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Company Name
-                  </label>
-                  <Input
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="h-12 text-lg border-slate-300"
-                    placeholder="Your Company"
                   />
                 </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Company Name *
+                  </label>
+                  <Input
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    required
+                    className="h-12 text-lg border-slate-300"
+                    placeholder="Your Company"
+                  />
+                </div>
+                
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Website URL
@@ -193,12 +226,14 @@ const FreeAuditForm = () => {
                     placeholder="https://yourwebsite.com"
                   />
                 </div>
-                
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Monthly Ad Spend
+                    Monthly Ad Spend *
                   </label>
-                  <Select onValueChange={(value) => handleSelectChange('monthlyAdSpend', value)}>
+                  <Select onValueChange={(value) => handleSelectChange('monthlyAdSpend', value)} required>
                     <SelectTrigger className="h-12 text-lg">
                       <SelectValue placeholder="Select your monthly spend" />
                     </SelectTrigger>
@@ -212,35 +247,36 @@ const FreeAuditForm = () => {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Primary Advertising Platform
-                </label>
-                <Select onValueChange={(value) => handleSelectChange('primaryPlatform', value)}>
-                  <SelectTrigger className="h-12 text-lg">
-                    <SelectValue placeholder="Select your main platform" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="amazon">Amazon</SelectItem>
-                    <SelectItem value="walmart">Walmart</SelectItem>
-                    <SelectItem value="meta">Facebook/Instagram</SelectItem>
-                    <SelectItem value="google">Google Ads</SelectItem>
-                    <SelectItem value="multiple">Multiple Platforms</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Primary Advertising Platform *
+                  </label>
+                  <Select onValueChange={(value) => handleSelectChange('primaryPlatform', value)} required>
+                    <SelectTrigger className="h-12 text-lg">
+                      <SelectValue placeholder="Select your main platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="amazon">Amazon</SelectItem>
+                      <SelectItem value="walmart">Walmart</SelectItem>
+                      <SelectItem value="meta">Facebook/Instagram</SelectItem>
+                      <SelectItem value="google">Google Ads</SelectItem>
+                      <SelectItem value="multiple">Multiple Platforms</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Business Goals
+                  Business Goals *
                 </label>
                 <Textarea
                   name="businessGoals"
                   value={formData.businessGoals}
                   onChange={handleChange}
+                  required
                   rows={4}
                   className="text-lg border-slate-300 resize-none"
                   placeholder="What are your main business objectives? (e.g., increase sales, improve ROAS, expand to new markets)"
