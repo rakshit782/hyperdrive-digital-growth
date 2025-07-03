@@ -5,14 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Mail, ArrowRight } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
 import { useFormSecurity } from "@/hooks/useFormSecurity";
-import { FormSecurityFields } from "@/components/forms/FormSecurityFields";
 import { toast } from "sonner";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
-  const [honeypotValue, setHoneypotValue] = useState("");
   const { submitForm, isSubmitting } = useFormSubmission();
-  const { csrfToken, isRecaptchaLoaded } = useFormSecurity();
+  const { isRecaptchaLoaded, validateInvisibleRecaptcha } = useFormSecurity();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,19 +31,24 @@ const NewsletterForm = () => {
     }
 
     try {
+      // Validate invisible reCAPTCHA
+      const securityResult = await validateInvisibleRecaptcha({ email }, 'newsletter');
+      
+      if (!securityResult.isValid) {
+        toast.error("Security verification failed. Please try again.");
+        return;
+      }
+
       const result = await submitForm({
         email,
         name: email.split('@')[0], // Use email prefix as name for newsletter
         formType: 'newsletter',
-        source: 'newsletter_form',
-        csrfToken,
-        honeypotValue
+        source: 'newsletter_form'
       });
       
       if (result.success) {
         toast.success("Thank you for subscribing! You'll receive our latest updates.");
         setEmail("");
-        setHoneypotValue("");
       }
     } catch (error) {
       console.error("Newsletter submission error:", error);
@@ -66,12 +69,6 @@ const NewsletterForm = () => {
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-3">
-        <FormSecurityFields
-          csrfToken={csrfToken}
-          honeypotValue={honeypotValue}
-          onHoneypotChange={setHoneypotValue}
-        />
-        
         <div className="flex gap-2">
           <Input
             type="email"
@@ -97,6 +94,10 @@ const NewsletterForm = () => {
         {!isRecaptchaLoaded && (
           <p className="text-xs text-slate-500">Loading security verification...</p>
         )}
+        
+        <p className="text-xs text-slate-500">
+          Protected by invisible reCAPTCHA. No spam, ever.
+        </p>
       </form>
     </div>
   );

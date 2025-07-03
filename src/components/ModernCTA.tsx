@@ -4,40 +4,28 @@ import { ArrowRight, CheckCircle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
-import { useFormSecurity } from "@/hooks/useFormSecurity";
-import { FormSecurityFields } from "@/components/forms/FormSecurityFields";
 
 const ModernCTA = () => {
   const [email, setEmail] = useState("");
-  const [honeypotValue, setHoneypotValue] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { submitForm, isSubmitting } = useFormSubmission();
-  const { csrfToken, isRecaptchaLoaded } = useFormSecurity();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email.trim()) return;
-    
-    if (!isRecaptchaLoaded) {
-      alert('Security verification is loading. Please wait a moment and try again.');
-      return;
-    }
 
     const result = await submitForm({
       email,
       name: email.split('@')[0], // Use email prefix as name
       formType: 'contact',
       source: 'cta_form',
-      message: 'Requested free audit from CTA section',
-      csrfToken,
-      honeypotValue
+      message: 'Requested free audit from CTA section'
     });
 
     if (result.success) {
       setIsSubmitted(true);
       setEmail("");
-      setHoneypotValue("");
       setTimeout(() => setIsSubmitted(false), 3000);
     }
   };
@@ -72,12 +60,6 @@ const ModernCTA = () => {
           {/* CTA Form */}
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6 max-w-xl mx-auto">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <FormSecurityFields
-                csrfToken={csrfToken}
-                honeypotValue={honeypotValue}
-                onHoneypotChange={setHoneypotValue}
-              />
-              
               <div className="flex flex-col sm:flex-row gap-3">
                 <Input
                   type="email"
@@ -90,7 +72,7 @@ const ModernCTA = () => {
                 <Button 
                   type="submit" 
                   className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-6 py-2 text-white font-semibold"
-                  disabled={isSubmitting || !isRecaptchaLoaded}
+                  disabled={isSubmitting}
                 >
                   {isSubmitted ? (
                     "Thank You!"
@@ -99,8 +81,6 @@ const ModernCTA = () => {
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                       Sending...
                     </div>
-                  ) : !isRecaptchaLoaded ? (
-                    "Loading..."
                   ) : (
                     <>
                       Get Free Audit
@@ -111,7 +91,7 @@ const ModernCTA = () => {
               </div>
             </form>
             <p className="text-white/60 text-sm mt-3">
-              No spam. Unsubscribe anytime. Protected by reCAPTCHA.
+              No spam. Unsubscribe anytime.
             </p>
           </div>
 

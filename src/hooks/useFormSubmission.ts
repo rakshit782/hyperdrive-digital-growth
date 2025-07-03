@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useZapierIntegration } from './useZapierIntegration';
 import { useZeptoMailAutomation } from './useZeptoMailAutomation';
-import { useFormSecurity, type SecurityValidationResult } from './useFormSecurity';
 import { databaseService } from '@/services/databaseService';
 
 export interface FormSubmissionData {
@@ -21,8 +20,6 @@ export interface FormSubmissionData {
   monthlyAdSpend?: string;
   primaryPlatform?: string;
   currentChallenges?: string;
-  csrfToken?: string;
-  honeypotValue?: string;
   uploadedFiles?: {
     businessSalesReport?: string | null;
     searchTermReport?: string | null;
@@ -35,32 +32,12 @@ export const useFormSubmission = () => {
   const { toast } = useToast();
   const { triggerZapierWebhook, getStoredWebhookUrls } = useZapierIntegration();
   const { triggerAutomatedEmails } = useZeptoMailAutomation();
-  const { validateSecurity } = useFormSecurity();
 
   const submitForm = async (data: FormSubmissionData) => {
     setIsSubmitting(true);
     
     try {
       console.log('Starting form submission with data:', data);
-
-      // Validate form security
-      const securityResult: SecurityValidationResult = await validateSecurity(
-        data,
-        data.formType || 'contact',
-        data.honeypotValue || ''
-      );
-
-      console.log('Security validation result:', securityResult);
-
-      if (!securityResult.isValid) {
-        console.error('Security validation failed:', securityResult.errors);
-        toast({
-          title: "Security Check Failed",
-          description: "Your submission was blocked for security reasons. Please try again.",
-          variant: "destructive",
-        });
-        return { success: false, error: 'Security validation failed' };
-      }
 
       // Prepare the full name from firstName and lastName if available
       const fullName = data.firstName && data.lastName 
@@ -84,7 +61,7 @@ Uploaded Files:
 - Advertised Product Report: ${data.uploadedFiles?.advertisedProductReport || 'Not uploaded'}`;
       }
 
-      // Prepare lead data with enhanced security information and file upload details
+      // Prepare lead data
       const leadData = {
         name: fullName,
         email: data.email,
@@ -93,12 +70,6 @@ Uploaded Files:
         source: data.source || 'website',
         status: 'new' as const,
         notes: detailedMessage || data.businessGoals || null,
-        form_security: {
-          recaptchaScore: securityResult.recaptchaScore,
-          honeypotTriggered: securityResult.honeypotTriggered,
-          csrfValid: securityResult.csrfValid,
-          validatedAt: new Date().toISOString()
-        },
         lead_data: {
           formType: data.formType || 'contact',
           firstName: data.firstName,
@@ -166,8 +137,7 @@ Uploaded Files:
             monthlyAdSpend: data.monthlyAdSpend,
             primaryPlatform: data.primaryPlatform,
             uploadedFiles: data.uploadedFiles,
-            timestamp: new Date().toISOString(),
-            securityScore: securityResult.recaptchaScore
+            timestamp: new Date().toISOString()
           };
 
           const webhookUrl = formTypeWebhook || generalWebhook;

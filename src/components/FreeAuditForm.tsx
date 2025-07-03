@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,8 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Send, Target, TrendingUp, Zap, FileText } from "lucide-react";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
-import { useFormSecurity } from "@/hooks/useFormSecurity";
-import { FormSecurityFields } from "@/components/forms/FormSecurityFields";
 import { useToast } from "@/hooks/use-toast";
 
 const FreeAuditForm = () => {
@@ -28,11 +27,9 @@ const FreeAuditForm = () => {
     searchTermReport: null as File | null,
     advertisedProductReport: null as File | null
   });
-  const [honeypotValue, setHoneypotValue] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const { submitForm, isSubmitting } = useFormSubmission();
-  const { csrfToken, isRecaptchaLoaded, recaptchaSiteKey } = useFormSecurity();
   const { toast } = useToast();
 
   const validateForm = () => {
@@ -58,23 +55,11 @@ const FreeAuditForm = () => {
     console.log('Form submission started');
     console.log('Form data:', formData);
     console.log('Uploaded files:', uploadedFiles);
-    console.log('reCAPTCHA loaded:', isRecaptchaLoaded);
-    console.log('reCAPTCHA site key:', !!recaptchaSiteKey);
     
     if (!validateForm()) {
       toast({
         title: "Form Validation Failed",
         description: "Please fill in all required fields correctly.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Only check reCAPTCHA if it's configured
-    if (recaptchaSiteKey && !isRecaptchaLoaded) {
-      toast({
-        title: "Security Check Loading",
-        description: "Please wait for security verification to load and try again.",
         variant: "destructive",
       });
       return;
@@ -86,8 +71,6 @@ const FreeAuditForm = () => {
         name: `${formData.firstName} ${formData.lastName}`.trim(),
         formType: 'free_audit',
         source: 'free_audit_form',
-        csrfToken,
-        honeypotValue,
         uploadedFiles: {
           businessSalesReport: uploadedFiles.businessSalesReport?.name || null,
           searchTermReport: uploadedFiles.searchTermReport?.name || null,
@@ -109,7 +92,6 @@ const FreeAuditForm = () => {
           searchTermReport: null,
           advertisedProductReport: null
         });
-        setHoneypotValue('');
         setFormErrors({});
         
         toast({
@@ -256,12 +238,6 @@ const FreeAuditForm = () => {
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <FormSecurityFields
-                csrfToken={csrfToken}
-                honeypotValue={honeypotValue}
-                onHoneypotChange={setHoneypotValue}
-              />
-
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -507,7 +483,7 @@ const FreeAuditForm = () => {
               
               <Button 
                 type="submit" 
-                disabled={isSubmitting || (recaptchaSiteKey && !isRecaptchaLoaded)}
+                disabled={isSubmitting}
                 className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 {isSubmitting ? (
@@ -515,8 +491,6 @@ const FreeAuditForm = () => {
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
                     Processing Your Request...
                   </div>
-                ) : (recaptchaSiteKey && !isRecaptchaLoaded) ? (
-                  'Loading Security Check...'
                 ) : (
                   <>
                     Get My Free $2,000 Audit
