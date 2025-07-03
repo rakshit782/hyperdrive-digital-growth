@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +32,7 @@ const FreeAuditForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const { submitForm, isSubmitting } = useFormSubmission();
-  const { csrfToken, isRecaptchaLoaded } = useFormSecurity();
+  const { csrfToken, isRecaptchaLoaded, recaptchaSiteKey } = useFormSecurity();
   const { toast } = useToast();
 
   const validateForm = () => {
@@ -60,6 +59,7 @@ const FreeAuditForm = () => {
     console.log('Form data:', formData);
     console.log('Uploaded files:', uploadedFiles);
     console.log('reCAPTCHA loaded:', isRecaptchaLoaded);
+    console.log('reCAPTCHA site key:', !!recaptchaSiteKey);
     
     if (!validateForm()) {
       toast({
@@ -70,7 +70,8 @@ const FreeAuditForm = () => {
       return;
     }
 
-    if (!isRecaptchaLoaded) {
+    // Only check reCAPTCHA if it's configured
+    if (recaptchaSiteKey && !isRecaptchaLoaded) {
       toast({
         title: "Security Check Loading",
         description: "Please wait for security verification to load and try again.",
@@ -506,7 +507,7 @@ const FreeAuditForm = () => {
               
               <Button 
                 type="submit" 
-                disabled={isSubmitting || !isRecaptchaLoaded}
+                disabled={isSubmitting || (recaptchaSiteKey && !isRecaptchaLoaded)}
                 className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 {isSubmitting ? (
@@ -514,7 +515,7 @@ const FreeAuditForm = () => {
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
                     Processing Your Request...
                   </div>
-                ) : !isRecaptchaLoaded ? (
+                ) : (recaptchaSiteKey && !isRecaptchaLoaded) ? (
                   'Loading Security Check...'
                 ) : (
                   <>

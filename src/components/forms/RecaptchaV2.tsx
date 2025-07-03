@@ -22,11 +22,16 @@ export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
   const widgetIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!siteKey || !window.grecaptcha || !recaptchaRef.current) return;
+    if (!siteKey || !recaptchaRef.current) return;
 
     const renderRecaptcha = () => {
-      if (recaptchaRef.current && window.grecaptcha) {
+      if (recaptchaRef.current && window.grecaptcha && window.grecaptcha.render) {
         try {
+          // Clear any existing widget
+          if (widgetIdRef.current !== null) {
+            return;
+          }
+
           widgetIdRef.current = window.grecaptcha.render(recaptchaRef.current, {
             sitekey: siteKey,
             theme,
@@ -35,6 +40,8 @@ export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
             'expired-callback': onExpire,
             'error-callback': onError
           });
+          
+          console.log('reCAPTCHA widget rendered successfully');
         } catch (error) {
           console.error('Error rendering reCAPTCHA:', error);
         }
@@ -42,7 +49,7 @@ export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
     };
 
     // Check if grecaptcha is ready
-    if (window.grecaptcha.render) {
+    if (window.grecaptcha && window.grecaptcha.render) {
       renderRecaptcha();
     } else {
       // Wait for grecaptcha to be ready
@@ -53,8 +60,23 @@ export const RecaptchaV2: React.FC<RecaptchaV2Props> = ({
         }
       }, 100);
 
+      // Cleanup interval after 10 seconds
+      setTimeout(() => clearInterval(checkReady), 10000);
+
       return () => clearInterval(checkReady);
     }
+
+    // Cleanup function
+    return () => {
+      if (widgetIdRef.current !== null && window.grecaptcha) {
+        try {
+          window.grecaptcha.reset(widgetIdRef.current);
+        } catch (error) {
+          console.error('Error resetting reCAPTCHA:', error);
+        }
+        widgetIdRef.current = null;
+      }
+    };
   }, [siteKey, theme, size, onVerify, onExpire, onError]);
 
   return <div ref={recaptchaRef} className="flex justify-center my-4" />;

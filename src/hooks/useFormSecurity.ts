@@ -58,26 +58,44 @@ export const useFormSecurity = () => {
     if (!recaptchaSiteKey) return;
 
     const loadRecaptcha = () => {
-      if (window.grecaptcha) {
+      // Check if already loaded
+      if (window.grecaptcha && window.grecaptcha.render) {
         console.log('reCAPTCHA already loaded');
         setIsRecaptchaLoaded(true);
+        setRecaptchaError(null);
         return;
       }
 
       console.log('Loading reCAPTCHA v2...');
       const script = document.createElement('script');
       script.src = 'https://www.google.com/recaptcha/api.js';
+      script.async = true;
+      script.defer = true;
+      
       script.onload = () => {
         console.log('reCAPTCHA v2 script loaded');
-        setIsRecaptchaLoaded(true);
-        setRecaptchaError(null);
+        // Wait a bit for grecaptcha to be fully initialized
+        const checkReady = () => {
+          if (window.grecaptcha && window.grecaptcha.render) {
+            setIsRecaptchaLoaded(true);
+            setRecaptchaError(null);
+          } else {
+            setTimeout(checkReady, 100);
+          }
+        };
+        checkReady();
       };
+      
       script.onerror = (error) => {
         console.error('Failed to load reCAPTCHA:', error);
         setRecaptchaError('Failed to load reCAPTCHA');
         setIsRecaptchaLoaded(false);
       };
-      document.head.appendChild(script);
+      
+      // Only add script if not already present
+      if (!document.querySelector('script[src="https://www.google.com/recaptcha/api.js"]')) {
+        document.head.appendChild(script);
+      }
     };
 
     loadRecaptcha();
@@ -175,9 +193,12 @@ export const useFormSecurity = () => {
         if (!recaptchaToken) {
           errors.push('Please complete the reCAPTCHA verification');
         }
+      } else if (recaptchaSiteKey) {
+        // reCAPTCHA is configured but not loaded yet
+        errors.push('Security check is loading, please wait and try again');
       } else {
-        console.warn('reCAPTCHA not loaded or configured, skipping validation');
-        errors.push('reCAPTCHA verification required');
+        console.warn('reCAPTCHA not configured, skipping validation');
+        // Don't add error if reCAPTCHA is not configured
       }
     } catch (error) {
       console.error('reCAPTCHA error:', error);
