@@ -35,6 +35,14 @@ export const usePostgresFormSubmission = () => {
         throw new Error('Name and email are required');
       }
 
+      // Test connection before submitting
+      console.log('Testing database connection...');
+      const isConnected = await postgresService.testConnection();
+      if (!isConnected) {
+        throw new Error('Unable to connect to the database. Please check if the backend service is running on ' + 
+          (import.meta.env.VITE_API_URL || 'http://localhost:3001'));
+      }
+
       // Prepare the full name from firstName and lastName if available
       const fullName = data.firstName && data.lastName 
         ? `${data.firstName} ${data.lastName}` 
@@ -126,10 +134,14 @@ Current Challenges: ${data.currentChallenges || 'Not provided'}`;
         errorMessage = error.message;
         
         // Provide more specific error messages for common issues
-        if (error.message.includes('network') || error.message.includes('fetch')) {
-          errorMessage = "Network error. Please check your connection and try again.";
+        if (error.message.includes('connect') || error.message.includes('Network')) {
+          errorMessage = "Unable to connect to the server. Please check your internet connection and try again. If the problem persists, the backend service may not be running.";
+        } else if (error.message.includes('timeout')) {
+          errorMessage = "Request timed out. Please check your connection and try again.";
         } else if (error.message.includes('validation') || error.message.includes('required')) {
           errorMessage = "Please fill in all required fields correctly.";
+        } else if (error.message.includes('backend service')) {
+          errorMessage = "Database service is currently unavailable. Please try again later.";
         }
       }
       
