@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { postgresService, PostgresLeadData } from '@/services/postgresService';
 
 export interface FormSubmissionData {
   name: string;
@@ -20,7 +20,7 @@ export interface FormSubmissionData {
   currentChallenges?: string;
 }
 
-export const useSupabaseFormSubmission = () => {
+export const usePostgresFormSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -28,11 +28,19 @@ export const useSupabaseFormSubmission = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('Starting Supabase form submission with data:', data);
+      console.log('Starting PostgreSQL form submission with data:', data);
 
       // Validate required fields
       if (!data.email || !data.name) {
         throw new Error('Name and email are required');
+      }
+
+      // Test connection before submitting
+      console.log('Testing database connection...');
+      const isConnected = await postgresService.testConnection();
+      if (!isConnected) {
+        throw new Error('Unable to connect to the database. Please check if the backend service is running on ' + 
+          (import.meta.env.VITE_API_URL || 'http://localhost:3001'));
       }
 
       // Prepare the full name from firstName and lastName if available
@@ -52,8 +60,8 @@ Business Goals: ${data.businessGoals || 'Not provided'}
 Current Challenges: ${data.currentChallenges || 'Not provided'}`;
       }
 
-      // Prepare lead data for Supabase
-      const leadData = {
+      // Prepare lead data for PostgreSQL
+      const leadData: PostgresLeadData = {
         name: fullName,
         email: data.email,
         phone: data.phone || null,
@@ -83,25 +91,16 @@ Current Challenges: ${data.currentChallenges || 'Not provided'}`;
         }
       };
 
-      console.log('Creating lead with Supabase data:', leadData);
+      console.log('Creating lead with PostgreSQL data:', leadData);
 
-      // Insert lead data using Supabase
-      const { data: leadResult, error: leadError } = await supabase
-        .from('leads')
-        .insert([leadData])
-        .select()
-        .single();
-
-      if (leadError) {
-        console.error('Supabase lead insertion error:', leadError);
-        throw new Error(`Failed to create lead: ${leadError.message}`);
-      }
+      // Insert lead data using PostgreSQL service
+      const leadResult = await postgresService.insertLead(leadData);
 
       if (!leadResult || !leadResult.id) {
-        throw new Error('Failed to create lead - Supabase returned invalid result');
+        throw new Error('Failed to create lead - PostgreSQL service returned invalid result');
       }
 
-      console.log('Lead created successfully via Supabase:', leadResult);
+      console.log('Lead created successfully via PostgreSQL:', leadResult);
       
       // Also store in contact_submissions for backward compatibility
       try {
@@ -114,18 +113,10 @@ Current Challenges: ${data.currentChallenges || 'Not provided'}`;
           form_type: data.formType || 'contact'
         };
 
-        const { error: contactError } = await supabase
-          .from('contact_submissions')
-          .insert([contactData]);
-
-        if (contactError) {
-          console.error('Failed to store contact submission via Supabase:', contactError);
-          // Don't fail the entire submission if contact submission fails
-        } else {
-          console.log('Contact submission stored successfully via Supabase');
-        }
+        await postgresService.insertContactSubmission(contactData);
+        console.log('Contact submission stored successfully via PostgreSQL');
       } catch (contactError) {
-        console.error('Failed to store contact submission via Supabase:', contactError);
+        console.error('Failed to store contact submission via PostgreSQL:', contactError);
         // Don't fail the entire submission if contact submission fails
       }
 
@@ -136,15 +127,21 @@ Current Challenges: ${data.currentChallenges || 'Not provided'}`;
 
       return { success: true, leadId: leadResult.id };
     } catch (error) {
-      console.error('Supabase form submission error:', error);
+      console.error('PostgreSQL form submission error:', error);
       
       let errorMessage = "There was an error submitting your form. Please try again.";
       if (error instanceof Error) {
         errorMessage = error.message;
         
         // Provide more specific error messages for common issues
-        if (error.message.includes('validation') || error.message.includes('required')) {
+        if (error.message.includes('connect') || error.message.includes('Network')) {
+          errorMessage = "Unable to connect to the server. Please check your internet connection and try again. If the problem persists, the backend service may not be running.";
+        } else if (error.message.includes('timeout')) {
+          errorMessage = "Request timed out. Please check your connection and try again.";
+        } else if (error.message.includes('validation') || error.message.includes('required')) {
           errorMessage = "Please fill in all required fields correctly.";
+        } else if (error.message.includes('backend service')) {
+          errorMessage = "Database service is currently unavailable. Please try again later.";
         }
       }
       

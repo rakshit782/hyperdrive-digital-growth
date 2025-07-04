@@ -1,66 +1,110 @@
 
+import { useState } from "react";
+import { ArrowRight, CheckCircle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useFormSubmission } from "@/hooks/useFormSubmission";
 
 const ModernCTA = () => {
+  const [email, setEmail] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const { submitForm, isSubmitting } = useFormSubmission();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) return;
+
+    const result = await submitForm({
+      email,
+      name: email.split('@')[0], // Use email prefix as name
+      formType: 'contact',
+      source: 'cta_form',
+      message: 'Requested free audit from CTA section'
+    });
+
+    if (result.success) {
+      setIsSubmitted(true);
+      setEmail("");
+      setTimeout(() => setIsSubmitted(false), 3000);
+    }
+  };
+
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="w-full h-full" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23ffffff' fillOpacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat'
-        }}></div>
-      </div>
+    <section className="py-12 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-grid-white/5"></div>
+      <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl"></div>
       
-      <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-full backdrop-blur-sm">
-            <Zap className="w-8 h-8 text-yellow-300" />
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="max-w-3xl mx-auto text-center text-white">
+          {/* Social Proof */}
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <span className="text-white/80 text-sm">4.9/5 from 500+ reviews</span>
           </div>
-        </div>
-        
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-          Ready to Scale Your Business?
-        </h2>
-        
-        <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-          Join hundreds of successful brands who trust AMZ AD SCOUT to drive their growth. 
-          Get your free audit and discover untapped opportunities today.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button 
-            size="lg" 
-            className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
-            onClick={() => window.location.href = '/free-audit'}
-          >
-            Get Free Audit
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
+
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+            Ready to Scale Your Business?
+          </h2>
           
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold transition-all duration-300"
-            onClick={() => window.location.href = '/contact'}
-          >
-            Contact Us
-          </Button>
-        </div>
-        
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div className="text-white/90">
-            <div className="text-3xl font-bold mb-2">500+</div>
-            <div className="text-blue-100">Successful Campaigns</div>
+          <p className="text-lg text-white/80 mb-6 max-w-xl mx-auto">
+            Get your free audit and see how we can grow your revenue.
+          </p>
+
+          {/* CTA Form */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6 max-w-xl mx-auto">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="email"
+                  placeholder="Enter your business email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 bg-white/20 border-white/30 text-white placeholder-white/60 focus:bg-white/30"
+                  required
+                />
+                <Button 
+                  type="submit" 
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-6 py-2 text-white font-semibold"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitted ? (
+                    "Thank You!"
+                  ) : isSubmitting ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Sending...
+                    </div>
+                  ) : (
+                    <>
+                      Get Free Audit
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+            <p className="text-white/60 text-sm mt-3">
+              No spam. Unsubscribe anytime.
+            </p>
           </div>
-          <div className="text-white/90">
-            <div className="text-3xl font-bold mb-2">$50M+</div>
-            <div className="text-blue-100">Ad Spend Managed</div>
-          </div>
-          <div className="text-white/90">
-            <div className="text-3xl font-bold mb-2">300%</div>
-            <div className="text-blue-100">Average ROAS Increase</div>
+
+          {/* Trust Indicators */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-white/70 text-sm">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4" />
+              <span>30-Day Guarantee</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Star className="w-4 h-4" />
+              <span>500+ Happy Clients</span>
+            </div>
           </div>
         </div>
       </div>
