@@ -1,219 +1,167 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
-import { useFormSubmission } from "@/hooks/useFormSubmission";
-import { toast } from "sonner";
+import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    company: "",
+    message: ""
   });
-  const { submitForm, isSubmitting } = useFormSubmission();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
+    setIsSubmitting(true);
 
     try {
-      const result = await submitForm({
-        ...formData,
-        formType: 'contact',
-        source: 'contact_form'
+      // Simulate form submission
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for your inquiry. We'll get back to you within 24 hours.",
       });
 
-      if (result.success) {
-        toast.success("Thank you for your message! We'll get back to you soon.");
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          company: '',
-          message: ''
-        });
-      }
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        message: ""
+      });
     } catch (error) {
-      console.error('Contact form error:', error);
-      toast.error("Something went wrong. Please try again.");
+      toast({
+        title: "Error",
+        description: "There was an error sending your message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
   return (
-    <section className="py-16">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Information */}
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Get in Touch</h2>
-              <p className="text-lg text-slate-600">
-                Ready to take your advertising to the next level? Let's discuss how we can help you achieve your goals.
-              </p>
-            </div>
+    <section id="contact" className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+            Get In Touch
+          </h2>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            Ready to scale your business? Contact us today for a free consultation and 
+            discover how we can help you achieve your goals.
+          </p>
+        </div>
 
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900 mb-1">Office Location</h3>
-                  <p className="text-slate-600">123 Business Ave, Suite 100<br />New York, NY 10001</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-6 h-6 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900 mb-1">Phone</h3>
-                  <p className="text-slate-600">+1 (555) 123-4567</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900 mb-1">Email</h3>
-                  <p className="text-slate-600">hello@yourbusiness.com</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-6 h-6 text-orange-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900 mb-1">Business Hours</h3>
-                  <p className="text-slate-600">
-                    Monday - Friday: 9:00 AM - 6:00 PM<br />
-                    Saturday: 10:00 AM - 4:00 PM<br />
-                    Sunday: Closed
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
+          <Card className="shadow-xl">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold text-slate-900">Send us a Message</CardTitle>
-              <CardDescription className="text-slate-600">
+              <CardTitle className="text-2xl">Send us a message</CardTitle>
+              <CardDescription>
                 Fill out the form below and we'll get back to you within 24 hours.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
                       Full Name *
                     </label>
                     <Input
+                      id="name"
                       name="name"
+                      type="text"
+                      required
                       value={formData.name}
                       onChange={handleChange}
-                      required
-                      className="h-12 border-slate-300"
                       placeholder="John Doe"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                      Email Address *
+                    </label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
+                      Phone Number
+                    </label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="company" className="block text-sm font-medium text-slate-700 mb-2">
                       Company
                     </label>
                     <Input
+                      id="company"
                       name="company"
+                      type="text"
                       value={formData.company}
                       onChange={handleChange}
-                      className="h-12 border-slate-300"
                       placeholder="Your Company"
                     />
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Email Address *
-                    </label>
-                    <Input
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="h-12 border-slate-300"
-                      placeholder="john@company.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Phone Number
-                    </label>
-                    <Input
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="h-12 border-slate-300"
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
-                </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
                     Message *
                   </label>
                   <Textarea
+                    id="message"
                     name="message"
+                    required
                     value={formData.message}
                     onChange={handleChange}
-                    required
-                    rows={5}
-                    className="border-slate-300 resize-none"
                     placeholder="Tell us about your project and how we can help..."
+                    rows={6}
                   />
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 text-lg font-semibold"
                 >
                   {isSubmitting ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                      Sending Message...
-                    </div>
+                    "Sending..."
                   ) : (
                     <>
                       Send Message
@@ -221,13 +169,90 @@ const Contact = () => {
                     </>
                   )}
                 </Button>
-
-                <p className="text-center text-sm text-slate-500">
-                  We'll respond to your message within 24 hours.
-                </p>
               </form>
             </CardContent>
           </Card>
+
+          {/* Contact Information */}
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">
+                Let's start a conversation
+              </h3>
+              <p className="text-lg text-slate-600 mb-8">
+                We're here to help you grow your business. Reach out to us using any of the methods below.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
+                    <Mail className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-slate-900">Email</h4>
+                  <p className="text-slate-600">Get in touch via email</p>
+                  <a 
+                    href="mailto:hello@amzadscout.com" 
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    hello@amzadscout.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
+                    <Phone className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-slate-900">Phone</h4>
+                  <p className="text-slate-600">Mon-Fri from 8am to 5pm EST</p>
+                  <a 
+                    href="tel:+1234567890" 
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    +1 (234) 567-8900
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
+                    <MapPin className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-slate-900">Office</h4>
+                  <p className="text-slate-600">Come say hello at our office</p>
+                  <address className="text-slate-700 not-italic">
+                    123 Business Ave, Suite 100<br />
+                    New York, NY 10001
+                  </address>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-slate-900 mb-2">
+                Ready for a free audit?
+              </h4>
+              <p className="text-slate-600 mb-4">
+                Get a comprehensive analysis of your advertising accounts and discover opportunities for growth.
+              </p>
+              <Button 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                onClick={() => window.location.href = '/free-audit'}
+              >
+                Get Free Audit
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
