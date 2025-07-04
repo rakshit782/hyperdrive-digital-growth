@@ -6,7 +6,7 @@ export interface PostgresLeadData {
   email: string;
   phone?: string;
   company?: string;
-  source: string;
+  source?: string; // Made optional to match usage
   status: 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
   notes?: string;
   form_security?: Record<string, any>;
@@ -69,9 +69,15 @@ class PostgresService {
         throw new Error('Unable to connect to the database server. Please check if the backend service is running.');
       }
 
+      // Ensure source has a default value if not provided
+      const dataWithDefaults = {
+        ...leadData,
+        source: leadData.source || 'unknown'
+      };
+
       const response = await apiRequest(`${this.baseUrl}${API_CONFIG.endpoints.leads}`, {
         method: 'POST',
-        body: JSON.stringify(leadData)
+        body: JSON.stringify(dataWithDefaults)
       });
 
       if (!response.ok) {
