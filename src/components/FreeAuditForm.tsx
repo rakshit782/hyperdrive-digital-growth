@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Send, Target, TrendingUp, Zap, TestTube } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { usePostgresFormSubmission } from "@/hooks/usePostgresFormSubmission";
+import { useSupabaseFormSubmission } from "@/hooks/useSupabaseFormSubmission";
 
 interface FormData {
   firstName: string;
@@ -40,7 +39,7 @@ const FreeAuditForm = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [honeypotValue, setHoneypotValue] = useState('');
   const { toast } = useToast();
-  const { submitForm, isSubmitting } = usePostgresFormSubmission();
+  const { submitForm, isSubmitting } = useSupabaseFormSubmission();
 
   const fillTestData = () => {
     setFormData({

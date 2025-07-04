@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { usePostgresFormSubmission } from "@/hooks/usePostgresFormSubmission";
+import { useSupabaseFormSubmission } from "@/hooks/useSupabaseFormSubmission";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [honeypotValue, setHoneypotValue] = useState("");
   const { toast } = useToast();
-  const { submitForm, isSubmitting } = usePostgresFormSubmission();
+  const { submitForm, isSubmitting } = useSupabaseFormSubmission();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
