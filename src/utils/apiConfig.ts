@@ -77,5 +77,37 @@ export const POSTGRES_CONFIG = {
     UUID_GENERATE: 'gen_random_uuid()',
     CURRENT_TIMESTAMP: 'CURRENT_TIMESTAMP',
     EMPTY_JSON: "'{}'::jsonb"
-  }
+  },
+
+  // Database schema for leads table
+  leadsTableSchema: `
+    CREATE TABLE IF NOT EXISTS leads (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      phone VARCHAR(50),
+      company VARCHAR(255),
+      source VARCHAR(100),
+      status VARCHAR(50) DEFAULT 'new',
+      notes TEXT,
+      form_security JSONB DEFAULT '{}',
+      lead_data JSONB DEFAULT '{}',
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+  `,
+
+  // Database schema for contact submissions table
+  contactSubmissionsTableSchema: `
+    CREATE TABLE IF NOT EXISTS contact_submissions (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      phone VARCHAR(50),
+      company VARCHAR(255),
+      message TEXT,
+      form_type VARCHAR(100) NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+  `
 };

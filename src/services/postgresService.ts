@@ -22,6 +22,21 @@ export interface PostgresContactData {
   form_type: string;
 }
 
+export interface Lead {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  source?: string;
+  status: 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
+  notes?: string;
+  form_security?: Record<string, any>;
+  lead_data?: Record<string, any>;
+  created_at: string;
+  updated_at?: string;
+}
+
 class PostgresService {
   private baseUrl: string;
 
@@ -32,7 +47,7 @@ class PostgresService {
   async testConnection(): Promise<boolean> {
     try {
       console.log('Testing PostgreSQL connection...');
-      const response = await apiRequest(`${this.baseUrl}/api/health`, {
+      const response = await apiRequest(`${this.baseUrl}${API_CONFIG.endpoints.health}`, {
         method: 'GET',
       });
 
@@ -49,13 +64,12 @@ class PostgresService {
     console.log('Inserting lead via PostgreSQL:', leadData);
     
     try {
-      // Test connection first
       const isConnected = await this.testConnection();
       if (!isConnected) {
         throw new Error('Unable to connect to the database server. Please check if the backend service is running.');
       }
 
-      const response = await apiRequest(`${this.baseUrl}/api/leads`, {
+      const response = await apiRequest(`${this.baseUrl}${API_CONFIG.endpoints.leads}`, {
         method: 'POST',
         body: JSON.stringify(leadData)
       });
@@ -73,15 +87,79 @@ class PostgresService {
     } catch (error) {
       console.error('PostgreSQL lead insertion error:', error);
       
-      // Provide user-friendly error messages
-      if (error.message.includes('Network error')) {
-        throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+      if (error.message.includes('Network error') || error.message.includes('connect')) {
+        throw new Error('Unable to connect to the server. Please check your internet connection and ensure the backend service is running.');
       } else if (error.message.includes('timeout')) {
         throw new Error('Request timed out. Please check your connection and try again.');
-      } else if (error.message.includes('backend service')) {
-        throw new Error('Database service is currently unavailable. Please try again later or contact support.');
       }
       
+      throw error;
+    }
+  }
+
+  async getLeads(): Promise<Lead[]> {
+    console.log('Fetching leads from PostgreSQL...');
+    
+    try {
+      const response = await apiRequest(`${this.baseUrl}${API_CONFIG.endpoints.leads}`, {
+        method: 'GET'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        throw new Error(`Failed to fetch leads: ${errorData.message || response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Leads fetched successfully:', result);
+      return result.data || result;
+    } catch (error) {
+      console.error('PostgreSQL leads fetch error:', error);
+      throw error;
+    }
+  }
+
+  async updateLead(id: string, leadData: Partial<PostgresLeadData>): Promise<any> {
+    console.log('Updating lead via PostgreSQL:', id, leadData);
+    
+    try {
+      const response = await apiRequest(`${this.baseUrl}${API_CONFIG.endpoints.leads}/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(leadData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        throw new Error(`Failed to update lead: ${errorData.message || response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Lead updated successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('PostgreSQL lead update error:', error);
+      throw error;
+    }
+  }
+
+  async deleteLead(id: string): Promise<any> {
+    console.log('Deleting lead via PostgreSQL:', id);
+    
+    try {
+      const response = await apiRequest(`${this.baseUrl}${API_CONFIG.endpoints.leads}/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        throw new Error(`Failed to delete lead: ${errorData.message || response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Lead deleted successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('PostgreSQL lead delete error:', error);
       throw error;
     }
   }
@@ -90,7 +168,7 @@ class PostgresService {
     console.log('Inserting contact submission via PostgreSQL:', contactData);
     
     try {
-      const response = await apiRequest(`${this.baseUrl}/api/contact-submissions`, {
+      const response = await apiRequest(`${this.baseUrl}${API_CONFIG.endpoints.contactSubmissions}`, {
         method: 'POST',
         body: JSON.stringify(contactData)
       });

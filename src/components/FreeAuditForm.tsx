@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Send, Target, TrendingUp, Zap, TestTube } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useSupabaseFormSubmission } from "@/hooks/useSupabaseFormSubmission";
+import { usePostgresFormSubmission } from "@/hooks/usePostgresFormSubmission";
 
 interface FormData {
   firstName: string;
@@ -39,7 +39,7 @@ const FreeAuditForm = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [honeypotValue, setHoneypotValue] = useState('');
   const { toast } = useToast();
-  const { submitForm, isSubmitting } = useSupabaseFormSubmission();
+  const { submitForm, isSubmitting } = usePostgresFormSubmission();
 
   const fillTestData = () => {
     setFormData({
@@ -128,7 +128,7 @@ const FreeAuditForm = () => {
         
         toast({
           title: "Success!",
-          description: "Your audit request has been submitted successfully.",
+          description: "Your audit request has been submitted successfully and saved to PostgreSQL.",
         });
       } else {
         throw new Error(result.error || 'Submission failed');
@@ -181,7 +181,7 @@ const FreeAuditForm = () => {
               <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-8" />
               <h2 className="text-4xl font-bold text-slate-900 mb-6">Your Audit Request is Submitted!</h2>
               <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-                Thank you for requesting your free $2,000 advertising audit. Our team will analyze your current campaigns and provide you with a comprehensive report within 24-48 hours.
+                Thank you for requesting your free $2,000 advertising audit. Your data has been saved to our PostgreSQL database and our team will analyze your current campaigns within 24-48 hours.
               </p>
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="text-center">
@@ -228,7 +228,7 @@ const FreeAuditForm = () => {
               Get Your Free $2,000 Advertising Audit
             </CardTitle>
             <CardDescription className="text-lg text-slate-600">
-              Discover hidden opportunities and get a custom roadmap to increase your ROAS by 300%
+              Discover hidden opportunities and get a custom roadmap to increase your ROAS by 300% (PostgreSQL Backend)
             </CardDescription>
             
             {/* Test Data Button */}
@@ -434,7 +434,7 @@ const FreeAuditForm = () => {
                 {isSubmitting ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
-                    Processing Your Request...
+                    Processing via PostgreSQL...
                   </div>
                 ) : (
                   <>
@@ -445,7 +445,7 @@ const FreeAuditForm = () => {
               </Button>
 
               <p className="text-center text-sm text-slate-500">
-                No spam, ever. We'll send you a detailed audit report within 24-48 hours.
+                No spam, ever. Data stored securely in PostgreSQL database.
               </p>
             </form>
           </CardContent>

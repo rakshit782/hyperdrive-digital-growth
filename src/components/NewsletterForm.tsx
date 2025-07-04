@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useSupabaseFormSubmission } from "@/hooks/useSupabaseFormSubmission";
+import { usePostgresFormSubmission } from "@/hooks/usePostgresFormSubmission";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [honeypotValue, setHoneypotValue] = useState("");
   const { toast } = useToast();
-  const { submitForm, isSubmitting } = useSupabaseFormSubmission();
+  const { submitForm, isSubmitting } = usePostgresFormSubmission();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +53,7 @@ const NewsletterForm = () => {
       if (result.success) {
         toast({
           title: "Thank you for subscribing!",
-          description: "You'll receive our latest updates and insights.",
+          description: "You'll receive our latest updates and insights. Data saved to PostgreSQL.",
         });
         
         setEmail("");
@@ -78,7 +78,7 @@ const NewsletterForm = () => {
         </div>
         <div>
           <h3 className="font-semibold text-slate-900">Stay Updated</h3>
-          <p className="text-sm text-slate-600">Get the latest tips and insights</p>
+          <p className="text-sm text-slate-600">Get the latest tips and insights (PostgreSQL)</p>
         </div>
       </div>
       
@@ -119,7 +119,7 @@ const NewsletterForm = () => {
         </div>
         
         <p className="text-xs text-slate-500">
-          No spam, ever. Unsubscribe anytime.
+          No spam, ever. Unsubscribe anytime. Stored in PostgreSQL.
         </p>
       </form>
     </div>
