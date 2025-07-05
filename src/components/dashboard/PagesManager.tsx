@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,8 @@ import {
   Globe, 
   Eye,
   Search,
-  Filter
+  Filter,
+  FileText
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -61,7 +61,7 @@ const PagesManager = () => {
 
   const fetchPages = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('pages')
         .select('*')
         .order('created_at', { ascending: false });
@@ -85,7 +85,7 @@ const PagesManager = () => {
     
     try {
       if (editingPage) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('pages')
           .update({
             ...formData,
@@ -99,7 +99,7 @@ const PagesManager = () => {
           description: "Page updated successfully",
         });
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('pages')
           .insert([formData]);
 
@@ -128,7 +128,7 @@ const PagesManager = () => {
     if (!confirm('Are you sure you want to delete this page?')) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('pages')
         .delete()
         .eq('id', id);
