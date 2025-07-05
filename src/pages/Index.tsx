@@ -14,7 +14,7 @@ const Index = () => {
     <>
       <SEOHead 
         title="Expert Amazon, Walmart & Meta Advertising Agency | Drive Sales Growth"
-        description="Leading advertising agency specializing in Amazon PPC, Walmart Connect, and Meta ads. Boost your ROI with our proven strategies. Free audit available!"
+        description="Leading advertising agency specializing in Amazon PPC, Walmart Connect, and Meta ads. Boost your ROI with our proven strategies."
         keywords="Amazon advertising, Walmart advertising, Meta ads, PPC management, e-commerce marketing, digital advertising agency"
       />
       <div className="min-h-screen">
