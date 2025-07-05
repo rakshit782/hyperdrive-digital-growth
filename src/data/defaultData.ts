@@ -1,5 +1,23 @@
 
-import { ServiceCard, Review } from "@/types/dashboard";
+interface ServiceCard {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+  features: string[];
+  gradient: string;
+  bgGradient: string;
+  link: string;
+}
+
+interface Review {
+  id: string;
+  name: string;
+  company: string;
+  rating: number;
+  review: string;
+  avatar: string;
+}
 
 export const defaultServices: ServiceCard[] = [
   {

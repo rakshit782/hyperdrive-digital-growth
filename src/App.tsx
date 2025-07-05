@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Auth0ProviderWrapper from "@/components/Auth0ProviderWrapper";
 import { initializePerformanceOptimizations } from "@/utils/lazyComponents";
-import { integrationManager } from "@/utils/integrationManager";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import About from "./pages/About";
@@ -48,9 +47,6 @@ const App = () => {
   useEffect(() => {
     // Initialize performance optimizations on app startup
     initializePerformanceOptimizations();
-    
-    // Initialize integration manager
-    integrationManager.initializeAllIntegrations();
     
     // Mark app initialization
     if (typeof performance !== 'undefined' && performance.mark) {
