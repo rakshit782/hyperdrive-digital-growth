@@ -15,8 +15,6 @@ import {
   Menu
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 
 interface DashboardLayoutProps {
@@ -29,16 +27,18 @@ const DashboardLayout = ({ children, activeTab, onTabChange }: DashboardLayoutPr
   const { user, isAuthenticated, isLoading, logout } = useAuth0();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
+  // Remove the loading state - direct redirect if not authenticated
+  if (!isAuthenticated && !isLoading) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  // Show minimal loading only during Auth0 initialization
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
   }
 
   const navigation = [

@@ -7,24 +7,8 @@ export const LazyCaseStudies = lazy(() => import('@/pages/CaseStudies'));
 export const LazyPricing = lazy(() => import('@/pages/Pricing'));
 export const LazyBlog = lazy(() => import('@/pages/Blog'));
 
-// Initialize performance optimizations
+// Simplified performance optimizations - removed preloading
 export const initializePerformanceOptimizations = () => {
-  // Preload critical components
-  const criticalComponents = [
-    () => import('@/components/Header'),
-    () => import('@/components/Hero'),
-    () => import('@/components/Services'),
-  ];
-
-  // Preload components with a small delay to avoid blocking initial render
-  setTimeout(() => {
-    criticalComponents.forEach(importFn => {
-      importFn().catch(error => {
-        console.warn('Failed to preload component:', error);
-      });
-    });
-  }, 100);
-
   // Set up intersection observer for lazy loading
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {

@@ -32,58 +32,89 @@ const DynamicHero = () => {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center max-w-5xl mx-auto">
-          {/* Main Headline */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-            <span 
-              className="bg-gradient-to-r bg-clip-text text-transparent"
-              style={{ 
-                backgroundImage: `linear-gradient(to right, ${settings.primaryColor}, ${settings.secondaryColor})` 
-              }}
-            >
-              {settings.heroTitle}
-            </span>
-          </h1>
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
+          <div className="text-center lg:text-left">
+            {/* Main Headline */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-6 leading-tight">
+              <span 
+                className="bg-gradient-to-r bg-clip-text text-transparent"
+                style={{ 
+                  backgroundImage: `linear-gradient(to right, ${settings.primaryColor}, ${settings.secondaryColor})` 
+                }}
+              >
+                {settings.heroTitle}
+              </span>
+            </h1>
 
-          {/* Subtitle */}
-          <p className="text-xl md:text-2xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto">
-            {settings.heroSubtitle}
-          </p>
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl text-slate-600 mb-8 leading-relaxed">
+              {settings.heroSubtitle}
+            </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-            <Button 
-              size="lg" 
-              className="text-lg px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              style={{ backgroundColor: settings.primaryColor }}
-            >
-              {settings.ctaText}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="text-lg px-8 py-4 rounded-xl border-2 hover:shadow-lg transition-all duration-300"
-              style={{ borderColor: settings.primaryColor, color: settings.primaryColor }}
-            >
-              View Case Studies
-            </Button>
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mb-8">
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                style={{ backgroundColor: settings.primaryColor }}
+              >
+                {settings.ctaText}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="text-lg px-8 py-4 rounded-xl border-2 hover:shadow-lg transition-all duration-300"
+                style={{ borderColor: settings.primaryColor, color: settings.primaryColor }}
+              >
+                View Case Studies
+              </Button>
+            </div>
+
+            {/* Company Info */}
+            <div className="text-center lg:text-left">
+              <h2 
+                className="text-2xl font-bold mb-2"
+                style={{ color: settings.primaryColor }}
+              >
+                {settings.companyName}
+              </h2>
+              <p 
+                className="text-lg font-medium"
+                style={{ color: settings.secondaryColor }}
+              >
+                {settings.tagline}
+              </p>
+            </div>
           </div>
 
-          {/* Company Info */}
-          <div className="text-center">
-            <h2 
-              className="text-2xl font-bold mb-2"
-              style={{ color: settings.primaryColor }}
-            >
-              {settings.companyName}
-            </h2>
-            <p 
-              className="text-lg font-medium"
-              style={{ color: settings.secondaryColor }}
-            >
-              {settings.tagline}
-            </p>
+          {/* Right Content - CTA Image */}
+          <div className="relative">
+            <div className="relative bg-white rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+              <img 
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Professional working on laptop - Digital Marketing Success"
+                className="w-full h-64 md:h-80 object-cover rounded-xl"
+              />
+              <div className="absolute -top-4 -right-4 bg-gradient-to-br from-green-400 to-green-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                ✓ Results Guaranteed
+              </div>
+              <div className="absolute -bottom-4 -left-4 bg-gradient-to-br from-blue-400 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                🚀 ROI Focused
+              </div>
+            </div>
+            
+            {/* Floating stats around the image */}
+            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+              <div className="text-2xl font-bold text-green-600">300%</div>
+              <div className="text-xs text-gray-600">Avg ROI Increase</div>
+            </div>
+            
+            <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+              <div className="text-2xl font-bold text-blue-600">24/7</div>
+              <div className="text-xs text-gray-600">Monitoring</div>
+            </div>
           </div>
         </div>
       </div>
