@@ -5,7 +5,12 @@ import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import PagesManager from '@/components/dashboard/PagesManager';
 import WebsiteTab from '@/components/dashboard/WebsiteTab';
 import Auth0Tab from '@/components/dashboard/Auth0Tab';
-import ComingSoonTab from '@/components/dashboard/ComingSoonTab';
+import HomepageElements from '@/components/dashboard/HomepageElements';
+import BlogManagement from '@/components/dashboard/BlogManagement';
+import ContactManagement from '@/components/dashboard/ContactManagement';
+import LeadManagementTab from '@/components/dashboard/LeadManagementTab';
+import WebsiteSEOTab from '@/components/dashboard/WebsiteSEOTab';
+import AnalyticsDashboardTab from '@/components/dashboard/AnalyticsDashboardTab';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -20,20 +25,18 @@ const Dashboard = () => {
         return <Auth0Tab />;
       case 'pages':
         return <PagesManager />;
+      case 'homepage':
+        return <HomepageElements />;
       case 'blog':
-        return <ComingSoonTab title="Blog Management" description="Create and manage your blog posts, categories, and featured content." />;
-      case 'media':
-        return <ComingSoonTab title="Media Library" description="Upload, organize, and manage your images, videos, and other media files." />;
-      case 'tracking':
-        return <ComingSoonTab title="Tracking Scripts" description="Add and manage tracking codes for Google Analytics, Facebook Pixel, and other services." />;
+        return <BlogManagement />;
+      case 'contacts':
+        return <ContactManagement />;
+      case 'leads':
+        return <LeadManagementTab />;
       case 'seo':
-        return <ComingSoonTab title="SEO Settings" description="Configure meta tags, sitemaps, and search engine optimization settings." />;
+        return <WebsiteSEOTab />;
       case 'analytics':
-        return <ComingSoonTab title="Analytics Dashboard" description="View detailed analytics about your website traffic and performance." />;
-      case 'users':
-        return <ComingSoonTab title="User Management" description="Manage user accounts, roles, and permissions for your website." />;
-      case 'settings':
-        return <ComingSoonTab title="Site Settings" description="Configure global website settings, themes, and customization options." />;
+        return <AnalyticsDashboardTab />;
       default:
         return <DashboardOverview />;
     }

@@ -6,13 +6,15 @@ import {
   FileText, 
   Settings, 
   Users,
-  Code,
-  Image,
-  BarChart3,
   Globe,
   LogOut,
   Menu,
-  Lock
+  Lock,
+  MousePointer,
+  Mail,
+  UserCheck,
+  Search,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -49,13 +51,12 @@ const DashboardLayout = ({ children, activeTab, onTabChange }: DashboardLayoutPr
     { id: 'website', name: 'Website', icon: Globe },
     { id: 'auth0', name: 'Auth0 Setup', icon: Lock },
     { id: 'pages', name: 'Pages', icon: FileText },
+    { id: 'homepage', name: 'Homepage', icon: MousePointer },
     { id: 'blog', name: 'Blog', icon: FileText },
-    { id: 'media', name: 'Media Library', icon: Image },
-    { id: 'tracking', name: 'Tracking Scripts', icon: Code },
-    { id: 'seo', name: 'SEO Settings', icon: Globe },
+    { id: 'contacts', name: 'Contacts', icon: Mail },
+    { id: 'leads', name: 'Leads', icon: UserCheck },
+    { id: 'seo', name: 'SEO', icon: Search },
     { id: 'analytics', name: 'Analytics', icon: BarChart3 },
-    { id: 'users', name: 'User Management', icon: Users },
-    { id: 'settings', name: 'Site Settings', icon: Settings },
   ];
 
   return (
