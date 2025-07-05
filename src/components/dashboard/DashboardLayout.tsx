@@ -43,6 +43,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange }: DashboardLayoutPr
 
   const navigation = [
     { id: 'overview', name: 'Overview', icon: LayoutDashboard },
+    { id: 'website', name: 'Website', icon: Globe },
     { id: 'pages', name: 'Pages', icon: FileText },
     { id: 'blog', name: 'Blog', icon: FileText },
     { id: 'media', name: 'Media Library', icon: Image },

@@ -1,6 +1,6 @@
 
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
+import DynamicHero from "@/components/DynamicHero";
 import ClienteleCarousel from "@/components/ClienteleCarousel";
 import Services from "@/components/Services";
 import CircularReviews from "@/components/CircularReviews";
@@ -34,7 +34,7 @@ const Index = () => {
         </div>
 
         <div className="space-y-12">
-          <Hero />
+          <DynamicHero />
           <ClienteleCarousel />
           <Services />
           <CircularReviews />
