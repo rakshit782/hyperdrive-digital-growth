@@ -89,31 +89,36 @@ const DynamicHero = () => {
             </div>
           </div>
 
-          {/* Right Content - CTA Image */}
+          {/* Right Content - Modern Analytics Dashboard Image */}
           <div className="relative">
             <div className="relative bg-white rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
               <img 
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Professional working on laptop - Digital Marketing Success"
+                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Modern Analytics Dashboard - Data Visualization Charts and Graphs"
                 className="w-full h-64 md:h-80 object-cover rounded-xl"
               />
               <div className="absolute -top-4 -right-4 bg-gradient-to-br from-green-400 to-green-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                ✓ Results Guaranteed
+                ✓ Data-Driven Results
               </div>
               <div className="absolute -bottom-4 -left-4 bg-gradient-to-br from-blue-400 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                🚀 ROI Focused
+                📊 Real-Time Analytics
               </div>
             </div>
             
             {/* Floating stats around the image */}
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-              <div className="text-2xl font-bold text-green-600">300%</div>
-              <div className="text-xs text-gray-600">Avg ROI Increase</div>
+              <div className="text-2xl font-bold text-green-600">+385%</div>
+              <div className="text-xs text-gray-600">Revenue Growth</div>
             </div>
             
             <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-              <div className="text-2xl font-bold text-blue-600">24/7</div>
-              <div className="text-xs text-gray-600">Monitoring</div>
+              <div className="text-2xl font-bold text-blue-600">2.4M</div>
+              <div className="text-xs text-gray-600">Impressions</div>
+            </div>
+
+            <div className="absolute top-1/2 -left-6 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+              <div className="text-2xl font-bold text-purple-600">12.8%</div>
+              <div className="text-xs text-gray-600">CTR Increase</div>
             </div>
           </div>
         </div>
