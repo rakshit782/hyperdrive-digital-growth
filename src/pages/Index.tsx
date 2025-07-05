@@ -8,6 +8,9 @@ import FAQ from "@/components/FAQ";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Settings } from "lucide-react";
 
 const Index = () => {
   return (
@@ -19,6 +22,17 @@ const Index = () => {
       />
       <div className="min-h-screen">
         <Header />
+        
+        {/* Admin Dashboard Link - Only show for authenticated users */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <Link to="/dashboard">
+            <Button variant="secondary" size="sm" className="shadow-lg">
+              <Settings className="h-4 w-4 mr-2" />
+              Admin
+            </Button>
+          </Link>
+        </div>
+
         <div className="space-y-12">
           <Hero />
           <ClienteleCarousel />
