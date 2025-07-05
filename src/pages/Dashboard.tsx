@@ -5,6 +5,7 @@ import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import PagesManager from '@/components/dashboard/PagesManager';
 import WebsiteTab from '@/components/dashboard/WebsiteTab';
 import Auth0Tab from '@/components/dashboard/Auth0Tab';
+import ComingSoonTab from '@/components/dashboard/ComingSoonTab';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -20,19 +21,19 @@ const Dashboard = () => {
       case 'pages':
         return <PagesManager />;
       case 'blog':
-        return <div className="p-8 text-center text-gray-500">Blog management coming soon...</div>;
+        return <ComingSoonTab title="Blog Management" description="Create and manage your blog posts, categories, and featured content." />;
       case 'media':
-        return <div className="p-8 text-center text-gray-500">Media library coming soon...</div>;
+        return <ComingSoonTab title="Media Library" description="Upload, organize, and manage your images, videos, and other media files." />;
       case 'tracking':
-        return <div className="p-8 text-center text-gray-500">Tracking scripts management coming soon...</div>;
+        return <ComingSoonTab title="Tracking Scripts" description="Add and manage tracking codes for Google Analytics, Facebook Pixel, and other services." />;
       case 'seo':
-        return <div className="p-8 text-center text-gray-500">SEO settings coming soon...</div>;
+        return <ComingSoonTab title="SEO Settings" description="Configure meta tags, sitemaps, and search engine optimization settings." />;
       case 'analytics':
-        return <div className="p-8 text-center text-gray-500">Analytics dashboard coming soon...</div>;
+        return <ComingSoonTab title="Analytics Dashboard" description="View detailed analytics about your website traffic and performance." />;
       case 'users':
-        return <div className="p-8 text-center text-gray-500">User management coming soon...</div>;
+        return <ComingSoonTab title="User Management" description="Manage user accounts, roles, and permissions for your website." />;
       case 'settings':
-        return <div className="p-8 text-center text-gray-500">Site settings coming soon...</div>;
+        return <ComingSoonTab title="Site Settings" description="Configure global website settings, themes, and customization options." />;
       default:
         return <DashboardOverview />;
     }
