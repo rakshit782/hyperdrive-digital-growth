@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Navigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -12,10 +11,12 @@ import {
   BarChart3,
   Globe,
   LogOut,
-  Menu
+  Menu,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { auth0ConfigManager } from '@/utils/auth0Config';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -24,16 +25,18 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout = ({ children, activeTab, onTabChange }: DashboardLayoutProps) => {
-  const { user, isAuthenticated, isLoading, logout } = useAuth0();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Check if Auth0 is configured
+  const auth0Config = auth0ConfigManager.getConfig();
+  const isAuth0Configured = auth0Config && auth0Config.isActive && auth0Config.domain && auth0Config.clientId;
+  
+  // Only use Auth0 hooks if it's configured
+  const auth0Result = isAuth0Configured ? useAuth0() : { user: null, isAuthenticated: false, isLoading: false, logout: () => {} };
+  const { user, isAuthenticated, isLoading, logout } = auth0Result;
 
-  // Remove the loading state - direct redirect if not authenticated
-  if (!isAuthenticated && !isLoading) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  // Show minimal loading only during Auth0 initialization
-  if (isLoading) {
+  // Show loading only if Auth0 is configured and loading
+  if (isAuth0Configured && isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -44,6 +47,7 @@ const DashboardLayout = ({ children, activeTab, onTabChange }: DashboardLayoutPr
   const navigation = [
     { id: 'overview', name: 'Overview', icon: LayoutDashboard },
     { id: 'website', name: 'Website', icon: Globe },
+    { id: 'auth0', name: 'Auth0 Setup', icon: Lock },
     { id: 'pages', name: 'Pages', icon: FileText },
     { id: 'blog', name: 'Blog', icon: FileText },
     { id: 'media', name: 'Media Library', icon: Image },
@@ -100,18 +104,22 @@ const DashboardLayout = ({ children, activeTab, onTabChange }: DashboardLayoutPr
             {!sidebarCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.name || user?.email}
+                  {isAuth0Configured && user ? (user.name || user.email) : 'Admin User'}
                 </p>
-                <p className="text-xs text-gray-500 truncate">Administrator</p>
+                <p className="text-xs text-gray-500 truncate">
+                  {isAuth0Configured ? 'Authenticated' : 'Demo Mode'}
+                </p>
               </div>
             )}
-            <button
-              onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-              className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"
-              title="Sign out"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
+            {isAuth0Configured && isAuthenticated && (
+              <button
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                className="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"
+                title="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -120,6 +128,19 @@ const DashboardLayout = ({ children, activeTab, onTabChange }: DashboardLayoutPr
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-y-auto">
           <div className="p-6">
+            {!isAuth0Configured && activeTab !== 'auth0' && (
+              <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <Lock className="h-5 w-5 text-yellow-600 mr-2" />
+                  <div>
+                    <h3 className="text-sm font-medium text-yellow-800">Authentication Not Configured</h3>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      You're in demo mode. Configure Auth0 authentication for production use.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             {children}
           </div>
         </main>

@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import PagesManager from '@/components/dashboard/PagesManager';
 import WebsiteTab from '@/components/dashboard/WebsiteTab';
+import Auth0Tab from '@/components/dashboard/Auth0Tab';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -11,10 +13,12 @@ const Dashboard = () => {
     switch (activeTab) {
       case 'overview':
         return <DashboardOverview />;
-      case 'pages':
-        return <PagesManager />;
       case 'website':
         return <WebsiteTab />;
+      case 'auth0':
+        return <Auth0Tab />;
+      case 'pages':
+        return <PagesManager />;
       case 'blog':
         return <div className="p-8 text-center text-gray-500">Blog management coming soon...</div>;
       case 'media':
