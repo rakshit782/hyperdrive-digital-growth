@@ -1,35 +1,8 @@
 
-import { useState } from "react";
 import { ArrowRight, CheckCircle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useFormSubmission } from "@/hooks/useFormSubmission";
 
 const ModernCTA = () => {
-  const [email, setEmail] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const { submitForm, isSubmitting } = useFormSubmission();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email.trim()) return;
-
-    const result = await submitForm({
-      email,
-      name: email.split('@')[0], // Use email prefix as name
-      formType: 'contact',
-      source: 'cta_form',
-      message: 'Requested free audit from CTA section'
-    });
-
-    if (result.success) {
-      setIsSubmitted(true);
-      setEmail("");
-      setTimeout(() => setIsSubmitted(false), 3000);
-    }
-  };
-
   return (
     <section className="py-12 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 relative overflow-hidden">
       {/* Background Effects */}
@@ -54,45 +27,18 @@ const ModernCTA = () => {
           </h2>
           
           <p className="text-lg text-white/80 mb-6 max-w-xl mx-auto">
-            Get your free audit and see how we can grow your revenue.
+            Contact our team to learn how we can grow your revenue.
           </p>
 
-          {/* CTA Form */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6 max-w-xl mx-auto">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Input
-                  type="email"
-                  placeholder="Enter your business email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-white/20 border-white/30 text-white placeholder-white/60 focus:bg-white/30"
-                  required
-                />
-                <Button 
-                  type="submit" 
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-6 py-2 text-white font-semibold"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitted ? (
-                    "Thank You!"
-                  ) : isSubmitting ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Sending...
-                    </div>
-                  ) : (
-                    <>
-                      Get Free Audit
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-            <p className="text-white/60 text-sm mt-3">
-              No spam. Unsubscribe anytime.
-            </p>
+          {/* CTA Button */}
+          <div className="mb-6">
+            <Button 
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-8 py-3 text-white font-semibold"
+              onClick={() => window.location.href = '/contact'}
+            >
+              Get in Touch
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
           </div>
 
           {/* Trust Indicators */}
