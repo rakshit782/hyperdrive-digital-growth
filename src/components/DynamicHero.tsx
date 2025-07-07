@@ -89,36 +89,36 @@ const DynamicHero = () => {
             </div>
           </div>
 
-          {/* Right Content - Modern Analytics Dashboard Image */}
+          {/* Right Content - Converting bright pastel image */}
           <div className="relative">
-            <div className="relative bg-white rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+            <div className="relative bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
               <img 
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Modern Analytics Dashboard - Data Visualization Charts and Graphs"
+                src="https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=800&h=600&auto=format&fit=crop&crop=center&q=80"
+                alt="Bright modern workspace with pastel colors - Success and growth visualization"
                 className="w-full h-64 md:h-80 object-cover rounded-xl"
               />
-              <div className="absolute -top-4 -right-4 bg-gradient-to-br from-green-400 to-green-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                ✓ Data-Driven Results
+              <div className="absolute -top-4 -right-4 bg-gradient-to-br from-emerald-300 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                ✓ Proven Results
               </div>
-              <div className="absolute -bottom-4 -left-4 bg-gradient-to-br from-blue-400 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                📊 Real-Time Analytics
+              <div className="absolute -bottom-4 -left-4 bg-gradient-to-br from-pink-300 to-purple-400 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                📈 Growth Focused
               </div>
             </div>
             
-            {/* Floating stats around the image */}
-            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-              <div className="text-2xl font-bold text-green-600">+385%</div>
-              <div className="text-xs text-gray-600">Revenue Growth</div>
+            {/* Floating stats around the image with bright pastel colors */}
+            <div className="absolute top-4 left-4 bg-gradient-to-br from-cyan-100 to-cyan-200 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-cyan-200">
+              <div className="text-2xl font-bold text-cyan-700">+385%</div>
+              <div className="text-xs text-cyan-600">Revenue Growth</div>
             </div>
             
-            <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-              <div className="text-2xl font-bold text-blue-600">2.4M</div>
-              <div className="text-xs text-gray-600">Impressions</div>
+            <div className="absolute bottom-4 right-4 bg-gradient-to-br from-rose-100 to-rose-200 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-rose-200">
+              <div className="text-2xl font-bold text-rose-700">2.4M</div>
+              <div className="text-xs text-rose-600">Impressions</div>
             </div>
 
-            <div className="absolute top-1/2 -left-6 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-              <div className="text-2xl font-bold text-purple-600">12.8%</div>
-              <div className="text-xs text-gray-600">CTR Increase</div>
+            <div className="absolute top-1/2 -left-6 bg-gradient-to-br from-violet-100 to-violet-200 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-violet-200">
+              <div className="text-2xl font-bold text-violet-700">12.8%</div>
+              <div className="text-xs text-violet-600">CTR Increase</div>
             </div>
           </div>
         </div>
