@@ -18,46 +18,37 @@ const DynamicHero = () => {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 overflow-hidden">
-      {/* Background Elements */}
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-subtle overflow-hidden">
+      {/* Minimalist Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div 
-          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-20 blur-3xl"
-          style={{ backgroundColor: settings.primaryColor }}
-        ></div>
-        <div 
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full opacity-20 blur-3xl"
-          style={{ backgroundColor: settings.secondaryColor }}
-        ></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,_hsl(var(--muted))_0%,_transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,_hsl(var(--accent))_0%,_transparent_50%)]"></div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="container-modern relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
-          <div className="text-center lg:text-left">
+          <div className="text-center lg:text-left space-y-8">
             {/* Main Headline */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-              <span 
-                className="bg-gradient-to-r bg-clip-text text-transparent"
-                style={{ 
-                  backgroundImage: `linear-gradient(to right, ${settings.primaryColor}, ${settings.secondaryColor})` 
-                }}
-              >
+            <h1 className="heading-modern text-5xl md:text-6xl lg:text-7xl text-foreground leading-[0.9] text-balance">
+              <span className="block text-muted-foreground text-lg font-normal mb-4 tracking-wide uppercase">
+                {settings.companyName}
+              </span>
+              <span className="block">
                 {settings.heroTitle}
               </span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-slate-600 mb-8 leading-relaxed">
+            <p className="text-modern text-xl md:text-2xl text-muted-foreground max-w-2xl text-balance">
               {settings.heroSubtitle}
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
               <Button 
                 size="lg" 
-                className="text-lg px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                style={{ backgroundColor: settings.primaryColor }}
+                className="btn-primary"
               >
                 {settings.ctaText}
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -65,60 +56,61 @@ const DynamicHero = () => {
               <Button 
                 variant="outline" 
                 size="lg"
-                className="text-lg px-8 py-4 rounded-xl border-2 hover:shadow-lg transition-all duration-300"
-                style={{ borderColor: settings.primaryColor, color: settings.primaryColor }}
+                className="btn-secondary"
               >
                 View Case Studies
               </Button>
             </div>
 
-            {/* Company Info */}
-            <div className="text-center lg:text-left">
-              <h2 
-                className="text-2xl font-bold mb-2"
-                style={{ color: settings.primaryColor }}
-              >
-                {settings.companyName}
-              </h2>
-              <p 
-                className="text-lg font-medium"
-                style={{ color: settings.secondaryColor }}
-              >
-                {settings.tagline}
-              </p>
+            {/* Trust Indicators */}
+            <div className="flex items-center gap-8 justify-center lg:justify-start pt-8 border-t border-border">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-foreground">500+</div>
+                <div className="text-sm text-muted-foreground">Clients</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-foreground">$50M+</div>
+                <div className="text-sm text-muted-foreground">Ad Spend</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-foreground">300%</div>
+                <div className="text-sm text-muted-foreground">Avg ROI</div>
+              </div>
             </div>
           </div>
 
-          {/* Right Content - Converting bright pastel image */}
+          {/* Right Content - Minimalist Visual */}
           <div className="relative">
-            <div className="relative bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
-              <img 
-                src="https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=800&h=600&auto=format&fit=crop&crop=center&q=80"
-                alt="Bright modern workspace with pastel colors - Success and growth visualization"
-                className="w-full h-64 md:h-80 object-cover rounded-xl"
-              />
-              <div className="absolute -top-4 -right-4 bg-gradient-to-br from-emerald-300 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                ✓ Proven Results
+            <div className="card-modern p-12 bg-card">
+              {/* Clean Dashboard Mockup */}
+              <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 border-b border-border">
+                  <div className="w-3 h-3 rounded-full bg-primary"></div>
+                  <div className="text-xs text-muted-foreground font-mono">Performance Dashboard</div>
+                  <div className="w-3 h-3 rounded-full bg-accent"></div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="card-modern p-4 text-center">
+                    <div className="text-2xl font-bold text-foreground mb-1">4.2x</div>
+                    <div className="text-xs text-muted-foreground">ROAS</div>
+                  </div>
+                  <div className="card-modern p-4 text-center">
+                    <div className="text-2xl font-bold text-foreground mb-1">89K</div>
+                    <div className="text-xs text-muted-foreground">Revenue</div>
+                  </div>
+                </div>
+                
+                <div className="h-24 bg-gradient-to-r from-primary/5 to-accent/5 rounded-lg flex items-end justify-center p-4">
+                  <div className="flex items-end gap-2">
+                    <div className="w-2 h-8 bg-primary/20 rounded-sm"></div>
+                    <div className="w-2 h-12 bg-primary/40 rounded-sm"></div>
+                    <div className="w-2 h-16 bg-primary rounded-sm"></div>
+                    <div className="w-2 h-10 bg-primary/60 rounded-sm"></div>
+                    <div className="w-2 h-14 bg-primary/80 rounded-sm"></div>
+                  </div>
+                </div>
               </div>
-              <div className="absolute -bottom-4 -left-4 bg-gradient-to-br from-pink-300 to-purple-400 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                📈 Growth Focused
-              </div>
-            </div>
-            
-            {/* Floating stats around the image with bright pastel colors */}
-            <div className="absolute top-4 left-4 bg-gradient-to-br from-cyan-100 to-cyan-200 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-cyan-200">
-              <div className="text-2xl font-bold text-cyan-700">+385%</div>
-              <div className="text-xs text-cyan-600">Revenue Growth</div>
-            </div>
-            
-            <div className="absolute bottom-4 right-4 bg-gradient-to-br from-rose-100 to-rose-200 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-rose-200">
-              <div className="text-2xl font-bold text-rose-700">2.4M</div>
-              <div className="text-xs text-rose-600">Impressions</div>
-            </div>
-
-            <div className="absolute top-1/2 -left-6 bg-gradient-to-br from-violet-100 to-violet-200 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-violet-200">
-              <div className="text-2xl font-bold text-violet-700">12.8%</div>
-              <div className="text-xs text-violet-600">CTR Increase</div>
             </div>
           </div>
         </div>

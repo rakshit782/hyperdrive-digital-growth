@@ -1,5 +1,5 @@
 
-import Header from "@/components/Header";
+import ModernHeader from "@/components/ModernHeader";
 import DynamicHero from "@/components/DynamicHero";
 import ClienteleCarousel from "@/components/ClienteleCarousel";
 import Services from "@/components/Services";
@@ -21,7 +21,7 @@ const Index = () => {
         keywords="Amazon advertising, Walmart advertising, Meta ads, PPC management, e-commerce marketing, digital advertising agency"
       />
       <div className="min-h-screen">
-        <Header />
+        <ModernHeader />
         
         {/* Admin Dashboard Link - Only show for authenticated users */}
         <div className="fixed bottom-4 right-4 z-50">
@@ -33,13 +33,15 @@ const Index = () => {
           </Link>
         </div>
 
-        <div className="space-y-12">
+        <div className="pt-16">
           <DynamicHero />
-          <ClienteleCarousel />
-          <Services />
-          <CircularReviews />
-          <FAQ />
-          <CTA />
+          <div className="section-padding space-y-32">
+            <ClienteleCarousel />
+            <Services />
+            <CircularReviews />
+            <FAQ />
+            <CTA />
+          </div>
         </div>
         <Footer />
       </div>
