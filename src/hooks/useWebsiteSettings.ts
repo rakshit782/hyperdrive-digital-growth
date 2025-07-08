@@ -75,9 +75,12 @@ export const useWebsiteSettings = () => {
     // Load initial settings
     loadSettings();
 
+    // Create a unique channel name to prevent conflicts
+    const channelName = `website-settings-${Date.now()}-${Math.random()}`;
+    
     // Listen for real-time updates from Supabase
     const channel = supabase
-      .channel('website-settings-changes')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -107,10 +110,10 @@ export const useWebsiteSettings = () => {
 
     return () => {
       // Properly cleanup the channel subscription
-      supabase.removeChannel(channel);
+      channel.unsubscribe();
       window.removeEventListener('websiteSettingsUpdated', handleSettingsUpdate as EventListener);
     };
-  }, []); // Remove dependency array to prevent re-subscriptions
+  }, []);
 
   return { settings, isLoading };
 };
