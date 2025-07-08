@@ -40,7 +40,7 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
     system: true,
   });
 
-  const dashboardTabs = [
+  const menuItems = [
     {
       id: "website",
       label: "Website",
@@ -64,6 +64,12 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       label: "Service Pages",
       icon: LayoutDashboard,
       category: "content",
+    },
+    {
+      id: "service-page-management",
+      label: "Service Page Management",
+      icon: Settings,
+      description: "Manage service page content"
     },
     {
       id: "reviews",
@@ -160,7 +166,7 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
   };
 
   const getTabsByCategory = (category: string) => {
-    return dashboardTabs.filter(tab => tab.category === category);
+    return menuItems.filter(tab => tab.category === category);
   };
 
   const toggleGroup = (groupId: string) => {
