@@ -32,7 +32,7 @@ interface ServiceCard {
   description: string;
   icon: string;
   gradient: string;
-  features: Json; // Changed from string[] to Json to match database schema
+  features: Json;
   sort_order: number;
   is_active: boolean;
 }
@@ -43,6 +43,30 @@ const ServicePageManagement = () => {
   const [editingPage, setEditingPage] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Form states
+  const [pageFormData, setPageFormData] = useState<ServicePageData>({
+    service_type: '',
+    title: '',
+    subtitle: '',
+    description: '',
+    hero_image: '',
+    meta_title: '',
+    meta_description: '',
+    is_active: true
+  });
+
+  const [cardFormData, setCardFormData] = useState({
+    id: '',
+    service_type: '',
+    title: '',
+    description: '',
+    icon: '',
+    gradient: '',
+    features: [] as string[],
+    sort_order: 0,
+    is_active: true
+  });
 
   const serviceTypes = [
     'meta-advertising',
@@ -63,7 +87,6 @@ const ServicePageManagement = () => {
     try {
       setLoading(true);
       
-      // Fetch service pages
       const { data: pages, error: pagesError } = await supabase
         .from('service_pages')
         .select('*')
@@ -75,7 +98,6 @@ const ServicePageManagement = () => {
         return;
       }
 
-      // Fetch service cards
       const { data: cards, error: cardsError } = await supabase
         .from('service_cards')
         .select('*')
@@ -98,11 +120,11 @@ const ServicePageManagement = () => {
     }
   };
 
-  const handleSavePage = async (pageData: ServicePageData) => {
+  const handleSavePage = async () => {
     try {
       const { error } = await supabase
         .from('service_pages')
-        .upsert(pageData, { onConflict: 'service_type' });
+        .upsert(pageFormData, { onConflict: 'service_type' });
 
       if (error) {
         console.error('Error saving page:', error);
@@ -119,22 +141,28 @@ const ServicePageManagement = () => {
     }
   };
 
-  const handleSaveCard = async (cardData: Omit<ServiceCard, 'id'> & { id?: string }) => {
+  const handleSaveCard = async () => {
     try {
-      if (cardData.id) {
+      const cardData = {
+        ...cardFormData,
+        features: cardFormData.features as Json
+      };
+
+      if (cardFormData.id && cardFormData.id !== 'new') {
         const { error } = await supabase
           .from('service_cards')
           .update(cardData)
-          .eq('id', cardData.id);
+          .eq('id', cardFormData.id);
         if (error) {
           console.error('Error updating card:', error);
           toast.error('Failed to update service card');
           return;
         }
       } else {
+        const { id, ...insertData } = cardData;
         const { error } = await supabase
           .from('service_cards')
-          .insert(cardData);
+          .insert(insertData);
         if (error) {
           console.error('Error creating card:', error);
           toast.error('Failed to create service card');
@@ -172,6 +200,50 @@ const ServicePageManagement = () => {
     }
   };
 
+  const handleEditPage = (serviceType: string) => {
+    const page = servicePages.find(p => p.service_type === serviceType);
+    if (page) {
+      setPageFormData(page);
+    } else {
+      setPageFormData({
+        service_type: serviceType,
+        title: '',
+        subtitle: '',
+        description: '',
+        hero_image: '',
+        meta_title: '',
+        meta_description: '',
+        is_active: true
+      });
+    }
+    setEditingPage(serviceType);
+  };
+
+  const handleEditCard = (cardId: string) => {
+    if (cardId === 'new') {
+      setCardFormData({
+        id: 'new',
+        service_type: '',
+        title: '',
+        description: '',
+        icon: '',
+        gradient: '',
+        features: [],
+        sort_order: 0,
+        is_active: true
+      });
+    } else {
+      const card = serviceCards.find(c => c.id === cardId);
+      if (card) {
+        setCardFormData({
+          ...card,
+          features: getCardFeatures(card.features)
+        });
+      }
+    }
+    setEditingCard(cardId);
+  };
+
   // Helper function to safely get features as string array
   const getCardFeatures = (features: Json): string[] => {
     if (Array.isArray(features)) {
@@ -188,7 +260,7 @@ const ServicePageManagement = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Service Page Management</h2>
-        <Button onClick={() => setEditingCard('new')}>
+        <Button onClick={() => handleEditCard('new')}>
           <Plus className="w-4 h-4 mr-2" />
           Add Service Card
         </Button>
@@ -213,7 +285,7 @@ const ServicePageManagement = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setEditingPage(serviceType)}
+                      onClick={() => handleEditPage(serviceType)}
                     >
                       <Edit className="w-4 h-4 mr-2" />
                       Edit
@@ -268,7 +340,7 @@ const ServicePageManagement = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => setEditingCard(card.id)}
+                              onClick={() => handleEditCard(card.id)}
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -296,23 +368,64 @@ const ServicePageManagement = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Edit Page Modal - Placeholder for now */}
+      {/* Edit Page Modal */}
       {editingPage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-2xl w-full mx-4">
+          <div className="bg-white p-6 rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Edit {editingPage.replace('-', ' ')} Page</h3>
             <div className="space-y-4">
               <div>
                 <Label htmlFor="title">Title</Label>
-                <Input id="title" placeholder="Enter page title" />
+                <Input 
+                  id="title" 
+                  value={pageFormData.title}
+                  onChange={(e) => setPageFormData(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter page title" 
+                />
               </div>
               <div>
                 <Label htmlFor="subtitle">Subtitle</Label>
-                <Input id="subtitle" placeholder="Enter page subtitle" />
+                <Input 
+                  id="subtitle" 
+                  value={pageFormData.subtitle}
+                  onChange={(e) => setPageFormData(prev => ({ ...prev, subtitle: e.target.value }))}
+                  placeholder="Enter page subtitle" 
+                />
               </div>
               <div>
                 <Label htmlFor="description">Description</Label>
-                <Textarea id="description" placeholder="Enter page description" />
+                <Textarea 
+                  id="description" 
+                  value={pageFormData.description}
+                  onChange={(e) => setPageFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Enter page description" 
+                />
+              </div>
+              <div>
+                <Label htmlFor="meta_title">Meta Title</Label>
+                <Input 
+                  id="meta_title" 
+                  value={pageFormData.meta_title}
+                  onChange={(e) => setPageFormData(prev => ({ ...prev, meta_title: e.target.value }))}
+                  placeholder="Enter meta title for SEO" 
+                />
+              </div>
+              <div>
+                <Label htmlFor="meta_description">Meta Description</Label>
+                <Textarea 
+                  id="meta_description" 
+                  value={pageFormData.meta_description}
+                  onChange={(e) => setPageFormData(prev => ({ ...prev, meta_description: e.target.value }))}
+                  placeholder="Enter meta description for SEO" 
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  id="is_active"
+                  checked={pageFormData.is_active}
+                  onCheckedChange={(checked) => setPageFormData(prev => ({ ...prev, is_active: checked }))}
+                />
+                <Label htmlFor="is_active">Active</Label>
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6">
@@ -320,7 +433,7 @@ const ServicePageManagement = () => {
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
-              <Button onClick={() => setEditingPage(null)}>
+              <Button onClick={handleSavePage}>
                 <Save className="w-4 h-4 mr-2" />
                 Save Changes
               </Button>
@@ -329,17 +442,20 @@ const ServicePageManagement = () => {
         </div>
       )}
 
-      {/* Edit Card Modal - Placeholder for now */}
+      {/* Edit Card Modal */}
       {editingCard && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-2xl w-full mx-4">
+          <div className="bg-white p-6 rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">
               {editingCard === 'new' ? 'Add New Service Card' : 'Edit Service Card'}
             </h3>
             <div className="space-y-4">
               <div>
                 <Label htmlFor="service-type">Service Type</Label>
-                <Select>
+                <Select 
+                  value={cardFormData.service_type}
+                  onValueChange={(value) => setCardFormData(prev => ({ ...prev, service_type: value }))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select service type" />
                   </SelectTrigger>
@@ -354,11 +470,57 @@ const ServicePageManagement = () => {
               </div>
               <div>
                 <Label htmlFor="card-title">Title</Label>
-                <Input id="card-title" placeholder="Enter card title" />
+                <Input 
+                  id="card-title" 
+                  value={cardFormData.title}
+                  onChange={(e) => setCardFormData(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter card title" 
+                />
               </div>
               <div>
                 <Label htmlFor="card-description">Description</Label>
-                <Textarea id="card-description" placeholder="Enter card description" />
+                <Textarea 
+                  id="card-description" 
+                  value={cardFormData.description}
+                  onChange={(e) => setCardFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Enter card description" 
+                />
+              </div>
+              <div>
+                <Label htmlFor="icon">Icon</Label>
+                <Input 
+                  id="icon" 
+                  value={cardFormData.icon}
+                  onChange={(e) => setCardFormData(prev => ({ ...prev, icon: e.target.value }))}
+                  placeholder="Enter icon name" 
+                />
+              </div>
+              <div>
+                <Label htmlFor="gradient">Gradient</Label>
+                <Input 
+                  id="gradient" 
+                  value={cardFormData.gradient}
+                  onChange={(e) => setCardFormData(prev => ({ ...prev, gradient: e.target.value }))}
+                  placeholder="Enter gradient CSS class" 
+                />
+              </div>
+              <div>
+                <Label htmlFor="sort_order">Sort Order</Label>
+                <Input 
+                  id="sort_order" 
+                  type="number"
+                  value={cardFormData.sort_order}
+                  onChange={(e) => setCardFormData(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
+                  placeholder="Enter sort order" 
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  id="card_active"
+                  checked={cardFormData.is_active}
+                  onCheckedChange={(checked) => setCardFormData(prev => ({ ...prev, is_active: checked }))}
+                />
+                <Label htmlFor="card_active">Active</Label>
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6">
@@ -366,7 +528,7 @@ const ServicePageManagement = () => {
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
-              <Button onClick={() => setEditingCard(null)}>
+              <Button onClick={handleSaveCard}>
                 <Save className="w-4 h-4 mr-2" />
                 {editingCard === 'new' ? 'Create Card' : 'Save Changes'}
               </Button>
