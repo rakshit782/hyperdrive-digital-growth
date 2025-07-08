@@ -398,6 +398,48 @@ export type Database = {
         }
         Relationships: []
       }
+      service_cards: {
+        Row: {
+          created_at: string | null
+          description: string
+          features: Json | null
+          gradient: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          service_type: string
+          sort_order: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          features?: Json | null
+          gradient?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          service_type: string
+          sort_order?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          features?: Json | null
+          gradient?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          service_type?: string
+          sort_order?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       service_case_studies: {
         Row: {
           client_name: string | null
@@ -441,6 +483,45 @@ export type Database = {
           results?: Json
           service_type?: string
           sort_order?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      service_pages: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          hero_image: string | null
+          is_active: boolean | null
+          meta_description: string | null
+          meta_title: string | null
+          service_type: string
+          subtitle: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          hero_image?: string | null
+          is_active?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
+          service_type: string
+          subtitle?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          hero_image?: string | null
+          is_active?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
+          service_type?: string
+          subtitle?: string | null
           title?: string
           updated_at?: string | null
         }

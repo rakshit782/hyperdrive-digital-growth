@@ -68,7 +68,11 @@ const ServicePageManagement = () => {
         .select('*')
         .order('service_type');
 
-      if (pagesError) throw pagesError;
+      if (pagesError) {
+        console.error('Error fetching service pages:', pagesError);
+        toast.error('Failed to load service pages');
+        return;
+      }
 
       // Fetch service cards
       const { data: cards, error: cardsError } = await supabase
@@ -77,7 +81,11 @@ const ServicePageManagement = () => {
         .order('service_type', { ascending: true })
         .order('sort_order', { ascending: true });
 
-      if (cardsError) throw cardsError;
+      if (cardsError) {
+        console.error('Error fetching service cards:', cardsError);
+        toast.error('Failed to load service cards');
+        return;
+      }
 
       setServicePages(pages || []);
       setServiceCards(cards || []);
@@ -95,7 +103,11 @@ const ServicePageManagement = () => {
         .from('service_pages')
         .upsert(pageData, { onConflict: 'service_type' });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving page:', error);
+        toast.error('Failed to save service page');
+        return;
+      }
 
       toast.success('Service page updated successfully');
       setEditingPage(null);
@@ -113,12 +125,20 @@ const ServicePageManagement = () => {
           .from('service_cards')
           .update(cardData)
           .eq('id', cardData.id);
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating card:', error);
+          toast.error('Failed to update service card');
+          return;
+        }
       } else {
         const { error } = await supabase
           .from('service_cards')
           .insert(cardData);
-        if (error) throw error;
+        if (error) {
+          console.error('Error creating card:', error);
+          toast.error('Failed to create service card');
+          return;
+        }
       }
 
       toast.success('Service card saved successfully');
@@ -137,7 +157,11 @@ const ServicePageManagement = () => {
         .delete()
         .eq('id', cardId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting card:', error);
+        toast.error('Failed to delete service card');
+        return;
+      }
 
       toast.success('Service card deleted successfully');
       fetchServiceData();
@@ -193,7 +217,7 @@ const ServicePageManagement = () => {
                       </div>
                       <div>
                         <strong>Status:</strong>
-                        <Badge variant={page?.is_active ? 'default' : 'secondary'}>
+                        <Badge variant={page?.is_active ? 'default' : 'secondary'} className="ml-2">
                           {page?.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                       </div>
@@ -244,6 +268,11 @@ const ServicePageManagement = () => {
                           </div>
                         </div>
                       ))}
+                      {cards.length === 0 && (
+                        <div className="text-center py-4 text-gray-500">
+                          No cards found for this service type
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -253,8 +282,84 @@ const ServicePageManagement = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Edit Page Modal would go here */}
-      {/* Edit Card Modal would go here */}
+      {/* Edit Page Modal - Placeholder for now */}
+      {editingPage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-2xl w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Edit {editingPage.replace('-', ' ')} Page</h3>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">Title</Label>
+                <Input id="title" placeholder="Enter page title" />
+              </div>
+              <div>
+                <Label htmlFor="subtitle">Subtitle</Label>
+                <Input id="subtitle" placeholder="Enter page subtitle" />
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea id="description" placeholder="Enter page description" />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <Button variant="outline" onClick={() => setEditingPage(null)}>
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </Button>
+              <Button onClick={() => setEditingPage(null)}>
+                <Save className="w-4 h-4 mr-2" />
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Card Modal - Placeholder for now */}
+      {editingCard && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-2xl w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">
+              {editingCard === 'new' ? 'Add New Service Card' : 'Edit Service Card'}
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="service-type">Service Type</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select service type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {serviceTypes.map(type => (
+                      <SelectItem key={type} value={type}>
+                        {type.replace('-', ' ')}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="card-title">Title</Label>
+                <Input id="card-title" placeholder="Enter card title" />
+              </div>
+              <div>
+                <Label htmlFor="card-description">Description</Label>
+                <Textarea id="card-description" placeholder="Enter card description" />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <Button variant="outline" onClick={() => setEditingCard(null)}>
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </Button>
+              <Button onClick={() => setEditingCard(null)}>
+                <Save className="w-4 h-4 mr-2" />
+                {editingCard === 'new' ? 'Create Card' : 'Save Changes'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
