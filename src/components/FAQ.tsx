@@ -1,96 +1,13 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, HelpCircle, MessageCircle, Sparkles } from "lucide-react";
-
-interface FAQItem {
-  id: string;
-  question: string;
-  answer: string;
-  isActive: boolean;
-}
-
-const defaultFAQs: FAQItem[] = [
-  {
-    id: "1",
-    question: "How quickly can I see results from your advertising campaigns?",
-    answer: "Most clients see initial improvements within 2-4 weeks, with significant results typically visible within 60-90 days. However, timelines can vary based on your current account status, competition, and budget.",
-    isActive: true
-  },
-  {
-    id: "2",
-    question: "What makes your agency different from others?",
-    answer: "We specialize exclusively in e-commerce advertising with a data-driven approach. Our team has managed over $50M in ad spend and focuses on profitable growth, not just traffic. We provide transparent reporting and dedicated account management.",
-    isActive: true
-  },
-  {
-    id: "3",
-    question: "Do you guarantee results?",
-    answer: "While we can't guarantee specific numbers due to market variables, we do guarantee our commitment to improving your performance. If you're not satisfied with our service within the first 60 days, we'll work with you to make it right.",
-    isActive: true
-  },
-  {
-    id: "4",
-    question: "What platforms do you manage advertising on?",
-    answer: "We manage advertising campaigns on Amazon, Walmart, Meta (Facebook & Instagram), and provide Shopify integration and development services. Our expertise spans the entire e-commerce advertising ecosystem.",
-    isActive: true
-  },
-  {
-    id: "5",
-    question: "How much do your services cost?",
-    answer: "Our pricing is customized based on your needs and ad spend. We offer both percentage-based and flat fee structures. Contact us for a free consultation to discuss pricing that fits your budget and goals.",
-    isActive: true
-  },
-  {
-    id: "6",
-    question: "Do you work with businesses of all sizes?",
-    answer: "Yes! We work with startups, growing businesses, and established brands. Our strategies are scalable and customized to your business size, goals, and budget.",
-    isActive: true
-  }
-];
+import { useFAQData } from "@/hooks/useFAQData";
 
 const FAQ = () => {
-  const [faqs, setFAQs] = useState<FAQItem[]>(defaultFAQs);
+  const { faqs, isLoading } = useFAQData();
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    console.log("FAQ: Component mounted, initializing...");
-    
-    const loadFAQs = () => {
-      const savedFAQs = localStorage.getItem('faqData');
-      if (savedFAQs) {
-        try {
-          const parsedData = JSON.parse(savedFAQs);
-          if (Array.isArray(parsedData) && parsedData.length > 0) {
-            console.log("FAQ: Loaded from localStorage:", parsedData.length);
-            setFAQs(parsedData.filter((faq: FAQItem) => faq.isActive));
-          } else {
-            console.log("FAQ: Invalid localStorage data, using defaults");
-            setFAQs(defaultFAQs);
-          }
-        } catch (error) {
-          console.error("FAQ: Error parsing saved FAQs:", error);
-          setFAQs(defaultFAQs);
-        }
-      }
-    };
-
-    loadFAQs();
-
-    const handleFAQUpdate = (event: CustomEvent) => {
-      console.log("FAQ: Received update event:", event.detail);
-      if (event.detail && Array.isArray(event.detail)) {
-        setFAQs(event.detail.filter((faq: FAQItem) => faq.isActive));
-      }
-    };
-
-    window.addEventListener('faqUpdated', handleFAQUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener('faqUpdated', handleFAQUpdate as EventListener);
-    };
-  }, []);
 
   const toggleItem = (id: string) => {
     setOpenItems(prev => ({
@@ -115,8 +32,25 @@ const FAQ = () => {
           </p>
         </div>
 
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(6)].map((_, index) => (
+              <Card key={index} className="border border-slate-200/60">
+                <CardHeader className="py-6">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-xl bg-slate-200 animate-pulse mr-3"></div>
+                    <div className="flex-1">
+                      <div className="h-4 bg-slate-200 animate-pulse rounded mb-2"></div>
+                      <div className="h-4 bg-slate-200 animate-pulse rounded w-3/4"></div>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
             <Card 
               key={faq.id} 
               className="group border border-slate-200/60 hover:border-blue-300/60 transition-all duration-300 bg-white/90 backdrop-blur-sm hover:shadow-lg"
@@ -157,8 +91,9 @@ const FAQ = () => {
                 </CollapsibleContent>
               </Collapsible>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <div className="text-center mt-12">
           <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200/50 mb-6">

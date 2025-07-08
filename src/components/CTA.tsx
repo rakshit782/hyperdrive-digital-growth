@@ -1,74 +1,11 @@
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, TrendingUp, Target } from "lucide-react";
-
-interface CTAData {
-  title: string;
-  subtitle: string;
-  description: string;
-  primaryButtonText: string;
-  primaryButtonLink: string;
-  secondaryButtonText: string;
-  secondaryButtonLink: string;
-  showSecondaryButton: boolean;
-  backgroundStyle: string;
-}
-
-const defaultCTAData: CTAData = {
-  title: "Ready to Scale Your Business?",
-  subtitle: "Get Your Free Strategy Session Today",
-  description: "Join hundreds of successful e-commerce businesses that have transformed their advertising results with our expert team. Let's discuss how we can help you achieve your growth goals.",
-  primaryButtonText: "Get Free Strategy Call",
-  primaryButtonLink: "/free-audit",
-  secondaryButtonText: "View Case Studies",
-  secondaryButtonLink: "/case-studies",
-  showSecondaryButton: true,
-  backgroundStyle: "gradient"
-};
+import { useCTAData } from "@/hooks/useCTAData";
 
 const CTA = () => {
-  const [ctaData, setCTAData] = useState<CTAData>(defaultCTAData);
+  const { ctaData, isLoading } = useCTAData();
 
-  useEffect(() => {
-    console.log("CTA: Component mounted, initializing...");
-    
-    const loadCTAData = () => {
-      const savedCTA = localStorage.getItem('ctaData');
-      if (savedCTA) {
-        try {
-          const parsedData = JSON.parse(savedCTA);
-          if (parsedData && typeof parsedData === 'object') {
-            console.log("CTA: Loaded from localStorage:", parsedData);
-            setCTAData({ ...defaultCTAData, ...parsedData });
-          } else {
-            console.log("CTA: Invalid localStorage data, using defaults");
-            setCTAData(defaultCTAData);
-          }
-        } catch (error) {
-          console.error("CTA: Error parsing saved CTA data:", error);
-          setCTAData(defaultCTAData);
-        }
-      }
-    };
-
-    // Load CTA data on mount
-    loadCTAData();
-
-    // Listen for updates from dashboard
-    const handleCTAUpdate = (event: CustomEvent) => {
-      console.log("CTA: Received update event:", event.detail);
-      if (event.detail && typeof event.detail === 'object') {
-        setCTAData({ ...defaultCTAData, ...event.detail });
-      }
-    };
-
-    window.addEventListener('ctaUpdated', handleCTAUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener('ctaUpdated', handleCTAUpdate as EventListener);
-    };
-  }, []);
 
   const getBackgroundClass = () => {
     switch (ctaData.backgroundStyle) {
@@ -81,6 +18,25 @@ const CTA = () => {
         return 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900';
     }
   };
+
+  if (isLoading) {
+    return (
+      <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white relative overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center">
+            <div className="w-20 h-20 bg-slate-700 animate-pulse rounded-3xl mx-auto mb-8"></div>
+            <div className="h-6 bg-slate-700 animate-pulse rounded mb-6 w-64 mx-auto"></div>
+            <div className="h-12 bg-slate-700 animate-pulse rounded mb-6 w-96 mx-auto"></div>
+            <div className="h-6 bg-slate-700 animate-pulse rounded mb-12 w-128 mx-auto"></div>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <div className="h-14 bg-slate-700 animate-pulse rounded-2xl w-64"></div>
+              <div className="h-14 bg-slate-700 animate-pulse rounded-2xl w-48"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={`py-20 ${getBackgroundClass()} text-white relative overflow-hidden`}>
