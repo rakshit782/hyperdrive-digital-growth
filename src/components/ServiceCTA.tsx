@@ -9,7 +9,7 @@ interface ServiceCTAProps {
   serviceType: string;
 }
 
-const ServiceCTA = ({ title, description, buttonText }: ServiceCTAProps) => {
+const ServiceCTA = ({ title, description, buttonText, serviceType }: ServiceCTAProps) => {
   return (
     <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
       <div className="max-w-4xl mx-auto px-6 text-center">
@@ -23,7 +23,7 @@ const ServiceCTA = ({ title, description, buttonText }: ServiceCTAProps) => {
         <Button 
           size="lg"
           className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-          onClick={() => window.location.href = '/contact'}
+          onClick={() => window.location.href = '/free-audit'}
         >
           {buttonText}
           <ArrowRight className="ml-2 w-5 h-5" />

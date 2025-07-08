@@ -1,5 +1,6 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { integrationManager } from '@/utils/integrationManager';
 
 interface User {
   id: string;
@@ -41,6 +42,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // Initialize all integrations on app start
+        integrationManager.initializeAllIntegrations();
+        
         // For now, we're using Auth0 for authentication which is handled by the Auth0Provider
         // No need to check for current user here as Auth0 handles this
         console.log('Auth system initialized - using Auth0 for authentication');

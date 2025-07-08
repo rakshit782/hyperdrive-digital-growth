@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Globe, Palette, Type, Eye, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface WebsiteSettings {
   companyName: string;
@@ -39,73 +39,25 @@ const WebsiteTab = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const loadSettings = async () => {
+    const savedSettings = localStorage.getItem('websiteSettings');
+    if (savedSettings) {
       try {
-        // Try loading from Supabase first
-        const { data: supabaseSettings } = await supabase
-          .from('website_settings')
-          .select('*');
-
-        if (supabaseSettings && supabaseSettings.length > 0) {
-          const settingsObj = supabaseSettings.reduce((acc, setting) => {
-            acc[setting.setting_key] = setting.setting_value;
-            return acc;
-          }, {} as any);
-          
-          setSettings({ ...defaultSettings, ...settingsObj });
-        } else {
-          // Fallback to localStorage
-          const savedSettings = localStorage.getItem('websiteSettings');
-          if (savedSettings) {
-            try {
-              const parsed = JSON.parse(savedSettings);
-              setSettings({ ...defaultSettings, ...parsed });
-            } catch (error) {
-              console.error('Failed to parse website settings:', error);
-            }
-          }
-        }
+        const parsed = JSON.parse(savedSettings);
+        setSettings({ ...defaultSettings, ...parsed });
       } catch (error) {
-        console.error('Failed to load settings:', error);
-        // Fallback to localStorage
-        const savedSettings = localStorage.getItem('websiteSettings');
-        if (savedSettings) {
-          try {
-            const parsed = JSON.parse(savedSettings);
-            setSettings({ ...defaultSettings, ...parsed });
-          } catch (parseError) {
-            console.error('Failed to parse localStorage settings:', parseError);
-          }
-        }
+        console.error('Failed to parse website settings:', error);
+        toast({
+          title: "Error loading settings",
+          description: "Using default settings instead.",
+          variant: "destructive"
+        });
       }
-    };
-
-    loadSettings();
-  }, []);
+    }
+  }, [toast]);
 
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      // Save to Supabase for real-time sync
-      const settingEntries = Object.entries(settings);
-      
-      for (const [key, value] of settingEntries) {
-        const { error } = await supabase
-          .from('website_settings')
-          .upsert({
-            setting_key: key,
-            setting_value: value,
-            setting_type: 'website'
-          }, {
-            onConflict: 'setting_key'
-          });
-
-        if (error) {
-          console.error(`Error saving ${key}:`, error);
-        }
-      }
-
-      // Also save to localStorage as backup
       localStorage.setItem('websiteSettings', JSON.stringify(settings));
       
       // Dispatch custom event to update website immediately
@@ -120,7 +72,7 @@ const WebsiteTab = () => {
       setIsSaved(true);
       toast({
         title: "Settings saved!",
-        description: "Your website has been updated in real-time across all devices.",
+        description: "Your website has been updated with the new settings.",
       });
       
       setTimeout(() => setIsSaved(false), 3000);
@@ -128,12 +80,9 @@ const WebsiteTab = () => {
       console.error('Failed to save settings:', error);
       toast({
         title: "Save failed",
-        description: "Please try again. Changes saved locally as backup.",
+        description: "Please try again.",
         variant: "destructive"
       });
-      
-      // Save to localStorage as fallback
-      localStorage.setItem('websiteSettings', JSON.stringify(settings));
     } finally {
       setIsLoading(false);
     }
@@ -143,21 +92,7 @@ const WebsiteTab = () => {
     setSettings(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleReset = async () => {
-    try {
-      // Clear from Supabase
-      const { error } = await supabase
-        .from('website_settings')
-        .delete()
-        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
-
-      if (error) {
-        console.error('Error clearing Supabase settings:', error);
-      }
-    } catch (error) {
-      console.error('Failed to clear Supabase settings:', error);
-    }
-
+  const handleReset = () => {
     setSettings(defaultSettings);
     localStorage.removeItem('websiteSettings');
     
@@ -171,7 +106,7 @@ const WebsiteTab = () => {
     
     toast({
       title: "Settings reset",
-      description: "All settings have been reset to defaults and synced in real-time.",
+      description: "All settings have been reset to defaults.",
     });
   };
 
@@ -186,7 +121,7 @@ const WebsiteTab = () => {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold text-slate-900">Website Settings</h2>
-            <p className="text-slate-600 mt-1">Configure your website appearance and content - updates in real-time</p>
+            <p className="text-slate-600 mt-1">Configure your website appearance and content</p>
           </div>
           <div className="flex gap-2">
             <Button onClick={previewChanges} variant="outline" className="bg-white/50">
@@ -367,9 +302,9 @@ const WebsiteTab = () => {
             {isLoading ? (
               <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
             ) : isSaved ? (
-              "✓ Saved & Synced!"
+              "✓ Saved!"
             ) : (
-              "Save & Sync Website Settings"
+              "Save Website Settings"
             )}
           </Button>
         </div>

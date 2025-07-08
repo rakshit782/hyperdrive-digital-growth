@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,16 +22,17 @@ import {
   Filter,
   Globe,
   FileText,
-  Award
+  Award,
+  RefreshCw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useSupabaseData, Lead } from "@/hooks/useSupabaseData";
+import { usePostgresLeads } from "@/hooks/usePostgresLeads";
+import { Lead } from "@/services/postgresService";
 
 type LeadStatus = 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
 
 const LeadManagementTab = () => {
-  const { useLeads } = useSupabaseData();
-  const { leads, loading, createLead, updateLead, deleteLead } = useLeads();
+  const { leads, loading, createLead, updateLead, deleteLead, refetch } = usePostgresLeads();
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -89,11 +89,10 @@ const LeadManagementTab = () => {
       const leadData = {
         ...formData,
         lead_data: {},
-        phone: formData.phone || null,
-        company: formData.company || null,
-        source: formData.source || null,
-        notes: formData.notes || null,
-        assigned_to: null
+        phone: formData.phone || undefined,
+        company: formData.company || undefined,
+        source: formData.source || undefined,
+        notes: formData.notes || undefined
       };
 
       if (selectedLead) {
@@ -152,6 +151,7 @@ const LeadManagementTab = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-gray-600">Loading leads from PostgreSQL...</span>
       </div>
     );
   }
@@ -166,114 +166,120 @@ const LeadManagementTab = () => {
                 <Users className="w-5 h-5 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl font-bold text-slate-900">Lead Management</CardTitle>
-                <CardDescription>Track and manage your leads and website form submissions</CardDescription>
+                <CardTitle className="text-xl font-bold text-slate-900">Lead Management (PostgreSQL)</CardTitle>
+                <CardDescription>Track and manage your leads with PostgreSQL database</CardDescription>
               </div>
             </div>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button onClick={resetForm} className="bg-gradient-to-r from-green-600 to-blue-600">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Lead
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle>{selectedLead ? 'Edit Lead' : 'Add New Lead'}</DialogTitle>
-                  <DialogDescription>
-                    {selectedLead ? 'Update lead information' : 'Add a new lead to your pipeline'}
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">Name *</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="company">Company</Label>
-                    <Input
-                      id="company"
-                      value={formData.company}
-                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="source">Source</Label>
-                    <Select value={formData.source} onValueChange={(value) => setFormData({ ...formData, source: value })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select source" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="website">Website</SelectItem>
-                        <SelectItem value="contact_form">Contact Form</SelectItem>
-                        <SelectItem value="free_audit_form">Free Audit Form</SelectItem>
-                        <SelectItem value="referral">Referral</SelectItem>
-                        <SelectItem value="social_media">Social Media</SelectItem>
-                        <SelectItem value="google_ads">Google Ads</SelectItem>
-                        <SelectItem value="facebook_ads">Facebook Ads</SelectItem>
-                        <SelectItem value="cold_outreach">Cold Outreach</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="status">Status</Label>
-                    <Select value={formData.status} onValueChange={(value: LeadStatus) => setFormData({ ...formData, status: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="new">New</SelectItem>
-                        <SelectItem value="contacted">Contacted</SelectItem>
-                        <SelectItem value="qualified">Qualified</SelectItem>
-                        <SelectItem value="converted">Converted</SelectItem>
-                        <SelectItem value="lost">Lost</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="notes">Notes</Label>
-                    <Textarea
-                      id="notes"
-                      value={formData.notes}
-                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                      rows={3}
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-2">
-                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button type="submit" className="bg-gradient-to-r from-green-600 to-blue-600">
-                      {selectedLead ? 'Update' : 'Create'} Lead
-                    </Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={refetch} className="flex items-center gap-2">
+                <RefreshCw className="w-4 h-4" />
+                Refresh
+              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={resetForm} className="bg-gradient-to-r from-green-600 to-blue-600">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Lead
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>{selectedLead ? 'Edit Lead' : 'Add New Lead'}</DialogTitle>
+                    <DialogDescription>
+                      {selectedLead ? 'Update lead information' : 'Add a new lead to your pipeline'}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <Label htmlFor="name">Name *</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="email">Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="company">Company</Label>
+                      <Input
+                        id="company"
+                        value={formData.company}
+                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="source">Source</Label>
+                      <Select value={formData.source} onValueChange={(value) => setFormData({ ...formData, source: value })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select source" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="website">Website</SelectItem>
+                          <SelectItem value="contact_form">Contact Form</SelectItem>
+                          <SelectItem value="free_audit_form">Free Audit Form</SelectItem>
+                          <SelectItem value="referral">Referral</SelectItem>
+                          <SelectItem value="social_media">Social Media</SelectItem>
+                          <SelectItem value="google_ads">Google Ads</SelectItem>
+                          <SelectItem value="facebook_ads">Facebook Ads</SelectItem>
+                          <SelectItem value="cold_outreach">Cold Outreach</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="status">Status</Label>
+                      <Select value={formData.status} onValueChange={(value: LeadStatus) => setFormData({ ...formData, status: value })}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="new">New</SelectItem>
+                          <SelectItem value="contacted">Contacted</SelectItem>
+                          <SelectItem value="qualified">Qualified</SelectItem>
+                          <SelectItem value="converted">Converted</SelectItem>
+                          <SelectItem value="lost">Lost</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="notes">Notes</Label>
+                      <Textarea
+                        id="notes"
+                        value={formData.notes}
+                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        rows={3}
+                      />
+                    </div>
+                    <div className="flex justify-end space-x-2">
+                      <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" className="bg-gradient-to-r from-green-600 to-blue-600">
+                        {selectedLead ? 'Update' : 'Create'} Lead
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </CardHeader>
         
@@ -450,7 +456,7 @@ const LeadManagementTab = () => {
                 <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No leads found</h3>
                 <p className="text-gray-600 mb-4">
-                  {filterStatus === 'all' && !searchTerm ? 'Start by adding your first lead or set up form submissions' : 
+                  {filterStatus === 'all' && !searchTerm ? 'Start by adding your first lead or connect your forms' : 
                    searchTerm ? `No leads match "${searchTerm}"` :
                    `No leads with status "${filterStatus}"`}
                 </p>

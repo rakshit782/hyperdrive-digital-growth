@@ -1,73 +1,90 @@
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-
-export interface DashboardStats {
-  totalPages: number;
-  totalPosts: number;
-  totalMedia: number;
-  activeScripts: number;
-}
+import { useState, useEffect } from "react";
+import { ServiceCard, Review } from "@/types/dashboard";
+import { defaultServices, defaultReviews } from "@/data/defaultData";
+import { isValidData, dispatchDataUpdate } from "@/utils/dashboardUtils";
 
 export const useDashboardData = () => {
-  const [stats, setStats] = useState<DashboardStats>({
-    totalPages: 0,
-    totalPosts: 0,
-    totalMedia: 0,
-    activeScripts: 0
-  });
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  const [services, setServices] = useState<ServiceCard[]>(defaultServices);
+  const [reviews, setReviews] = useState<Review[]>(defaultReviews);
 
-  useEffect(() => {
-    fetchDashboardStats();
-  }, []);
-
-  const fetchDashboardStats = async () => {
-    try {
-      // Fetch pages count - using any to bypass type checking temporarily
-      const { count: pagesCount } = await (supabase as any)
-        .from('pages')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch blog posts count
-      const { count: postsCount } = await supabase
-        .from('blog_posts')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch media count - using any to bypass type checking temporarily
-      const { count: mediaCount } = await (supabase as any)
-        .from('media_library')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch active scripts count - using any to bypass type checking temporarily
-      const { count: scriptsCount } = await (supabase as any)
-        .from('tracking_scripts')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_active', true);
-
-      setStats({
-        totalPages: pagesCount || 0,
-        totalPosts: postsCount || 0,
-        totalMedia: mediaCount || 0,
-        activeScripts: scriptsCount || 0
-      });
-    } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch dashboard statistics",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+  const initializeData = () => {
+    console.log("Dashboard: Initializing data...");
+    
+    const savedServices = localStorage.getItem('servicesData');
+    const savedReviews = localStorage.getItem('reviewsData');
+    
+    let servicesData = defaultServices;
+    let reviewsData = defaultReviews;
+    
+    // Validate and load services
+    if (savedServices) {
+      try {
+        const parsedServices = JSON.parse(savedServices);
+        if (isValidData(parsedServices, 'services') && parsedServices.length === 6) {
+          servicesData = parsedServices;
+          console.log("Dashboard: Loaded valid services from localStorage", parsedServices.length);
+        } else {
+          console.log("Dashboard: Invalid services data, using defaults");
+        }
+      } catch (error) {
+        console.error("Dashboard: Failed to parse services data:", error);
+      }
     }
+    
+    // Validate and load reviews
+    if (savedReviews) {
+      try {
+        const parsedReviews = JSON.parse(savedReviews);
+        if (isValidData(parsedReviews, 'reviews') && parsedReviews.length === 6) {
+          reviewsData = parsedReviews;
+          console.log("Dashboard: Loaded valid reviews from localStorage", parsedReviews.length);
+        } else {
+          console.log("Dashboard: Invalid reviews data, using defaults");
+        }
+      } catch (error) {
+        console.error("Dashboard: Failed to parse reviews data:", error);
+      }
+    }
+    
+    // Force update localStorage with valid data
+    localStorage.setItem('servicesData', JSON.stringify(servicesData));
+    localStorage.setItem('reviewsData', JSON.stringify(reviewsData));
+    
+    // Update state
+    setServices(servicesData);
+    setReviews(reviewsData);
+    
+    // Dispatch events to notify frontend components
+    console.log("Dashboard: Dispatching update events");
+    dispatchDataUpdate('services', servicesData);
+    dispatchDataUpdate('reviews', reviewsData);
+    
+    console.log("Dashboard: Initialization complete - Services:", servicesData.length, "Reviews:", reviewsData.length);
   };
 
+  const updateServices = (newServices: ServiceCard[]) => {
+    console.log("Dashboard: Updating services", newServices.length);
+    setServices(newServices);
+    localStorage.setItem('servicesData', JSON.stringify(newServices));
+    dispatchDataUpdate('services', newServices);
+  };
+
+  const updateReviews = (newReviews: Review[]) => {
+    console.log("Dashboard: Updating reviews", newReviews.length);
+    setReviews(newReviews);
+    localStorage.setItem('reviewsData', JSON.stringify(newReviews));
+    dispatchDataUpdate('reviews', newReviews);
+  };
+
+  useEffect(() => {
+    initializeData();
+  }, []);
+
   return {
-    stats,
-    loading,
-    refreshStats: fetchDashboardStats
+    services,
+    reviews,
+    updateServices,
+    updateReviews,
   };
 };
