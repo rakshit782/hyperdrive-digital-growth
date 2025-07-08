@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,10 @@ import PerformanceOptimizer from "./components/PerformanceOptimizer";
 import SEOManager from "./components/SEOManager";
 import AdvancedAnalytics from "./components/AdvancedAnalytics";
 import EmailAutomationManager from "./components/EmailAutomationManager";
+import ScrollToTop from "./components/ScrollToTop";
+import WebsiteDevelopment from "./pages/WebsiteDevelopment";
+import ShopifyIntegration from "./pages/ShopifyIntegration";
+import AccountManagement from "./pages/AccountManagement";
 import { performanceMonitor } from "./utils/performanceMonitor";
 
 const queryClient = new QueryClient({
@@ -49,6 +52,7 @@ function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <PerformanceOptimizer />
           <SEOManager />
           <AdvancedAnalytics />
@@ -64,6 +68,10 @@ function App() {
             <Route path="/meta-advertising" element={<MetaAdvertising />} />
             <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
             <Route path="/google-advertising" element={<GoogleAdvertising />} />
+            <Route path="/website-development" element={<WebsiteDevelopment />} />
+            <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+            <Route path="/shopify-integration" element={<ShopifyIntegration />} />
+            <Route path="/account-management" element={<AccountManagement />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
