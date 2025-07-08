@@ -106,10 +106,11 @@ export const useWebsiteSettings = () => {
     window.addEventListener('websiteSettingsUpdated', handleSettingsUpdate as EventListener);
 
     return () => {
+      // Properly cleanup the channel subscription
       supabase.removeChannel(channel);
       window.removeEventListener('websiteSettingsUpdated', handleSettingsUpdate as EventListener);
     };
-  }, []);
+  }, []); // Remove dependency array to prevent re-subscriptions
 
   return { settings, isLoading };
 };
