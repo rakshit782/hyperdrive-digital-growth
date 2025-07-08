@@ -43,8 +43,11 @@ export class PerformanceMonitor {
       // First Input Delay
       new PerformanceObserver((entryList) => {
         for (const entry of entryList.getEntries()) {
-          console.log('FID:', entry.processingStart - entry.startTime);
-          this.metrics.set('FID', entry.processingStart - entry.startTime);
+          const fidEntry = entry as any; // Cast to access FID-specific properties
+          if (fidEntry.processingStart && fidEntry.startTime) {
+            console.log('FID:', fidEntry.processingStart - fidEntry.startTime);
+            this.metrics.set('FID', fidEntry.processingStart - fidEntry.startTime);
+          }
         }
       }).observe({ entryTypes: ['first-input'] });
 
@@ -52,8 +55,9 @@ export class PerformanceMonitor {
       let clsValue = 0;
       new PerformanceObserver((entryList) => {
         for (const entry of entryList.getEntries()) {
-          if (!entry.hadRecentInput) {
-            clsValue += entry.value;
+          const clsEntry = entry as any; // Cast to access CLS-specific properties
+          if (!clsEntry.hadRecentInput && clsEntry.value) {
+            clsValue += clsEntry.value;
           }
         }
         console.log('CLS:', clsValue);

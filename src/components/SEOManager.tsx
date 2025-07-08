@@ -90,7 +90,7 @@ const SEOManager = () => {
     updateMetaTag('twitter:description', currentSEO.description);
     
     // Canonical URL
-    let canonical = document.querySelector('link[rel="canonical"]');
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
     if (!canonical) {
       canonical = document.createElement('link');
       canonical.setAttribute('rel', 'canonical');
@@ -100,9 +100,9 @@ const SEOManager = () => {
     
     // Structured Data
     if (currentSEO.structuredData) {
-      let script = document.getElementById('structured-data');
+      let script = document.getElementById('structured-data') as HTMLScriptElement;
       if (!script) {
-        script = document.createElement('script');
+        script = document.createElement('script') as HTMLScriptElement;
         script.id = 'structured-data';
         script.type = 'application/ld+json';
         document.head.appendChild(script);
