@@ -49,6 +49,76 @@ interface ServiceData {
 
 const getServiceSpecificData = (serviceType: string) => {
   const serviceConfigs = {
+    'meta-advertising': {
+      stats: [
+        { label: 'Campaign Reach', value: '5M+', description: 'Average monthly reach', icon: 'Users' },
+        { label: 'Engagement Rate', value: '8.5%', description: 'Above industry average', icon: 'TrendingUp' },
+        { label: 'ROAS', value: '4.2x', description: 'Return on ad spend', icon: 'Target' },
+        { label: 'Conversion Rate', value: '12%', description: 'Average conversion rate', icon: 'Zap' }
+      ],
+      caseStudy: {
+        title: 'Meta Advertising Success Story',
+        description: 'Transformed social media advertising strategy for a growing e-commerce brand, achieving exceptional engagement and conversion results.',
+        industry: 'E-commerce Fashion',
+        results: {
+          'Reach Increase': '+300%',
+          'Engagement Rate': '+8.5%',
+          'ROAS': '4.2x',
+          'Conversion Rate': '+12%'
+        }
+      },
+      reviews: [
+        {
+          client_name: 'Sarah Johnson',
+          company: 'Fashion Forward Co',
+          rating: 5,
+          review_text: 'Outstanding Meta advertising management that transformed our social media presence. The targeting was precise and results exceeded expectations.',
+          results_achieved: 'Increased social media ROI by 320% and brand engagement by 85%'
+        },
+        {
+          client_name: 'Michael Chen',
+          company: 'Urban Style Brand',
+          rating: 5,
+          review_text: 'Professional team with deep expertise in Facebook and Instagram advertising. Our campaigns now perform better than ever.',
+          results_achieved: 'Achieved 4.2x ROAS and 12% conversion rate across all campaigns'
+        }
+      ]
+    },
+    'amazon-advertising': {
+      stats: [
+        { label: 'Sales Growth', value: '+250%', description: 'Average client increase', icon: 'TrendingUp' },
+        { label: 'ACOS Reduction', value: '-40%', description: 'Advertising cost optimization', icon: 'Target' },
+        { label: 'Keyword Ranking', value: 'Top 3', description: 'Average position achieved', icon: 'Award' },
+        { label: 'ROI Improvement', value: '+180%', description: 'Return on investment', icon: 'Zap' }
+      ],
+      caseStudy: {
+        title: 'Amazon PPC Optimization Success',
+        description: 'Optimized Amazon advertising campaigns for a consumer electronics brand, achieving remarkable sales growth and cost efficiency.',
+        industry: 'Consumer Electronics',
+        results: {
+          'Sales Growth': '+250%',
+          'ACOS Reduction': '-40%',
+          'Keyword Ranking': 'Top 3',
+          'ROI Improvement': '+180%'
+        }
+      },
+      reviews: [
+        {
+          client_name: 'David Wilson',
+          company: 'TechGear Pro',
+          rating: 5,
+          review_text: 'Exceptional Amazon PPC management that doubled our sales within 3 months. The keyword optimization was spot-on.',
+          results_achieved: 'Doubled sales revenue and improved product ranking to top 3'
+        },
+        {
+          client_name: 'Lisa Rodriguez',
+          company: 'Home Essentials',
+          rating: 5,
+          review_text: 'Professional Amazon advertising service that significantly reduced our ACOS while increasing visibility and sales.',
+          results_achieved: 'Reduced ACOS by 40% while increasing sales by 250%'
+        }
+      ]
+    },
     'account-management': {
       stats: [
         { label: 'Client Retention', value: '98%', description: 'Client satisfaction rate', icon: 'Users' },

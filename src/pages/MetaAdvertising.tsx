@@ -280,16 +280,16 @@ const MetaAdvertising = () => {
                           <TrendingUp className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <CardTitle className="text-lg">{study.client_name}</CardTitle>
+                          <CardTitle className="text-lg">{study.client_name || 'Confidential Client'}</CardTitle>
                           <p className="text-sm text-slate-600">{study.industry}</p>
                         </div>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-slate-600 mb-4">{study.challenge}</p>
+                      <p className="text-slate-600 mb-4">{study.description}</p>
                       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-blue-600 mb-1">{study.result_metric}</div>
-                        <p className="text-sm text-slate-600">{study.result_description}</p>
+                        <div className="text-2xl font-bold text-blue-600 mb-1">{study.title}</div>
+                        <p className="text-sm text-slate-600">Outstanding Results Achieved</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -325,7 +325,7 @@ const MetaAdvertising = () => {
                         </div>
                         <div>
                           <div className="font-semibold text-slate-900">{review.client_name}</div>
-                          <div className="text-sm text-slate-600">{review.client_title}</div>
+                          <div className="text-sm text-slate-600">{review.company}</div>
                         </div>
                       </div>
                     </CardContent>
