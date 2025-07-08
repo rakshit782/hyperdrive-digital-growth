@@ -45,9 +45,9 @@ const NewsletterForm = () => {
       const result = await submitForm({
         name: email.split('@')[0], // Use email prefix as name for newsletter
         email: email,
+        phone: '', // Provide empty phone field to satisfy type requirements
         source: 'newsletter_form',
-        formType: 'newsletter',
-        message: 'Newsletter subscription'
+        formType: 'newsletter'
       });
 
       if (result.success) {
