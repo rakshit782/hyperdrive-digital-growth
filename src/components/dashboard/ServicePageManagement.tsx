@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 
 interface ServicePageData {
   service_type: string;
@@ -31,7 +32,7 @@ interface ServiceCard {
   description: string;
   icon: string;
   gradient: string;
-  features: string[];
+  features: Json; // Changed from string[] to Json to match database schema
   sort_order: number;
   is_active: boolean;
 }
@@ -171,6 +172,14 @@ const ServicePageManagement = () => {
     }
   };
 
+  // Helper function to safely get features as string array
+  const getCardFeatures = (features: Json): string[] => {
+    if (Array.isArray(features)) {
+      return features.filter((item): item is string => typeof item === 'string');
+    }
+    return [];
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center p-8">Loading...</div>;
   }
@@ -249,6 +258,11 @@ const ServicePageManagement = () => {
                             <Badge variant={card.is_active ? 'default' : 'secondary'} className="ml-2">
                               {card.is_active ? 'Active' : 'Inactive'}
                             </Badge>
+                            {getCardFeatures(card.features).length > 0 && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                Features: {getCardFeatures(card.features).length}
+                              </div>
+                            )}
                           </div>
                           <div className="flex gap-2">
                             <Button
