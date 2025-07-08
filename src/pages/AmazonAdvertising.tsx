@@ -90,10 +90,10 @@ const AmazonAdvertising = () => {
       />
       <Header />
       
-      {/* Hero Section with Custom Image */}
+      {/* Custom Hero Section with consistent padding */}
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <section className="py-24 md:py-32 lg:py-40">
-          <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-full border border-orange-200/50 mb-6">
@@ -149,6 +149,7 @@ const AmazonAdvertising = () => {
           </div>
         </section>
 
+        {/* Use ServicePageLayout for the rest of the content */}
         <ServicePageLayout
           title="Amazon Advertising"
           subtitle="Professional Amazon PPC Management"
