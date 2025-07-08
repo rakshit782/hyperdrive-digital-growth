@@ -27,6 +27,8 @@ import AccountManagement from "./pages/AccountManagement";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import TermsConditions from "./pages/TermsConditions";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 import { performanceMonitor } from "./utils/performanceMonitor";
 
 const queryClient = new QueryClient({
@@ -80,6 +82,8 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/terms-conditions" element={<TermsConditions />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
