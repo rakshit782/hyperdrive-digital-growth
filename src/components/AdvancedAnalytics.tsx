@@ -43,60 +43,77 @@ class AdvancedAnalyticsManager {
   }
 
   private trackUserEngagement() {
-    // Click tracking
+    // Click tracking with error handling
     document.addEventListener('click', (event) => {
-      this.userInteractions++;
-      const target = event.target as HTMLElement;
-      
-      this.trackEvent('click', {
-        element_type: target.tagName.toLowerCase(),
-        element_class: target.className,
-        element_id: target.id,
-        element_text: target.textContent?.substring(0, 100),
-        x: event.clientX,
-        y: event.clientY
-      });
+      try {
+        this.userInteractions++;
+        const target = event.target as HTMLElement;
+        
+        this.trackEvent('click', {
+          element_type: target.tagName.toLowerCase(),
+          element_class: target.className,
+          element_id: target.id,
+          element_text: target.textContent?.substring(0, 100),
+          x: event.clientX,
+          y: event.clientY
+        });
+      } catch (error) {
+        console.warn('Click tracking error:', error);
+      }
     });
 
-    // Scroll tracking
+    // Scroll tracking with throttling
     let scrollDepth = 0;
+    let scrollTimeout: NodeJS.Timeout;
+    
     window.addEventListener('scroll', () => {
-      const currentDepth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
-      if (currentDepth > scrollDepth && currentDepth % 25 === 0) {
-        scrollDepth = currentDepth;
-        this.trackEvent('scroll_depth', { depth: scrollDepth });
-      }
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        try {
+          const currentDepth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+          if (currentDepth > scrollDepth && currentDepth % 25 === 0) {
+            scrollDepth = currentDepth;
+            this.trackEvent('scroll_depth', { depth: scrollDepth });
+          }
+        } catch (error) {
+          console.warn('Scroll tracking error:', error);
+        }
+      }, 100);
     });
 
     // Time on page
     window.addEventListener('beforeunload', () => {
-      const timeOnPage = Date.now() - this.pageLoadTime;
-      this.trackEvent('page_exit', {
-        time_on_page: timeOnPage,
-        interactions: this.userInteractions
-      });
+      try {
+        const timeOnPage = Date.now() - this.pageLoadTime;
+        this.trackEvent('page_exit', {
+          time_on_page: timeOnPage,
+          interactions: this.userInteractions
+        });
+      } catch (error) {
+        console.warn('Page exit tracking error:', error);
+      }
     });
   }
 
   private trackPerformanceMetrics() {
-    // Web Vitals
+    // Web Vitals with error handling
     if ('PerformanceObserver' in window) {
-      const observer = new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          if (entry.entryType === 'navigation') {
-            const navEntry = entry as PerformanceNavigationTiming;
-            this.trackEvent('performance_navigation', {
-              dns_time: navEntry.domainLookupEnd - navEntry.domainLookupStart,
-              connect_time: navEntry.connectEnd - navEntry.connectStart,
-              response_time: navEntry.responseEnd - navEntry.requestStart,
-              dom_load_time: navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart,
-              page_load_time: navEntry.loadEventEnd - navEntry.loadEventStart
-            });
-          }
-        }
-      });
-      
       try {
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (entry.entryType === 'navigation') {
+              const navEntry = entry as PerformanceNavigationTiming;
+              this.trackEvent('performance_navigation', {
+                dns_time: navEntry.domainLookupEnd - navEntry.domainLookupStart,
+                connect_time: navEntry.connectEnd - navEntry.connectStart,
+                response_time: navEntry.responseEnd - navEntry.requestStart,
+                dom_load_time: navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart,
+                page_load_time: navEntry.loadEventEnd - navEntry.loadEventStart
+              });
+            }
+          }
+        });
+        
         observer.observe({ entryTypes: ['navigation'] });
       } catch (e) {
         console.warn('Performance observer not supported:', e);
@@ -117,7 +134,8 @@ class AdvancedAnalyticsManager {
     try {
       await supabase.from('analytics_events').insert(event);
     } catch (error) {
-      console.error('Failed to track event:', error);
+      // Silently handle errors to avoid disrupting user experience
+      console.warn('Analytics tracking failed:', error);
     }
   }
 
