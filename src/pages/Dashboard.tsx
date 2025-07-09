@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -41,7 +42,6 @@ import {
   Zap,
   Palette
 } from "lucide-react";
-import ServicePageManagement from "@/components/dashboard/ServicePageManagement";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('website');
@@ -73,7 +73,6 @@ const Dashboard = () => {
       'hero-slider': Sliders,
       'services': Settings,
       'service-pages': LayoutDashboard,
-      'service-page-management': Settings,
       'reviews': Star,
       'faq-management': Shield,
       'cta-management': Target,
@@ -99,8 +98,7 @@ const Dashboard = () => {
       'website': 'Website Settings',
       'hero-slider': 'Hero Slider Management',
       'services': 'Services Management',
-      'service-pages': 'Service Pages',
-      'service-page-management': 'Service Page Management',
+      'service-pages': 'Service Pages Management',
       'reviews': 'Reviews Management',
       'faq-management': 'FAQ Management',
       'cta-management': 'CTA Management',
@@ -126,8 +124,7 @@ const Dashboard = () => {
       'website': 'Configure your website settings and general information',
       'hero-slider': 'Manage hero slider content and presentation',
       'services': 'Add, edit, and organize your service offerings',
-      'service-pages': 'Customize individual service page layouts and content',
-      'service-page-management': 'Manage all service page content, cards, and reviews',
+      'service-pages': 'Manage service pages with real-time data editor for stats, case studies, and reviews',
       'reviews': 'Manage customer reviews and testimonials',
       'faq-management': 'Create and organize frequently asked questions',
       'cta-management': 'Configure call-to-action sections and buttons',
@@ -165,8 +162,6 @@ const Dashboard = () => {
         );
       case 'service-pages':
         return <ServicePagesManagementTab />;
-      case 'service-page-management':
-        return <ServicePageManagement />;
       case 'reviews':
         return (
           <ReviewsTab 
