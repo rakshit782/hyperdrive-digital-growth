@@ -190,8 +190,7 @@ const ShopifyDevelopment = () => {
                 })}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
         )}
 
         {/* Services Section */}
