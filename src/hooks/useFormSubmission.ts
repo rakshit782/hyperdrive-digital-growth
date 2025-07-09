@@ -1,9 +1,8 @@
 
-import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useZapierIntegration } from './useZapierIntegration';
-import { useZeptoMailAutomation } from './useZeptoMailAutomation';
-import { databaseService } from '@/services/databaseService';
+import { useLeadSubmission, type LeadSubmissionData } from './useLeadSubmission';
+import { useContactSubmission } from './useContactSubmission';
+import { useFormAutomation } from './useFormAutomation';
 
 export interface FormSubmissionData {
   name: string;
@@ -28,14 +27,14 @@ export interface FormSubmissionData {
 }
 
 export const useFormSubmission = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { triggerZapierWebhook, getStoredWebhookUrls } = useZapierIntegration();
-  const { triggerAutomatedEmails } = useZeptoMailAutomation();
+  const { submitLead, isSubmitting: isLeadSubmitting } = useLeadSubmission();
+  const { submitContact, isSubmitting: isContactSubmitting } = useContactSubmission();
+  const { triggerAutomations } = useFormAutomation();
+
+  const isSubmitting = isLeadSubmitting || isContactSubmitting;
 
   const submitForm = async (data: FormSubmissionData) => {
-    setIsSubmitting(true);
-    
     try {
       console.log('Starting form submission with data:', data);
 
@@ -66,120 +65,65 @@ Uploaded Files:
 - Advertised Product Report: ${data.uploadedFiles?.advertisedProductReport || 'Not uploaded'}`;
       }
 
-      // Prepare lead data with all required fields
-      const leadData = {
+      // Submit lead data
+      const leadResult = await submitLead({
         name: fullName,
         email: data.email,
-        phone: data.phone || null,
-        company: data.company || null,
+        phone: data.phone,
+        company: data.company,
         source: data.source || 'website',
-        status: 'new' as const,
         notes: detailedMessage || data.businessGoals || null,
-        form_security: {
-          timestamp: Date.now(),
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: document.referrer
-        },
-        lead_data: {
-          formType: data.formType || 'contact',
-          firstName: data.firstName,
-          lastName: data.lastName,
-          businessGoals: data.businessGoals,
-          website: data.website,
-          monthlyAdSpend: data.monthlyAdSpend,
-          primaryPlatform: data.primaryPlatform,
-          currentChallenges: data.currentChallenges,
-          uploadedFiles: data.uploadedFiles || {},
-          submittedAt: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: document.referrer
-        }
-      };
+        firstName: data.firstName,
+        lastName: data.lastName,
+        businessGoals: data.businessGoals,
+        website: data.website,
+        monthlyAdSpend: data.monthlyAdSpend,
+        primaryPlatform: data.primaryPlatform,
+        currentChallenges: data.currentChallenges,
+        uploadedFiles: data.uploadedFiles
+      });
 
-      console.log('Creating lead with data:', leadData);
-
-      // Insert lead data using database service
-      const leadResult = await databaseService.insertLead(leadData);
-
-      if (!leadResult) {
-        throw new Error('Failed to create lead - database service returned null');
+      if (!leadResult.success) {
+        throw new Error(leadResult.error || 'Failed to create lead');
       }
 
-      console.log('Lead created successfully:', leadResult);
-      
-      // Also store in contact_submissions for backward compatibility
+      // Store in contact_submissions for backward compatibility
       try {
-        const contactData = {
+        await submitContact({
           name: fullName,
           email: data.email,
-          phone: data.phone || null,
-          company: data.company || null,
+          phone: data.phone,
+          company: data.company,
           message: detailedMessage,
-          form_type: data.formType || 'contact'
-        };
-
-        await databaseService.insertContactSubmission(contactData);
-        console.log('Contact submission stored successfully');
+          formType: data.formType || 'contact'
+        });
       } catch (contactError) {
         console.error('Failed to store contact submission:', contactError);
         // Don't fail the entire submission if contact submission fails
       }
 
-      // Trigger Zapier webhooks (non-blocking)
+      // Trigger automations (non-blocking)
       try {
-        const webhooks = getStoredWebhookUrls();
-        const formTypeWebhook = webhooks[data.formType || 'contact'];
-        const generalWebhook = webhooks['new_lead'];
-
-        if (formTypeWebhook || generalWebhook) {
-          const zapierData = {
-            leadId: leadResult.id,
-            name: fullName,
-            email: data.email,
-            phone: data.phone,
-            company: data.company,
-            source: data.source || 'website',
-            formType: data.formType || 'contact',
-            message: detailedMessage,
-            businessGoals: data.businessGoals,
-            website: data.website,
-            monthlyAdSpend: data.monthlyAdSpend,
-            primaryPlatform: data.primaryPlatform,
-            uploadedFiles: data.uploadedFiles,
-            timestamp: new Date().toISOString()
-          };
-
-          const webhookUrl = formTypeWebhook || generalWebhook;
-          await triggerZapierWebhook(webhookUrl, zapierData);
-          console.log('Zapier webhook triggered successfully');
-        }
-      } catch (webhookError) {
-        console.error('Webhook error:', webhookError);
-        // Don't fail the entire submission if webhook fails
-      }
-
-      // Trigger automated emails using ZeptoMail (non-blocking)
-      try {
-        await triggerAutomatedEmails(data.formType || 'form_submission', {
-          email: data.email,
+        await triggerAutomations({
+          leadId: leadResult.leadId,
           name: fullName,
+          email: data.email,
+          phone: data.phone,
           company: data.company,
-          phone: data.phone
+          formType: data.formType || 'contact',
+          message: detailedMessage,
+          businessGoals: data.businessGoals,
+          website: data.website,
+          monthlyAdSpend: data.monthlyAdSpend,
+          primaryPlatform: data.primaryPlatform,
+          uploadedFiles: data.uploadedFiles
         });
-        console.log('Automated emails triggered successfully');
-      } catch (emailError) {
-        console.error('Email automation error:', emailError);
-        // Don't fail the entire submission if email fails
+      } catch (automationError) {
+        console.error('Automation error:', automationError);
+        // Don't fail the entire submission if automation fails
       }
 
-      // Dispatch custom event for real-time updates
-      window.dispatchEvent(new CustomEvent('leadCreated', {
-        detail: leadResult
-      }));
-
-      return { success: true, leadId: leadResult.id };
+      return { success: true, leadId: leadResult.leadId };
     } catch (error) {
       console.error('Form submission error:', error);
       
@@ -196,8 +140,6 @@ Uploaded Files:
       }
       
       return { success: false, error: errorMessage };
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
