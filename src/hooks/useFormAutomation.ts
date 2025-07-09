@@ -25,7 +25,14 @@ export const useFormAutomation = () => {
 
       if (formTypeWebhook || generalWebhook) {
         const zapierData = {
-          ...data,
+          leadId: data.leadId || 'unknown',
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          company: data.company,
+          source: 'website',
+          formType: data.formType || 'contact',
+          message: data.message,
           timestamp: new Date().toISOString()
         };
 
