@@ -11,8 +11,23 @@ interface SEOHeadProps {
 
 const SEOHead = ({ title, description, keywords, image, url }: SEOHeadProps) => {
   useEffect(() => {
+    // Check for custom website title from settings
+    const savedSettings = localStorage.getItem('websiteSettings');
+    let finalTitle = title;
+    
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        if (settings.websiteTitle) {
+          finalTitle = settings.websiteTitle;
+        }
+      } catch (error) {
+        console.error('Failed to parse website settings for title:', error);
+      }
+    }
+    
     // Set document title
-    document.title = title;
+    document.title = finalTitle;
     
     // Set meta description
     let metaDescription = document.querySelector('meta[name="description"]');
@@ -51,7 +66,7 @@ const SEOHead = ({ title, description, keywords, image, url }: SEOHeadProps) => 
       }
     };
     
-    setMetaProperty('og:title', title);
+    setMetaProperty('og:title', finalTitle);
     setMetaProperty('og:description', description);
     if (image) setMetaProperty('og:image', image);
     if (url) setMetaProperty('og:url', url);
@@ -71,9 +86,24 @@ const SEOHead = ({ title, description, keywords, image, url }: SEOHeadProps) => 
     };
     
     setMetaName('twitter:card', 'summary_large_image');
-    setMetaName('twitter:title', title);
+    setMetaName('twitter:title', finalTitle);
     setMetaName('twitter:description', description);
     if (image) setMetaName('twitter:image', image);
+
+    // Listen for real-time title updates
+    const handleSettingsUpdate = (event: CustomEvent) => {
+      if (event.detail?.websiteTitle) {
+        document.title = event.detail.websiteTitle;
+        setMetaProperty('og:title', event.detail.websiteTitle);
+        setMetaName('twitter:title', event.detail.websiteTitle);
+      }
+    };
+
+    window.addEventListener('websiteSettingsUpdated', handleSettingsUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('websiteSettingsUpdated', handleSettingsUpdate as EventListener);
+    };
   }, [title, description, keywords, image, url]);
 
   return null;

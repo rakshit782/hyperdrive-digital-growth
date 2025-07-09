@@ -23,6 +23,8 @@ import { SecuritySettingsTab } from "@/components/dashboard/SecuritySettingsTab"
 import AboutContentManagement from "@/components/dashboard/AboutContentManagement";
 import SEOManagement from "@/components/dashboard/SEOManagement";
 import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
+import LogoManagementTab from "@/components/dashboard/LogoManagementTab";
+import WebsiteTab from "@/components/dashboard/WebsiteTab";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
 import { 
@@ -47,7 +49,6 @@ import {
   Home,
   Scale
 } from "lucide-react";
-import LogoManagementTab from "@/components/dashboard/LogoManagementTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('services');
@@ -97,6 +98,8 @@ const Dashboard = () => {
       'website-integrations': Zap,
       'integration-status': Zap,
       'policy-pages': Scale,
+      'logo-management': Palette,
+      'website-settings': Cog,
     };
     return iconMap[tabId] || Settings;
   };
@@ -126,6 +129,7 @@ const Dashboard = () => {
       'integration-status': 'Integration Status',
       'policy-pages': 'Policy Pages Management',
       'logo-management': 'Logo Management',
+      'website-settings': 'Website Settings',
     };
     return titleMap[tabId] || 'Dashboard';
   };
@@ -155,6 +159,7 @@ const Dashboard = () => {
       'integration-status': 'Monitor integration health and status',
       'policy-pages': 'Manage Privacy Policy, Terms of Service, and Terms & Conditions content',
       'logo-management': 'Customize your brand logo and display settings across the website',
+      'website-settings': 'Configure website title, favicon, contact details, and branding with real-time updates',
     };
     return descriptionMap[tabId] || 'Manage your dashboard settings';
   };
@@ -219,6 +224,8 @@ const Dashboard = () => {
         return <PolicyPagesTab />;
       case 'logo-management':
         return <LogoManagementTab />;
+      case 'website-settings':
+        return <WebsiteTab />;
       default:
         return (
           <ServicesTab 

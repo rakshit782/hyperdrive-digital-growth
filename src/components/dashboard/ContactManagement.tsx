@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, Clock, MapPin, Eye } from "lucide-react";
+import { Phone, Mail, Clock, MapPin, Eye, RefreshCw } from "lucide-react";
 
 interface ContactInfo {
   phone: string;
@@ -26,19 +26,75 @@ const ContactManagement = () => {
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
+    // Load from website settings first, then fallback to contact data
+    const savedWebsiteSettings = localStorage.getItem('websiteSettings');
     const savedContact = localStorage.getItem('contactData');
+    
+    let contactData = defaultContact;
+    
+    if (savedWebsiteSettings) {
+      try {
+        const websiteSettings = JSON.parse(savedWebsiteSettings);
+        if (websiteSettings.contactPhone || websiteSettings.contactEmail || 
+            websiteSettings.contactAddress || websiteSettings.businessHours) {
+          contactData = {
+            phone: websiteSettings.contactPhone || defaultContact.phone,
+            email: websiteSettings.contactEmail || defaultContact.email,
+            address: websiteSettings.contactAddress || defaultContact.address,
+            hours: websiteSettings.businessHours || defaultContact.hours
+          };
+        }
+      } catch (error) {
+        console.error('Failed to parse website settings:', error);
+      }
+    }
+    
     if (savedContact) {
       try {
         const parsed = JSON.parse(savedContact);
-        setContactInfo({ ...defaultContact, ...parsed });
+        contactData = { ...contactData, ...parsed };
       } catch (error) {
         console.error('Failed to parse contact settings:', error);
       }
     }
+    
+    setContactInfo(contactData);
+
+    // Listen for updates from website settings
+    const handleContactUpdate = (event: CustomEvent) => {
+      console.log('Contact management received update:', event.detail);
+      setContactInfo(prev => ({ ...prev, ...event.detail }));
+    };
+
+    window.addEventListener('contactUpdated', handleContactUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('contactUpdated', handleContactUpdate as EventListener);
+    };
   }, []);
 
   const handleSave = () => {
+    // Save to both contact data and website settings for consistency
     localStorage.setItem('contactData', JSON.stringify(contactInfo));
+    
+    // Update website settings as well
+    const savedWebsiteSettings = localStorage.getItem('websiteSettings');
+    if (savedWebsiteSettings) {
+      try {
+        const websiteSettings = JSON.parse(savedWebsiteSettings);
+        const updatedSettings = {
+          ...websiteSettings,
+          contactPhone: contactInfo.phone,
+          contactEmail: contactInfo.email,
+          contactAddress: contactInfo.address,
+          businessHours: contactInfo.hours
+        };
+        localStorage.setItem('websiteSettings', JSON.stringify(updatedSettings));
+      } catch (error) {
+        console.error('Failed to update website settings:', error);
+      }
+    }
+    
     window.dispatchEvent(new CustomEvent('contactUpdated', { detail: contactInfo }));
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
@@ -48,19 +104,32 @@ const ContactManagement = () => {
     setContactInfo(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleReset = () => {
+    setContactInfo(defaultContact);
+    localStorage.removeItem('contactData');
+    window.dispatchEvent(new CustomEvent('contactUpdated', { detail: defaultContact }));
+    setIsSaved(false);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Settings Panel */}
       <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
         <CardHeader>
-          <div className="flex items-center">
-            <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg mr-3">
-              <Phone className="w-5 h-5 text-white" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg mr-3">
+                <Phone className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-bold text-slate-900">Contact Information</CardTitle>
+                <CardDescription>Update contact details displayed throughout the website</CardDescription>
+              </div>
             </div>
-            <div>
-              <CardTitle className="text-xl font-bold text-slate-900">Contact Information</CardTitle>
-              <CardDescription>Update contact details displayed throughout the website</CardDescription>
-            </div>
+            <Button onClick={handleReset} variant="outline" size="sm">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Reset
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
