@@ -48,7 +48,7 @@ const NewsletterForm = () => {
       console.log('Submitting email:', email);
       const result = await addEmail({
         email: email.trim(),
-        name: email.split('@')[0], // Use email prefix as name
+        name: email.split('@')[0],
         source: 'newsletter_form',
         tags: ['website_signup']
       });
@@ -57,7 +57,7 @@ const NewsletterForm = () => {
         console.log('Email submission successful');
         toast({
           title: "Thank you for subscribing!",
-          description: "You'll receive our latest updates and insights. Data saved locally.",
+          description: "You'll receive our latest updates and insights.",
         });
         
         setEmail("");
@@ -78,18 +78,8 @@ const NewsletterForm = () => {
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-blue-100 shadow-lg">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-          <Mail className="w-5 h-5 text-white" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-slate-900">Stay Updated</h3>
-          <p className="text-sm text-slate-600">Get the latest tips and insights (Local Storage)</p>
-        </div>
-      </div>
-      
-      <form onSubmit={handleSubmit} className="space-y-3">
+    <div className="w-full max-w-lg mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Honeypot field - Hidden from users, visible to bots */}
         <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
           <Input
@@ -102,31 +92,37 @@ const NewsletterForm = () => {
           />
         </div>
 
-        <div className="flex gap-2">
-          <Input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="flex-1 border-slate-200 focus:border-blue-400 focus:ring-blue-400/20"
-            disabled={isSubmitting}
-            required
-          />
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1">
+            <Input
+              type="email"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-12 bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20 rounded-lg"
+              disabled={isSubmitting}
+              required
+            />
+          </div>
           <Button 
             type="submit" 
             disabled={isSubmitting}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300"
+            className="h-12 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
           >
             {isSubmitting ? (
               <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
-              <ArrowRight className="w-4 h-4" />
+              <>
+                <Mail className="w-4 h-4" />
+                <span className="hidden sm:inline">Subscribe</span>
+                <ArrowRight className="w-4 h-4 sm:hidden" />
+              </>
             )}
           </Button>
         </div>
         
-        <p className="text-xs text-slate-500">
-          No spam, ever. Unsubscribe anytime. Stored locally.
+        <p className="text-xs text-slate-400 text-center">
+          Join 10,000+ marketers getting weekly insights. No spam, unsubscribe anytime.
         </p>
       </form>
     </div>

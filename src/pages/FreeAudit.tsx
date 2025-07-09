@@ -14,19 +14,21 @@ const FreeAudit = () => {
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         {/* Hero Section with symmetrical padding */}
-        <section className="py-24 md:py-32 lg:py-40">
+        <section className="py-16 md:py-24 lg:py-32">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
               Get Your Free $2,000 Audit
             </h1>
-            <p className="text-xl md:text-2xl text-slate-600 leading-relaxed">
+            <p className="text-xl md:text-2xl text-slate-600 leading-relaxed max-w-3xl mx-auto">
               Discover hidden opportunities in your advertising campaigns and get a roadmap to increase your ROAS by 300%.
             </p>
           </div>
         </section>
 
-        {/* Form Section */}
-        <FreeAuditForm />
+        {/* Form Section with better spacing and symmetry */}
+        <section className="pb-16 md:pb-24 lg:pb-32">
+          <FreeAuditForm />
+        </section>
       </div>
       <Footer />
     </>
