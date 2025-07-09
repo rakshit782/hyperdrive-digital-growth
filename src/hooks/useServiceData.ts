@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Json } from '@/integrations/supabase/types';
 
 export interface ServiceCaseStudy {
   id: string;
@@ -9,7 +10,7 @@ export interface ServiceCaseStudy {
   description: string;
   client_name: string;
   industry: string;
-  results: Record<string, any>;
+  results: Json;
   image_url?: string;
   is_featured: boolean;
   sort_order: number;
