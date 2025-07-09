@@ -37,7 +37,7 @@ export const useNewsletterEmails = () => {
     }
   };
 
-  const addEmail = async (emailData: Omit<NewsletterEmail, 'id' | 'created_at' | 'updated_at'>) => {
+  const addEmail = async (emailData: Omit<NewsletterEmail, 'id' | 'created_at' | 'updated_at' | 'status'> & { status?: 'subscribed' | 'unsubscribed' }) => {
     try {
       // Check if email already exists
       const existingEmail = await localDB.findWhere('newsletter_emails', 
@@ -67,7 +67,7 @@ export const useNewsletterEmails = () => {
         // Add new email
         const id = await localDB.insert('newsletter_emails', {
           ...emailData,
-          status: 'subscribed'
+          status: emailData.status || 'subscribed'
         });
         toast({
           title: "Success",
