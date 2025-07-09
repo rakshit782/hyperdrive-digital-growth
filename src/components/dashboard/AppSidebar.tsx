@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Sheet,
@@ -88,7 +89,7 @@ const menuItems = [
 ];
 
 export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
-  const { collapsed, setCollapsed } = useSidebar();
+  const { open, setOpen } = useSidebar();
   const { setConfig } = useDashboardConfig();
 
   const handleNavigation = (tabId: string) => {
@@ -100,12 +101,12 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
   };
 
   return (
-    <Sheet open={!collapsed} onOpenChange={setCollapsed}>
+    <Sheet open={!open} onOpenChange={(isOpen) => setOpen(!isOpen)}>
       <SheetTrigger asChild>
         <aside className={cn(
           "group/sidebar fixed left-0 top-0 z-50 flex h-full flex-col border-r bg-secondary",
           "duration-200 lg:relative",
-          collapsed ? "w-[5rem] hover:w-[16rem]" : "w-[16rem]",
+          open ? "w-[5rem] hover:w-[16rem]" : "w-[16rem]",
         )}>
           <div className="px-4 py-6">
             <SheetHeader>

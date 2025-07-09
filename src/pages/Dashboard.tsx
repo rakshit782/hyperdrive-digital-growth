@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -21,6 +22,8 @@ import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
 import { FormSecurityTab } from "@/components/dashboard/FormSecurityTab";
 import HomepageCustomizationTab from "@/components/dashboard/HomepageCustomizationTab";
 import { SecuritySettingsTab } from "@/components/dashboard/SecuritySettingsTab";
+import AboutContentManagement from "@/components/dashboard/AboutContentManagement";
+import SEOManagement from "@/components/dashboard/SEOManagement";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
 import { 
