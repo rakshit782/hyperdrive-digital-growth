@@ -7,7 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
 import CaseStudyPopup from '@/components/CaseStudyPopup';
-import { useServiceData } from '@/hooks/useServiceData';
+import { useServiceData, ServiceCaseStudy } from '@/hooks/useServiceData';
 
 interface UnifiedServicePageProps {
   serviceType: string;
@@ -64,11 +64,11 @@ const UnifiedServicePage = ({
   features
 }: UnifiedServicePageProps) => {
   const { caseStudies, stats, reviews, loading } = useServiceData(serviceType);
-  const [selectedCaseStudy, setSelectedCaseStudy] = useState(null);
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<ServiceCaseStudy | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 
-  const handleCaseStudyClick = (caseStudy: any) => {
+  const handleCaseStudyClick = (caseStudy: ServiceCaseStudy) => {
     setSelectedCaseStudy(caseStudy);
     setIsPopupOpen(true);
   };
@@ -308,7 +308,7 @@ const UnifiedServicePage = ({
                         <div className="grid grid-cols-1 gap-2 mb-4">
                           {Object.entries(study.results).slice(0, 1).map(([key, value]) => (
                             <div key={key} className="text-center">
-                              <div className={`text-lg font-bold text-${primaryColor}-600`}>{value}</div>
+                              <div className={`text-lg font-bold text-${primaryColor}-600`}>{String(value)}</div>
                               <div className="text-xs text-slate-500">{key}</div>
                             </div>
                           ))}

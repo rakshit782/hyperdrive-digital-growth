@@ -100,23 +100,24 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
 
   const handleSave = async () => {
     try {
-      let table = '';
-      switch (editingType) {
-        case 'case-study':
-          table = 'service_case_studies';
-          break;
-        case 'stat':
-          table = 'service_stats';
-          break;
-        case 'review':
-          table = 'service_reviews';
-          break;
-      }
-
-      if (editingItem.id) {
-        await supabase.from(table).update(editingItem).eq('id', editingItem.id);
-      } else {
-        await supabase.from(table).insert(editingItem);
+      if (editingType === 'case-study') {
+        if (editingItem.id) {
+          await supabase.from('service_case_studies').update(editingItem).eq('id', editingItem.id);
+        } else {
+          await supabase.from('service_case_studies').insert(editingItem);
+        }
+      } else if (editingType === 'stat') {
+        if (editingItem.id) {
+          await supabase.from('service_stats').update(editingItem).eq('id', editingItem.id);
+        } else {
+          await supabase.from('service_stats').insert(editingItem);
+        }
+      } else if (editingType === 'review') {
+        if (editingItem.id) {
+          await supabase.from('service_reviews').update(editingItem).eq('id', editingItem.id);
+        } else {
+          await supabase.from('service_reviews').insert(editingItem);
+        }
       }
 
       toast({
@@ -139,20 +140,14 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
 
   const handleDelete = async (id: string, type: string) => {
     try {
-      let table = '';
-      switch (type) {
-        case 'case-study':
-          table = 'service_case_studies';
-          break;
-        case 'stat':
-          table = 'service_stats';
-          break;
-        case 'review':
-          table = 'service_reviews';
-          break;
+      if (type === 'case-study') {
+        await supabase.from('service_case_studies').delete().eq('id', id);
+      } else if (type === 'stat') {
+        await supabase.from('service_stats').delete().eq('id', id);
+      } else if (type === 'review') {
+        await supabase.from('service_reviews').delete().eq('id', id);
       }
 
-      await supabase.from(table).delete().eq('id', id);
       toast({
         title: "Success",
         description: `${type} deleted successfully`,
@@ -170,23 +165,22 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
 
   const toggleActive = async (item: any, type: string) => {
     try {
-      let table = '';
-      switch (type) {
-        case 'case-study':
-          table = 'service_case_studies';
-          break;
-        case 'stat':
-          table = 'service_stats';
-          break;
-        case 'review':
-          table = 'service_reviews';
-          break;
+      if (type === 'case-study') {
+        await supabase
+          .from('service_case_studies')
+          .update({ is_active: !item.is_active })
+          .eq('id', item.id);
+      } else if (type === 'stat') {
+        await supabase
+          .from('service_stats')
+          .update({ is_active: !item.is_active })
+          .eq('id', item.id);
+      } else if (type === 'review') {
+        await supabase
+          .from('service_reviews')
+          .update({ is_active: !item.is_active })
+          .eq('id', item.id);
       }
-
-      await supabase
-        .from(table)
-        .update({ is_active: !item.is_active })
-        .eq('id', item.id);
 
       fetchData();
     } catch (error) {
