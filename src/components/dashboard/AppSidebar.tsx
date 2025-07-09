@@ -1,284 +1,202 @@
-import { useState, useEffect } from "react";
-import { 
-  Settings, LayoutDashboard, Star, Image, Users, Link2, 
-  Database, Mail, Shield, Cog, Zap, ChevronDown, Menu, Target, Activity 
+import React from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import {
+  Settings,
+  LayoutDashboard,
+  Star,
+  Shield,
+  Target,
+  Link2,
+  Database,
+  Mail,
+  Image,
+  Users,
+  Cog,
+  Zap,
+  Palette,
+  FileText,
+  Search,
+  BookOpen,
+  HelpCircle,
+  DollarSign,
+  Home
 } from "lucide-react";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { useSidebar } from "@/components/ui/sidebar";
+import { useDashboardConfig } from "@/hooks/useDashboardConfig";
+import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
+const menuItems = [
+  {
+    category: "Content Management",
+    items: [
+      { id: 'services', title: 'Services Management', icon: Settings },
+      { id: 'service-pages', title: 'Service Pages', icon: LayoutDashboard },
+      { id: 'about-content', title: 'About Page Content', icon: FileText },
+      { id: 'blog-management', title: 'Blog Management', icon: BookOpen },
+      { id: 'reviews', title: 'Reviews Management', icon: Star },
+      { id: 'faq-management', title: 'FAQ Management', icon: HelpCircle },
+      { id: 'pricing-management', title: 'Pricing Management', icon: DollarSign },
+    ]
+  },
+  {
+    category: "SEO & Marketing",
+    items: [
+      { id: 'seo-management', title: 'SEO Management', icon: Search },
+      { id: 'cta-management', title: 'CTA Management', icon: Target },
+      { id: 'homepage-customization', title: 'Homepage', icon: Home },
+    ]
+  },
+  {
+    category: "Customer Relations",
+    items: [
+      { id: 'leads', title: 'Lead Management', icon: Database },
+      { id: 'contact-management', title: 'Contact Management', icon: Mail },
+      { id: 'newsletter-email-management', title: 'Newsletter Emails', icon: Mail },
+      { id: 'email-workflow', title: 'Email Workflow', icon: Mail },
+      { id: 'clientele-management', title: 'Clientele', icon: Users },
+    ]
+  },
+  {
+    category: "Integrations",
+    items: [
+      { id: 'website-integrations', title: 'Website Integrations', icon: Zap },
+      { id: 'integration-status', title: 'Integration Status', icon: Zap },
+    ]
+  },
+  {
+    category: "System",
+    items: [
+      { id: 'form-security', title: 'Form Security', icon: Shield },
+      { id: 'security-settings', title: 'Security Settings', icon: Shield },
+    ]
+  },
+];
+
 export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
-  const { open } = useSidebar();
-  const collapsed = !open;
-  const [openGroups, setOpenGroups] = useState<{ [key: string]: boolean }>({
-    content: true,
-    crm: true,
-    media: true,
-    business: true,
-    system: true,
-  });
+  const { collapsed, setCollapsed } = useSidebar();
+  const { setConfig } = useDashboardConfig();
 
-  const menuItems = [
-    {
-      id: "services",
-      label: "Services",
-      icon: Settings,
-      category: "content",
-    },
-    {
-      id: "service-pages",
-      label: "Service Pages",
-      icon: LayoutDashboard,
-      category: "content",
-    },
-    {
-      id: "reviews",
-      label: "Reviews",
-      icon: Star,
-      category: "content",
-    },
-    {
-      id: "faq-management",
-      label: "FAQ Management",
-      icon: Shield,
-      category: "content",
-    },
-    {
-      id: "cta-management",
-      label: "CTA Section",
-      icon: Target,
-      category: "content",
-    },
-    {
-      id: "footer-management",
-      label: "Footer & Partners",
-      icon: Link2,
-      category: "content",
-    },
-    {
-      id: "blog-management",
-      label: "Blog Posts",
-      icon: LayoutDashboard,
-      category: "content",
-    },
-    {
-      id: "leads",
-      label: "Lead Management",
-      icon: Database,
-      category: "crm",
-    },
-    {
-      id: "contact-management",
-      label: "Contact Forms",
-      icon: Mail,
-      category: "crm",
-    },
-    {
-      id: "newsletter-email-management",
-      label: "Newsletter Emails",
-      icon: Mail,
-      category: "crm",
-    },
-    {
-      id: "email-workflow",
-      label: "Email Automation",
-      icon: Mail,
-      category: "crm",
-    },
-    {
-      id: "form-security",
-      label: "Form Security",
-      icon: Shield,
-      category: "crm",
-    },
-    {
-      id: "service-header-images",
-      label: "Service Images",
-      icon: Image,
-      category: "media",
-    },
-    {
-      id: "clientele-management",  
-      label: "Clientele Logos",
-      icon: Users,
-      category: "media",
-    },
-    {
-      id: "pricing-management",
-      label: "Pricing Plans",
-      icon: Cog,
-      category: "business",
-    },
-    {
-      id: "homepage-customization",
-      label: "Homepage",
-      icon: LayoutDashboard,
-      category: "business",
-    },
-    {
-      id: "website-integrations",
-      label: "Website Integrations",
-      icon: Zap,
-      category: "system",
-    },
-    {
-      id: "integration-status",
-      label: "Integration Status",
-      icon: Zap,
-      category: "system",
-    },
-    {
-      id: "security-settings",
-      label: "Security Settings",
-      icon: Shield,
-      category: "system",
+  const handleNavigation = (tabId: string) => {
+    onTabChange(tabId);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('activeTab', tabId);
     }
-  ];
-
-  const categories = {
-    content: { label: "Content", color: "bg-blue-500" },
-    crm: { label: "CRM", color: "bg-green-500" },
-    media: { label: "Media", color: "bg-purple-500" },
-    business: { label: "Business", color: "bg-orange-500" },
-    system: { label: "System", color: "bg-gray-500" },
-  };
-
-  const getTabsByCategory = (category: string) => {
-    return menuItems.filter(tab => tab.category === category);
-  };
-
-  const toggleGroup = (groupId: string) => {
-    setOpenGroups(prev => ({
-      ...prev,
-      [groupId]: !prev[groupId]
-    }));
-  };
-
-  const getTabIcon = (tab: any) => {
-    const IconComponent = tab.icon;
-    return <IconComponent className="w-4 h-4" />;
+    setConfig(prev => ({ ...prev, activeTab: tabId }));
   };
 
   return (
-    <Sidebar className="border-r border-slate-200/60 bg-white/95 backdrop-blur-md">
-      <SidebarHeader className="p-6 border-b border-slate-200/60">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <Menu className="w-4 h-4 text-white" />
+    <Sheet open={!collapsed} onOpenChange={setCollapsed}>
+      <SheetTrigger asChild>
+        <aside className={cn(
+          "group/sidebar fixed left-0 top-0 z-50 flex h-full flex-col border-r bg-secondary",
+          "duration-200 lg:relative",
+          collapsed ? "w-[5rem] hover:w-[16rem]" : "w-[16rem]",
+        )}>
+          <div className="px-4 py-6">
+            <SheetHeader>
+              <SheetTitle>Dashboard Menu</SheetTitle>
+              <SheetDescription>
+                Manage all aspects of your website from this menu.
+              </SheetDescription>
+            </SheetHeader>
           </div>
-          {!collapsed && (
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">Dashboard</h2>
-              <p className="text-xs text-slate-500">Content Management</p>
-            </div>
-          )}
-        </div>
-      </SidebarHeader>
 
-      <SidebarContent className="p-4">
-        {Object.entries(categories).map(([categoryId, categoryInfo]) => {
-          const categoryTabs = getTabsByCategory(categoryId);
-          if (categoryTabs.length === 0) return null;
+          <Separator />
 
-          return (
-            <SidebarGroup key={categoryId}>
-              <Collapsible
-                open={openGroups[categoryId]}
-                onOpenChange={() => toggleGroup(categoryId)}
-              >
-                <CollapsibleTrigger asChild>
-                  <SidebarGroupLabel className="group/label flex items-center justify-between hover:bg-slate-50 rounded-md px-2 py-2 cursor-pointer">
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${categoryInfo.color}`} />
-                      {!collapsed && (
-                        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                          {categoryInfo.label}
-                        </span>
+          <ScrollArea className="flex-1 space-y-4 p-4">
+            {menuItems.map((category, index) => (
+              <div key={index} className="space-y-2">
+                <h4 className="font-medium text-sm px-1">{category.category}</h4>
+                <div className="space-y-1">
+                  {category.items.map((item) => (
+                    <Button
+                      key={item.id}
+                      variant="ghost"
+                      className={cn(
+                        "flex w-full items-center justify-start gap-2 rounded-md px-2.5 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground sm:text-base",
+                        activeTab === item.id ? "bg-muted font-semibold" : "text-muted-foreground"
                       )}
-                    </div>
-                    {!collapsed && (
-                      <ChevronDown 
-                        className={`w-3 h-3 transition-transform ${
-                          openGroups[categoryId] ? 'rotate-180' : ''
-                        }`} 
-                      />
-                    )}
-                  </SidebarGroupLabel>
-                </CollapsibleTrigger>
+                      onClick={() => handleNavigation(item.id)}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </ScrollArea>
 
-                <CollapsibleContent>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {categoryTabs.map((tab) => (
-                        <SidebarMenuItem key={tab.id}>
-                          <SidebarMenuButton
-                            onClick={() => onTabChange(tab.id)}
-                            isActive={activeTab === tab.id}
-                            className={`w-full justify-start ${
-                              activeTab === tab.id 
-                                ? 'bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 border-r-2 border-blue-500' 
-                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                            }`}
-                          >
-                            <div className="flex items-center space-x-3 w-full">
-                              <div className={`p-1.5 rounded-md ${
-                                activeTab === tab.id 
-                                  ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white' 
-                                  : 'bg-slate-100 text-slate-600'
-                              }`}>
-                                {getTabIcon(tab)}
-                              </div>
-                              {!collapsed && (
-                                <span className="text-sm font-medium truncate">{tab.label}</span>
-                              )}
-                            </div>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </CollapsibleContent>
-              </Collapsible>
-            </SidebarGroup>
-          );
-        })}
-      </SidebarContent>
+          <Separator />
 
-      <SidebarFooter className="p-4 border-t border-slate-200/60">
-        <div className="flex items-center justify-between">
-          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
-            {!collapsed ? 'Online' : '•'}
-          </Badge>
-          {!collapsed && (
-            <div className="text-xs text-slate-500">
-              CRM v2.0
-            </div>
-          )}
-        </div>
-      </SidebarFooter>
-    </Sidebar>
+          <div className="mt-auto p-4">
+            <Button variant="outline" className="w-full">
+              Add Content <Settings className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </aside>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[16rem] p-0">
+        <aside className="fixed left-0 top-0 z-50 flex h-full w-[16rem] flex-col border-r bg-secondary">
+          <div className="px-4 py-6">
+            <SheetHeader>
+              <SheetTitle>Dashboard Menu</SheetTitle>
+              <SheetDescription>
+                Manage all aspects of your website from this menu.
+              </SheetDescription>
+            </SheetHeader>
+          </div>
+
+          <Separator />
+
+          <ScrollArea className="flex-1 space-y-4 p-4">
+            {menuItems.map((category, index) => (
+              <div key={index} className="space-y-2">
+                <h4 className="font-medium text-sm px-1">{category.category}</h4>
+                <div className="space-y-1">
+                  {category.items.map((item) => (
+                    <Button
+                      key={item.id}
+                      variant="ghost"
+                      className={cn(
+                        "flex w-full items-center justify-start gap-2 rounded-md px-2.5 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground sm:text-base",
+                        activeTab === item.id ? "bg-muted font-semibold" : "text-muted-foreground"
+                      )}
+                      onClick={() => handleNavigation(item.id)}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </ScrollArea>
+
+          <Separator />
+
+          <div className="mt-auto p-4">
+            <Button variant="outline" className="w-full">
+              Add Content <Settings className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </aside>
+      </SheetContent>
+    </Sheet>
   );
 }

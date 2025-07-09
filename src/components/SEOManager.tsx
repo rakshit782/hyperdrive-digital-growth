@@ -1,57 +1,25 @@
 
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-
-interface SEOData {
-  title: string;
-  description: string;
-  keywords?: string;
-  canonicalUrl?: string;
-  ogImage?: string;
-  structuredData?: any;
-}
+import { useSEOData } from '@/hooks/useSEOData';
 
 const SEOManager = () => {
   const location = useLocation();
-
-  const seoData: Record<string, SEOData> = {
-    '/': {
-      title: 'Expert Amazon, Walmart & Meta Advertising Agency | Drive Sales Growth',
-      description: 'Leading advertising agency specializing in Amazon PPC, Walmart Connect, and Meta ads. Boost your ROI with our proven strategies. Free audit available!',
-      keywords: 'Amazon advertising, Walmart advertising, Meta ads, PPC management, e-commerce marketing, digital advertising agency',
-      canonicalUrl: 'https://yourdomain.com/',
-      structuredData: {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Expert Advertising Agency",
-        "description": "Leading advertising agency specializing in Amazon PPC, Walmart Connect, and Meta ads",
-        "url": "https://yourdomain.com",
-        "sameAs": [
-          "https://www.facebook.com/yourpage",
-          "https://www.linkedin.com/company/yourcompany"
-        ]
-      }
-    },
-    '/contact': {
-      title: 'Contact Us - Get Your Free Advertising Audit',
-      description: 'Ready to scale your business? Contact our team for a free advertising audit and consultation.',
-      keywords: 'contact advertising agency, free audit, consultation, PPC experts',
-      canonicalUrl: 'https://yourdomain.com/contact'
-    },
-    '/free-audit': {
-      title: 'Free Advertising Audit - Get Your $2,000 Analysis',
-      description: 'Get a comprehensive free audit of your advertising performance across Amazon, Walmart, and Meta platforms. Discover growth opportunities.',
-      keywords: 'free advertising audit, PPC analysis, Amazon audit, marketing assessment',
-      canonicalUrl: 'https://yourdomain.com/free-audit'
-    }
-  };
+  const { pages, globalSettings } = useSEOData();
 
   useEffect(() => {
-    const currentSEO = seoData[location.pathname] || seoData['/'];
-    
+    // Find SEO data for current page
+    const currentPage = pages.find(page => page.page_path === location.pathname);
+    const defaultSEO = pages.find(page => page.page_path === '/');
+    const seoData = currentPage || defaultSEO;
+
+    if (!seoData) return;
+
     // Update title
-    document.title = currentSEO.title;
-    
+    if (seoData.title_tag) {
+      document.title = seoData.title_tag;
+    }
+
     // Update meta tags
     const updateMetaTag = (name: string, content: string) => {
       let meta = document.querySelector(`meta[name="${name}"]`);
@@ -74,20 +42,48 @@ const SEOManager = () => {
     };
 
     // Basic SEO tags
-    updateMetaTag('description', currentSEO.description);
-    if (currentSEO.keywords) updateMetaTag('keywords', currentSEO.keywords);
+    if (seoData.meta_description) {
+      updateMetaTag('description', seoData.meta_description);
+    }
+    
+    // Robots meta
+    const robotsContent = [];
+    if (!seoData.robots_index) robotsContent.push('noindex');
+    if (!seoData.robots_follow) robotsContent.push('nofollow');
+    if (robotsContent.length > 0) {
+      updateMetaTag('robots', robotsContent.join(','));
+    }
     
     // Open Graph tags
-    updateProperty('og:title', currentSEO.title);
-    updateProperty('og:description', currentSEO.description);
+    if (seoData.og_title || seoData.title_tag) {
+      updateProperty('og:title', seoData.og_title || seoData.title_tag);
+    }
+    if (seoData.og_description || seoData.meta_description) {
+      updateProperty('og:description', seoData.og_description || seoData.meta_description);
+    }
     updateProperty('og:type', 'website');
     updateProperty('og:url', window.location.href);
-    if (currentSEO.ogImage) updateProperty('og:image', currentSEO.ogImage);
+    
+    if (seoData.og_image) {
+      updateProperty('og:image', seoData.og_image);
+    } else {
+      const defaultOgImage = globalSettings.find(s => s.setting_key === 'default_og_image')?.setting_value?.url;
+      if (defaultOgImage) {
+        updateProperty('og:image', defaultOgImage);
+      }
+    }
     
     // Twitter tags
     updateMetaTag('twitter:card', 'summary_large_image');
-    updateMetaTag('twitter:title', currentSEO.title);
-    updateMetaTag('twitter:description', currentSEO.description);
+    if (seoData.twitter_title || seoData.title_tag) {
+      updateMetaTag('twitter:title', seoData.twitter_title || seoData.title_tag);
+    }
+    if (seoData.twitter_description || seoData.meta_description) {
+      updateMetaTag('twitter:description', seoData.twitter_description || seoData.meta_description);
+    }
+    if (seoData.twitter_image || seoData.og_image) {
+      updateMetaTag('twitter:image', seoData.twitter_image || seoData.og_image);
+    }
     
     // Canonical URL
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
@@ -96,10 +92,10 @@ const SEOManager = () => {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', currentSEO.canonicalUrl || window.location.href);
+    canonical.setAttribute('href', seoData.canonical_url || window.location.href);
     
     // Structured Data
-    if (currentSEO.structuredData) {
+    if (seoData.schema_data && Object.keys(seoData.schema_data).length > 0) {
       let script = document.getElementById('structured-data') as HTMLScriptElement;
       if (!script) {
         script = document.createElement('script') as HTMLScriptElement;
@@ -107,9 +103,23 @@ const SEOManager = () => {
         script.type = 'application/ld+json';
         document.head.appendChild(script);
       }
-      script.textContent = JSON.stringify(currentSEO.structuredData);
+      
+      const schemaData = {
+        "@context": "https://schema.org",
+        "@type": seoData.schema_type,
+        ...seoData.schema_data
+      };
+      
+      script.textContent = JSON.stringify(schemaData);
     }
-  }, [location.pathname]);
+
+    // Google Site Verification
+    const googleVerification = globalSettings.find(s => s.setting_key === 'google_site_verification')?.setting_value?.code;
+    if (googleVerification) {
+      updateMetaTag('google-site-verification', googleVerification);
+    }
+
+  }, [location.pathname, pages, globalSettings]);
 
   return null;
 };

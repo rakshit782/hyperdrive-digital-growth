@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      about_content: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          section_name: string
+          sort_order: number | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          section_name: string
+          sort_order?: number | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          section_name?: string
+          sort_order?: number | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           created_at: string | null
@@ -394,6 +430,102 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      seo_global_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      seo_pages: {
+        Row: {
+          canonical_url: string | null
+          created_at: string
+          id: string
+          include_in_sitemap: boolean | null
+          is_active: boolean | null
+          meta_description: string | null
+          og_description: string | null
+          og_image: string | null
+          og_title: string | null
+          page_name: string
+          page_path: string
+          robots_follow: boolean | null
+          robots_index: boolean | null
+          schema_data: Json | null
+          schema_type: string | null
+          title_tag: string | null
+          twitter_description: string | null
+          twitter_image: string | null
+          twitter_title: string | null
+          updated_at: string
+        }
+        Insert: {
+          canonical_url?: string | null
+          created_at?: string
+          id?: string
+          include_in_sitemap?: boolean | null
+          is_active?: boolean | null
+          meta_description?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          page_name: string
+          page_path: string
+          robots_follow?: boolean | null
+          robots_index?: boolean | null
+          schema_data?: Json | null
+          schema_type?: string | null
+          title_tag?: string | null
+          twitter_description?: string | null
+          twitter_image?: string | null
+          twitter_title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          canonical_url?: string | null
+          created_at?: string
+          id?: string
+          include_in_sitemap?: boolean | null
+          is_active?: boolean | null
+          meta_description?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          page_name?: string
+          page_path?: string
+          robots_follow?: boolean | null
+          robots_index?: boolean | null
+          schema_data?: Json | null
+          schema_type?: string | null
+          title_tag?: string | null
+          twitter_description?: string | null
+          twitter_image?: string | null
+          twitter_title?: string | null
           updated_at?: string
         }
         Relationships: []

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -37,7 +36,9 @@ import {
   Users,
   Cog,
   Zap,
-  Palette
+  Palette,
+  FileText,
+  Search
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -68,6 +69,8 @@ const Dashboard = () => {
     const iconMap: { [key: string]: React.ComponentType<any> } = {
       'services': Settings,
       'service-pages': LayoutDashboard,
+      'about-content': FileText,
+      'seo-management': Search,
       'reviews': Star,
       'faq-management': Shield,
       'cta-management': Target,
@@ -93,6 +96,8 @@ const Dashboard = () => {
     const titleMap: { [key: string]: string } = {
       'services': 'Services Management',
       'service-pages': 'Service Pages Management',
+      'about-content': 'About Page Content',
+      'seo-management': 'SEO Management',
       'reviews': 'Reviews Management',
       'faq-management': 'FAQ Management',
       'cta-management': 'CTA Management',
@@ -118,6 +123,8 @@ const Dashboard = () => {
     const descriptionMap: { [key: string]: string } = {
       'services': 'Add, edit, and organize your service offerings',
       'service-pages': 'Manage service pages with real-time data editor for stats, case studies, and reviews',
+      'about-content': 'Customize and manage content sections for your About page',
+      'seo-management': 'Configure SEO settings, meta tags, and structured data for all pages',
       'reviews': 'Manage customer reviews and testimonials',
       'faq-management': 'Create and organize frequently asked questions',
       'cta-management': 'Configure call-to-action sections and buttons',
@@ -152,6 +159,10 @@ const Dashboard = () => {
         );
       case 'service-pages':
         return <ServicePagesManagementTab />;
+      case 'about-content':
+        return <AboutContentManagement />;
+      case 'seo-management':
+        return <SEOManagement />;
       case 'reviews':
         return (
           <ReviewsTab 

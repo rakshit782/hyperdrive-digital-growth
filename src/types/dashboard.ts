@@ -31,6 +31,8 @@ export interface ReviewCard {
 export type DashboardTab = 
   | 'services'
   | 'service-pages'
+  | 'about-content'
+  | 'seo-management'
   | 'reviews'
   | 'homepage-customization'
   | 'pricing'
