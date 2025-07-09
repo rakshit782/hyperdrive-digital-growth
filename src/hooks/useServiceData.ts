@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 export interface ServiceCaseStudy {
   id: string;
+  service_type: string;
   title: string;
   description: string;
   client_name: string;
@@ -14,24 +15,39 @@ export interface ServiceCaseStudy {
   key_success_factors?: string[];
   timeline?: string;
   testimonial?: string;
+  is_featured: boolean;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ServiceStat {
   id: string;
+  service_type: string;
   stat_label: string;
   stat_value: string;
   stat_description: string;
   icon_name?: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ServiceReview {
   id: string;
+  service_type: string;
   client_name: string;
   company: string;
   review_text: string;
   rating: number;
   avatar_url?: string;
   results_achieved?: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
@@ -39,6 +55,7 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
     'amazon-advertising': [
       {
         id: '1',
+        service_type: 'amazon-advertising',
         title: 'Premium Electronics Brand Achieves 450% ROI Growth',
         description: 'A leading electronics manufacturer struggled with low visibility and poor conversion rates on Amazon. Through strategic PPC optimization and listing enhancement, we transformed their marketplace presence.',
         client_name: 'TechFlow Electronics',
@@ -58,10 +75,16 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Competitive analysis integration'
         ],
         timeline: '6 months',
-        testimonial: 'The results exceeded our expectations. Our Amazon sales have become our primary revenue driver.'
+        testimonial: 'The results exceeded our expectations. Our Amazon sales have become our primary revenue driver.',
+        is_featured: true,
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'amazon-advertising',
         title: 'Home & Garden Brand Dominates Competitive Market',
         description: 'A home improvement company needed to compete against established brands in the saturated home & garden category.',
         client_name: 'GreenSpace Solutions',
@@ -81,12 +104,18 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Seasonal campaign optimization'
         ],
         timeline: '8 months',
-        testimonial: 'We went from unknown to market leader in our category. The strategic approach was game-changing.'
+        testimonial: 'We went from unknown to market leader in our category. The strategic approach was game-changing.',
+        is_featured: false,
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'walmart-advertising': [
       {
         id: '1',
+        service_type: 'walmart-advertising',
         title: 'Consumer Goods Brand Captures 350% Revenue Growth',
         description: 'A consumer packaged goods company struggled to compete on Walmart Marketplace against established brands with larger advertising budgets.',
         client_name: 'FreshLife Essentials',
@@ -106,10 +135,16 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Enhanced product content'
         ],
         timeline: '5 months',
-        testimonial: 'Walmart has become our fastest-growing sales channel. The expertise in Walmart Connect was exactly what we needed.'
+        testimonial: 'Walmart has become our fastest-growing sales channel. The expertise in Walmart Connect was exactly what we needed.',
+        is_featured: true,
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'walmart-advertising',
         title: 'Health & Wellness Brand Achieves Category Leadership',
         description: 'A health supplement company wanted to establish dominance in the competitive wellness category on Walmart.',
         client_name: 'VitalBoost Nutrition',
@@ -129,12 +164,18 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Customer retention focus'
         ],
         timeline: '7 months',
-        testimonial: 'We are now a recognized leader in our category on Walmart. The growth has been phenomenal.'
+        testimonial: 'We are now a recognized leader in our category on Walmart. The growth has been phenomenal.',
+        is_featured: false,
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'google-advertising': [
       {
         id: '1',
+        service_type: 'google-advertising',
         title: 'B2B Software Company Scales to $2M Annual Revenue',
         description: 'A SaaS startup needed to compete against enterprise solutions while maintaining cost-effective customer acquisition.',
         client_name: 'CloudSync Pro',
@@ -154,10 +195,16 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Performance tracking integration'
         ],
         timeline: '12 months',
-        testimonial: 'Google Ads became our primary growth engine. The ROI has been incredible and sustainable.'
+        testimonial: 'Google Ads became our primary growth engine. The ROI has been incredible and sustainable.',
+        is_featured: true,
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'google-advertising',
         title: 'E-commerce Fashion Brand Achieves 500% ROAS',
         description: 'An online fashion retailer needed to scale profitably during peak shopping seasons while maintaining brand positioning.',
         client_name: 'StyleHub Fashion',
@@ -177,12 +224,18 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Customer journey mapping'
         ],
         timeline: '9 months',
-        testimonial: 'Our Google Ads performance during peak season exceeded all expectations. Truly exceptional results.'
+        testimonial: 'Our Google Ads performance during peak season exceeded all expectations. Truly exceptional results.',
+        is_featured: false,
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'meta-advertising': [
       {
         id: '1',
+        service_type: 'meta-advertising',
         title: 'Fitness Brand Builds Community of 100K+ Engaged Users',
         description: 'A fitness equipment company wanted to build a strong community and drive direct-to-consumer sales through social media.',
         client_name: 'FitForce Equipment',
@@ -202,10 +255,16 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Influencer partnership integration'
         ],
         timeline: '10 months',
-        testimonial: 'We built an incredible community that drives consistent sales. Social media is now our strongest channel.'
+        testimonial: 'We built an incredible community that drives consistent sales. Social media is now our strongest channel.',
+        is_featured: true,
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'meta-advertising',
         title: 'Beauty Brand Captures Gen Z Market with 300% Growth',
         description: 'A cosmetics startup needed to establish itself in the competitive beauty market and connect with younger demographics.',
         client_name: 'GlowUp Cosmetics',
@@ -225,12 +284,18 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Platform-specific optimization'
         ],
         timeline: '6 months',
-        testimonial: 'We became the go-to brand for our demographic. The social strategy was perfectly executed.'
+        testimonial: 'We became the go-to brand for our demographic. The social strategy was perfectly executed.',
+        is_featured: false,
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'website-development': [
       {
         id: '1',
+        service_type: 'website-development',
         title: 'E-commerce Platform Achieves 275% Conversion Rate Boost',
         description: 'An online retailer needed a complete website overhaul to improve user experience and increase conversions from their existing traffic.',
         client_name: 'ModernMart Online',
@@ -250,10 +315,16 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Conversion funnel analysis'
         ],
         timeline: '4 months',
-        testimonial: 'Our new website transformed our business. The conversion improvements exceeded all expectations.'
+        testimonial: 'Our new website transformed our business. The conversion improvements exceeded all expectations.',
+        is_featured: true,
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'website-development',
         title: 'Professional Services Firm Generates 400% More Leads',
         description: 'A law firm needed a professional website that would establish credibility and generate qualified leads for their practice.',
         client_name: 'Sterling Legal Partners',
@@ -273,12 +344,18 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Professional content creation'
         ],
         timeline: '3 months',
-        testimonial: 'Our website now generates more leads than all other marketing channels combined. Exceptional work.'
+        testimonial: 'Our website now generates more leads than all other marketing channels combined. Exceptional work.',
+        is_featured: false,
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'account-management': [
       {
         id: '1',
+        service_type: 'account-management',
         title: 'Multi-Channel Retailer Achieves 325% Revenue Growth',
         description: 'A growing retailer needed expert account management across multiple advertising platforms to scale efficiently.',
         client_name: 'Urban Lifestyle Co.',
@@ -298,10 +375,16 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Strategic account coordination'
         ],
         timeline: '8 months',
-        testimonial: 'Having expert account management across all platforms was a game-changer for our growth strategy.'
+        testimonial: 'Having expert account management across all platforms was a game-changer for our growth strategy.',
+        is_featured: true,
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'account-management',
         title: 'Technology Startup Scales to Enterprise Level',
         description: 'A tech startup needed professional account management to transition from startup to enterprise-level operations.',
         client_name: 'InnovateTech Solutions',
@@ -321,12 +404,18 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Performance consistency focus'
         ],
         timeline: '12 months',
-        testimonial: 'The professional account management enabled us to scale without losing performance. Critical for our growth.'
+        testimonial: 'The professional account management enabled us to scale without losing performance. Critical for our growth.',
+        is_featured: false,
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'shopify-development': [
       {
         id: '1',
+        service_type: 'shopify-development',
         title: 'Fashion Brand Launches with $500K First-Year Revenue',
         description: 'A new fashion brand needed a complete Shopify store that would compete with established fashion retailers from day one.',
         client_name: 'Luxe Fashion House',
@@ -346,10 +435,16 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Marketing tool integration'
         ],
         timeline: '6 weeks',
-        testimonial: 'Our Shopify store exceeded all expectations. The design and functionality are absolutely perfect.'
+        testimonial: 'Our Shopify store exceeded all expectations. The design and functionality are absolutely perfect.',
+        is_featured: true,
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'shopify-development',
         title: 'Health Brand Achieves 280% Mobile Conversion Boost',
         description: 'A health supplement company needed a mobile-optimized Shopify store to capture the growing mobile commerce market.',
         client_name: 'Pure Wellness Labs',
@@ -369,12 +464,18 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Performance optimization'
         ],
         timeline: '5 weeks',
-        testimonial: 'The mobile experience is incredible. Our mobile sales have become our primary revenue source.'
+        testimonial: 'The mobile experience is incredible. Our mobile sales have become our primary revenue source.',
+        is_featured: false,
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'shopify-integration': [
       {
         id: '1',
+        service_type: 'shopify-integration',
         title: 'Multi-Platform Retailer Streamlines Operations by 60%',
         description: 'A retailer selling across multiple platforms needed seamless Shopify integrations to manage inventory and orders efficiently.',
         client_name: 'OmniStore Solutions',
@@ -394,10 +495,16 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Error prevention systems'
         ],
         timeline: '8 weeks',
-        testimonial: 'The integrations transformed our operations. We can now manage everything from one central system.'
+        testimonial: 'The integrations transformed our operations. We can now manage everything from one central system.',
+        is_featured: true,
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'shopify-integration',
         title: 'Growing Brand Scales with Advanced CRM Integration',
         description: 'A rapidly growing brand needed advanced CRM and marketing automation integrations to maintain customer relationships at scale.',
         client_name: 'GrowthCo Brands',
@@ -417,7 +524,12 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
           'Personalized communication workflows'
         ],
         timeline: '6 weeks',
-        testimonial: 'The CRM integration allows us to maintain personal relationships with thousands of customers. Incredible scalability.'
+        testimonial: 'The CRM integration allows us to maintain personal relationships with thousands of customers. Incredible scalability.',
+        is_featured: false,
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ]
   };
@@ -428,52 +540,372 @@ const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
 const getMockStats = (serviceType: string): ServiceStat[] => {
   const baseStats = {
     'amazon-advertising': [
-      { id: '1', stat_label: 'Average ROI Increase', stat_value: '450%', stat_description: 'Return on investment improvement' },
-      { id: '2', stat_label: 'ACoS Reduction', stat_value: '65%', stat_description: 'Average cost of sale decrease' },
-      { id: '3', stat_label: 'Sales Growth', stat_value: '380%', stat_description: 'Revenue increase within 6 months' },
-      { id: '4', stat_label: 'Client Satisfaction', stat_value: '98%', stat_description: 'Happy clients rate' }
+      { 
+        id: '1', 
+        service_type: 'amazon-advertising',
+        stat_label: 'Average ROI Increase', 
+        stat_value: '450%', 
+        stat_description: 'Return on investment improvement',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '2', 
+        service_type: 'amazon-advertising',
+        stat_label: 'ACoS Reduction', 
+        stat_value: '65%', 
+        stat_description: 'Average cost of sale decrease',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '3', 
+        service_type: 'amazon-advertising',
+        stat_label: 'Sales Growth', 
+        stat_value: '380%', 
+        stat_description: 'Revenue increase within 6 months',
+        sort_order: 3,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '4', 
+        service_type: 'amazon-advertising',
+        stat_label: 'Client Satisfaction', 
+        stat_value: '98%', 
+        stat_description: 'Happy clients rate',
+        sort_order: 4,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
     ],
     'walmart-advertising': [
-      { id: '1', stat_label: 'Revenue Growth', stat_value: '350%', stat_description: 'Average revenue increase' },
-      { id: '2', stat_label: 'Market Penetration', stat_value: '400%', stat_description: 'Improved market reach' },
-      { id: '3', stat_label: 'Conversion Rate', stat_value: '125%', stat_description: 'Higher conversion rates' },
-      { id: '4', stat_label: 'Success Rate', stat_value: '96%', stat_description: 'Campaign success rate' }
+      { 
+        id: '1', 
+        service_type: 'walmart-advertising',
+        stat_label: 'Revenue Growth', 
+        stat_value: '350%', 
+        stat_description: 'Average revenue increase',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '2', 
+        service_type: 'walmart-advertising',
+        stat_label: 'Market Penetration', 
+        stat_value: '400%', 
+        stat_description: 'Improved market reach',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '3', 
+        service_type: 'walmart-advertising',
+        stat_label: 'Conversion Rate', 
+        stat_value: '125%', 
+        stat_description: 'Higher conversion rates',
+        sort_order: 3,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '4', 
+        service_type: 'walmart-advertising',
+        stat_label: 'Success Rate', 
+        stat_value: '96%', 
+        stat_description: 'Campaign success rate',
+        sort_order: 4,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
     ],
     'google-advertising': [
-      { id: '1', stat_label: 'Average ROAS', stat_value: '500%', stat_description: 'Return on ad spend' },
-      { id: '2', stat_label: 'Cost Reduction', stat_value: '45%', stat_description: 'Lower customer acquisition costs' },
-      { id: '3', stat_label: 'Lead Quality', stat_value: '180%', stat_description: 'Higher quality leads' },
-      { id: '4', stat_label: 'Client Growth', stat_value: '250%', stat_description: 'Average business growth' }
+      { 
+        id: '1', 
+        service_type: 'google-advertising',
+        stat_label: 'Average ROAS', 
+        stat_value: '500%', 
+        stat_description: 'Return on ad spend',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '2', 
+        service_type: 'google-advertising',
+        stat_label: 'Cost Reduction', 
+        stat_value: '45%', 
+        stat_description: 'Lower customer acquisition costs',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '3', 
+        service_type: 'google-advertising',
+        stat_label: 'Lead Quality', 
+        stat_value: '180%', 
+        stat_description: 'Higher quality leads',
+        sort_order: 3,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '4', 
+        service_type: 'google-advertising',
+        stat_label: 'Client Growth', 
+        stat_value: '250%', 
+        stat_description: 'Average business growth',
+        sort_order: 4,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
     ],
     'meta-advertising': [
-      { id: '1', stat_label: 'Community Growth', stat_value: '275%', stat_description: 'Average follower increase' },
-      { id: '2', stat_label: 'Engagement Rate', stat_value: '300%', stat_description: 'Higher user engagement' },
-      { id: '3', stat_label: 'Social Commerce', stat_value: '400%', stat_description: 'Sales through social' },
-      { id: '4', stat_label: 'Brand Awareness', stat_value: '200%', stat_description: 'Improved brand recognition' }
+      { 
+        id: '1', 
+        service_type: 'meta-advertising',
+        stat_label: 'Community Growth', 
+        stat_value: '275%', 
+        stat_description: 'Average follower increase',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '2', 
+        service_type: 'meta-advertising',
+        stat_label: 'Engagement Rate', 
+        stat_value: '300%', 
+        stat_description: 'Higher user engagement',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '3', 
+        service_type: 'meta-advertising',
+        stat_label: 'Social Commerce', 
+        stat_value: '400%', 
+        stat_description: 'Sales through social',
+        sort_order: 3,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '4', 
+        service_type: 'meta-advertising',
+        stat_label: 'Brand Awareness', 
+        stat_value: '200%', 
+        stat_description: 'Improved brand recognition',
+        sort_order: 4,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
     ],
     'website-development': [
-      { id: '1', stat_label: 'Conversion Boost', stat_value: '275%', stat_description: 'Average conversion improvement' },
-      { id: '2', stat_label: 'Load Speed', stat_value: '85%', stat_description: 'Faster loading times' },
-      { id: '3', stat_label: 'Lead Generation', stat_value: '400%', stat_description: 'More qualified leads' },
-      { id: '4', stat_label: 'User Satisfaction', stat_value: '96%', stat_description: 'Positive user feedback' }
+      { 
+        id: '1', 
+        service_type: 'website-development',
+        stat_label: 'Conversion Boost', 
+        stat_value: '275%', 
+        stat_description: 'Average conversion improvement',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '2', 
+        service_type: 'website-development',
+        stat_label: 'Load Speed', 
+        stat_value: '85%', 
+        stat_description: 'Faster loading times',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '3', 
+        service_type: 'website-development',
+        stat_label: 'Lead Generation', 
+        stat_value: '400%', 
+        stat_description: 'More qualified leads',
+        sort_order: 3,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '4', 
+        service_type: 'website-development',
+        stat_label: 'User Satisfaction', 
+        stat_value: '96%', 
+        stat_description: 'Positive user feedback',
+        sort_order: 4,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
     ],
     'account-management': [
-      { id: '1', stat_label: 'Revenue Growth', stat_value: '325%', stat_description: 'Cross-channel revenue increase' },
-      { id: '2', stat_label: 'Efficiency Gain', stat_value: '200%', stat_description: 'Improved account efficiency' },
-      { id: '3', stat_label: 'Cost Optimization', stat_value: '35%', stat_description: 'Reduced management costs' },
-      { id: '4', stat_label: 'Success Rate', stat_value: '97%', stat_description: 'Successful campaigns' }
+      { 
+        id: '1', 
+        service_type: 'account-management',
+        stat_label: 'Revenue Growth', 
+        stat_value: '325%', 
+        stat_description: 'Cross-channel revenue increase',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '2', 
+        service_type: 'account-management',
+        stat_label: 'Efficiency Gain', 
+        stat_value: '200%', 
+        stat_description: 'Improved account efficiency',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '3', 
+        service_type: 'account-management',
+        stat_label: 'Cost Optimization', 
+        stat_value: '35%', 
+        stat_description: 'Reduced management costs',
+        sort_order: 3,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '4', 
+        service_type: 'account-management',
+        stat_label: 'Success Rate', 
+        stat_value: '97%', 
+        stat_description: 'Successful campaigns',
+        sort_order: 4,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
     ],
     'shopify-development': [
-      { id: '1', stat_label: 'Revenue Growth', stat_value: '$500K+', stat_description: 'First-year revenue achievement' },
-      { id: '2', stat_label: 'Conversion Rate', stat_value: '4.2%', stat_description: 'Average store conversion' },
-      { id: '3', stat_label: 'Mobile Boost', stat_value: '280%', stat_description: 'Mobile conversion improvement' },
-      { id: '4', stat_label: 'Client Satisfaction', stat_value: '98%', stat_description: 'Happy store owners' }
+      { 
+        id: '1', 
+        service_type: 'shopify-development',
+        stat_label: 'Revenue Growth', 
+        stat_value: '$500K+', 
+        stat_description: 'First-year revenue achievement',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '2', 
+        service_type: 'shopify-development',
+        stat_label: 'Conversion Rate', 
+        stat_value: '4.2%', 
+        stat_description: 'Average store conversion',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '3', 
+        service_type: 'shopify-development',
+        stat_label: 'Mobile Boost', 
+        stat_value: '280%', 
+        stat_description: 'Mobile conversion improvement',
+        sort_order: 3,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '4', 
+        service_type: 'shopify-development',
+        stat_label: 'Client Satisfaction', 
+        stat_value: '98%', 
+        stat_description: 'Happy store owners',
+        sort_order: 4,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
     ],
     'shopify-integration': [
-      { id: '1', stat_label: 'Efficiency Gain', stat_value: '60%', stat_description: 'Operational improvement' },
-      { id: '2', stat_label: 'Accuracy Rate', stat_value: '99.5%', stat_description: 'Inventory accuracy' },
-      { id: '3', stat_label: 'Processing Speed', stat_value: '200%', stat_description: 'Faster order processing' },
-      { id: '4', stat_label: 'Error Reduction', stat_value: '85%', stat_description: 'Fewer operational errors' }
+      { 
+        id: '1', 
+        service_type: 'shopify-integration',
+        stat_label: 'Efficiency Gain', 
+        stat_value: '60%', 
+        stat_description: 'Operational improvement',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '2', 
+        service_type: 'shopify-integration',
+        stat_label: 'Accuracy Rate', 
+        stat_value: '99.5%', 
+        stat_description: 'Inventory accuracy',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '3', 
+        service_type: 'shopify-integration',
+        stat_label: 'Processing Speed', 
+        stat_value: '200%', 
+        stat_description: 'Faster order processing',
+        sort_order: 3,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      { 
+        id: '4', 
+        service_type: 'shopify-integration',
+        stat_label: 'Error Reduction', 
+        stat_value: '85%', 
+        stat_description: 'Fewer operational errors',
+        sort_order: 4,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
     ]
   };
 
@@ -485,145 +917,225 @@ const getMockReviews = (serviceType: string): ServiceReview[] => {
     'amazon-advertising': [
       {
         id: '1',
+        service_type: 'amazon-advertising',
         client_name: 'Sarah Johnson',
         company: 'TechFlow Electronics',
         review_text: 'The Amazon advertising expertise transformed our business. Our ROI increased by 450% and we now dominate our category. The team understands Amazon like no other.',
         rating: 5,
-        results_achieved: '450% ROI increase, 65% ACoS reduction'
+        results_achieved: '450% ROI increase, 65% ACoS reduction',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'amazon-advertising',
         client_name: 'Mike Rodriguez',
         company: 'GreenSpace Solutions',
         review_text: 'From unknown to market leader in 8 months. The strategic approach to Amazon advertising was exactly what we needed to compete with established brands.',
         rating: 5,
-        results_achieved: '75% market share increase, 420% revenue growth'
+        results_achieved: '75% market share increase, 420% revenue growth',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'walmart-advertising': [
       {
         id: '1',
+        service_type: 'walmart-advertising',
         client_name: 'Lisa Chen',
         company: 'FreshLife Essentials',
         review_text: 'Walmart Connect became our fastest-growing channel. The expertise in Walmart-specific optimization was game-changing for our consumer goods brand.',
         rating: 5,
-        results_achieved: '350% revenue growth, 400% market penetration'
+        results_achieved: '350% revenue growth, 400% market penetration',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'walmart-advertising',
         client_name: 'David Thompson',
         company: 'VitalBoost Nutrition',
         review_text: 'We achieved category leadership on Walmart thanks to their strategic approach. The audience targeting and keyword optimization were phenomenal.',
         rating: 5,
-        results_achieved: 'Top 5 category ranking, 275% sales volume increase'
+        results_achieved: 'Top 5 category ranking, 275% sales volume increase',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'google-advertising': [
       {
         id: '1',
+        service_type: 'google-advertising',
         client_name: 'Jennifer Martinez',
         company: 'CloudSync Pro',
         review_text: 'Google Ads became our primary growth engine. We scaled to $2M annual revenue with incredible ROI. The multi-channel approach was perfect.',
         rating: 5,
-        results_achieved: '$2M+ annual revenue, 45% cost reduction'
+        results_achieved: '$2M+ annual revenue, 45% cost reduction',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'google-advertising',
         client_name: 'Alex Kim',
         company: 'StyleHub Fashion',
         review_text: 'Our Google Ads performance during peak season exceeded all expectations. 500% ROAS was beyond what we thought possible.',
         rating: 5,
-        results_achieved: '500% ROAS, 350% seasonal revenue growth'
+        results_achieved: '500% ROAS, 350% seasonal revenue growth',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'meta-advertising': [
       {
         id: '1',
+        service_type: 'meta-advertising',
         client_name: 'Maria Gonzalez',
         company: 'FitForce Equipment',
         review_text: 'We built an incredible community of 100K+ engaged users. Social media became our strongest sales channel with authentic engagement.',
         rating: 5,
-        results_achieved: '100K+ community, 400% social commerce sales'
+        results_achieved: '100K+ community, 400% social commerce sales',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'meta-advertising',
         client_name: 'Taylor Davis',
         company: 'GlowUp Cosmetics',
         review_text: 'We became the go-to brand for Gen Z. The authentic storytelling and trend-based content strategy was perfectly executed.',
         rating: 5,
-        results_achieved: '300% revenue growth, 250% Gen Z engagement'
+        results_achieved: '300% revenue growth, 250% Gen Z engagement',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'website-development': [
       {
         id: '1',
+        service_type: 'website-development',
         client_name: 'Robert Wilson',
         company: 'ModernMart Online',
         review_text: 'Our new website transformed our business completely. The conversion improvements exceeded all expectations with 275% increase.',
         rating: 5,
-        results_achieved: '275% conversion rate boost, 85% faster loading'
+        results_achieved: '275% conversion rate boost, 85% faster loading',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'website-development',
         client_name: 'Amanda Foster',
         company: 'Sterling Legal Partners',
         review_text: 'Our website now generates more leads than all other marketing channels combined. The professional design built incredible credibility.',
         rating: 5,
-        results_achieved: '400% more leads, 250% credibility increase'
+        results_achieved: '400% more leads, 250% credibility increase',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'account-management': [
       {
         id: '1',
+        service_type: 'account-management',
         client_name: 'Chris Johnson',
         company: 'Urban Lifestyle Co.',
         review_text: 'Having expert account management across all platforms was a game-changer. The unified strategy delivered 325% revenue growth.',
         rating: 5,
-        results_achieved: '325% cross-channel revenue, 35% cost optimization'
+        results_achieved: '325% cross-channel revenue, 35% cost optimization',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'account-management',
         client_name: 'Nicole Brown',
         company: 'InnovateTech Solutions',
         review_text: 'Professional account management enabled us to scale without losing performance. Critical for our transition to enterprise level.',
         rating: 5,
-        results_achieved: '500% operational scale, 180% performance consistency'
+        results_achieved: '500% operational scale, 180% performance consistency',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'shopify-development': [
       {
         id: '1',
+        service_type: 'shopify-development',
         client_name: 'Victoria Hayes',
         company: 'Luxe Fashion House',
         review_text: 'Our Shopify store exceeded all expectations. The design and functionality are absolutely perfect. We hit $500K in our first year.',
         rating: 5,
-        results_achieved: '$500K+ first-year revenue, 4.2% conversion rate'
+        results_achieved: '$500K+ first-year revenue, 4.2% conversion rate',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'shopify-development',
         client_name: 'Ryan Mitchell',
         company: 'Pure Wellness Labs',
         review_text: 'The mobile experience is incredible. Our mobile sales became our primary revenue source with 280% conversion boost.',
         rating: 5,
-        results_achieved: '280% mobile conversion boost, 75% mobile revenue share'
+        results_achieved: '280% mobile conversion boost, 75% mobile revenue share',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ],
     'shopify-integration': [
       {
         id: '1',
+        service_type: 'shopify-integration',
         client_name: 'Steven Clark',
         company: 'OmniStore Solutions',
         review_text: 'The integrations transformed our operations completely. We can now manage everything from one central system with 60% efficiency gain.',
         rating: 5,
-        results_achieved: '60% efficiency gain, 99.5% inventory accuracy'
+        results_achieved: '60% efficiency gain, 99.5% inventory accuracy',
+        sort_order: 1,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       },
       {
         id: '2',
+        service_type: 'shopify-integration',
         client_name: 'Rachel Adams',
         company: 'GrowthCo Brands',
         review_text: 'The CRM integration allows us to maintain personal relationships with thousands of customers. Incredible scalability achievement.',
         rating: 5,
-        results_achieved: '85% customer retention, 150% marketing efficiency'
+        results_achieved: '85% customer retention, 150% marketing efficiency',
+        sort_order: 2,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     ]
   };
