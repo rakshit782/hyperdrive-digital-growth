@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,13 +27,28 @@ import {
   RefreshCw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { usePostgresLeads } from "@/hooks/usePostgresLeads";
-import { Lead } from "@/services/postgresService";
+import { localDB } from "@/utils/localStorageDB";
 
 type LeadStatus = 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
 
+interface Lead {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  source?: string;
+  status: LeadStatus;
+  notes?: string;
+  form_security?: Record<string, any>;
+  lead_data?: Record<string, any>;
+  created_at: string;
+  updated_at?: string;
+}
+
 const LeadManagementTab = () => {
-  const { leads, loading, createLead, updateLead, deleteLead, refetch } = usePostgresLeads();
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -69,6 +85,28 @@ const LeadManagementTab = () => {
     other: FileText
   };
 
+  const loadLeads = async () => {
+    try {
+      setLoading(true);
+      const leadsData = await localDB.findAll('leads');
+      setLeads(leadsData);
+      console.log('Leads loaded from local storage:', leadsData);
+    } catch (error) {
+      console.error('Error loading leads:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load leads from local storage",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadLeads();
+  }, []);
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -88,23 +126,45 @@ const LeadManagementTab = () => {
     try {
       const leadData = {
         ...formData,
-        lead_data: {},
-        phone: formData.phone || undefined,
-        company: formData.company || undefined,
-        source: formData.source || undefined,
-        notes: formData.notes || undefined
+        form_security: {
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
+        },
+        lead_data: {
+          formType: 'manual_entry',
+          submittedAt: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
+        }
       };
 
       if (selectedLead) {
-        await updateLead(selectedLead.id, leadData);
+        await localDB.update('leads', selectedLead.id, leadData);
+        toast({
+          title: "Success",
+          description: "Lead updated successfully",
+        });
       } else {
-        await createLead(leadData);
+        await localDB.insert('leads', leadData);
+        toast({
+          title: "Success",
+          description: "Lead created successfully",
+        });
       }
       
       resetForm();
       setIsDialogOpen(false);
+      loadLeads();
     } catch (error) {
       console.error('Error saving lead:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save lead",
+        variant: "destructive",
+      });
     }
   };
 
@@ -124,7 +184,21 @@ const LeadManagementTab = () => {
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this lead?')) {
-      await deleteLead(id);
+      try {
+        await localDB.delete('leads', id);
+        toast({
+          title: "Success",
+          description: "Lead deleted successfully",
+        });
+        loadLeads();
+      } catch (error) {
+        console.error('Error deleting lead:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete lead",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -151,7 +225,7 @@ const LeadManagementTab = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Loading leads from PostgreSQL...</span>
+        <span className="ml-3 text-gray-600">Loading leads from local storage...</span>
       </div>
     );
   }
@@ -166,12 +240,12 @@ const LeadManagementTab = () => {
                 <Users className="w-5 h-5 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl font-bold text-slate-900">Lead Management (PostgreSQL)</CardTitle>
-                <CardDescription>Track and manage your leads with PostgreSQL database</CardDescription>
+                <CardTitle className="text-xl font-bold text-slate-900">Lead Management (Local Storage)</CardTitle>
+                <CardDescription>Track and manage your leads with local browser storage</CardDescription>
               </div>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={refetch} className="flex items-center gap-2">
+              <Button variant="outline" onClick={loadLeads} className="flex items-center gap-2">
                 <RefreshCw className="w-4 h-4" />
                 Refresh
               </Button>
@@ -456,7 +530,7 @@ const LeadManagementTab = () => {
                 <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No leads found</h3>
                 <p className="text-gray-600 mb-4">
-                  {filterStatus === 'all' && !searchTerm ? 'Start by adding your first lead or connect your forms' : 
+                  {filterStatus === 'all' && !searchTerm ? 'Start by adding your first lead or submit a form' : 
                    searchTerm ? `No leads match "${searchTerm}"` :
                    `No leads with status "${filterStatus}"`}
                 </p>
