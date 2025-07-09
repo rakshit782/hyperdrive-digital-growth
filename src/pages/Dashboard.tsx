@@ -23,6 +23,7 @@ import HomepageCustomizationTab from "@/components/dashboard/HomepageCustomizati
 import { SecuritySettingsTab } from "@/components/dashboard/SecuritySettingsTab";
 import AboutContentManagement from "@/components/dashboard/AboutContentManagement";
 import SEOManagement from "@/components/dashboard/SEOManagement";
+import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
 import { 
@@ -44,7 +45,8 @@ import {
   BookOpen,
   HelpCircle,
   DollarSign,
-  Home
+  Home,
+  Scale
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -94,6 +96,7 @@ const Dashboard = () => {
       'service-header-images': Image,
       'website-integrations': Zap,
       'integration-status': Zap,
+      'policy-pages': Scale,
     };
     return iconMap[tabId] || Settings;
   };
@@ -121,6 +124,7 @@ const Dashboard = () => {
       'service-header-images': 'Service Images',
       'website-integrations': 'Website Integrations',
       'integration-status': 'Integration Status',
+      'policy-pages': 'Policy Pages Management',
     };
     return titleMap[tabId] || 'Dashboard';
   };
@@ -148,6 +152,7 @@ const Dashboard = () => {
       'service-header-images': 'Upload and manage service page header images',
       'website-integrations': 'Manage third-party integrations and APIs',
       'integration-status': 'Monitor integration health and status',
+      'policy-pages': 'Manage Privacy Policy, Terms of Service, and Terms & Conditions content',
     };
     return descriptionMap[tabId] || 'Manage your dashboard settings';
   };
@@ -208,6 +213,8 @@ const Dashboard = () => {
         return <WebsiteIntegrationsTab />;
       case 'integration-status':
         return <IntegrationStatusTab />;
+      case 'policy-pages':
+        return <PolicyPagesTab />;
       default:
         return (
           <ServicesTab 

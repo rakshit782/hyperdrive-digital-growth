@@ -38,12 +38,14 @@ const TermsOfService = () => {
       try {
         const parsed = JSON.parse(savedContent);
         setPolicyContent(parsed);
+        console.log('Terms of service content loaded:', parsed);
       } catch (error) {
         console.error('Failed to parse terms of service content:', error);
       }
     }
 
     const handleContentUpdate = (event: CustomEvent) => {
+      console.log('Terms of service content updated via dashboard');
       setPolicyContent(event.detail);
     };
 

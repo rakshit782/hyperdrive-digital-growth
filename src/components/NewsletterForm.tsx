@@ -45,14 +45,16 @@ const NewsletterForm = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('Submitting email:', email);
       const result = await addEmail({
-        email: email,
+        email: email.trim(),
         name: email.split('@')[0], // Use email prefix as name
         source: 'newsletter_form',
         tags: ['website_signup']
       });
 
       if (result.success) {
+        console.log('Email submission successful');
         toast({
           title: "Thank you for subscribing!",
           description: "You'll receive our latest updates and insights. Data saved locally.",
@@ -60,6 +62,7 @@ const NewsletterForm = () => {
         
         setEmail("");
       } else {
+        console.log('Email submission failed:', result.error);
         throw new Error(result.error || 'Subscription failed');
       }
     } catch (error) {

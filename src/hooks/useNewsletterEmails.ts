@@ -22,6 +22,7 @@ export const useNewsletterEmails = () => {
   const fetchEmails = async () => {
     try {
       setLoading(true);
+      console.log('Fetching newsletter emails from local storage...');
       const emailsData = await localDB.findAll('newsletter_emails');
       setEmails(emailsData);
       console.log('Newsletter emails fetched from local storage:', emailsData);
@@ -39,6 +40,8 @@ export const useNewsletterEmails = () => {
 
   const addEmail = async (emailData: Omit<NewsletterEmail, 'id' | 'created_at' | 'updated_at' | 'status'> & { status?: 'subscribed' | 'unsubscribed' }) => {
     try {
+      console.log('Adding newsletter email:', emailData);
+      
       // Check if email already exists
       const existingEmail = await localDB.findWhere('newsletter_emails', 
         (item) => item.email.toLowerCase() === emailData.email.toLowerCase()
@@ -49,13 +52,16 @@ export const useNewsletterEmails = () => {
         if (existingEmail[0].status === 'unsubscribed') {
           await localDB.update('newsletter_emails', existingEmail[0].id, {
             status: 'subscribed',
-            source: emailData.source || 'newsletter_form'
+            source: emailData.source || 'newsletter_form',
+            updated_at: new Date().toISOString()
           });
+          console.log('Reactivated existing email subscription');
           toast({
             title: "Welcome Back!",
             description: "Email subscription reactivated successfully",
           });
         } else {
+          console.log('Email already subscribed');
           toast({
             title: "Already Subscribed",
             description: "This email is already subscribed to our newsletter",
@@ -65,10 +71,15 @@ export const useNewsletterEmails = () => {
         }
       } else {
         // Add new email
-        const id = await localDB.insert('newsletter_emails', {
+        const newEmailData = {
           ...emailData,
-          status: emailData.status || 'subscribed'
-        });
+          status: emailData.status || 'subscribed',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        const id = await localDB.insert('newsletter_emails', newEmailData);
+        console.log('New email added with ID:', id);
         toast({
           title: "Success",
           description: "Email added to newsletter successfully",
@@ -90,7 +101,10 @@ export const useNewsletterEmails = () => {
 
   const updateEmailStatus = async (id: string, status: 'subscribed' | 'unsubscribed') => {
     try {
-      await localDB.update('newsletter_emails', id, { status });
+      await localDB.update('newsletter_emails', id, { 
+        status,
+        updated_at: new Date().toISOString()
+      });
       toast({
         title: "Success",
         description: `Email ${status} successfully`,

@@ -38,12 +38,14 @@ const PrivacyPolicy = () => {
       try {
         const parsed = JSON.parse(savedContent);
         setPolicyContent(parsed);
+        console.log('Privacy policy content loaded:', parsed);
       } catch (error) {
         console.error('Failed to parse privacy policy content:', error);
       }
     }
 
     const handleContentUpdate = (event: CustomEvent) => {
+      console.log('Privacy policy content updated via dashboard');
       setPolicyContent(event.detail);
     };
 
