@@ -22,46 +22,49 @@ const ModernDashboardLayout = ({
   icon 
 }: ModernDashboardLayoutProps) => {
   return (
-    <div className="space-y-6">
-      {/* Modern Header Section */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          {icon && (
-            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg">
-              {icon}
-            </div>
-          )}
-          <div className="space-y-1">
-            <div className="flex items-center space-x-3">
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
-              {category && (
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                  {category}
-                </Badge>
+    <div className="min-h-screen bg-gray-50">
+      {/* Main Content */}
+      <div className="ml-[280px] p-8">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                {icon && (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg">
+                    {icon}
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-3">
+                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{title}</h1>
+                    {category && (
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 px-3 py-1">
+                        {category}
+                      </Badge>
+                    )}
+                  </div>
+                  {description && (
+                    <p className="text-gray-600 text-base max-w-2xl leading-relaxed">{description}</p>
+                  )}
+                </div>
+              </div>
+              {action && (
+                <div className="flex items-center space-x-3">
+                  {action}
+                </div>
               )}
             </div>
-            {description && (
-              <p className="text-slate-600 text-sm max-w-2xl leading-relaxed">{description}</p>
-            )}
           </div>
-        </div>
-        {action && (
-          <div className="flex items-center space-x-2">
-            {action}
-          </div>
-        )}
-      </div>
 
-      <Separator className="bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
-      
-      {/* Content Card */}
-      <Card className="crm-card border-0 shadow-xl">
-        <CardContent className="p-8">
-          <div className="space-y-6">
-            {children}
-          </div>
-        </CardContent>
-      </Card>
+          {/* Content Card */}
+          <Card className="bg-white shadow-sm border border-gray-200">
+            <CardContent className="p-8">
+              {children}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };

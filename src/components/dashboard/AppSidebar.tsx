@@ -1,14 +1,8 @@
 
 import React from "react";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+  Separator
+} from "@/components/ui/separator";
 import {
   Settings,
   LayoutDashboard,
@@ -32,8 +26,6 @@ import {
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
-import { useDashboardConfig } from "@/hooks/useDashboardConfig";
 import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
@@ -89,115 +81,75 @@ const menuItems = [
 ];
 
 export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
-  const { open, setOpen } = useSidebar();
-  const { setConfig } = useDashboardConfig();
-
   const handleNavigation = (tabId: string) => {
     onTabChange(tabId);
     if (typeof window !== 'undefined') {
       localStorage.setItem('activeTab', tabId);
     }
-    setConfig(prev => ({ ...prev, activeTab: tabId }));
   };
 
   return (
-    <Sheet open={!open} onOpenChange={(isOpen) => setOpen(!isOpen)}>
-      <SheetTrigger asChild>
-        <aside className={cn(
-          "group/sidebar fixed left-0 top-0 z-50 flex h-full flex-col border-r bg-secondary",
-          "duration-200 lg:relative",
-          open ? "w-[5rem] hover:w-[16rem]" : "w-[16rem]",
-        )}>
-          <div className="px-4 py-6">
-            <SheetHeader>
-              <SheetTitle>Dashboard Menu</SheetTitle>
-              <SheetDescription>
-                Manage all aspects of your website from this menu.
-              </SheetDescription>
-            </SheetHeader>
+    <aside className="fixed left-0 top-0 z-50 flex h-full w-[280px] flex-col border-r bg-white shadow-lg">
+      <div className="px-6 py-8">
+        <div className="flex items-center space-x-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+            <Settings className="h-5 w-5" />
           </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Dashboard</h2>
+            <p className="text-sm text-gray-500">Manage your website</p>
+          </div>
+        </div>
+      </div>
 
-          <Separator />
+      <Separator className="bg-gray-200" />
 
-          <ScrollArea className="flex-1 space-y-4 p-4">
-            {menuItems.map((category, index) => (
-              <div key={index} className="space-y-2">
-                <h4 className="font-medium text-sm px-1">{category.category}</h4>
-                <div className="space-y-1">
-                  {category.items.map((item) => (
-                    <Button
-                      key={item.id}
-                      variant="ghost"
-                      className={cn(
-                        "flex w-full items-center justify-start gap-2 rounded-md px-2.5 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground sm:text-base",
-                        activeTab === item.id ? "bg-muted font-semibold" : "text-muted-foreground"
-                      )}
-                      onClick={() => handleNavigation(item.id)}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Button>
-                  ))}
-                </div>
+      <ScrollArea className="flex-1 px-4 py-6">
+        <div className="space-y-8">
+          {menuItems.map((category, index) => (
+            <div key={index} className="space-y-3">
+              <h4 className="px-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                {category.category}
+              </h4>
+              <div className="space-y-1">
+                {category.items.map((item) => (
+                  <Button
+                    key={item.id}
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start px-3 py-2.5 text-sm font-medium transition-colors",
+                      "hover:bg-blue-50 hover:text-blue-700",
+                      activeTab === item.id 
+                        ? "bg-blue-100 text-blue-700 shadow-sm border-r-2 border-blue-500" 
+                        : "text-gray-600"
+                    )}
+                    onClick={() => handleNavigation(item.id)}
+                  >
+                    <item.icon className="mr-3 h-4 w-4" />
+                    <span className="truncate">{item.title}</span>
+                  </Button>
+                ))}
               </div>
-            ))}
-          </ScrollArea>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
 
-          <Separator />
+      <Separator className="bg-gray-200" />
 
-          <div className="mt-auto p-4">
-            <Button variant="outline" className="w-full">
-              Add Content <Settings className="ml-2 h-4 w-4" />
-            </Button>
+      <div className="p-4">
+        <div className="rounded-lg bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+          <div className="flex items-center space-x-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm">
+              <Zap className="h-4 w-4 text-blue-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900">Pro Features</p>
+              <p className="text-xs text-gray-500 truncate">Unlock advanced tools</p>
+            </div>
           </div>
-        </aside>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[16rem] p-0">
-        <aside className="fixed left-0 top-0 z-50 flex h-full w-[16rem] flex-col border-r bg-secondary">
-          <div className="px-4 py-6">
-            <SheetHeader>
-              <SheetTitle>Dashboard Menu</SheetTitle>
-              <SheetDescription>
-                Manage all aspects of your website from this menu.
-              </SheetDescription>
-            </SheetHeader>
-          </div>
-
-          <Separator />
-
-          <ScrollArea className="flex-1 space-y-4 p-4">
-            {menuItems.map((category, index) => (
-              <div key={index} className="space-y-2">
-                <h4 className="font-medium text-sm px-1">{category.category}</h4>
-                <div className="space-y-1">
-                  {category.items.map((item) => (
-                    <Button
-                      key={item.id}
-                      variant="ghost"
-                      className={cn(
-                        "flex w-full items-center justify-start gap-2 rounded-md px-2.5 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground sm:text-base",
-                        activeTab === item.id ? "bg-muted font-semibold" : "text-muted-foreground"
-                      )}
-                      onClick={() => handleNavigation(item.id)}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </ScrollArea>
-
-          <Separator />
-
-          <div className="mt-auto p-4">
-            <Button variant="outline" className="w-full">
-              Add Content <Settings className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </aside>
-      </SheetContent>
-    </Sheet>
+        </div>
+      </div>
+    </aside>
   );
 }
