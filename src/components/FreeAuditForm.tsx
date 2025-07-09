@@ -1,408 +1,320 @@
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Send, Target, TrendingUp, Zap, TestTube, Upload } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useFormSubmission } from "@/hooks/useFormSubmission";
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { useFormSubmission } from '@/hooks/useFormSubmission';
+import { supabase } from '@/integrations/supabase/client';
+import { Upload, FileText, AlertCircle } from 'lucide-react';
+import AuditBenefits from '@/components/forms/AuditBenefits';
 
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  company: string;
-  website: string;
-  monthlyAdSpend: string;
-  primaryPlatform: string;
-  businessGoals: string;
-  currentChallenges: string;
+const auditFormSchema = z.object({
+  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  phone: z.string().optional(),
+  company: z.string().optional(),
+  website: z.string().url('Please enter a valid website URL').optional().or(z.literal('')),
+  monthlyAdSpend: z.string().min(1, 'Please select your monthly ad spend'),
+  primaryPlatform: z.string().min(1, 'Please select your primary platform'),
+  businessGoals: z.string().min(10, 'Please describe your business goals (minimum 10 characters)'),
+  currentChallenges: z.string().min(10, 'Please describe your current challenges (minimum 10 characters)'),
+});
+
+type AuditFormData = z.infer<typeof auditFormSchema>;
+
+interface FileUploadState {
   businessSalesReport: File | null;
   searchTermReport: File | null;
   advertisedProductReport: File | null;
 }
 
 const FreeAuditForm = () => {
-  const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    company: '',
-    website: '',
-    monthlyAdSpend: '',
-    primaryPlatform: '',
-    businessGoals: '',
-    currentChallenges: '',
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<FileUploadState>({
     businessSalesReport: null,
     searchTermReport: null,
-    advertisedProductReport: null
+    advertisedProductReport: null,
   });
-  
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [honeypotValue, setHoneypotValue] = useState('');
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   const { toast } = useToast();
-  const { submitForm, isSubmitting } = useFormSubmission();
+  const { submitForm } = useFormSubmission();
 
-  const fillTestData = () => {
-    setFormData({
-      firstName: 'John',
-      lastName: 'Smith',
-      email: 'john.smith@example.com',
-      phone: '+1 (555) 123-4567',
-      company: 'Example Corp',
-      website: 'https://example.com',
-      monthlyAdSpend: '10k-25k',
-      primaryPlatform: 'amazon',
-      businessGoals: 'We want to increase our Amazon sales by 50% while maintaining profitable ROAS.',
-      currentChallenges: 'We are struggling with high ACoS on our campaigns and poor organic ranking.',
-      businessSalesReport: null,
-      searchTermReport: null,
-      advertisedProductReport: null
-    });
-    setFormErrors({});
-    
-    toast({
-      title: "Test data filled",
-      description: "Form has been populated with sample data for testing",
-    });
-  };
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<AuditFormData>({
+    resolver: zodResolver(auditFormSchema),
+  });
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, fieldName: keyof FormData) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const maxSize = 10 * 1024 * 1024; // 10MB
-      const allowedTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
-      
-      if (file.size > maxSize) {
-        toast({
-          title: "File too large",
-          description: "Please select a file smaller than 10MB",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      if (!allowedTypes.includes(file.type)) {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload a PDF, Excel, or CSV file",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      setFormData(prev => ({
-        ...prev,
-        [fieldName]: file
-      }));
-      
-      toast({
-        title: "File uploaded",
-        description: `${file.name} has been uploaded successfully`,
-      });
-    }
-  };
-
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    if (!formData.firstName.trim()) errors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) errors.lastName = 'Last name is required';
-    if (!formData.email.trim()) errors.email = 'Email is required';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = 'Please enter a valid email';
-    if (!formData.phone.trim()) errors.phone = 'Phone number is required';
-    if (!formData.company.trim()) errors.company = 'Company name is required';
-    if (!formData.monthlyAdSpend) errors.monthlyAdSpend = 'Monthly ad spend is required';
-    if (!formData.primaryPlatform) errors.primaryPlatform = 'Primary platform is required';
-    if (!formData.businessGoals.trim()) errors.businessGoals = 'Business goals are required';
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    console.log('Free audit form submission started');
-    
-    if (honeypotValue) {
-      console.log('Honeypot triggered, blocking submission');
-      return;
-    }
-    
-    if (!validateForm()) {
-      toast({
-        title: "Form Validation Failed",
-        description: "Please fill in all required fields correctly.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const uploadFileToStorage = async (file: File, fileName: string): Promise<string | null> => {
     try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${Date.now()}-${fileName}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('lead-files')
+        .upload(filePath, file);
+
+      if (error) {
+        console.error('Upload error:', error);
+        return null;
+      }
+
+      return filePath;
+    } catch (error) {
+      console.error('Upload error:', error);
+      return null;
+    }
+  };
+
+  const handleFileChange = (fileType: keyof FileUploadState, file: File | null) => {
+    setUploadedFiles(prev => ({
+      ...prev,
+      [fileType]: file
+    }));
+  };
+
+  const onSubmit = async (data: AuditFormData) => {
+    setIsSubmitting(true);
+    
+    try {
+      // Upload files to Supabase storage
+      const uploadedFilePaths: { [key: string]: string | null } = {};
+      
+      if (uploadedFiles.businessSalesReport) {
+        setUploadProgress({ businessSalesReport: 0 });
+        uploadedFilePaths.businessSalesReport = await uploadFileToStorage(
+          uploadedFiles.businessSalesReport, 
+          'business-sales-report'
+        );
+        setUploadProgress({ businessSalesReport: 100 });
+      }
+      
+      if (uploadedFiles.searchTermReport) {
+        setUploadProgress({ searchTermReport: 0 });
+        uploadedFilePaths.searchTermReport = await uploadFileToStorage(
+          uploadedFiles.searchTermReport, 
+          'search-term-report'
+        );
+        setUploadProgress({ searchTermReport: 100 });
+      }
+      
+      if (uploadedFiles.advertisedProductReport) {
+        setUploadProgress({ advertisedProductReport: 0 });
+        uploadedFilePaths.advertisedProductReport = await uploadFileToStorage(
+          uploadedFiles.advertisedProductReport, 
+          'advertised-product-report'
+        );
+        setUploadProgress({ advertisedProductReport: 100 });
+      }
+
+      const fullName = `${data.firstName} ${data.lastName}`;
+      
       const result = await submitForm({
-        name: `${formData.firstName} ${formData.lastName}`,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
-        company: formData.company,
-        website: formData.website,
-        monthlyAdSpend: formData.monthlyAdSpend,
-        primaryPlatform: formData.primaryPlatform,
-        businessGoals: formData.businessGoals,
-        currentChallenges: formData.currentChallenges,
+        name: fullName,
+        email: data.email,
+        phone: data.phone,
+        company: data.company,
         source: 'free_audit_form',
         formType: 'free_audit',
-        uploadedFiles: {
-          businessSalesReport: formData.businessSalesReport?.name || null,
-          searchTermReport: formData.searchTermReport?.name || null,
-          advertisedProductReport: formData.advertisedProductReport?.name || null
-        }
+        firstName: data.firstName,
+        lastName: data.lastName,
+        businessGoals: data.businessGoals,
+        website: data.website,
+        monthlyAdSpend: data.monthlyAdSpend,
+        primaryPlatform: data.primaryPlatform,
+        currentChallenges: data.currentChallenges,
+        uploadedFiles: uploadedFilePaths,
       });
 
       if (result.success) {
-        setIsSubmitted(true);
-        
-        setFormData({
-          firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
-          monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: '',
-          businessSalesReport: null, searchTermReport: null, advertisedProductReport: null
-        });
-        setFormErrors({});
-        
         toast({
-          title: "Success!",
-          description: "Your audit request has been submitted successfully and saved to local storage.",
+          title: "Audit Request Submitted!",
+          description: "We'll review your information and get back to you within 24 hours with your comprehensive audit.",
         });
+        
+        // Reset form
+        setUploadedFiles({
+          businessSalesReport: null,
+          searchTermReport: null,
+          advertisedProductReport: null,
+        });
+        setUploadProgress({});
       } else {
-        throw new Error(result.error || 'Submission failed');
+        throw new Error(result.error || 'Failed to submit audit request');
       }
     } catch (error) {
       console.error('Form submission error:', error);
       toast({
         title: "Submission Failed",
-        description: error instanceof Error ? error.message : "Please try again later.",
+        description: error instanceof Error ? error.message : "There was an error submitting your audit request. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    if (formErrors[name]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    if (formErrors[name]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  if (isSubmitted) {
-    return (
-      <section className="py-16">
-        <div className="max-w-4xl mx-auto px-6">
-          <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0">
-            <CardContent className="p-12 text-center">
-              <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-8" />
-              <h2 className="text-4xl font-bold text-slate-900 mb-6">Your Audit Request is Submitted!</h2>
-              <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-                Thank you for requesting your free $2,000 advertising audit. Your data has been saved locally and our team will analyze your current campaigns within 24-48 hours.
-              </p>
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Target className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <h3 className="font-semibold text-slate-900">Deep Analysis</h3>
-                  <p className="text-sm text-slate-600">Comprehensive audit of your campaigns</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <TrendingUp className="w-8 h-8 text-purple-600" />
-                  </div>
-                  <h3 className="font-semibold text-slate-900">Growth Opportunities</h3>
-                  <p className="text-sm text-slate-600">Identify areas for improvement</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Zap className="w-8 h-8 text-green-600" />
-                  </div>
-                  <h3 className="font-semibold text-slate-900">Action Plan</h3>
-                  <p className="text-sm text-slate-600">Custom strategy for your business</p>
-                </div>
-              </div>
-              <Button 
-                onClick={() => setIsSubmitted(false)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600"
-              >
-                Request Another Audit
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-    );
-  }
+  const FileUploadField = ({ 
+    label, 
+    fileType, 
+    accept = ".pdf,.xlsx,.xls,.csv" 
+  }: { 
+    label: string; 
+    fileType: keyof FileUploadState; 
+    accept?: string;
+  }) => (
+    <div className="space-y-2">
+      <Label htmlFor={fileType} className="text-sm font-medium text-gray-700">
+        {label} <span className="text-gray-500">(Optional)</span>
+      </Label>
+      <div className="relative">
+        <Input
+          id={fileType}
+          type="file"
+          accept={accept}
+          onChange={(e) => {
+            const file = e.target.files?.[0] || null;
+            handleFileChange(fileType, file);
+          }}
+          className="hidden"
+        />
+        <Label
+          htmlFor={fileType}
+          className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+        >
+          <div className="flex flex-col items-center space-y-2">
+            {uploadedFiles[fileType] ? (
+              <>
+                <FileText className="w-6 h-6 text-green-600" />
+                <span className="text-sm text-green-600 font-medium">
+                  {uploadedFiles[fileType]?.name}
+                </span>
+              </>
+            ) : (
+              <>
+                <Upload className="w-6 h-6 text-gray-400" />
+                <span className="text-sm text-gray-600">Click to upload file</span>
+              </>
+            )}
+          </div>
+        </Label>
+        {uploadProgress[fileType] !== undefined && uploadProgress[fileType] < 100 && (
+          <div className="mt-2">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                style={{ width: `${uploadProgress[fileType]}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
-    <section className="py-16">
-      <div className="max-w-4xl mx-auto px-6">
-        <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0">
-          <CardHeader className="text-center pb-8">
-            <CardTitle className="text-3xl font-bold text-slate-900 mb-4">
-              Get Your Free $2,000 Advertising Audit
-            </CardTitle>
-            <CardDescription className="text-lg text-slate-600">
-              Discover hidden opportunities and get a custom roadmap to increase your ROAS by 300% (Local Storage)
-            </CardDescription>
+    <section className="py-16 px-6 bg-white">
+      <div className="max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-12 items-start">
+          {/* Left side - Benefits */}
+          <AuditBenefits />
+
+          {/* Right side - Form */}
+          <Card className="shadow-xl border-0 bg-white">
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-2xl font-bold text-gray-900">
+                Get Your Free $2,000 Audit
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                Fill out the form below and upload your reports for a comprehensive analysis
+              </CardDescription>
+            </CardHeader>
             
-            <div className="mt-4">
-              <Button 
-                type="button" 
-                onClick={fillTestData}
-                variant="outline"
-                className="bg-yellow-50 border-yellow-200 text-yellow-800 hover:bg-yellow-100"
-              >
-                <TestTube className="w-4 h-4 mr-2" />
-                Fill Test Data
-              </Button>
-            </div>
-          </CardHeader>
-          
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
-                <Input
-                  name="website_url"
-                  value={honeypotValue}
-                  onChange={(e) => setHoneypotValue(e.target.value)}
-                  tabIndex={-1}
-                  autoComplete="nope"
-                  aria-hidden="true"
-                />
-              </div>
-
-              {/* Contact Information */}
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold text-slate-900 border-b pb-2">Contact Information</h3>
-                
-                <div className="grid md:grid-cols-2 gap-6">
+            <CardContent>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {/* Personal Information */}
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">First Name *</label>
+                    <Label htmlFor="firstName">First Name *</Label>
                     <Input
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      required
-                      className={`h-12 text-lg border-slate-300 ${formErrors.firstName ? 'border-red-500' : ''}`}
+                      {...register('firstName')}
                       placeholder="John"
+                      className="mt-1"
                     />
-                    {formErrors.firstName && <p className="text-red-500 text-sm mt-1">{formErrors.firstName}</p>}
+                    {errors.firstName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
+                    )}
                   </div>
-                  
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Last Name *</label>
+                    <Label htmlFor="lastName">Last Name *</Label>
                     <Input
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      required
-                      className={`h-12 text-lg border-slate-300 ${formErrors.lastName ? 'border-red-500' : ''}`}
+                      {...register('lastName')}
                       placeholder="Doe"
+                      className="mt-1"
                     />
-                    {formErrors.lastName && <p className="text-red-500 text-sm mt-1">{formErrors.lastName}</p>}
-                  </div>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address *</label>
-                    <Input
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className={`h-12 text-lg border-slate-300 ${formErrors.email ? 'border-red-500' : ''}`}
-                      placeholder="john@company.com"
-                    />
-                    {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number *</label>
-                    <Input
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                      className={`h-12 text-lg border-slate-300 ${formErrors.phone ? 'border-red-500' : ''}`}
-                      placeholder="+1 (555) 123-4567"
-                    />
-                    {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
+                    {errors.lastName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
+                    )}
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Company Name *</label>
-                    <Input
-                      name="company"
-                      value={formData.company}
-                      onChange={handleChange}
-                      required
-                      className={`h-12 text-lg border-slate-300 ${formErrors.company ? 'border-red-500' : ''}`}
-                      placeholder="Your Company"
-                    />
-                    {formErrors.company && <p className="text-red-500 text-sm mt-1">{formErrors.company}</p>}
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Website URL</label>
-                    <Input
-                      name="website"
-                      value={formData.website}
-                      onChange={handleChange}
-                      className="h-12 text-lg border-slate-300"
-                      placeholder="https://yourwebsite.com"
-                    />
-                  </div>
+                <div>
+                  <Label htmlFor="email">Email Address *</Label>
+                  <Input
+                    {...register('email')}
+                    type="email"
+                    placeholder="john@company.com"
+                    className="mt-1"
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                  )}
                 </div>
-              </div>
 
-              {/* Business Information */}
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold text-slate-900 border-b pb-2">Business Information</h3>
-                
-                <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    {...register('phone')}
+                    type="tel"
+                    placeholder="+1 (555) 123-4567"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="company">Company Name</Label>
+                  <Input
+                    {...register('company')}
+                    placeholder="Your Company LLC"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="website">Website URL</Label>
+                  <Input
+                    {...register('website')}
+                    placeholder="https://yourwebsite.com"
+                    className="mt-1"
+                  />
+                  {errors.website && (
+                    <p className="text-red-500 text-sm mt-1">{errors.website.message}</p>
+                  )}
+                </div>
+
+                {/* Business Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Monthly Ad Spend *</label>
-                    <Select onValueChange={(value) => handleSelectChange('monthlyAdSpend', value)} value={formData.monthlyAdSpend} required>
-                      <SelectTrigger className={`h-12 text-lg ${formErrors.monthlyAdSpend ? 'border-red-500' : ''}`}>
-                        <SelectValue placeholder="Select your monthly spend" />
+                    <Label htmlFor="monthlyAdSpend">Monthly Ad Spend *</Label>
+                    <Select onValueChange={(value) => setValue('monthlyAdSpend', value)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select range" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="under-1k">Under $1,000</SelectItem>
@@ -410,158 +322,96 @@ const FreeAuditForm = () => {
                         <SelectItem value="5k-10k">$5,000 - $10,000</SelectItem>
                         <SelectItem value="10k-25k">$10,000 - $25,000</SelectItem>
                         <SelectItem value="25k-50k">$25,000 - $50,000</SelectItem>
-                        <SelectItem value="over-50k">Over $50,000</SelectItem>
+                        <SelectItem value="50k-plus">$50,000+</SelectItem>
                       </SelectContent>
                     </Select>
-                    {formErrors.monthlyAdSpend && <p className="text-red-500 text-sm mt-1">{formErrors.monthlyAdSpend}</p>}
+                    {errors.monthlyAdSpend && (
+                      <p className="text-red-500 text-sm mt-1">{errors.monthlyAdSpend.message}</p>
+                    )}
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Primary Advertising Platform *</label>
-                    <Select onValueChange={(value) => handleSelectChange('primaryPlatform', value)} value={formData.primaryPlatform} required>
-                      <SelectTrigger className={`h-12 text-lg ${formErrors.primaryPlatform ? 'border-red-500' : ''}`}>
-                        <SelectValue placeholder="Select your main platform" />
+                    <Label htmlFor="primaryPlatform">Primary Platform *</Label>
+                    <Select onValueChange={(value) => setValue('primaryPlatform', value)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select platform" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="amazon">Amazon</SelectItem>
                         <SelectItem value="walmart">Walmart</SelectItem>
-                        <SelectItem value="meta">Facebook/Instagram</SelectItem>
+                        <SelectItem value="meta">Meta (Facebook/Instagram)</SelectItem>
                         <SelectItem value="google">Google Ads</SelectItem>
                         <SelectItem value="multiple">Multiple Platforms</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
-                    {formErrors.primaryPlatform && <p className="text-red-500 text-sm mt-1">{formErrors.primaryPlatform}</p>}
+                    {errors.primaryPlatform && (
+                      <p className="text-red-500 text-sm mt-1">{errors.primaryPlatform.message}</p>
+                    )}
                   </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Business Goals *</label>
-                  <Textarea
-                    name="businessGoals"
-                    value={formData.businessGoals}
-                    onChange={handleChange}
-                    required
-                    rows={4}
-                    className={`text-lg border-slate-300 resize-none ${formErrors.businessGoals ? 'border-red-500' : ''}`}
-                    placeholder="What are your main business objectives? (e.g., increase sales, improve ROAS, expand to new markets)"
-                  />
-                  {formErrors.businessGoals && <p className="text-red-500 text-sm mt-1">{formErrors.businessGoals}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Current Challenges</label>
+                  <Label htmlFor="businessGoals">Business Goals *</Label>
                   <Textarea
-                    name="currentChallenges"
-                    value={formData.currentChallenges}
-                    onChange={handleChange}
-                    rows={4}
-                    className="text-lg border-slate-300 resize-none"
-                    placeholder="What advertising challenges are you facing? (e.g., high CPC, low conversion rates, account management issues)"
+                    {...register('businessGoals')}
+                    placeholder="Describe your main business goals and what you want to achieve..."
+                    className="mt-1 min-h-[80px]"
                   />
+                  {errors.businessGoals && (
+                    <p className="text-red-500 text-sm mt-1">{errors.businessGoals.message}</p>
+                  )}
                 </div>
-              </div>
 
-              {/* File Upload Section */}
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold text-slate-900 border-b pb-2">Required Reports</h3>
-                <p className="text-slate-600 text-sm">
-                  Please upload your advertising reports for a comprehensive audit. All files should be in PDF, Excel, or CSV format (Max 10MB each).
-                </p>
-                
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-slate-900">
-                      30 Days Business Sales Report
-                    </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <input
-                        type="file"
-                        accept=".pdf,.xlsx,.xls,.csv"
-                        onChange={(e) => handleFileUpload(e, 'businessSalesReport')}
-                        className="hidden"
-                        id="businessSalesReport"
-                      />
-                      <label htmlFor="businessSalesReport" className="cursor-pointer">
-                        <span className="text-sm text-blue-600 hover:text-blue-800">
-                          {formData.businessSalesReport ? formData.businessSalesReport.name : 'Upload File'}
-                        </span>
-                      </label>
-                      <p className="text-xs text-gray-500 mt-1">PDF, Excel, CSV (Max 10MB)</p>
-                    </div>
+                <div>
+                  <Label htmlFor="currentChallenges">Current Challenges *</Label>
+                  <Textarea
+                    {...register('currentChallenges')}
+                    placeholder="What challenges are you currently facing with your advertising?"
+                    className="mt-1 min-h-[80px]"
+                  />
+                  {errors.currentChallenges && (
+                    <p className="text-red-500 text-sm mt-1">{errors.currentChallenges.message}</p>
+                  )}
+                </div>
+
+                {/* File Upload Section */}
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center space-x-2">
+                    <AlertCircle className="w-5 h-5 text-blue-600" />
+                    <h3 className="text-lg font-semibold text-gray-900">Upload Reports (Optional)</h3>
                   </div>
-
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-slate-900">
-                      60 Days Search Term Report
-                    </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <input
-                        type="file"
-                        accept=".pdf,.xlsx,.xls,.csv"
-                        onChange={(e) => handleFileUpload(e, 'searchTermReport')}
-                        className="hidden"
-                        id="searchTermReport"
-                      />
-                      <label htmlFor="searchTermReport" className="cursor-pointer">
-                        <span className="text-sm text-blue-600 hover:text-blue-800">
-                          {formData.searchTermReport ? formData.searchTermReport.name : 'Upload File'}
-                        </span>
-                      </label>
-                      <p className="text-xs text-gray-500 mt-1">PDF, Excel, CSV (Max 10MB)</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-slate-900">
-                      60 Days Advertised Product Report
-                    </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <input
-                        type="file"
-                        accept=".pdf,.xlsx,.xls,.csv"
-                        onChange={(e) => handleFileUpload(e, 'advertisedProductReport')}
-                        className="hidden"
-                        id="advertisedProductReport"
-                      />
-                      <label htmlFor="advertisedProductReport" className="cursor-pointer">
-                        <span className="text-sm text-blue-600 hover:text-blue-800">
-                          {formData.advertisedProductReport ? formData.advertisedProductReport.name : 'Upload File'}
-                        </span>
-                      </label>
-                      <p className="text-xs text-gray-500 mt-1">PDF, Excel, CSV (Max 10MB)</p>
-                    </div>
+                  <p className="text-sm text-gray-600">
+                    Upload your reports to get more detailed insights in your audit
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <FileUploadField 
+                      label="30 Days Business Sales Report" 
+                      fileType="businessSalesReport"
+                    />
+                    <FileUploadField 
+                      label="60 Days Search Term Report" 
+                      fileType="searchTermReport"
+                    />
+                    <FileUploadField 
+                      label="60 Days Advertised Product Report" 
+                      fileType="advertisedProductReport"
+                    />
                   </div>
                 </div>
-              </div>
-              
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
-                    Processing with Local Storage...
-                  </div>
-                ) : (
-                  <>
-                    Get My Free $2,000 Audit
-                    <Send className="ml-3 w-6 h-6" />
-                  </>
-                )}
-              </Button>
 
-              <p className="text-center text-sm text-slate-500">
-                No spam, ever. Data stored securely in local storage.
-              </p>
-            </form>
-          </CardContent>
-        </Card>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Submitting Audit Request...' : 'Get My Free $2,000 Audit'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </section>
   );

@@ -326,6 +326,7 @@ export type Database = {
           form_security: Json | null
           id: string
           lead_data: Json | null
+          lead_number: string | null
           name: string
           notes: string | null
           phone: string | null
@@ -341,6 +342,7 @@ export type Database = {
           form_security?: Json | null
           id?: string
           lead_data?: Json | null
+          lead_number?: string | null
           name: string
           notes?: string | null
           phone?: string | null
@@ -356,6 +358,7 @@ export type Database = {
           form_security?: Json | null
           id?: string
           lead_data?: Json | null
+          lead_number?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
@@ -802,6 +805,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_lead_files: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      generate_lead_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string

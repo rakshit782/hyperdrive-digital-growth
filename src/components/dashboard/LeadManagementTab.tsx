@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
   Users, 
-  Plus, 
   Edit, 
   Trash2, 
   Phone, 
@@ -23,15 +21,19 @@ import {
   FileText,
   Award,
   RefreshCw,
-  Download
+  Download,
+  Eye,
+  Hash
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { localDB } from "@/utils/localStorageDB";
+import LeadDetailsModal from "./LeadDetailsModal";
 
 type LeadStatus = 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
 
 interface Lead {
   id: string;
+  lead_number?: string;
   name: string;
   email: string;
   phone?: string;
@@ -50,6 +52,8 @@ const LeadManagementTab = () => {
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
   const statusColors = {
@@ -132,11 +136,17 @@ const LeadManagementTab = () => {
     }
   };
 
+  const handleLeadClick = (lead: Lead) => {
+    setSelectedLead(lead);
+    setIsModalOpen(true);
+  };
+
   const filteredLeads = leads.filter(lead => {
     const matchesStatus = filterStatus === 'all' || lead.status === filterStatus;
     const matchesSearch = !searchTerm || 
       lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (lead.lead_number && lead.lead_number.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (lead.company && lead.company.toLowerCase().includes(searchTerm.toLowerCase()));
     
     return matchesStatus && matchesSearch;
@@ -263,7 +273,7 @@ const LeadManagementTab = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
-                  placeholder="Search leads by name, email, or company..."
+                  placeholder="Search leads by name, email, lead ID, or company..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -293,13 +303,13 @@ const LeadManagementTab = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Lead ID</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Company</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Source</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Business Goals</TableHead>
                   <TableHead>Files</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Actions</TableHead>
@@ -310,10 +320,19 @@ const LeadManagementTab = () => {
                   filteredLeads.map((lead) => {
                     const SourceIcon = sourceIcons[lead.source as keyof typeof sourceIcons] || FileText;
                     const uploadedFiles = lead.lead_data?.uploadedFiles || {};
-                    const businessGoals = lead.lead_data?.businessGoals || lead.notes || '';
                     
                     return (
-                      <TableRow key={lead.id}>
+                      <TableRow key={lead.id} className="hover:bg-gray-50">
+                        <TableCell>
+                          <Button
+                            variant="link"
+                            className="p-0 h-auto font-mono text-blue-600 hover:text-blue-800"
+                            onClick={() => handleLeadClick(lead)}
+                          >
+                            <Hash className="w-3 h-3 mr-1" />
+                            {lead.lead_number || lead.id.slice(0, 8)}
+                          </Button>
+                        </TableCell>
                         <TableCell className="font-medium">{lead.name}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
@@ -361,32 +380,17 @@ const LeadManagementTab = () => {
                             </SelectContent>
                           </Select>
                         </TableCell>
-                        <TableCell className="max-w-xs">
-                          {businessGoals && (
-                            <div className="truncate" title={businessGoals}>
-                              {businessGoals.length > 50 ? `${businessGoals.substring(0, 50)}...` : businessGoals}
-                            </div>
-                          )}
-                        </TableCell>
                         <TableCell>
-                          <div className="space-y-1">
-                            {uploadedFiles.businessSalesReport && (
-                              <div className="flex items-center gap-1 text-xs text-green-600">
-                                <Download className="w-3 h-3" />
-                                Sales Report
-                              </div>
-                            )}
-                            {uploadedFiles.searchTermReport && (
-                              <div className="flex items-center gap-1 text-xs text-blue-600">
-                                <Download className="w-3 h-3" />
-                                Search Terms
-                              </div>
-                            )}
-                            {uploadedFiles.advertisedProductReport && (
-                              <div className="flex items-center gap-1 text-xs text-purple-600">
-                                <Download className="w-3 h-3" />
-                                Product Report
-                              </div>
+                          <div className="flex items-center gap-1">
+                            {Object.keys(uploadedFiles).length > 0 ? (
+                              <>
+                                <FileText className="w-4 h-4 text-green-600" />
+                                <span className="text-xs text-green-600 font-medium">
+                                  {Object.keys(uploadedFiles).length} file(s)
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-xs text-gray-400">No files</span>
                             )}
                           </div>
                         </TableCell>
@@ -398,6 +402,14 @@ const LeadManagementTab = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleLeadClick(lead)}
+                              className="flex items-center gap-1"
+                            >
+                              <Eye className="w-3 h-3" />
+                            </Button>
                             <Button variant="outline" size="sm" onClick={() => handleDelete(lead.id)}>
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -424,6 +436,16 @@ const LeadManagementTab = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Lead Details Modal */}
+      <LeadDetailsModal
+        lead={selectedLead}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedLead(null);
+        }}
+      />
     </div>
   );
 };

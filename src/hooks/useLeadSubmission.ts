@@ -40,6 +40,14 @@ export const useLeadSubmission = () => {
         throw new Error('Name and email are required');
       }
 
+      // Generate unique lead number (will be handled by database trigger in Supabase)
+      const generateLeadNumber = () => {
+        const today = new Date();
+        const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+        const randomStr = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        return `LEAD-${dateStr}-${randomStr}`;
+      };
+
       // Prepare lead data with all required fields
       const leadData = {
         name: data.name,
@@ -49,6 +57,7 @@ export const useLeadSubmission = () => {
         source: data.source || 'website',
         status: data.status || 'new' as const,
         notes: data.notes || null,
+        lead_number: generateLeadNumber(), // For local storage, we generate it here
         form_security: {
           timestamp: Date.now(),
           userAgent: navigator.userAgent,
