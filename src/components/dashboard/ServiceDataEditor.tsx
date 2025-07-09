@@ -123,7 +123,6 @@ const ServiceDataEditor = ({ serviceType, onClose }: ServiceDataEditorProps) => 
   const handleSave = async () => {
     try {
       let data: any = {};
-      let table = '';
 
       if (editingType === 'case-study') {
         data = {
@@ -131,27 +130,36 @@ const ServiceDataEditor = ({ serviceType, onClose }: ServiceDataEditorProps) => 
           ...caseStudyForm,
           is_active: true
         };
-        table = 'service_case_studies';
+
+        if (editingItem?.id) {
+          await supabase.from('service_case_studies').update(data).eq('id', editingItem.id);
+        } else {
+          await supabase.from('service_case_studies').insert(data);
+        }
       } else if (editingType === 'stat') {
         data = {
           service_type: serviceType,
           ...statForm,
           is_active: true
         };
-        table = 'service_stats';
+
+        if (editingItem?.id) {
+          await supabase.from('service_stats').update(data).eq('id', editingItem.id);
+        } else {
+          await supabase.from('service_stats').insert(data);
+        }
       } else if (editingType === 'review') {
         data = {
           service_type: serviceType,
           ...reviewForm,
           is_active: true
         };
-        table = 'service_reviews';
-      }
 
-      if (editingItem?.id) {
-        await supabase.from(table).update(data).eq('id', editingItem.id);
-      } else {
-        await supabase.from(table).insert(data);
+        if (editingItem?.id) {
+          await supabase.from('service_reviews').update(data).eq('id', editingItem.id);
+        } else {
+          await supabase.from('service_reviews').insert(data);
+        }
       }
 
       toast.success(`${editingType} saved successfully`);
@@ -166,12 +174,14 @@ const ServiceDataEditor = ({ serviceType, onClose }: ServiceDataEditorProps) => 
 
   const handleDelete = async (type: 'case-study' | 'stat' | 'review', id: string) => {
     try {
-      let table = '';
-      if (type === 'case-study') table = 'service_case_studies';
-      else if (type === 'stat') table = 'service_stats';
-      else if (type === 'review') table = 'service_reviews';
+      if (type === 'case-study') {
+        await supabase.from('service_case_studies').delete().eq('id', id);
+      } else if (type === 'stat') {
+        await supabase.from('service_stats').delete().eq('id', id);
+      } else if (type === 'review') {
+        await supabase.from('service_reviews').delete().eq('id', id);
+      }
 
-      await supabase.from(table).delete().eq('id', id);
       toast.success(`${type} deleted successfully`);
       window.location.reload(); // Refresh to see changes
     } catch (error) {
