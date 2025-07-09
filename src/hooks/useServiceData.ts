@@ -49,10 +49,27 @@ export interface ServiceReview {
 export const useServiceData = (serviceType: string) => {
   const [loading, setLoading] = useState(false);
   
+  // Map service type from URL to data key
+  const getDataKey = (type: string) => {
+    const mapping: Record<string, string> = {
+      'google-advertising': 'google-advertising',
+      'meta-advertising': 'meta-advertising',
+      'amazon-advertising': 'amazon-advertising',
+      'walmart-advertising': 'walmart-advertising',
+      'shopify-development': 'shopify-development',
+      'shopify-integration': 'shopify-integration',
+      'website-development': 'website-development',
+      'account-management': 'account-management'
+    };
+    return mapping[type] || type;
+  };
+
+  const dataKey = getDataKey(serviceType);
+  
   // Get mock data based on service type
-  const caseStudies = mockCaseStudies[serviceType] || [];
-  const stats = mockStats[serviceType] || [];
-  const reviews = mockReviews[serviceType] || [];
+  const caseStudies = mockCaseStudies[dataKey] || [];
+  const stats = mockStats[dataKey] || [];
+  const reviews = mockReviews[dataKey] || [];
 
   return {
     caseStudies,
