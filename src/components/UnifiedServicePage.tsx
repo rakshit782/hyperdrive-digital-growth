@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +8,7 @@ import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
 import CaseStudyPopup from '@/components/CaseStudyPopup';
 import { useServiceData, ServiceCaseStudy } from '@/hooks/useServiceData';
+import * as Icons from 'lucide-react';
 
 interface UnifiedServicePageProps {
   serviceType: string;
@@ -111,17 +113,8 @@ const UnifiedServicePage = ({
 
   // Get the icon component for stats
   const getStatIcon = (iconName?: string) => {
-    const iconMap: { [key: string]: any } = {
-      'TrendingUp': TrendingUp,
-      'ShoppingCart': TrendingUp,
-      'MousePointer': TrendingUp,
-      'Heart': TrendingUp,
-      'Zap': TrendingUp,
-      'ShoppingBag': TrendingUp,
-      'Shield': TrendingUp,
-      'Clock': TrendingUp
-    };
-    return iconMap[iconName || 'TrendingUp'] || TrendingUp;
+    if (!iconName) return TrendingUp;
+    return (Icons as any)[iconName] || TrendingUp;
   };
 
   // Display the full amounts: 4 features, 4 stats, 8 case studies, 6 reviews
@@ -129,6 +122,24 @@ const UnifiedServicePage = ({
   const displayStats = stats.slice(0, 4);
   const displayCaseStudies = caseStudies.slice(0, 8);
   const displayReviews = reviews.slice(0, 6);
+
+  // Define gradient classes for Google Advertising case studies
+  const getCaseStudyGradient = (serviceType: string, index: number) => {
+    if (serviceType === 'google-advertising') {
+      const gradients = [
+        'bg-gradient-to-r from-red-500 to-orange-500',
+        'bg-gradient-to-r from-orange-500 to-yellow-500',
+        'bg-gradient-to-r from-yellow-500 to-green-500',
+        'bg-gradient-to-r from-green-500 to-blue-500',
+        'bg-gradient-to-r from-blue-500 to-indigo-500',
+        'bg-gradient-to-r from-indigo-500 to-purple-500',
+        'bg-gradient-to-r from-purple-500 to-pink-500',
+        'bg-gradient-to-r from-pink-500 to-red-500'
+      ];
+      return gradients[index % gradients.length];
+    }
+    return `bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500`;
+  };
 
   return (
     <>
@@ -301,7 +312,7 @@ const UnifiedServicePage = ({
                       onClick={() => handleCaseStudyClick(study)}
                     >
                       <CardContent className="p-0">
-                        <div className={`bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500 p-4 text-white`}>
+                        <div className={`${getCaseStudyGradient(serviceType, index)} p-4 text-white`}>
                           <div className="flex items-center justify-between mb-2">
                             <span className="px-2 py-1 bg-white/20 rounded-full text-xs font-medium">
                               {study.industry}
