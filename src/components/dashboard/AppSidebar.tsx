@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { 
-  Globe, Sliders, Settings, LayoutDashboard, Star, Image, Users, Link2, 
+  Settings, LayoutDashboard, Star, Image, Users, Link2, 
   Database, Mail, Shield, Cog, Zap, ChevronDown, Menu, Target, Activity 
 } from "lucide-react";
 import {
@@ -42,18 +43,6 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
 
   const menuItems = [
     {
-      id: "website",
-      label: "Website",
-      icon: Globe,
-      category: "content",
-    },
-    {
-      id: "hero-slider",
-      label: "Hero Slider",
-      icon: Sliders,
-      category: "content",
-    },
-    {
       id: "services",
       label: "Services",
       icon: Settings,
@@ -64,12 +53,6 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       label: "Service Pages",
       icon: LayoutDashboard,
       category: "content",
-    },
-    {
-      id: "service-page-management",
-      label: "Service Page Management",
-      icon: Settings,
-      description: "Manage service page content"
     },
     {
       id: "reviews",
@@ -144,6 +127,12 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       category: "business",
     },
     {
+      id: "homepage-customization",
+      label: "Homepage",
+      icon: LayoutDashboard,
+      category: "business",
+    },
+    {
       id: "website-integrations",
       label: "Website Integrations",
       icon: Zap,
@@ -153,6 +142,12 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
       id: "integration-status",
       label: "Integration Status",
       icon: Zap,
+      category: "system",
+    },
+    {
+      id: "security-settings",
+      label: "Security Settings",
+      icon: Shield,
       category: "system",
     }
   ];
@@ -180,29 +175,6 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
     const IconComponent = tab.icon;
     return <IconComponent className="w-4 h-4" />;
   };
-
-  const securityAndIntegrations = [
-    {
-      title: "Form Security Monitor",
-      icon: Shield,
-      id: "form-security"
-    },
-    {
-      title: "Security Settings",
-      icon: Shield,
-      id: "security-settings"
-    },
-    {
-      title: "Website Integrations",
-      icon: Zap,
-      id: "website-integrations"
-    },
-    {
-      title: "Integration Status",
-      icon: Activity,
-      id: "integration-status"
-    }
-  ];
 
   return (
     <Sidebar className="border-r border-slate-200/60 bg-white/95 backdrop-blur-md">

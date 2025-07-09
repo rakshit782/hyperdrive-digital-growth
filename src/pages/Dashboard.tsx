@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import ModernDashboardLayout from "@/components/dashboard/ModernDashboardLayout";
-import WebsiteTab from "@/components/dashboard/WebsiteTab";
-import HeroSliderTab from "@/components/dashboard/HeroSliderTab";
 import ServicesTab from "@/components/dashboard/ServicesTab";
 import ServicePagesManagementTab from "@/components/dashboard/ServicePagesManagementTab";
 import ReviewsTab from "@/components/dashboard/ReviewsTab";
@@ -26,8 +24,6 @@ import { SecuritySettingsTab } from "@/components/dashboard/SecuritySettingsTab"
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { ServiceCard, Review } from "@/types/dashboard";
 import { 
-  Globe, 
-  Sliders, 
   Settings, 
   LayoutDashboard, 
   Star, 
@@ -44,7 +40,7 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('website');
+  const [activeTab, setActiveTab] = useState('services');
   const { services, reviews, updateServices, updateReviews } = useDashboardData();
 
   const handleEditService = (service: ServiceCard) => {
@@ -69,8 +65,6 @@ const Dashboard = () => {
 
   const getTabIcon = (tabId: string) => {
     const iconMap: { [key: string]: React.ComponentType<any> } = {
-      'website': Globe,
-      'hero-slider': Sliders,
       'services': Settings,
       'service-pages': LayoutDashboard,
       'reviews': Star,
@@ -90,13 +84,11 @@ const Dashboard = () => {
       'integration-status': Zap,
       'homepage-customization': Palette,
     };
-    return iconMap[tabId] || Globe;
+    return iconMap[tabId] || Settings;
   };
 
   const getTabTitle = (tabId: string) => {
     const titleMap: { [key: string]: string } = {
-      'website': 'Website Settings',
-      'hero-slider': 'Hero Slider Management',
       'services': 'Services Management',
       'service-pages': 'Service Pages Management',
       'reviews': 'Reviews Management',
@@ -121,8 +113,6 @@ const Dashboard = () => {
 
   const getTabDescription = (tabId: string) => {
     const descriptionMap: { [key: string]: string } = {
-      'website': 'Configure your website settings and general information',
-      'hero-slider': 'Manage hero slider content and presentation',
       'services': 'Add, edit, and organize your service offerings',
       'service-pages': 'Manage service pages with real-time data editor for stats, case studies, and reviews',
       'reviews': 'Manage customer reviews and testimonials',
@@ -147,10 +137,6 @@ const Dashboard = () => {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'website':
-        return <WebsiteTab />;
-      case 'hero-slider':
-        return <HeroSliderTab />;
       case 'services':
         return (
           <ServicesTab 
@@ -200,7 +186,14 @@ const Dashboard = () => {
       case 'homepage-customization':
         return <HomepageCustomizationTab />;
       default:
-        return <WebsiteTab />;
+        return (
+          <ServicesTab 
+            services={services}
+            onEdit={handleEditService}
+            onDelete={handleDeleteService}
+            onAdd={handleAddService}
+          />
+        );
     }
   };
 
