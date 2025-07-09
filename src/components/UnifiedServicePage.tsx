@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -96,21 +95,36 @@ const UnifiedServicePage = ({
 
   const nextReviews = () => {
     setCurrentReviewIndex((prev) => 
-      prev + 3 >= reviews.length ? 0 : prev + 3
+      prev + 6 >= reviews.length ? 0 : prev + 6
     );
   };
 
   const prevReviews = () => {
     setCurrentReviewIndex((prev) => 
-      prev - 3 < 0 ? Math.max(0, reviews.length - 3) : prev - 3
+      prev - 6 < 0 ? Math.max(0, reviews.length - 6) : prev - 6
     );
   };
 
   const getCurrentReviews = () => {
-    return reviews.slice(currentReviewIndex, currentReviewIndex + 3);
+    return reviews.slice(currentReviewIndex, currentReviewIndex + 6);
   };
 
-  // Ensure we have exactly the required number of items
+  // Get the icon component for stats
+  const getStatIcon = (iconName?: string) => {
+    const iconMap: { [key: string]: any } = {
+      'TrendingUp': TrendingUp,
+      'ShoppingCart': TrendingUp,
+      'MousePointer': TrendingUp,
+      'Heart': TrendingUp,
+      'Zap': TrendingUp,
+      'ShoppingBag': TrendingUp,
+      'Shield': TrendingUp,
+      'Clock': TrendingUp
+    };
+    return iconMap[iconName || 'TrendingUp'] || TrendingUp;
+  };
+
+  // Display the full amounts: 4 features, 4 stats, 8 case studies, 6 reviews
   const displayFeatures = features.slice(0, 4);
   const displayStats = stats.slice(0, 4);
   const displayCaseStudies = caseStudies.slice(0, 8);
@@ -223,7 +237,7 @@ const UnifiedServicePage = ({
             </div>
           </section>
 
-          {/* Stats Section */}
+          {/* Stats Section - Show 4 stats */}
           {displayStats.length > 0 && (
             <section className="py-12 bg-gradient-to-br from-slate-50 to-blue-50/50">
               <div className="max-w-6xl mx-auto px-6">
@@ -232,24 +246,27 @@ const UnifiedServicePage = ({
                 </h2>
                 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {displayStats.map((stat, index) => (
-                    <Card key={stat.id} className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white/90 backdrop-blur-sm border-0 shadow-md">
-                      <CardContent className="p-6">
-                        <div className={`w-12 h-12 bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500 rounded-xl flex items-center justify-center mx-auto mb-4`}>
-                          <TrendingUp className="w-6 h-6 text-white" />
-                        </div>
-                        <div className="text-3xl font-bold text-slate-900 mb-2">{stat.stat_value}</div>
-                        <div className="text-base font-medium text-slate-800 mb-1">{stat.stat_label}</div>
-                        <p className="text-slate-600 text-xs">{stat.stat_description}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  {displayStats.map((stat, index) => {
+                    const IconComponent = getStatIcon(stat.icon_name);
+                    return (
+                      <Card key={stat.id} className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white/90 backdrop-blur-sm border-0 shadow-md">
+                        <CardContent className="p-6">
+                          <div className={`w-12 h-12 bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500 rounded-xl flex items-center justify-center mx-auto mb-4`}>
+                            <IconComponent className="w-6 h-6 text-white" />
+                          </div>
+                          <div className="text-3xl font-bold text-slate-900 mb-2">{stat.stat_value}</div>
+                          <div className="text-base font-medium text-slate-800 mb-1">{stat.stat_label}</div>
+                          <p className="text-slate-600 text-xs">{stat.stat_description}</p>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </div>
             </section>
           )}
 
-          {/* Case Studies Section */}
+          {/* Case Studies Section - Show 8 case studies */}
           {displayCaseStudies.length > 0 && (
             <section className="py-12 bg-white/60 backdrop-blur-sm">
               <div className="max-w-6xl mx-auto px-6">
@@ -325,7 +342,7 @@ const UnifiedServicePage = ({
             </section>
           )}
 
-          {/* Reviews Section */}
+          {/* Reviews Section - Show 6 reviews with carousel */}
           {displayReviews.length > 0 && (
             <section className="py-12 bg-gradient-to-br from-slate-50 to-blue-50/50">
               <div className="max-w-6xl mx-auto px-6">
@@ -369,7 +386,7 @@ const UnifiedServicePage = ({
                     ))}
                   </div>
 
-                  {displayReviews.length > 3 && (
+                  {displayReviews.length > 6 && (
                     <div className="flex justify-center gap-4 mt-8">
                       <Button
                         variant="outline"
