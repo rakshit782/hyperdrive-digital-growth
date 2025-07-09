@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import ModernDashboardLayout from "@/components/dashboard/ModernDashboardLayout";
@@ -48,6 +47,7 @@ import {
   Home,
   Scale
 } from "lucide-react";
+import LogoManagementTab from "@/components/dashboard/LogoManagementTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('services');
@@ -125,6 +125,7 @@ const Dashboard = () => {
       'website-integrations': 'Website Integrations',
       'integration-status': 'Integration Status',
       'policy-pages': 'Policy Pages Management',
+      'logo-management': 'Logo Management',
     };
     return titleMap[tabId] || 'Dashboard';
   };
@@ -153,6 +154,7 @@ const Dashboard = () => {
       'website-integrations': 'Manage third-party integrations and APIs',
       'integration-status': 'Monitor integration health and status',
       'policy-pages': 'Manage Privacy Policy, Terms of Service, and Terms & Conditions content',
+      'logo-management': 'Customize your brand logo and display settings across the website',
     };
     return descriptionMap[tabId] || 'Manage your dashboard settings';
   };
@@ -215,6 +217,8 @@ const Dashboard = () => {
         return <IntegrationStatusTab />;
       case 'policy-pages':
         return <PolicyPagesTab />;
+      case 'logo-management':
+        return <LogoManagementTab />;
       default:
         return (
           <ServicesTab 

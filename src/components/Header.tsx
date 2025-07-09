@@ -14,6 +14,7 @@ interface LogoSettings {
   logoUrl: string;
   logoSize: string;
   logoAlt: string;
+  showInHeader?: boolean;
 }
 
 const Header = () => {
@@ -21,19 +22,21 @@ const Header = () => {
   const [logoSettings, setLogoSettings] = useState<LogoSettings>({
     logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
     logoSize: "h-12",
-    logoAlt: "AMZ AD SCOUT - The Growth Agency"
+    logoAlt: "AMZ AD SCOUT - The Growth Agency",
+    showInHeader: true
   });
 
   useEffect(() => {
     // Load logo settings from localStorage
-    const savedLogo = localStorage.getItem('logoData');
+    const savedLogo = localStorage.getItem('logoSettings');
     if (savedLogo) {
       try {
         const parsed = JSON.parse(savedLogo);
         setLogoSettings({
           logoUrl: parsed.logoUrl || "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
           logoSize: parsed.logoSize || "h-12",
-          logoAlt: parsed.logoAlt || "AMZ AD SCOUT - The Growth Agency"
+          logoAlt: parsed.logoAlt || "AMZ AD SCOUT - The Growth Agency",
+          showInHeader: parsed.showInHeader !== false
         });
       } catch (error) {
         console.error('Failed to parse logo settings:', error);
@@ -43,7 +46,7 @@ const Header = () => {
     // Listen for logo updates from dashboard
     const handleLogoUpdate = (event: CustomEvent) => {
       console.log('Header received logo update:', event.detail);
-      setLogoSettings(event.detail);
+      setLogoSettings(prev => ({ ...prev, ...event.detail }));
     };
 
     window.addEventListener('logoUpdated', handleLogoUpdate as EventListener);
@@ -76,15 +79,17 @@ const Header = () => {
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
       <div className="container-standard flex items-center justify-between h-20 px-6">
-        <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-          <img 
-            src={logoSettings.logoUrl}
-            alt={logoSettings.logoAlt}
-            className={`${logoSettings.logoSize} w-auto object-contain`}
-            onError={handleImageError}
-            onLoad={() => console.log('Header logo loaded:', logoSettings.logoUrl)}
-          />
-        </Link>
+        {logoSettings.showInHeader && (
+          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <img 
+              src={logoSettings.logoUrl}
+              alt={logoSettings.logoAlt}
+              className={`${logoSettings.logoSize} w-auto object-contain`}
+              onError={handleImageError}
+              onLoad={() => console.log('Header logo loaded:', logoSettings.logoUrl)}
+            />
+          </Link>
+        )}
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-12">

@@ -1,8 +1,6 @@
 
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useDashboardConfig } from "@/hooks/useDashboardConfig";
 import { 
   Settings, 
   LayoutDashboard, 
@@ -14,9 +12,7 @@ import {
   Mail,
   Image,
   Users,
-  Cog,
   Zap,
-  Palette,
   FileText,
   Search,
   BookOpen,
@@ -27,9 +23,6 @@ import {
 } from "lucide-react";
 
 export const AppSidebar = ({ activeTab, onTabChange }: { activeTab: string; onTabChange: (tab: string) => void }) => {
-  const location = useLocation();
-  const config = useDashboardConfig();
-
   const menuItems = [
     // Content Management
     {
@@ -50,6 +43,7 @@ export const AppSidebar = ({ activeTab, onTabChange }: { activeTab: string; onTa
     {
       category: "Website Customization", 
       items: [
+        { id: "logo-management", label: "Logo Management", icon: Image },
         { id: "cta-management", label: "CTA Management", icon: Target },
         { id: "homepage-customization", label: "Homepage", icon: Home },
         { id: "footer-management", label: "Footer", icon: Link2 },
