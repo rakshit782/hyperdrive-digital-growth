@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, ArrowUpRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Star, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
@@ -132,9 +131,9 @@ const UnifiedServicePage = ({
       <div className={`min-h-screen ${gradientClass}`}>
         <Header />
         
-        <div className="space-y-12">
-          {/* Hero Section - Reduced padding */}
-          <section className="pt-32 pb-12 relative overflow-hidden">
+        <div className="space-y-16">
+          {/* Hero Section */}
+          <section className="pt-32 pb-16 relative overflow-hidden">
             <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
             <div className="max-w-7xl mx-auto px-6 lg:px-8 relative">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -202,8 +201,8 @@ const UnifiedServicePage = ({
             </div>
           </section>
 
-          {/* Features Section - Enhanced cards */}
-          <section className="py-12 bg-white/60 backdrop-blur-sm">
+          {/* Features Section */}
+          <section className="py-16 bg-white/60 backdrop-blur-sm">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
@@ -233,9 +232,9 @@ const UnifiedServicePage = ({
             </div>
           </section>
 
-          {/* Stats Section - Improved layout */}
+          {/* Stats Section */}
           {displayStats.length > 0 && (
-            <section className="py-12 bg-gradient-to-br from-slate-50 to-blue-50/50">
+            <section className="py-16 bg-gradient-to-br from-slate-50 to-blue-50/50">
               <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-12">
                   Proven Results
@@ -259,71 +258,126 @@ const UnifiedServicePage = ({
             </section>
           )}
 
-          {/* Case Studies Section - Redesigned without images */}
+          {/* Case Studies Section - Enhanced for trust building */}
           {displayCaseStudies.length > 0 && (
-            <section className="py-12 bg-white/60 backdrop-blur-sm">
+            <section className="py-16 bg-white/60 backdrop-blur-sm">
               <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="text-center mb-12">
                   <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                    Success Stories
+                    Proven Success Stories
                   </h2>
-                  <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                    Real results from businesses that transformed their performance with our expertise.
+                  <p className="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                    Real results from businesses like yours. See how our {title.toLowerCase()} helped companies achieve remarkable growth and success.
                   </p>
+                  <div className="flex items-center justify-center gap-6 mt-6 text-sm text-slate-500">
+                    <span className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      Verified Results
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      Client Approved
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      Real Performance Data
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {displayCaseStudies.map((study, index) => (
                     <Card 
                       key={study.id}
-                      className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer group bg-white/80 backdrop-blur-sm border-0 shadow-lg"
+                      className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer group bg-white/90 backdrop-blur-sm border-0 shadow-lg overflow-hidden"
                       onClick={() => handleCaseStudyClick(study)}
                     >
-                      <CardContent className="p-6">
-                        {/* Header with industry badge */}
-                        <div className="flex items-center justify-between mb-4">
-                          <span className={`px-3 py-1 bg-${primaryColor}-100 text-${primaryColor}-800 rounded-full text-xs font-medium`}>
-                            {study.industry}
-                          </span>
-                          <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" />
+                      <CardContent className="p-0">
+                        {/* Header with gradient background */}
+                        <div className={`bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500 p-4 text-white`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="px-2 py-1 bg-white/20 rounded-full text-xs font-medium">
+                              {study.industry}
+                            </span>
+                            <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" />
+                          </div>
+                          <h3 className="text-sm font-bold leading-tight line-clamp-2">
+                            {study.title}
+                          </h3>
                         </div>
                         
-                        <h3 className="text-lg font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-900 transition-colors">
-                          {study.title}
-                        </h3>
-                        
-                        <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                          {study.description}
-                        </p>
-                        
-                        {/* Results highlight */}
-                        <div className={`bg-gradient-to-r from-${primaryColor}-50 to-${secondaryColor}-50 rounded-lg p-4 border border-${primaryColor}-100`}>
+                        {/* Content */}
+                        <div className="p-4">
+                          <p className="text-slate-600 text-xs leading-relaxed mb-4 line-clamp-3">
+                            {study.description}
+                          </p>
+                          
+                          {/* Results highlight */}
+                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-100 mb-4">
+                            <div className="text-center">
+                              {study.results && typeof study.results === 'object' && Object.entries(study.results).slice(0, 1).map(([key, value]) => (
+                                <div key={key}>
+                                  <div className="text-lg font-bold text-green-600">{String(value)}</div>
+                                  <div className="text-xs text-slate-600 capitalize">{key.replace(/_/g, ' ')}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Client info */}
                           <div className="text-center">
-                            {study.results && typeof study.results === 'object' && Object.entries(study.results).slice(0, 1).map(([key, value]) => (
-                              <div key={key}>
-                                <div className={`text-2xl font-bold text-${primaryColor}-600`}>{String(value)}</div>
-                                <div className="text-xs text-slate-600 capitalize">{key.replace(/_/g, ' ')}</div>
-                              </div>
-                            ))}
+                            <div className="text-xs font-medium text-slate-900">{study.client_name}</div>
+                            <div className="text-xs text-slate-500">{study.industry}</div>
                           </div>
                         </div>
                         
-                        <Button 
-                          className={`w-full mt-4 bg-gradient-to-r from-${primaryColor}-600 to-${secondaryColor}-600 text-white py-2 px-4 rounded-lg font-medium hover:shadow-lg transition-all duration-300 text-sm`}
-                        >
-                          View Details
-                        </Button>
+                        {/* Footer */}
+                        <div className="p-4 pt-0">
+                          <div className="text-xs text-center text-slate-400 hover:text-slate-600 transition-colors">
+                            Click to read full case study →
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
                   ))}
+                </div>
+                
+                {/* Trust indicators below case studies */}
+                <div className="mt-12 text-center">
+                  <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-slate-200">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-4">Why These Results Matter</h3>
+                    <div className="grid md:grid-cols-3 gap-6 text-sm">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <div className="font-medium text-slate-900">Verified Performance</div>
+                          <div className="text-slate-600">All results are verified and approved by our clients</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <div className="font-medium text-slate-900">Real Business Impact</div>
+                          <div className="text-slate-600">Measurable improvements in revenue and growth</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <div className="font-medium text-slate-900">Repeatable Success</div>
+                          <div className="text-slate-600">Proven strategies that work across industries</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
           )}
 
-          {/* Reviews Section - Enhanced design */}
+          {/* Reviews Section */}
           {displayReviews.length > 0 && (
-            <section className="py-12 bg-gradient-to-br from-slate-50 to-purple-50/50">
+            <section className="py-16 bg-gradient-to-br from-slate-50 to-purple-50/50">
               <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="text-center mb-12">
                   <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
@@ -408,8 +462,8 @@ const UnifiedServicePage = ({
             </section>
           )}
 
-          {/* CTA Section - Improved design */}
-          <section className="py-12 bg-gradient-to-br from-blue-50/50 to-indigo-50/50">
+          {/* CTA Section */}
+          <section className="py-16 bg-gradient-to-br from-blue-50/50 to-indigo-50/50">
             <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
                 {ctaTitle}
