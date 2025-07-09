@@ -306,10 +306,10 @@ const UnifiedServicePage = ({
                         </p>
                         
                         <div className="grid grid-cols-1 gap-2 mb-4">
-                          {Object.entries(study.results).slice(0, 1).map(([key, value]) => (
+                          {study.results && typeof study.results === 'object' && Object.entries(study.results).slice(0, 1).map(([key, value]) => (
                             <div key={key} className="text-center">
                               <div className={`text-lg font-bold text-${primaryColor}-600`}>{String(value)}</div>
-                              <div className="text-xs text-slate-500">{key}</div>
+                              <div className="text-xs text-slate-500">{key.replace(/_/g, ' ')}</div>
                             </div>
                           ))}
                         </div>
@@ -346,10 +346,18 @@ const UnifiedServicePage = ({
                     {getCurrentReviews().map((review) => (
                       <div key={review.id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100">
                         <div className="flex items-center mb-4">
-                          <div className={`w-12 h-12 bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500 rounded-full flex items-center justify-center mr-4`}>
-                            <span className="text-white font-semibold text-lg">
-                              {review.client_name.charAt(0)}
-                            </span>
+                          <div className={`w-12 h-12 bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500 rounded-full flex items-center justify-center mr-4 overflow-hidden`}>
+                            {review.avatar_url ? (
+                              <img 
+                                src={review.avatar_url} 
+                                alt={review.client_name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-white font-semibold text-lg">
+                                {review.client_name.charAt(0)}
+                              </span>
+                            )}
                           </div>
                           <div>
                             <h4 className="font-semibold text-slate-900">{review.client_name}</h4>
