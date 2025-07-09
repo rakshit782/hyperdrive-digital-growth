@@ -58,6 +58,7 @@ export type DashboardTab =
   | 'blog-management'
   | 'leads'
   | 'contact-management'
+  | 'newsletter-email-management'
   | 'email-workflow'
   | 'form-security'
   | 'service-header-images'

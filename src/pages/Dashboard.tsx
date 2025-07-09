@@ -12,6 +12,7 @@ import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
 import BlogManagement from "@/components/dashboard/BlogManagement";
 import LeadManagementTab from "@/components/dashboard/LeadManagementTab";
 import ContactManagement from "@/components/dashboard/ContactManagement";
+import NewsletterEmailManagementTab from "@/components/dashboard/NewsletterEmailManagementTab";
 import EmailWorkflowTab from "@/components/dashboard/EmailWorkflowTab";
 import ServiceHeaderImagesTab from "@/components/dashboard/ServiceHeaderImagesTab";
 import ClienteleManagementTab from "@/components/dashboard/ClienteleManagementTab";
@@ -74,6 +75,7 @@ const Dashboard = () => {
       'blog-management': LayoutDashboard,
       'leads': Database,
       'contact-management': Mail,
+      'newsletter-email-management': Mail,
       'email-workflow': Mail,
       'form-security': Shield,
       'security-settings': Shield,
@@ -98,6 +100,7 @@ const Dashboard = () => {
       'blog-management': 'Blog Management',
       'leads': 'Lead Management',
       'contact-management': 'Contact Management',
+      'newsletter-email-management': 'Newsletter Email Management',
       'email-workflow': 'Email Workflow',
       'form-security': 'Form Security Monitor',
       'security-settings': 'Security Settings',
@@ -122,6 +125,7 @@ const Dashboard = () => {
       'blog-management': 'Create and manage blog posts and articles',
       'leads': 'View and manage customer leads and inquiries',
       'contact-management': 'Handle contact form submissions and messages',
+      'newsletter-email-management': 'Manage newsletter email subscribers and campaigns',
       'email-workflow': 'Set up automated email sequences and campaigns',
       'form-security': 'Monitor form security and spam protection',
       'security-settings': 'Configure security features and reCAPTCHA',
@@ -167,6 +171,8 @@ const Dashboard = () => {
         return <LeadManagementTab />;
       case 'contact-management':
         return <ContactManagement />;
+      case 'newsletter-email-management':
+        return <NewsletterEmailManagementTab />;
       case 'email-workflow':
         return <EmailWorkflowTab />;
       case 'form-security':

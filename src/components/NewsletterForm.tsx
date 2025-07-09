@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useFormSubmission } from "@/hooks/useFormSubmission";
+import { useNewsletterEmails } from "@/hooks/useNewsletterEmails";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [honeypotValue, setHoneypotValue] = useState("");
   const { toast } = useToast();
-  const { submitForm, isSubmitting } = useFormSubmission();
+  const { addEmail } = useNewsletterEmails();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,13 +42,14 @@ const NewsletterForm = () => {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
-      const result = await submitForm({
-        name: email.split('@')[0], // Use email prefix as name for newsletter
+      const result = await addEmail({
         email: email,
-        phone: '', // Provide empty phone field to satisfy type requirements
+        name: email.split('@')[0], // Use email prefix as name
         source: 'newsletter_form',
-        formType: 'newsletter'
+        tags: ['website_signup']
       });
 
       if (result.success) {
@@ -67,6 +69,8 @@ const NewsletterForm = () => {
         description: error instanceof Error ? error.message : "Please check your connection and try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

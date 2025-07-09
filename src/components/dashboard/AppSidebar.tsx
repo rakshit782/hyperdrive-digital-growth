@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   Settings, LayoutDashboard, Star, Image, Users, Link2, 
@@ -93,6 +92,12 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
     {
       id: "contact-management",
       label: "Contact Forms",
+      icon: Mail,
+      category: "crm",
+    },
+    {
+      id: "newsletter-email-management",
+      label: "Newsletter Emails",
       icon: Mail,
       category: "crm",
     },

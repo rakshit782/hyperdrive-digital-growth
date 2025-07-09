@@ -1,4 +1,3 @@
-
 import localforage from 'localforage';
 
 interface DBConfig {
@@ -30,7 +29,8 @@ class LocalStorageDB {
       'reviews',
       'services',
       'stats',
-      'case_studies'
+      'case_studies',
+      'newsletter_emails'
     ];
 
     storeConfigs.forEach(storeName => {
