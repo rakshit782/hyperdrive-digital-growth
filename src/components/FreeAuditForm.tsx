@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Send, Target, TrendingUp, Zap, TestTube } from "lucide-react";
+import { CheckCircle, Send, Target, TrendingUp, Zap, TestTube, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useFormSubmission } from "@/hooks/useFormSubmission";
 
@@ -20,6 +20,9 @@ interface FormData {
   primaryPlatform: string;
   businessGoals: string;
   currentChallenges: string;
+  businessSalesReport: File | null;
+  searchTermReport: File | null;
+  advertisedProductReport: File | null;
 }
 
 const FreeAuditForm = () => {
@@ -33,7 +36,10 @@ const FreeAuditForm = () => {
     monthlyAdSpend: '',
     primaryPlatform: '',
     businessGoals: '',
-    currentChallenges: ''
+    currentChallenges: '',
+    businessSalesReport: null,
+    searchTermReport: null,
+    advertisedProductReport: null
   });
   
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -53,7 +59,10 @@ const FreeAuditForm = () => {
       monthlyAdSpend: '10k-25k',
       primaryPlatform: 'amazon',
       businessGoals: 'We want to increase our Amazon sales by 50% while maintaining profitable ROAS.',
-      currentChallenges: 'We are struggling with high ACoS on our campaigns and poor organic ranking.'
+      currentChallenges: 'We are struggling with high ACoS on our campaigns and poor organic ranking.',
+      businessSalesReport: null,
+      searchTermReport: null,
+      advertisedProductReport: null
     });
     setFormErrors({});
     
@@ -61,6 +70,42 @@ const FreeAuditForm = () => {
       title: "Test data filled",
       description: "Form has been populated with sample data for testing",
     });
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, fieldName: keyof FormData) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      const allowedTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
+      
+      if (file.size > maxSize) {
+        toast({
+          title: "File too large",
+          description: "Please select a file smaller than 10MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a PDF, Excel, or CSV file",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        [fieldName]: file
+      }));
+      
+      toast({
+        title: "File uploaded",
+        description: `${file.name} has been uploaded successfully`,
+      });
+    }
   };
 
   const validateForm = (): boolean => {
@@ -85,7 +130,6 @@ const FreeAuditForm = () => {
     
     console.log('Free audit form submission started');
     
-    // Check honeypot
     if (honeypotValue) {
       console.log('Honeypot triggered, blocking submission');
       return;
@@ -114,16 +158,21 @@ const FreeAuditForm = () => {
         businessGoals: formData.businessGoals,
         currentChallenges: formData.currentChallenges,
         source: 'free_audit_form',
-        formType: 'free_audit'
+        formType: 'free_audit',
+        uploadedFiles: {
+          businessSalesReport: formData.businessSalesReport?.name || null,
+          searchTermReport: formData.searchTermReport?.name || null,
+          advertisedProductReport: formData.advertisedProductReport?.name || null
+        }
       });
 
       if (result.success) {
         setIsSubmitted(true);
         
-        // Reset form
         setFormData({
           firstName: '', lastName: '', email: '', phone: '', company: '', website: '',
-          monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: ''
+          monthlyAdSpend: '', primaryPlatform: '', businessGoals: '', currentChallenges: '',
+          businessSalesReport: null, searchTermReport: null, advertisedProductReport: null
         });
         setFormErrors({});
         
@@ -150,7 +199,6 @@ const FreeAuditForm = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (formErrors[name]) {
       setFormErrors(prev => ({
         ...prev,
@@ -164,7 +212,6 @@ const FreeAuditForm = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user selects
     if (formErrors[name]) {
       setFormErrors(prev => ({
         ...prev,
@@ -232,7 +279,6 @@ const FreeAuditForm = () => {
               Discover hidden opportunities and get a custom roadmap to increase your ROAS by 300% (Local Storage)
             </CardDescription>
             
-            {/* Test Data Button */}
             <div className="mt-4">
               <Button 
                 type="button" 
@@ -247,8 +293,7 @@ const FreeAuditForm = () => {
           </CardHeader>
           
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Honeypot field - Hidden from users, visible to bots */}
+            <form onSubmit={handleSubmit} className="space-y-8">
               <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
                 <Input
                   name="website_url"
@@ -260,171 +305,237 @@ const FreeAuditForm = () => {
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    First Name *
-                  </label>
-                  <Input
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                    className={`h-12 text-lg border-slate-300 ${formErrors.firstName ? 'border-red-500' : ''}`}
-                    placeholder="John"
-                  />
-                  {formErrors.firstName && <p className="text-red-500 text-sm mt-1">{formErrors.firstName}</p>}
+              {/* Contact Information */}
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-slate-900 border-b pb-2">Contact Information</h3>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">First Name *</label>
+                    <Input
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      required
+                      className={`h-12 text-lg border-slate-300 ${formErrors.firstName ? 'border-red-500' : ''}`}
+                      placeholder="John"
+                    />
+                    {formErrors.firstName && <p className="text-red-500 text-sm mt-1">{formErrors.firstName}</p>}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Last Name *</label>
+                    <Input
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      required
+                      className={`h-12 text-lg border-slate-300 ${formErrors.lastName ? 'border-red-500' : ''}`}
+                      placeholder="Doe"
+                    />
+                    {formErrors.lastName && <p className="text-red-500 text-sm mt-1">{formErrors.lastName}</p>}
+                  </div>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Last Name *
-                  </label>
-                  <Input
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
-                    className={`h-12 text-lg border-slate-300 ${formErrors.lastName ? 'border-red-500' : ''}`}
-                    placeholder="Doe"
-                  />
-                  {formErrors.lastName && <p className="text-red-500 text-sm mt-1">{formErrors.lastName}</p>}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address *</label>
+                    <Input
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className={`h-12 text-lg border-slate-300 ${formErrors.email ? 'border-red-500' : ''}`}
+                      placeholder="john@company.com"
+                    />
+                    {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number *</label>
+                    <Input
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                      className={`h-12 text-lg border-slate-300 ${formErrors.phone ? 'border-red-500' : ''}`}
+                      placeholder="+1 (555) 123-4567"
+                    />
+                    {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
+                  </div>
                 </div>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Email Address *
-                  </label>
-                  <Input
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className={`h-12 text-lg border-slate-300 ${formErrors.email ? 'border-red-500' : ''}`}
-                    placeholder="john@company.com"
-                  />
-                  {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Phone Number *
-                  </label>
-                  <Input
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    className={`h-12 text-lg border-slate-300 ${formErrors.phone ? 'border-red-500' : ''}`}
-                    placeholder="+1 (555) 123-4567"
-                  />
-                  {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Company Name *</label>
+                    <Input
+                      name="company"
+                      value={formData.company}
+                      onChange={handleChange}
+                      required
+                      className={`h-12 text-lg border-slate-300 ${formErrors.company ? 'border-red-500' : ''}`}
+                      placeholder="Your Company"
+                    />
+                    {formErrors.company && <p className="text-red-500 text-sm mt-1">{formErrors.company}</p>}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Website URL</label>
+                    <Input
+                      name="website"
+                      value={formData.website}
+                      onChange={handleChange}
+                      className="h-12 text-lg border-slate-300"
+                      placeholder="https://yourwebsite.com"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              {/* Business Information */}
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-slate-900 border-b pb-2">Business Information</h3>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Monthly Ad Spend *</label>
+                    <Select onValueChange={(value) => handleSelectChange('monthlyAdSpend', value)} value={formData.monthlyAdSpend} required>
+                      <SelectTrigger className={`h-12 text-lg ${formErrors.monthlyAdSpend ? 'border-red-500' : ''}`}>
+                        <SelectValue placeholder="Select your monthly spend" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="under-1k">Under $1,000</SelectItem>
+                        <SelectItem value="1k-5k">$1,000 - $5,000</SelectItem>
+                        <SelectItem value="5k-10k">$5,000 - $10,000</SelectItem>
+                        <SelectItem value="10k-25k">$10,000 - $25,000</SelectItem>
+                        <SelectItem value="25k-50k">$25,000 - $50,000</SelectItem>
+                        <SelectItem value="over-50k">Over $50,000</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {formErrors.monthlyAdSpend && <p className="text-red-500 text-sm mt-1">{formErrors.monthlyAdSpend}</p>}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Primary Advertising Platform *</label>
+                    <Select onValueChange={(value) => handleSelectChange('primaryPlatform', value)} value={formData.primaryPlatform} required>
+                      <SelectTrigger className={`h-12 text-lg ${formErrors.primaryPlatform ? 'border-red-500' : ''}`}>
+                        <SelectValue placeholder="Select your main platform" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="amazon">Amazon</SelectItem>
+                        <SelectItem value="walmart">Walmart</SelectItem>
+                        <SelectItem value="meta">Facebook/Instagram</SelectItem>
+                        <SelectItem value="google">Google Ads</SelectItem>
+                        <SelectItem value="multiple">Multiple Platforms</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {formErrors.primaryPlatform && <p className="text-red-500 text-sm mt-1">{formErrors.primaryPlatform}</p>}
+                  </div>
+                </div>
+                
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Company Name *
-                  </label>
-                  <Input
-                    name="company"
-                    value={formData.company}
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Business Goals *</label>
+                  <Textarea
+                    name="businessGoals"
+                    value={formData.businessGoals}
                     onChange={handleChange}
                     required
-                    className={`h-12 text-lg border-slate-300 ${formErrors.company ? 'border-red-500' : ''}`}
-                    placeholder="Your Company"
+                    rows={4}
+                    className={`text-lg border-slate-300 resize-none ${formErrors.businessGoals ? 'border-red-500' : ''}`}
+                    placeholder="What are your main business objectives? (e.g., increase sales, improve ROAS, expand to new markets)"
                   />
-                  {formErrors.company && <p className="text-red-500 text-sm mt-1">{formErrors.company}</p>}
+                  {formErrors.businessGoals && <p className="text-red-500 text-sm mt-1">{formErrors.businessGoals}</p>}
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Website URL
-                  </label>
-                  <Input
-                    name="website"
-                    value={formData.website}
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Current Challenges</label>
+                  <Textarea
+                    name="currentChallenges"
+                    value={formData.currentChallenges}
                     onChange={handleChange}
-                    className="h-12 text-lg border-slate-300"
-                    placeholder="https://yourwebsite.com"
+                    rows={4}
+                    className="text-lg border-slate-300 resize-none"
+                    placeholder="What advertising challenges are you facing? (e.g., high CPC, low conversion rates, account management issues)"
                   />
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Monthly Ad Spend *
-                  </label>
-                  <Select onValueChange={(value) => handleSelectChange('monthlyAdSpend', value)} value={formData.monthlyAdSpend} required>
-                    <SelectTrigger className={`h-12 text-lg ${formErrors.monthlyAdSpend ? 'border-red-500' : ''}`}>
-                      <SelectValue placeholder="Select your monthly spend" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="under-1k">Under $1,000</SelectItem>
-                      <SelectItem value="1k-5k">$1,000 - $5,000</SelectItem>
-                      <SelectItem value="5k-10k">$5,000 - $10,000</SelectItem>
-                      <SelectItem value="10k-25k">$10,000 - $25,000</SelectItem>
-                      <SelectItem value="25k-50k">$25,000 - $50,000</SelectItem>
-                      <SelectItem value="over-50k">Over $50,000</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {formErrors.monthlyAdSpend && <p className="text-red-500 text-sm mt-1">{formErrors.monthlyAdSpend}</p>}
-                </div>
+              {/* File Upload Section */}
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-slate-900 border-b pb-2">Required Reports</h3>
+                <p className="text-slate-600 text-sm">
+                  Please upload your advertising reports for a comprehensive audit. All files should be in PDF, Excel, or CSV format (Max 10MB each).
+                </p>
                 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Primary Advertising Platform *
-                  </label>
-                  <Select onValueChange={(value) => handleSelectChange('primaryPlatform', value)} value={formData.primaryPlatform} required>
-                    <SelectTrigger className={`h-12 text-lg ${formErrors.primaryPlatform ? 'border-red-500' : ''}`}>
-                      <SelectValue placeholder="Select your main platform" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="amazon">Amazon</SelectItem>
-                      <SelectItem value="walmart">Walmart</SelectItem>
-                      <SelectItem value="meta">Facebook/Instagram</SelectItem>
-                      <SelectItem value="google">Google Ads</SelectItem>
-                      <SelectItem value="multiple">Multiple Platforms</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {formErrors.primaryPlatform && <p className="text-red-500 text-sm mt-1">{formErrors.primaryPlatform}</p>}
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Business Goals *
-                </label>
-                <Textarea
-                  name="businessGoals"
-                  value={formData.businessGoals}
-                  onChange={handleChange}
-                  required
-                  rows={4}
-                  className={`text-lg border-slate-300 resize-none ${formErrors.businessGoals ? 'border-red-500' : ''}`}
-                  placeholder="What are your main business objectives? (e.g., increase sales, improve ROAS, expand to new markets)"
-                />
-                {formErrors.businessGoals && <p className="text-red-500 text-sm mt-1">{formErrors.businessGoals}</p>}
-              </div>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-900">
+                      30 Days Business Sales Report
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <input
+                        type="file"
+                        accept=".pdf,.xlsx,.xls,.csv"
+                        onChange={(e) => handleFileUpload(e, 'businessSalesReport')}
+                        className="hidden"
+                        id="businessSalesReport"
+                      />
+                      <label htmlFor="businessSalesReport" className="cursor-pointer">
+                        <span className="text-sm text-blue-600 hover:text-blue-800">
+                          {formData.businessSalesReport ? formData.businessSalesReport.name : 'Upload File'}
+                        </span>
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">PDF, Excel, CSV (Max 10MB)</p>
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Current Challenges
-                </label>
-                <Textarea
-                  name="currentChallenges"
-                  value={formData.currentChallenges}
-                  onChange={handleChange}
-                  rows={4}
-                  className="text-lg border-slate-300 resize-none"
-                  placeholder="What advertising challenges are you facing? (e.g., high CPC, low conversion rates, account management issues)"
-                />
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-900">
+                      60 Days Search Term Report
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <input
+                        type="file"
+                        accept=".pdf,.xlsx,.xls,.csv"
+                        onChange={(e) => handleFileUpload(e, 'searchTermReport')}
+                        className="hidden"
+                        id="searchTermReport"
+                      />
+                      <label htmlFor="searchTermReport" className="cursor-pointer">
+                        <span className="text-sm text-blue-600 hover:text-blue-800">
+                          {formData.searchTermReport ? formData.searchTermReport.name : 'Upload File'}
+                        </span>
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">PDF, Excel, CSV (Max 10MB)</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-900">
+                      60 Days Advertised Product Report
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <input
+                        type="file"
+                        accept=".pdf,.xlsx,.xls,.csv"
+                        onChange={(e) => handleFileUpload(e, 'advertisedProductReport')}
+                        className="hidden"
+                        id="advertisedProductReport"
+                      />
+                      <label htmlFor="advertisedProductReport" className="cursor-pointer">
+                        <span className="text-sm text-blue-600 hover:text-blue-800">
+                          {formData.advertisedProductReport ? formData.advertisedProductReport.name : 'Upload File'}
+                        </span>
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">PDF, Excel, CSV (Max 10MB)</p>
+                    </div>
+                  </div>
+                </div>
               </div>
               
               <Button 

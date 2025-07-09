@@ -1,3 +1,4 @@
+
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -21,6 +22,9 @@ import WebsiteDevelopmentPage from '@/pages/WebsiteDevelopmentPage'
 import AccountManagementPage from '@/pages/AccountManagementPage'
 import ShopifyDevelopmentPage from '@/pages/ShopifyDevelopmentPage'
 import ShopifyIntegrationPage from '@/pages/ShopifyIntegrationPage'
+import PrivacyPolicy from '@/pages/PrivacyPolicy'
+import TermsOfService from '@/pages/TermsOfService'
+import TermsConditions from '@/pages/TermsConditions'
 import Dashboard from '@/pages/Dashboard'
 import NavigationOptimizer from "@/components/NavigationOptimizer";
 
@@ -56,6 +60,9 @@ function App() {
               <Route path="/account-management" element={<AccountManagementPage />} />
               <Route path="/shopify-development" element={<ShopifyDevelopmentPage />} />
               <Route path="/shopify-integration" element={<ShopifyIntegrationPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/terms-conditions" element={<TermsConditions />} />
               <Route path="/dashboard" element={<Dashboard />} />
             </Routes>
           </ErrorBoundary>

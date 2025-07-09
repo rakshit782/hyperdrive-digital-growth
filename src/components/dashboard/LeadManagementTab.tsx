@@ -3,11 +3,9 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
   Users, 
   Plus, 
@@ -24,7 +22,8 @@ import {
   Globe,
   FileText,
   Award,
-  RefreshCw
+  RefreshCw,
+  Download
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { localDB } from "@/utils/localStorageDB";
@@ -49,21 +48,9 @@ interface Lead {
 const LeadManagementTab = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    source: '',
-    status: 'new' as LeadStatus,
-    notes: ''
-  });
 
   const statusColors = {
     new: 'bg-blue-100 text-blue-800',
@@ -107,79 +94,22 @@ const LeadManagementTab = () => {
     loadLeads();
   }, []);
 
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      source: '',
-      status: 'new',
-      notes: ''
-    });
-    setSelectedLead(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleStatusChange = async (leadId: string, newStatus: LeadStatus) => {
     try {
-      const leadData = {
-        ...formData,
-        form_security: {
-          timestamp: Date.now(),
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: document.referrer
-        },
-        lead_data: {
-          formType: 'manual_entry',
-          submittedAt: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: document.referrer
-        }
-      };
-
-      if (selectedLead) {
-        await localDB.update('leads', selectedLead.id, leadData);
-        toast({
-          title: "Success",
-          description: "Lead updated successfully",
-        });
-      } else {
-        await localDB.insert('leads', leadData);
-        toast({
-          title: "Success",
-          description: "Lead created successfully",
-        });
-      }
-      
-      resetForm();
-      setIsDialogOpen(false);
+      await localDB.update('leads', leadId, { status: newStatus });
+      toast({
+        title: "Success",
+        description: "Lead status updated successfully",
+      });
       loadLeads();
     } catch (error) {
-      console.error('Error saving lead:', error);
+      console.error('Error updating lead status:', error);
       toast({
         title: "Error",
-        description: "Failed to save lead",
+        description: "Failed to update lead status",
         variant: "destructive",
       });
     }
-  };
-
-  const handleEdit = (lead: Lead) => {
-    setSelectedLead(lead);
-    setFormData({
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone || '',
-      company: lead.company || '',
-      source: lead.source || '',
-      status: lead.status,
-      notes: lead.notes || ''
-    });
-    setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -244,116 +174,10 @@ const LeadManagementTab = () => {
                 <CardDescription>Track and manage your leads with local browser storage</CardDescription>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={loadLeads} className="flex items-center gap-2">
-                <RefreshCw className="w-4 h-4" />
-                Refresh
-              </Button>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button onClick={resetForm} className="bg-gradient-to-r from-green-600 to-blue-600">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Lead
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>{selectedLead ? 'Edit Lead' : 'Add New Lead'}</DialogTitle>
-                    <DialogDescription>
-                      {selectedLead ? 'Update lead information' : 'Add a new lead to your pipeline'}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <Label htmlFor="name">Name *</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input
-                        id="phone"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="company">Company</Label>
-                      <Input
-                        id="company"
-                        value={formData.company}
-                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="source">Source</Label>
-                      <Select value={formData.source} onValueChange={(value) => setFormData({ ...formData, source: value })}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select source" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="website">Website</SelectItem>
-                          <SelectItem value="contact_form">Contact Form</SelectItem>
-                          <SelectItem value="free_audit_form">Free Audit Form</SelectItem>
-                          <SelectItem value="referral">Referral</SelectItem>
-                          <SelectItem value="social_media">Social Media</SelectItem>
-                          <SelectItem value="google_ads">Google Ads</SelectItem>
-                          <SelectItem value="facebook_ads">Facebook Ads</SelectItem>
-                          <SelectItem value="cold_outreach">Cold Outreach</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="status">Status</Label>
-                      <Select value={formData.status} onValueChange={(value: LeadStatus) => setFormData({ ...formData, status: value })}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="new">New</SelectItem>
-                          <SelectItem value="contacted">Contacted</SelectItem>
-                          <SelectItem value="qualified">Qualified</SelectItem>
-                          <SelectItem value="converted">Converted</SelectItem>
-                          <SelectItem value="lost">Lost</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="notes">Notes</Label>
-                      <Textarea
-                        id="notes"
-                        value={formData.notes}
-                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                        rows={3}
-                      />
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button type="submit" className="bg-gradient-to-r from-green-600 to-blue-600">
-                        {selectedLead ? 'Update' : 'Create'} Lead
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            </div>
+            <Button variant="outline" onClick={loadLeads} className="flex items-center gap-2">
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
           </div>
         </CardHeader>
         
@@ -464,84 +288,139 @@ const LeadManagementTab = () => {
             </div>
           </div>
 
-          {/* Leads List */}
-          <div className="space-y-4">
-            {filteredLeads.length > 0 ? (
-              filteredLeads.map((lead) => {
-                const SourceIcon = sourceIcons[lead.source as keyof typeof sourceIcons] || FileText;
-                return (
-                  <Card key={lead.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-gray-900">{lead.name}</h3>
-                            <Badge className={statusColors[lead.status]}>
-                              {lead.status.charAt(0).toUpperCase() + lead.status.slice(1)}
-                            </Badge>
-                            {lead.source && (
-                              <Badge variant="outline" className="text-xs flex items-center gap-1">
-                                <SourceIcon className="w-3 h-3" />
-                                {lead.source.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                              </Badge>
-                            )}
+          {/* Leads Table */}
+          <div className="border rounded-lg">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Company</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Source</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Business Goals</TableHead>
+                  <TableHead>Files</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredLeads.length > 0 ? (
+                  filteredLeads.map((lead) => {
+                    const SourceIcon = sourceIcons[lead.source as keyof typeof sourceIcons] || FileText;
+                    const uploadedFiles = lead.lead_data?.uploadedFiles || {};
+                    const businessGoals = lead.lead_data?.businessGoals || lead.notes || '';
+                    
+                    return (
+                      <TableRow key={lead.id}>
+                        <TableCell className="font-medium">{lead.name}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Mail className="w-4 h-4 text-gray-400" />
+                            {lead.email}
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
+                        </TableCell>
+                        <TableCell>
+                          {lead.company && (
                             <div className="flex items-center gap-1">
-                              <Mail className="w-4 h-4" />
-                              {lead.email}
+                              <Building className="w-4 h-4 text-gray-400" />
+                              {lead.company}
                             </div>
-                            {lead.phone && (
-                              <div className="flex items-center gap-1">
-                                <Phone className="w-4 h-4" />
-                                {lead.phone}
-                              </div>
-                            )}
-                            {lead.company && (
-                              <div className="flex items-center gap-1">
-                                <Building className="w-4 h-4" />
-                                {lead.company}
-                              </div>
-                            )}
-                            <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              {new Date(lead.created_at).toLocaleDateString()}
-                            </div>
-                          </div>
-                          {lead.notes && (
-                            <p className="text-sm text-gray-600 mt-2 line-clamp-2">{lead.notes}</p>
                           )}
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <Button variant="outline" size="sm" onClick={() => handleEdit(lead)}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleDelete(lead.id)}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })
-            ) : (
-              <div className="text-center py-12">
-                <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No leads found</h3>
-                <p className="text-gray-600 mb-4">
-                  {filterStatus === 'all' && !searchTerm ? 'Start by adding your first lead or submit a form' : 
-                   searchTerm ? `No leads match "${searchTerm}"` :
-                   `No leads with status "${filterStatus}"`}
-                </p>
-                {filterStatus === 'all' && !searchTerm && (
-                  <Button onClick={() => setIsDialogOpen(true)}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Your First Lead
-                  </Button>
+                        </TableCell>
+                        <TableCell>
+                          {lead.phone && (
+                            <div className="flex items-center gap-1">
+                              <Phone className="w-4 h-4 text-gray-400" />
+                              {lead.phone}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {lead.source && (
+                            <Badge variant="outline" className="text-xs flex items-center gap-1 w-fit">
+                              <SourceIcon className="w-3 h-3" />
+                              {lead.source.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Select value={lead.status} onValueChange={(value: LeadStatus) => handleStatusChange(lead.id, value)}>
+                            <SelectTrigger className="w-32">
+                              <Badge className={statusColors[lead.status]}>
+                                {lead.status.charAt(0).toUpperCase() + lead.status.slice(1)}
+                              </Badge>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="new">New</SelectItem>
+                              <SelectItem value="contacted">Contacted</SelectItem>
+                              <SelectItem value="qualified">Qualified</SelectItem>
+                              <SelectItem value="converted">Converted</SelectItem>
+                              <SelectItem value="lost">Lost</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell className="max-w-xs">
+                          {businessGoals && (
+                            <div className="truncate" title={businessGoals}>
+                              {businessGoals.length > 50 ? `${businessGoals.substring(0, 50)}...` : businessGoals}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            {uploadedFiles.businessSalesReport && (
+                              <div className="flex items-center gap-1 text-xs text-green-600">
+                                <Download className="w-3 h-3" />
+                                Sales Report
+                              </div>
+                            )}
+                            {uploadedFiles.searchTermReport && (
+                              <div className="flex items-center gap-1 text-xs text-blue-600">
+                                <Download className="w-3 h-3" />
+                                Search Terms
+                              </div>
+                            )}
+                            {uploadedFiles.advertisedProductReport && (
+                              <div className="flex items-center gap-1 text-xs text-purple-600">
+                                <Download className="w-3 h-3" />
+                                Product Report
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <Calendar className="w-4 h-4" />
+                            {new Date(lead.created_at).toLocaleDateString()}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handleDelete(lead.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={10} className="text-center py-12">
+                      <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">No leads found</h3>
+                      <p className="text-gray-600">
+                        {filterStatus === 'all' && !searchTerm ? 'Start by submitting a form to see leads here' : 
+                         searchTerm ? `No leads match "${searchTerm}"` :
+                         `No leads with status "${filterStatus}"`}
+                      </p>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </div>
-            )}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>
