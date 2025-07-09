@@ -1,1137 +1,635 @@
+
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Json } from '@/integrations/supabase/types';
 
 export interface ServiceCaseStudy {
   id: string;
-  service_type: string;
   title: string;
   description: string;
   client_name: string;
   industry: string;
-  results: Json;
+  results: Record<string, string>;
   image_url?: string;
-  is_featured: boolean;
-  sort_order: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  challenge?: string;
+  solution?: string;
+  key_success_factors?: string[];
+  timeline?: string;
+  testimonial?: string;
 }
 
 export interface ServiceStat {
   id: string;
-  service_type: string;
   stat_label: string;
   stat_value: string;
-  stat_description?: string;
+  stat_description: string;
   icon_name?: string;
-  sort_order: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface ServiceReview {
   id: string;
-  service_type: string;
   client_name: string;
   company: string;
   review_text: string;
   rating: number;
   avatar_url?: string;
   results_achieved?: string;
-  sort_order: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
 }
 
-// Service-specific case studies
-const getServiceSpecificCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
-  const baseTimestamp = new Date().toISOString();
+const getMockCaseStudies = (serviceType: string): ServiceCaseStudy[] => {
+  const baseStudies = {
+    'amazon-advertising': [
+      {
+        id: '1',
+        title: 'Premium Electronics Brand Achieves 450% ROI Growth',
+        description: 'A leading electronics manufacturer struggled with low visibility and poor conversion rates on Amazon. Through strategic PPC optimization and listing enhancement, we transformed their marketplace presence.',
+        client_name: 'TechFlow Electronics',
+        industry: 'Consumer Electronics',
+        challenge: 'Low organic ranking, high ACoS, poor product visibility, and declining sales despite quality products.',
+        solution: 'Implemented comprehensive keyword research, optimized product listings with enhanced A+ content, restructured PPC campaigns with precise targeting, and developed a strategic bidding system.',
+        results: {
+          'ROI Increase': '+450%',
+          'ACoS Reduction': '-65%',
+          'Sales Growth': '+380%',
+          'Organic Ranking': 'Top 3 for main keywords'
+        },
+        key_success_factors: [
+          'Data-driven keyword optimization',
+          'Strategic bid management',
+          'Enhanced product content',
+          'Competitive analysis integration'
+        ],
+        timeline: '6 months',
+        testimonial: 'The results exceeded our expectations. Our Amazon sales have become our primary revenue driver.'
+      },
+      {
+        id: '2',
+        title: 'Home & Garden Brand Dominates Competitive Market',
+        description: 'A home improvement company needed to compete against established brands in the saturated home & garden category.',
+        client_name: 'GreenSpace Solutions',
+        industry: 'Home & Garden',
+        challenge: 'Highly competitive market, limited brand recognition, and struggling to gain market share against established competitors.',
+        solution: 'Developed a multi-tiered advertising strategy combining Sponsored Products, Brands, and Display ads with optimized product listings.',
+        results: {
+          'Market Share': '+75%',
+          'Brand Recognition': '+250%',
+          'Revenue Growth': '+420%',
+          'Customer Acquisition': '+300%'
+        },
+        key_success_factors: [
+          'Multi-format advertising approach',
+          'Brand building strategy',
+          'Customer behavior analysis',
+          'Seasonal campaign optimization'
+        ],
+        timeline: '8 months',
+        testimonial: 'We went from unknown to market leader in our category. The strategic approach was game-changing.'
+      }
+    ],
+    'walmart-advertising': [
+      {
+        id: '1',
+        title: 'Consumer Goods Brand Captures 350% Revenue Growth',
+        description: 'A consumer packaged goods company struggled to compete on Walmart Marketplace against established brands with larger advertising budgets.',
+        client_name: 'FreshLife Essentials',
+        industry: 'Consumer Packaged Goods',
+        challenge: 'Limited visibility on Walmart, high competition from established brands, poor product discoverability, and low conversion rates.',
+        solution: 'Implemented Walmart Connect advertising strategy with sponsored products, search ads, and display campaigns. Optimized product content and pricing strategy.',
+        results: {
+          'Revenue Growth': '+350%',
+          'Click-Through Rate': '+180%',
+          'Conversion Rate': '+125%',
+          'Market Penetration': '+400%'
+        },
+        key_success_factors: [
+          'Walmart-specific optimization',
+          'Strategic product placement',
+          'Competitive pricing analysis',
+          'Enhanced product content'
+        ],
+        timeline: '5 months',
+        testimonial: 'Walmart has become our fastest-growing sales channel. The expertise in Walmart Connect was exactly what we needed.'
+      },
+      {
+        id: '2',
+        title: 'Health & Wellness Brand Achieves Category Leadership',
+        description: 'A health supplement company wanted to establish dominance in the competitive wellness category on Walmart.',
+        client_name: 'VitalBoost Nutrition',
+        industry: 'Health & Wellness',
+        challenge: 'Saturated market, high advertising costs, difficulty in standing out among hundreds of similar products.',
+        solution: 'Created targeted Walmart Connect campaigns with precise audience segmentation, optimized for high-intent keywords, and developed compelling product storytelling.',
+        results: {
+          'Category Ranking': 'Top 5 Position',
+          'Sales Volume': '+275%',
+          'Brand Awareness': '+320%',
+          'Customer Loyalty': '+150%'
+        },
+        key_success_factors: [
+          'Audience segmentation strategy',
+          'High-intent keyword targeting',
+          'Product storytelling optimization',
+          'Customer retention focus'
+        ],
+        timeline: '7 months',
+        testimonial: 'We are now a recognized leader in our category on Walmart. The growth has been phenomenal.'
+      }
+    ],
+    'google-advertising': [
+      {
+        id: '1',
+        title: 'B2B Software Company Scales to $2M Annual Revenue',
+        description: 'A SaaS startup needed to compete against enterprise solutions while maintaining cost-effective customer acquisition.',
+        client_name: 'CloudSync Pro',
+        industry: 'B2B Software',
+        challenge: 'High customer acquisition costs, competing against enterprise brands, limited brand recognition in the market.',
+        solution: 'Developed comprehensive Google Ads strategy including Search, Display, and YouTube campaigns with advanced audience targeting and conversion optimization.',
+        results: {
+          'Annual Revenue': '$2M+',
+          'Cost Per Acquisition': '-45%',
+          'Lead Quality': '+180%',
+          'Market Share': '+65%'
+        },
+        key_success_factors: [
+          'Multi-channel approach',
+          'Advanced audience targeting',
+          'Conversion rate optimization',
+          'Performance tracking integration'
+        ],
+        timeline: '12 months',
+        testimonial: 'Google Ads became our primary growth engine. The ROI has been incredible and sustainable.'
+      },
+      {
+        id: '2',
+        title: 'E-commerce Fashion Brand Achieves 500% ROAS',
+        description: 'An online fashion retailer needed to scale profitably during peak shopping seasons while maintaining brand positioning.',
+        client_name: 'StyleHub Fashion',
+        industry: 'Fashion & Retail',
+        challenge: 'Seasonal fluctuations, high competition during peak periods, maintaining profitability while scaling.',
+        solution: 'Implemented seasonal Google Ads strategy with Shopping campaigns, Performance Max, and strategic remarketing across all Google properties.',
+        results: {
+          'Return on Ad Spend': '500%',
+          'Seasonal Revenue': '+350%',
+          'Brand Visibility': '+200%',
+          'Customer Lifetime Value': '+85%'
+        },
+        key_success_factors: [
+          'Seasonal campaign optimization',
+          'Shopping campaign excellence',
+          'Cross-platform integration',
+          'Customer journey mapping'
+        ],
+        timeline: '9 months',
+        testimonial: 'Our Google Ads performance during peak season exceeded all expectations. Truly exceptional results.'
+      }
+    ],
+    'meta-advertising': [
+      {
+        id: '1',
+        title: 'Fitness Brand Builds Community of 100K+ Engaged Users',
+        description: 'A fitness equipment company wanted to build a strong community and drive direct-to-consumer sales through social media.',
+        client_name: 'FitForce Equipment',
+        industry: 'Fitness & Health',
+        challenge: 'Building brand community, converting social engagement to sales, competing against established fitness brands.',
+        solution: 'Created comprehensive Meta advertising strategy focusing on community building, user-generated content, and conversion optimization across Facebook and Instagram.',
+        results: {
+          'Community Growth': '100K+ users',
+          'Engagement Rate': '+275%',
+          'Social Commerce Sales': '+400%',
+          'Brand Loyalty': '+150%'
+        },
+        key_success_factors: [
+          'Community-focused strategy',
+          'User-generated content campaigns',
+          'Social commerce optimization',
+          'Influencer partnership integration'
+        ],
+        timeline: '10 months',
+        testimonial: 'We built an incredible community that drives consistent sales. Social media is now our strongest channel.'
+      },
+      {
+        id: '2',
+        title: 'Beauty Brand Captures Gen Z Market with 300% Growth',
+        description: 'A cosmetics startup needed to establish itself in the competitive beauty market and connect with younger demographics.',
+        client_name: 'GlowUp Cosmetics',
+        industry: 'Beauty & Cosmetics',
+        challenge: 'Highly competitive beauty market, connecting with Gen Z audience, building brand trust and authenticity.',
+        solution: 'Developed Meta advertising campaigns focused on authentic storytelling, influencer collaborations, and trend-based content across all Meta platforms.',
+        results: {
+          'Revenue Growth': '+300%',
+          'Gen Z Engagement': '+250%',
+          'Brand Recognition': '+180%',
+          'Social Mentions': '+400%'
+        },
+        key_success_factors: [
+          'Authentic brand storytelling',
+          'Trend-based content strategy',
+          'Micro-influencer partnerships',
+          'Platform-specific optimization'
+        ],
+        timeline: '6 months',
+        testimonial: 'We became the go-to brand for our demographic. The social strategy was perfectly executed.'
+      }
+    ],
+    'website-development': [
+      {
+        id: '1',
+        title: 'E-commerce Platform Achieves 275% Conversion Rate Boost',
+        description: 'An online retailer needed a complete website overhaul to improve user experience and increase conversions from their existing traffic.',
+        client_name: 'ModernMart Online',
+        industry: 'E-commerce Retail',
+        challenge: 'Outdated website design, poor mobile experience, slow loading times, and low conversion rates despite high traffic volume.',
+        solution: 'Built a modern, responsive e-commerce platform with optimized user experience, fast loading speeds, and conversion-focused design elements.',
+        results: {
+          'Conversion Rate': '+275%',
+          'Page Load Speed': '85% faster',
+          'Mobile Experience': '+300% improvement',
+          'Revenue Growth': '+220%'
+        },
+        key_success_factors: [
+          'User experience optimization',
+          'Mobile-first design approach',
+          'Performance optimization',
+          'Conversion funnel analysis'
+        ],
+        timeline: '4 months',
+        testimonial: 'Our new website transformed our business. The conversion improvements exceeded all expectations.'
+      },
+      {
+        id: '2',
+        title: 'Professional Services Firm Generates 400% More Leads',
+        description: 'A law firm needed a professional website that would establish credibility and generate qualified leads for their practice.',
+        client_name: 'Sterling Legal Partners',
+        industry: 'Professional Services',
+        challenge: 'Outdated online presence, lack of credibility, poor lead generation, and difficulty standing out in competitive legal market.',
+        solution: 'Developed a professional, trust-building website with SEO optimization, lead capture systems, and compelling content that showcases expertise.',
+        results: {
+          'Lead Generation': '+400%',
+          'Online Credibility': '+250%',
+          'Search Visibility': '+180%',
+          'Client Acquisition': '+150%'
+        },
+        key_success_factors: [
+          'Trust-building design elements',
+          'SEO optimization strategy',
+          'Lead capture optimization',
+          'Professional content creation'
+        ],
+        timeline: '3 months',
+        testimonial: 'Our website now generates more leads than all other marketing channels combined. Exceptional work.'
+      }
+    ],
+    'account-management': [
+      {
+        id: '1',
+        title: 'Multi-Channel Retailer Achieves 325% Revenue Growth',
+        description: 'A growing retailer needed expert account management across multiple advertising platforms to scale efficiently.',
+        client_name: 'Urban Lifestyle Co.',
+        industry: 'Retail & Lifestyle',
+        challenge: 'Managing multiple advertising accounts, maintaining consistency across platforms, optimizing cross-channel performance.',
+        solution: 'Provided comprehensive account management across all major platforms with unified strategy, consistent messaging, and cross-platform optimization.',
+        results: {
+          'Cross-Channel Revenue': '+325%',
+          'Account Efficiency': '+200%',
+          'Cost Optimization': '-35%',
+          'Brand Consistency': '+150%'
+        },
+        key_success_factors: [
+          'Unified cross-platform strategy',
+          'Consistent brand messaging',
+          'Performance optimization',
+          'Strategic account coordination'
+        ],
+        timeline: '8 months',
+        testimonial: 'Having expert account management across all platforms was a game-changer for our growth strategy.'
+      },
+      {
+        id: '2',
+        title: 'Technology Startup Scales to Enterprise Level',
+        description: 'A tech startup needed professional account management to transition from startup to enterprise-level operations.',
+        client_name: 'InnovateTech Solutions',
+        industry: 'Technology',
+        challenge: 'Scaling advertising operations, maintaining performance during growth, optimizing budget allocation across platforms.',
+        solution: 'Implemented enterprise-level account management with advanced analytics, budget optimization, and strategic growth planning.',
+        results: {
+          'Operational Scale': '500% increase',
+          'Performance Consistency': '+180%',
+          'Budget Efficiency': '+120%',
+          'Growth Acceleration': '+250%'
+        },
+        key_success_factors: [
+          'Enterprise-level processes',
+          'Advanced analytics implementation',
+          'Strategic growth planning',
+          'Performance consistency focus'
+        ],
+        timeline: '12 months',
+        testimonial: 'The professional account management enabled us to scale without losing performance. Critical for our growth.'
+      }
+    ],
+    'shopify-development': [
+      {
+        id: '1',
+        title: 'Fashion Brand Launches with $500K First-Year Revenue',
+        description: 'A new fashion brand needed a complete Shopify store that would compete with established fashion retailers from day one.',
+        client_name: 'Luxe Fashion House',
+        industry: 'Fashion & Apparel',
+        challenge: 'Entering competitive fashion market, creating premium brand experience, building customer trust as a new brand.',
+        solution: 'Developed a premium Shopify store with custom design, advanced functionality, seamless user experience, and integrated marketing tools.',
+        results: {
+          'First-Year Revenue': '$500K+',
+          'Conversion Rate': '4.2%',
+          'Customer Satisfaction': '96%',
+          'Repeat Purchase Rate': '45%'
+        },
+        key_success_factors: [
+          'Premium design execution',
+          'Custom functionality development',
+          'User experience optimization',
+          'Marketing tool integration'
+        ],
+        timeline: '6 weeks',
+        testimonial: 'Our Shopify store exceeded all expectations. The design and functionality are absolutely perfect.'
+      },
+      {
+        id: '2',
+        title: 'Health Brand Achieves 280% Mobile Conversion Boost',
+        description: 'A health supplement company needed a mobile-optimized Shopify store to capture the growing mobile commerce market.',
+        client_name: 'Pure Wellness Labs',
+        industry: 'Health & Supplements',
+        challenge: 'Poor mobile experience, low mobile conversions, complex product catalog, and subscription management needs.',
+        solution: 'Built a mobile-first Shopify store with subscription capabilities, simplified navigation, and optimized checkout process.',
+        results: {
+          'Mobile Conversions': '+280%',
+          'Subscription Growth': '+150%',
+          'User Experience Score': '94/100',
+          'Mobile Revenue Share': '75%'
+        },
+        key_success_factors: [
+          'Mobile-first design approach',
+          'Subscription system integration',
+          'Simplified user journey',
+          'Performance optimization'
+        ],
+        timeline: '5 weeks',
+        testimonial: 'The mobile experience is incredible. Our mobile sales have become our primary revenue source.'
+      }
+    ],
+    'shopify-integration': [
+      {
+        id: '1',
+        title: 'Multi-Platform Retailer Streamlines Operations by 60%',
+        description: 'A retailer selling across multiple platforms needed seamless Shopify integrations to manage inventory and orders efficiently.',
+        client_name: 'OmniStore Solutions',
+        industry: 'Multi-Channel Retail',
+        challenge: 'Managing inventory across platforms, order processing complexity, data synchronization issues, operational inefficiency.',
+        solution: 'Implemented comprehensive Shopify integrations with inventory management, order processing automation, and real-time data synchronization.',
+        results: {
+          'Operational Efficiency': '+60%',
+          'Inventory Accuracy': '99.5%',
+          'Order Processing Speed': '+200%',
+          'Error Reduction': '-85%'
+        },
+        key_success_factors: [
+          'Automated inventory management',
+          'Real-time data synchronization',
+          'Streamlined order processing',
+          'Error prevention systems'
+        ],
+        timeline: '8 weeks',
+        testimonial: 'The integrations transformed our operations. We can now manage everything from one central system.'
+      },
+      {
+        id: '2',
+        title: 'Growing Brand Scales with Advanced CRM Integration',
+        description: 'A rapidly growing brand needed advanced CRM and marketing automation integrations to maintain customer relationships at scale.',
+        client_name: 'GrowthCo Brands',
+        industry: 'Consumer Goods',
+        challenge: 'Scaling customer communications, managing growth-stage operations, maintaining personalized customer experience.',
+        solution: 'Integrated advanced CRM system with marketing automation, customer segmentation, and personalized communication workflows.',
+        results: {
+          'Customer Retention': '+85%',
+          'Marketing Efficiency': '+150%',
+          'Personalization Score': '+200%',
+          'Revenue Per Customer': '+120%'
+        },
+        key_success_factors: [
+          'Advanced CRM integration',
+          'Marketing automation setup',
+          'Customer segmentation strategy',
+          'Personalized communication workflows'
+        ],
+        timeline: '6 weeks',
+        testimonial: 'The CRM integration allows us to maintain personal relationships with thousands of customers. Incredible scalability.'
+      }
+    ]
+  };
 
-  switch (serviceType) {
-    case 'amazon-advertising':
-      return [
-        {
-          id: '1',
-          service_type: serviceType,
-          title: 'Kitchen Appliance Brand Achieves 400% Sales Growth',
-          description: 'A mid-sized kitchen appliance company was struggling with low visibility on Amazon despite having quality products. We implemented a comprehensive Amazon advertising strategy including Sponsored Products, Sponsored Brands, and strategic keyword optimization. Within 6 months, we transformed their presence from page 3 rankings to consistent top 5 positions across their main product categories.',
-          client_name: 'CookPro Solutions',
-          industry: 'Kitchen Appliances',
-          results: { 
-            'Sales Increase': '400%', 
-            'ACOS Reduction': '45%', 
-            'Organic Ranking': 'Top 5',
-            'Revenue Growth': '$2.3M'
-          },
-          is_featured: true,
-          sort_order: 0,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '2',
-          service_type: serviceType,
-          title: 'Beauty Brand Dominates Competitive Category',
-          description: 'A beauty startup needed to compete against established brands in the highly competitive skincare category. Our Amazon advertising specialists developed a multi-layered campaign strategy focusing on long-tail keywords and customer targeting. We optimized their product listings and implemented strategic bidding to maximize visibility while maintaining profitability.',
-          client_name: 'GlowUp Skincare',
-          industry: 'Beauty & Personal Care',
-          results: { 
-            'Market Share': '15%', 
-            'Click-Through Rate': '8.5%', 
-            'Conversion Rate': '12%',
-            'Monthly Revenue': '$450K'
-          },
-          is_featured: false,
-          sort_order: 1,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '3',
-          service_type: serviceType,
-          title: 'Electronics Brand Scales from $10K to $500K Monthly',
-          description: 'A tech startup with innovative phone accessories was generating only $10K monthly on Amazon. Through strategic Sponsored Display campaigns, enhanced brand content, and competitive analysis, we helped them scale their business exponentially. Our data-driven approach identified untapped keywords and optimized their advertising spend for maximum ROI.',
-          client_name: 'TechGear Innovations',
-          industry: 'Electronics',
-          results: { 
-            'Monthly Revenue': '$500K', 
-            'ROI Improvement': '650%', 
-            'Keyword Rankings': '200+',
-            'Brand Recognition': '85%'
-          },
-          is_featured: true,
-          sort_order: 2,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '4',
-          service_type: serviceType,
-          title: 'Home & Garden Brand Expands to 5 New Categories',
-          description: 'An established home improvement brand wanted to expand into new product categories on Amazon. We developed category-specific advertising strategies, conducted thorough competitor analysis, and implemented cross-selling techniques. Our approach helped them successfully penetrate new markets while maintaining their core business growth.',
-          client_name: 'HomeVantage Co.',
-          industry: 'Home & Garden',
-          results: { 
-            'New Categories': '5', 
-            'Cross-sell Rate': '35%', 
-            'Category Ranking': 'Top 10',
-            'Overall Growth': '280%'
-          },
-          is_featured: false,
-          sort_order: 3,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '5',
-          service_type: serviceType,
-          title: 'Sports Equipment Brand Captures Seasonal Success',
-          description: 'A sports equipment manufacturer needed to maximize their seasonal sales periods. We created dynamic advertising campaigns that scaled with demand, implemented seasonal keyword strategies, and optimized inventory management through advertising insights. The result was record-breaking performance during peak seasons.',
-          client_name: 'FitnessPro Gear',
-          industry: 'Sports & Outdoors',
-          results: { 
-            'Seasonal Sales': '320%', 
-            'Inventory Turnover': '5x', 
-            'Peak Season ROI': '12:1',
-            'Brand Awareness': '75%'
-          },
-          is_featured: true,
-          sort_order: 4,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '6',
-          service_type: serviceType,
-          title: 'Pet Supplies Brand Achieves Amazon\'s Choice Status',
-          description: 'A pet supplies company aimed to achieve Amazon\'s Choice status for their flagship products. Through optimized advertising campaigns, review management, and strategic pricing, we helped them meet all criteria for this prestigious badge. This achievement significantly boosted their organic visibility and sales.',
-          client_name: 'PawPerfect Supplies',
-          industry: 'Pet Supplies',
-          results: { 
-            'Amazon\'s Choice': '3 Products', 
-            'Organic Traffic': '450%', 
-            'Review Rating': '4.8/5',
-            'Sales Velocity': '600%'
-          },
-          is_featured: false,
-          sort_order: 5,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '7',
-          service_type: serviceType,
-          title: 'Fashion Accessory Brand Builds Loyal Customer Base',
-          description: 'A fashion accessories brand struggled with customer retention on Amazon. We implemented targeted advertising campaigns focused on customer lifetime value, developed retargeting strategies, and optimized their brand store. Our comprehensive approach resulted in a loyal customer base and significant repeat purchase rates.',
-          client_name: 'StyleCraft Accessories',
-          industry: 'Fashion',
-          results: { 
-            'Customer Retention': '65%', 
-            'Repeat Purchase Rate': '40%', 
-            'Brand Store Traffic': '300%',
-            'Customer LTV': '$180'
-          },
-          is_featured: true,
-          sort_order: 6,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '8',
-          service_type: serviceType,
-          title: 'Health Supplement Brand Navigates Amazon Compliance',
-          description: 'A health supplements company faced Amazon compliance challenges while trying to scale their advertising. We developed compliant advertising strategies, optimized their listings to meet Amazon\'s strict guidelines, and created educational content that converts. Our expertise in the health category helped them grow safely and sustainably.',
-          client_name: 'VitalHealth Nutrition',
-          industry: 'Health & Wellness',
-          results: { 
-            'Compliance Score': '100%', 
-            'Ad Approval Rate': '95%', 
-            'Organic Ranking': 'Top 3',
-            'Monthly Growth': '45%'
-          },
-          is_featured: false,
-          sort_order: 7,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-      ];
-
-    case 'google-advertising':
-      return [
-        {
-          id: '1',
-          service_type: serviceType,
-          title: 'Local Law Firm Dominates Search Results',
-          description: 'A personal injury law firm was losing potential clients to competitors in Google search results. We developed a comprehensive Google Ads strategy targeting high-intent keywords, implemented location-based targeting, and created compelling ad copy that emphasized their expertise. Our campaign optimization reduced cost per lead by 60% while tripling qualified inquiries.',
-          client_name: 'Justice Partners Law',
-          industry: 'Legal Services',
-          results: { 
-            'Cost Per Lead': '-60%', 
-            'Qualified Leads': '300%', 
-            'Search Impression Share': '85%',
-            'Conversion Rate': '15.2%'
-          },
-          is_featured: true,
-          sort_order: 0,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '2',
-          service_type: serviceType,
-          title: 'SaaS Startup Scales from $50K to $2M ARR',
-          description: 'A B2B SaaS platform needed to scale their customer acquisition through Google Ads. We implemented a full-funnel advertising approach, targeting decision-makers with compelling value propositions. Through continuous optimization of ad copy, landing pages, and bidding strategies, we helped them achieve exponential growth while maintaining a healthy CAC ratio.',
-          client_name: 'CloudFlow Technologies',
-          industry: 'SaaS',
-          results: { 
-            'Annual Revenue': '$2M', 
-            'CAC Reduction': '45%', 
-            'Lead Quality Score': '9.2/10',
-            'Trial to Paid': '28%'
-          },
-          is_featured: false,
-          sort_order: 1,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '3',
-          service_type: serviceType,
-          title: 'E-commerce Fashion Store Achieves 8x ROAS',
-          description: 'An online fashion retailer was struggling with Google Shopping campaigns and low return on ad spend. We restructured their product feed, implemented strategic bidding for seasonal trends, and created targeted campaigns for different customer segments. Our data-driven approach delivered exceptional results with industry-leading ROAS.',
-          client_name: 'TrendStyle Boutique',
-          industry: 'Fashion E-commerce',
-          results: { 
-            'ROAS': '8:1', 
-            'Shopping Campaign CTR': '3.8%', 
-            'Revenue Growth': '420%',
-            'Product Visibility': '90%'
-          },
-          is_featured: true,
-          sort_order: 2,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '4',
-          service_type: serviceType,
-          title: 'Healthcare Practice Doubles Patient Bookings',
-          description: 'A dental practice wanted to increase patient bookings through online advertising. We created targeted Google Ads campaigns focusing on local search terms, implemented call extensions for immediate bookings, and developed landing pages optimized for conversions. Our healthcare-compliant approach significantly increased their patient base.',
-          client_name: 'Bright Smile Dental',
-          industry: 'Healthcare',
-          results: { 
-            'Patient Bookings': '200%', 
-            'Local Search Ranking': '#1', 
-            'Call Conversions': '65%',
-            'Practice Growth': '150%'
-          },
-          is_featured: false,
-          sort_order: 3,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '5',
-          service_type: serviceType,
-          title: 'Real Estate Agency Generates 500+ Quality Leads Monthly',
-          description: 'A commercial real estate agency needed a consistent flow of qualified leads for their premium properties. We developed targeted Google Ads campaigns focusing on high-value keywords, implemented lead scoring systems, and created compelling ad extensions. Our strategy generated a steady stream of high-quality prospects.',
-          client_name: 'Premier Commercial Realty',
-          industry: 'Real Estate',
-          results: { 
-            'Monthly Leads': '500+', 
-            'Lead Quality Score': '8.5/10', 
-            'Cost Per Qualified Lead': '-55%',
-            'Deal Closure Rate': '18%'
-          },
-          is_featured: true,
-          sort_order: 4,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '6',
-          service_type: serviceType,
-          title: 'Manufacturing Company Expands B2B Client Base',
-          description: 'An industrial manufacturing company wanted to reach new B2B clients through Google Ads. We created industry-specific campaigns targeting decision-makers, implemented LinkedIn integration for enhanced targeting, and developed technical landing pages that converted prospects into qualified leads.',
-          client_name: 'IndustrialTech Solutions',
-          industry: 'Manufacturing',
-          results: { 
-            'B2B Leads': '380%', 
-            'Enterprise Clients': '25', 
-            'Average Deal Size': '$125K',
-            'Sales Cycle': '-30%'
-          },
-          is_featured: false,
-          sort_order: 5,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '7',
-          service_type: serviceType,
-          title: 'Education Platform Reaches 10,000 Students',
-          description: 'An online education platform needed to scale their student enrollment through Google Ads. We created campaigns targeting specific educational keywords, implemented demographic targeting for different course offerings, and optimized for student lifetime value rather than just initial conversions.',
-          client_name: 'LearnTech Academy',
-          industry: 'Education',
-          results: { 
-            'Student Enrollment': '10,000', 
-            'Cost Per Acquisition': '-50%', 
-            'Course Completion Rate': '75%',
-            'Student LTV': '$450'
-          },
-          is_featured: true,
-          sort_order: 6,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '8',
-          service_type: serviceType,
-          title: 'Financial Services Firm Builds Trust Through Google Ads',
-          description: 'A financial advisory firm needed to build trust and credibility while generating leads through Google Ads. We developed campaigns highlighting their credentials, created educational content that positions them as experts, and implemented strict compliance measures. Our approach built both visibility and credibility.',
-          client_name: 'WealthGuard Financial',
-          industry: 'Financial Services',
-          results: { 
-            'Lead Quality': '9.1/10', 
-            'Brand Trust Score': '88%', 
-            'Client Acquisition': '220%',
-            'Average Client Value': '$85K'
-          },
-          is_featured: false,
-          sort_order: 7,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-      ];
-
-    case 'meta-advertising':
-      return [
-        {
-          id: '1',
-          service_type: serviceType,
-          title: 'Lifestyle Brand Builds 500K Engaged Community',
-          description: 'A sustainable lifestyle brand wanted to build a community around their eco-friendly values. We developed a comprehensive Meta advertising strategy focusing on community building, user-generated content, and values-based targeting. Our campaigns not only drove sales but created a loyal brand community that actively promotes their products.',
-          client_name: 'EcoLiving Co.',
-          industry: 'Sustainable Products',
-          results: { 
-            'Community Size': '500K', 
-            'Engagement Rate': '8.5%', 
-            'User-Generated Content': '2,500 posts',
-            'Brand Advocacy': '65%'
-          },
-          is_featured: true,
-          sort_order: 0,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '2',
-          service_type: serviceType,
-          title: 'Local Restaurant Chain Drives 400% Foot Traffic',
-          description: 'A regional restaurant chain needed to increase foot traffic across their 15 locations. We created location-based Meta campaigns with compelling food photography, implemented event promotion strategies, and used local community targeting. Our hyper-local approach significantly increased visits and brand awareness in each market.',
-          client_name: 'Flavor Town Restaurants',
-          industry: 'Food & Beverage',
-          results: { 
-            'Foot Traffic': '400%', 
-            'Location Awareness': '85%', 
-            'Event Attendance': '250%',
-            'Revenue Per Location': '$180K'
-          },
-          is_featured: false,
-          sort_order: 1,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '3',
-          service_type: serviceType,
-          title: 'Fitness App Acquires 100K Active Users',
-          description: 'A fitness app startup needed to acquire high-quality users who would remain engaged with their platform. We developed Meta campaigns targeting fitness enthusiasts, created compelling video content showcasing workout results, and implemented app event optimization for long-term user retention.',
-          client_name: 'FitTrack Pro',
-          industry: 'Health & Fitness',
-          results: { 
-            'Active Users': '100K', 
-            'User Retention': '70%', 
-            'In-App Purchases': '25%',
-            'Daily Active Users': '45K'
-          },
-          is_featured: true,
-          sort_order: 2,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '4',
-          service_type: serviceType,
-          title: 'Beauty Brand Achieves Viral Success on Instagram',
-          description: 'An emerging beauty brand wanted to break through the crowded Instagram beauty space. We created visually stunning campaigns featuring real customer transformations, implemented influencer collaboration strategies, and optimized for social sharing. Our creative approach led to multiple viral moments and exponential growth.',
-          client_name: 'Radiant Beauty Co.',
-          industry: 'Beauty & Cosmetics',
-          results: { 
-            'Viral Posts': '12', 
-            'Influencer Partnerships': '150', 
-            'Social Shares': '250K',
-            'Brand Mentions': '500K'
-          },
-          is_featured: false,
-          sort_order: 3,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '5',
-          service_type: serviceType,
-          title: 'Tech Startup Generates $5M in Pre-Orders',
-          description: 'A hardware tech startup needed to generate pre-orders for their innovative product launch. We created anticipation-building Meta campaigns, implemented retargeting sequences for interested prospects, and developed compelling product demonstration videos. Our strategy successfully funded their product development.',
-          client_name: 'InnovateTech Labs',
-          industry: 'Technology',
-          results: { 
-            'Pre-Orders': '$5M', 
-            'Email Signups': '75K', 
-            'Video Views': '2.5M',
-            'Conversion Rate': '12%'
-          },
-          is_featured: true,
-          sort_order: 4,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '6',
-          service_type: serviceType,
-          title: 'Fashion Designer Builds Global Brand Recognition',
-          description: 'An independent fashion designer wanted to build international brand recognition through social media. We created culturally-relevant campaigns for different markets, implemented user-generated content strategies, and optimized for brand awareness metrics. Our approach established them as a recognized global fashion brand.',
-          client_name: 'Milano Design Studio',
-          industry: 'Fashion Design',
-          results: { 
-            'Global Reach': '50 countries', 
-            'Brand Recognition': '78%', 
-            'International Sales': '300%',
-            'Fashion Week Features': '5'
-          },
-          is_featured: false,
-          sort_order: 5,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '7',
-          service_type: serviceType,
-          title: 'Non-Profit Raises $2M Through Facebook Fundraising',
-          description: 'A environmental non-profit needed to increase donations and awareness for their cause. We developed emotional storytelling campaigns, implemented Facebook\'s fundraising tools, and created shareable content that educated audiences about environmental issues. Our campaigns significantly increased both donations and volunteer participation.',
-          client_name: 'Green Future Foundation',
-          industry: 'Non-Profit',
-          results: { 
-            'Funds Raised': '$2M', 
-            'New Volunteers': '5,000', 
-            'Campaign Reach': '10M',
-            'Engagement Rate': '15%'
-          },
-          is_featured: true,
-          sort_order: 6,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '8',
-          service_type: serviceType,
-          title: 'Home Decor Brand Masters Pinterest Shopping',
-          description: 'A home decor brand wanted to leverage Pinterest\'s shopping features through Meta\'s advertising platform. We created Pinterest-optimized content, implemented product catalog integration, and developed seasonal campaigns that aligned with home decoration trends. Our approach made them a top performer in the home decor category.',
-          client_name: 'Cozy Home Designs',
-          industry: 'Home Decor',
-          results: { 
-            'Pinterest Traffic': '600%', 
-            'Shopping Conversions': '35%', 
-            'Seasonal Sales': '450%',
-            'Product Saves': '100K'
-          },
-          is_featured: false,
-          sort_order: 7,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-      ];
-
-    case 'shopify-development':
-      return [
-        {
-          id: '1',
-          service_type: serviceType,
-          title: 'Custom Shopify Store Increases Conversion Rate by 340%',
-          description: 'A jewelry brand was struggling with a generic Shopify theme that didn\'t showcase their products effectively. We developed a custom Shopify store with advanced product visualization, implemented a sophisticated filtering system, and created a seamless checkout process. The custom development addressed their specific needs and significantly improved user experience.',
-          client_name: 'Elegant Gems',
-          industry: 'Jewelry',
-          results: { 
-            'Conversion Rate': '+340%', 
-            'Page Load Speed': '2.1s', 
-            'Mobile Optimization': '98%',
-            'Customer Satisfaction': '4.9/5'
-          },
-          is_featured: true,
-          sort_order: 0,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '2',
-          service_type: serviceType,
-          title: 'Multi-Vendor Marketplace Built on Shopify Plus',
-          description: 'A client wanted to create a multi-vendor marketplace similar to Etsy but with more control and customization. We built a comprehensive marketplace platform using Shopify Plus, implemented vendor management systems, automated commission calculations, and created separate vendor dashboards. The platform now hosts over 500 vendors.',
-          client_name: 'ArtisanHub Marketplace',
-          industry: 'Marketplace',
-          results: { 
-            'Active Vendors': '500+', 
-            'Platform Revenue': '$8.5M', 
-            'Vendor Satisfaction': '92%',
-            'Transaction Volume': '50K/month'
-          },
-          is_featured: false,
-          sort_order: 1,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '3',
-          service_type: serviceType,
-          title: 'B2B Wholesale Portal Streamlines Operations',
-          description: 'A manufacturing company needed a B2B wholesale portal to manage their dealer network efficiently. We developed a custom Shopify Plus solution with tiered pricing, bulk ordering capabilities, credit management, and automated approval workflows. The system transformed their wholesale operations and improved dealer relationships.',
-          client_name: 'Industrial Supply Pro',
-          industry: 'B2B Manufacturing',
-          results: { 
-            'Order Processing': '-75% time', 
-            'Dealer Efficiency': '300%', 
-            'Error Reduction': '90%',
-            'Revenue Growth': '250%'
-          },
-          is_featured: true,
-          sort_order: 2,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '4',
-          service_type: serviceType,
-          title: 'Subscription Box Platform Automates Everything',
-          description: 'A subscription box company was manually managing their entire operation. We built a comprehensive Shopify solution with subscription management, automated billing, inventory tracking, and customer portal features. The automation allowed them to scale from 100 to 10,000 subscribers without additional staff.',
-          client_name: 'Monthly Delights',
-          industry: 'Subscription Commerce',
-          results: { 
-            'Subscriber Growth': '10,000%', 
-            'Automation Level': '95%', 
-            'Operational Costs': '-60%',
-            'Customer Retention': '85%'
-          },
-          is_featured: false,
-          sort_order: 3,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '5',
-          service_type: serviceType,
-          title: 'International Brand Expands to 25 Countries',
-          description: 'A growing brand wanted to expand internationally but faced complex challenges with currencies, languages, and shipping. We developed a multi-market Shopify Plus solution with automatic currency conversion, multi-language support, regional pricing, and integrated international shipping. The expansion was seamless and profitable.',
-          client_name: 'Global Fashion House',
-          industry: 'International Fashion',
-          results: { 
-            'Market Expansion': '25 countries', 
-            'International Revenue': '40%', 
-            'Conversion Rate': '15.8%',
-            'Shipping Efficiency': '95%'
-          },
-          is_featured: true,
-          sort_order: 4,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '6',
-          service_type: serviceType,
-          title: 'Custom Product Configurator Boosts Sales 450%',
-          description: 'A furniture company needed customers to visualize custom products before purchase. We developed an advanced 3D product configurator integrated with Shopify, allowing customers to customize materials, colors, and dimensions in real-time. The visual customization tool dramatically increased confidence and sales.',
-          client_name: 'CustomCraft Furniture',
-          industry: 'Custom Furniture',
-          results: { 
-            'Sales Increase': '450%', 
-            'Product Returns': '-80%', 
-            'Customization Rate': '75%',
-            'Average Order Value': '+220%'
-          },
-          is_featured: false,
-          sort_order: 5,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '7',
-          service_type: serviceType,
-          title: 'Mobile-First Store Captures Gen Z Market',
-          description: 'A streetwear brand targeting Gen Z needed a mobile-first shopping experience. We developed a highly optimized mobile Shopify store with social shopping features, influencer integration, and gamification elements. The mobile-centric approach perfectly aligned with their target audience\'s shopping behavior.',
-          client_name: 'Urban Street Co.',
-          industry: 'Streetwear',
-          results: { 
-            'Mobile Conversions': '85%', 
-            'Gen Z Engagement': '12 min avg', 
-            'Social Sharing': '500%',
-            'Repeat Purchase Rate': '60%'
-          },
-          is_featured: true,
-          sort_order: 6,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '8',
-          service_type: serviceType,
-          title: 'Performance Optimization Saves $100K in Ad Spend',
-          description: 'An established e-commerce store was losing money due to slow loading times and poor performance. We completely optimized their Shopify store, improved Core Web Vitals, implemented advanced caching, and optimized all images and code. The performance improvements dramatically reduced their advertising costs and increased organic rankings.',
-          client_name: 'SportGear Central',
-          industry: 'Sports Equipment',
-          results: { 
-            'Page Speed': '+180%', 
-            'Ad Cost Savings': '$100K', 
-            'SEO Rankings': '+150%',
-            'Revenue Per Visitor': '+95%'
-          },
-          is_featured: false,
-          sort_order: 7,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-      ];
-
-    case 'shopify-integration':
-      return [
-        {
-          id: '1',
-          service_type: serviceType,
-          title: 'ERP Integration Streamlines Inventory Across 50 Locations',
-          description: 'A retail chain with 50 physical locations needed real-time inventory synchronization between their Shopify store and ERP system. We developed a robust integration that automatically updates inventory levels, syncs product information, and manages purchase orders across all channels. This eliminated overselling and improved operational efficiency.',
-          client_name: 'RetailMax Chain',
-          industry: 'Retail',
-          results: { 
-            'Inventory Accuracy': '99.8%', 
-            'Overselling Reduction': '100%', 
-            'Operational Efficiency': '+280%',
-            'Stock Management Time': '-90%'
-          },
-          is_featured: true,
-          sort_order: 0,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '2',
-          service_type: serviceType,
-          title: 'Marketing Automation Increases Customer LTV by 300%',
-          description: 'An online beauty brand wanted to increase customer lifetime value through better marketing automation. We integrated Shopify with Klaviyo, HubSpot, and Facebook Pixel to create sophisticated customer journeys. The automated sequences included abandoned cart recovery, post-purchase follow-ups, and personalized product recommendations.',
-          client_name: 'Beauty Bliss Co.',
-          industry: 'Beauty & Cosmetics',
-          results: { 
-            'Customer LTV': '+300%', 
-            'Email Revenue': '35% of total', 
-            'Automation ROI': '2,400%',
-            'Customer Retention': '+85%'
-          },
-          is_featured: false,
-          sort_order: 1,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '3',
-          service_type: serviceType,
-          title: 'Accounting Integration Saves 40 Hours Weekly',
-          description: 'A growing e-commerce business was spending excessive time on manual bookkeeping and financial reporting. We integrated their Shopify store with QuickBooks and Xero, implementing automated transaction recording, tax calculations, and financial reporting. The integration eliminated manual data entry and improved financial accuracy.',
-          client_name: 'TechGadgets Plus',
-          industry: 'Electronics',
-          results: { 
-            'Time Savings': '40 hours/week', 
-            'Accounting Accuracy': '99.9%', 
-            'Financial Reporting': 'Real-time',
-            'Tax Compliance': '100%'
-          },
-          is_featured: true,
-          sort_order: 2,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '4',
-          service_type: serviceType,
-          title: 'Multi-Channel Selling Increases Revenue by 400%',
-          description: 'A product manufacturer wanted to sell across multiple channels while maintaining centralized inventory management. We integrated their Shopify store with Amazon, eBay, Walmart, and Facebook Marketplace, creating a unified system that automatically syncs inventory, pricing, and order management across all platforms.',
-          client_name: 'HomeDecor Innovations',
-          industry: 'Home & Garden',
-          results: { 
-            'Revenue Growth': '400%', 
-            'Channel Coverage': '8 platforms', 
-            'Inventory Sync': '99.5%',
-            'Order Management': 'Centralized'
-          },
-          is_featured: false,
-          sort_order: 3,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '5',
-          service_type: serviceType,
-          title: 'Shipping API Integration Reduces Costs by 45%',
-          description: 'An international e-commerce store was struggling with high shipping costs and complex logistics. We integrated multiple shipping APIs including FedEx, UPS, DHL, and local carriers, implementing smart shipping logic that automatically selects the most cost-effective option. Real-time tracking and automated notifications improved customer satisfaction.',
-          client_name: 'Global Marketplace',
-          industry: 'International E-commerce',
-          results: { 
-            'Shipping Cost Reduction': '45%', 
-            'Delivery Speed': '+60%', 
-            'Customer Satisfaction': '96%',
-            'Tracking Accuracy': '100%'
-          },
-          is_featured: true,
-          sort_order: 4,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '6',
-          service_type: serviceType,
-          title: 'CRM Integration Improves Customer Service by 250%',
-          description: 'A subscription-based company needed better customer relationship management to handle growing support demands. We integrated Shopify with Zendesk and Salesforce, creating a comprehensive view of customer interactions, purchase history, and support tickets. This integration dramatically improved response times and resolution rates.',
-          client_name: 'SubscribeBox Pro',
-          industry: 'Subscription Services',
-          results: { 
-            'Response Time': '-75%', 
-            'Resolution Rate': '+250%', 
-            'Customer Satisfaction': '4.8/5',
-            'Support Efficiency': '+180%'
-          },
-          is_featured: false,
-          sort_order: 5,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '7',
-          service_type: serviceType,
-          title: 'Payment Gateway Integration Reduces Checkout Abandonment',
-          description: 'An online store was losing customers during checkout due to limited payment options and security concerns. We integrated multiple payment gateways including Stripe, PayPal, Apple Pay, and local payment methods, implementing fraud detection and optimizing the checkout flow. The improved payment experience significantly reduced abandonment.',
-          client_name: 'Fashion Forward Store',
-          industry: 'Fashion',
-          results: { 
-            'Checkout Abandonment': '-65%', 
-            'Payment Success Rate': '98.5%', 
-            'Fraud Reduction': '90%',
-            'Conversion Rate': '+140%'
-          },
-          is_featured: true,
-          sort_order: 6,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '8',
-          service_type: serviceType,
-          title: 'Analytics Integration Provides 360° Business Intelligence',
-          description: 'A multi-brand retailer needed comprehensive analytics to make data-driven decisions across their entire operation. We integrated Shopify with Google Analytics 4, Facebook Analytics, and custom business intelligence tools, creating unified dashboards that provide insights into customer behavior, sales performance, and operational metrics.',
-          client_name: 'Multi-Brand Retail',
-          industry: 'Retail',
-          results: { 
-            'Data Accuracy': '99.7%', 
-            'Decision Speed': '+300%', 
-            'ROI Tracking': 'Real-time',
-            'Business Intelligence': '360° view'
-          },
-          is_featured: false,
-          sort_order: 7,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-      ];
-
-    case 'account-management':
-      return [
-        {
-          id: '1',
-          service_type: serviceType,
-          title: 'Complete Ad Account Optimization Triples ROAS',
-          description: 'A growing e-commerce brand was struggling with declining ad performance across Google, Facebook, and Amazon. Our account management team conducted a comprehensive audit, restructured campaigns, implemented advanced targeting strategies, and optimized bidding algorithms. Through continuous monitoring and optimization, we transformed their advertising efficiency.',
-          client_name: 'TrendSetter Fashion',
-          industry: 'Fashion E-commerce',
-          results: { 
-            'ROAS Improvement': '300%', 
-            'Cost Per Acquisition': '-60%', 
-            'Campaign Performance': '+250%',
-            'Revenue Growth': '180%'
-          },
-          is_featured: true,
-          sort_order: 0,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '2',
-          service_type: serviceType,
-          title: 'Multi-Platform Campaign Management Scales SaaS Business',
-          description: 'A B2B SaaS company needed expert management across LinkedIn, Google Ads, and retargeting campaigns to scale their enterprise sales. Our team developed platform-specific strategies, implemented advanced attribution models, and created cohesive messaging across all channels. The integrated approach significantly improved lead quality and sales velocity.',
-          client_name: 'CloudTech Solutions',
-          industry: 'B2B SaaS',
-          results: { 
-            'Lead Quality Score': '9.5/10', 
-            'Sales Velocity': '+180%', 
-            'Enterprise Deals': '+320%',
-            'Customer Acquisition Cost': '-45%'
-          },
-          is_featured: false,
-          sort_order: 1,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '3',
-          service_type: serviceType,
-          title: 'Performance Monitoring Prevents $500K Budget Waste',
-          description: 'A large retailer was unknowingly wasting significant ad spend due to poor campaign monitoring and optimization. Our account management team implemented real-time performance tracking, automated bid adjustments, and proactive budget optimization. Early detection of underperforming campaigns saved substantial advertising budget.',
-          client_name: 'MegaRetail Corp',
-          industry: 'Retail',
-          results: { 
-            'Budget Waste Prevention': '$500K', 
-            'Performance Monitoring': '24/7', 
-            'Optimization Frequency': 'Daily',
-            'Efficiency Improvement': '+220%'
-          },
-          is_featured: true,
-          sort_order: 2,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '4',
-          service_type: serviceType,
-          title: 'Strategic Account Planning Achieves 500% Growth',
-          description: 'A healthcare startup needed strategic guidance to allocate their advertising budget effectively across different growth stages. Our account management team developed a comprehensive 12-month strategy, implemented phased campaign rollouts, and continuously optimized based on business goals and market conditions.',
-          client_name: 'HealthTech Innovations',
-          industry: 'Healthcare Technology',
-          results: { 
-            'Business Growth': '500%', 
-            'Market Penetration': '15%', 
-            'Strategic Planning': '12-month roadmap',
-            'Goal Achievement': '98%'
-          },
-          is_featured: false,
-          sort_order: 3,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '5',
-          service_type: serviceType,
-          title: 'Crisis Management Saves Brand During PR Challenge',
-          description: 'When a consumer brand faced a public relations crisis, our account management team quickly pivoted their advertising strategy, paused controversial campaigns, and implemented reputation management tactics. Swift action and strategic communication prevented significant brand damage and maintained customer trust.',
-          client_name: 'FamilyBrand Products',
-          industry: 'Consumer Goods',
-          results: { 
-            'Brand Sentiment Recovery': '95%', 
-            'Crisis Response Time': '2 hours', 
-            'Revenue Protection': '$2.5M',
-            'Reputation Score': '4.6/5'
-          },
-          is_featured: true,
-          sort_order: 4,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '6',
-          service_type: serviceType,
-          title: 'Automated Reporting Improves Decision Making Speed',
-          description: 'A multi-location business was struggling with manual reporting across their advertising accounts, leading to delayed decision-making. Our team implemented automated reporting systems, custom dashboards, and real-time alerts. The streamlined reporting process enabled faster reactions to market changes and opportunities.',
-          client_name: 'Regional Services Group',
-          industry: 'Professional Services',
-          results: { 
-            'Reporting Automation': '95%', 
-            'Decision Speed': '+400%', 
-            'Data Accuracy': '99.8%',
-            'Strategic Agility': '+300%'
-          },
-          is_featured: false,
-          sort_order: 5,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '7',
-          service_type: serviceType,
-          title: 'Seasonal Campaign Management Maximizes Holiday Sales',
-          description: 'A gift retailer needed expert management of their complex seasonal advertising campaigns across Black Friday, Cyber Monday, and Christmas. Our team developed detailed seasonal strategies, managed budget allocation throughout peak periods, and optimized campaigns in real-time to capture maximum holiday revenue.',
-          client_name: 'Holiday Gifts Emporium',
-          industry: 'Seasonal Retail',
-          results: { 
-            'Holiday Revenue': '+450%', 
-            'Peak Day Performance': '2,000% normal', 
-            'Budget Efficiency': '+180%',
-            'Market Share': '25%'
-          },
-          is_featured: true,
-          sort_order: 6,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-        {
-          id: '8',
-          service_type: serviceType,
-          title: 'International Account Expansion Enters 20 New Markets',
-          description: 'A successful domestic brand wanted to expand internationally but lacked expertise in global advertising management. Our team managed the complex process of setting up advertising accounts in 20 countries, implementing localized strategies, and ensuring compliance with regional advertising regulations.',
-          client_name: 'Global Expansion Co.',
-          industry: 'International Business',
-          results: { 
-            'Market Expansion': '20 countries', 
-            'International Revenue': '40% of total', 
-            'Compliance Rate': '100%',
-            'Global Brand Recognition': '85%'
-          },
-          is_featured: false,
-          sort_order: 7,
-          is_active: true,
-          created_at: baseTimestamp,
-          updated_at: baseTimestamp,
-        },
-      ];
-
-    default:
-      // Return generic case studies for other service types
-      return getMockCaseStudies('generic');
-  }
+  return baseStudies[serviceType as keyof typeof baseStudies] || [];
 };
 
-// Mockup data for stats
-const getMockStats = (serviceType: string): ServiceStat[] => [
-  {
-    id: '1',
-    service_type: serviceType,
-    stat_label: 'Average ROI Increase',
-    stat_value: '450%',
-    stat_description: 'Return on investment improvement',
-    icon_name: 'TrendingUp',
-    sort_order: 0,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    service_type: serviceType,
-    stat_label: 'Client Satisfaction',
-    stat_value: '98%',
-    stat_description: 'Happy clients rate',
-    icon_name: 'Heart',
-    sort_order: 1,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '3',
-    service_type: serviceType,
-    stat_label: 'Projects Completed',
-    stat_value: '1,200+',
-    stat_description: 'Successful deliveries',
-    icon_name: 'CheckCircle',
-    sort_order: 2,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '4',
-    service_type: serviceType,
-    stat_label: 'Years Experience',
-    stat_value: '10+',
-    stat_description: 'Industry expertise',
-    icon_name: 'Award',
-    sort_order: 3,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
+const getMockStats = (serviceType: string): ServiceStat[] => {
+  const baseStats = {
+    'amazon-advertising': [
+      { id: '1', stat_label: 'Average ROI Increase', stat_value: '450%', stat_description: 'Return on investment improvement' },
+      { id: '2', stat_label: 'ACoS Reduction', stat_value: '65%', stat_description: 'Average cost of sale decrease' },
+      { id: '3', stat_label: 'Sales Growth', stat_value: '380%', stat_description: 'Revenue increase within 6 months' },
+      { id: '4', stat_label: 'Client Satisfaction', stat_value: '98%', stat_description: 'Happy clients rate' }
+    ],
+    'walmart-advertising': [
+      { id: '1', stat_label: 'Revenue Growth', stat_value: '350%', stat_description: 'Average revenue increase' },
+      { id: '2', stat_label: 'Market Penetration', stat_value: '400%', stat_description: 'Improved market reach' },
+      { id: '3', stat_label: 'Conversion Rate', stat_value: '125%', stat_description: 'Higher conversion rates' },
+      { id: '4', stat_label: 'Success Rate', stat_value: '96%', stat_description: 'Campaign success rate' }
+    ],
+    'google-advertising': [
+      { id: '1', stat_label: 'Average ROAS', stat_value: '500%', stat_description: 'Return on ad spend' },
+      { id: '2', stat_label: 'Cost Reduction', stat_value: '45%', stat_description: 'Lower customer acquisition costs' },
+      { id: '3', stat_label: 'Lead Quality', stat_value: '180%', stat_description: 'Higher quality leads' },
+      { id: '4', stat_label: 'Client Growth', stat_value: '250%', stat_description: 'Average business growth' }
+    ],
+    'meta-advertising': [
+      { id: '1', stat_label: 'Community Growth', stat_value: '275%', stat_description: 'Average follower increase' },
+      { id: '2', stat_label: 'Engagement Rate', stat_value: '300%', stat_description: 'Higher user engagement' },
+      { id: '3', stat_label: 'Social Commerce', stat_value: '400%', stat_description: 'Sales through social' },
+      { id: '4', stat_label: 'Brand Awareness', stat_value: '200%', stat_description: 'Improved brand recognition' }
+    ],
+    'website-development': [
+      { id: '1', stat_label: 'Conversion Boost', stat_value: '275%', stat_description: 'Average conversion improvement' },
+      { id: '2', stat_label: 'Load Speed', stat_value: '85%', stat_description: 'Faster loading times' },
+      { id: '3', stat_label: 'Lead Generation', stat_value: '400%', stat_description: 'More qualified leads' },
+      { id: '4', stat_label: 'User Satisfaction', stat_value: '96%', stat_description: 'Positive user feedback' }
+    ],
+    'account-management': [
+      { id: '1', stat_label: 'Revenue Growth', stat_value: '325%', stat_description: 'Cross-channel revenue increase' },
+      { id: '2', stat_label: 'Efficiency Gain', stat_value: '200%', stat_description: 'Improved account efficiency' },
+      { id: '3', stat_label: 'Cost Optimization', stat_value: '35%', stat_description: 'Reduced management costs' },
+      { id: '4', stat_label: 'Success Rate', stat_value: '97%', stat_description: 'Successful campaigns' }
+    ],
+    'shopify-development': [
+      { id: '1', stat_label: 'Revenue Growth', stat_value: '$500K+', stat_description: 'First-year revenue achievement' },
+      { id: '2', stat_label: 'Conversion Rate', stat_value: '4.2%', stat_description: 'Average store conversion' },
+      { id: '3', stat_label: 'Mobile Boost', stat_value: '280%', stat_description: 'Mobile conversion improvement' },
+      { id: '4', stat_label: 'Client Satisfaction', stat_value: '98%', stat_description: 'Happy store owners' }
+    ],
+    'shopify-integration': [
+      { id: '1', stat_label: 'Efficiency Gain', stat_value: '60%', stat_description: 'Operational improvement' },
+      { id: '2', stat_label: 'Accuracy Rate', stat_value: '99.5%', stat_description: 'Inventory accuracy' },
+      { id: '3', stat_label: 'Processing Speed', stat_value: '200%', stat_description: 'Faster order processing' },
+      { id: '4', stat_label: 'Error Reduction', stat_value: '85%', stat_description: 'Fewer operational errors' }
+    ]
+  };
 
-// Mockup data for reviews
-const getMockReviews = (serviceType: string): ServiceReview[] => [
-  {
-    id: '1',
-    service_type: serviceType,
-    client_name: 'Sarah Johnson',
-    company: 'TechStart Inc',
-    review_text: 'Absolutely incredible results! Our revenue increased by 300% within just 6 months. The team\'s expertise and dedication are unmatched.',
-    rating: 5,
-    avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b593?w=100&h=100&fit=crop&crop=face',
-    results_achieved: '300% revenue increase, 50% cost reduction',
-    sort_order: 0,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    service_type: serviceType,
-    client_name: 'Michael Chen',
-    company: 'Growth Solutions',
-    review_text: 'Professional, efficient, and results-driven. They transformed our entire marketing approach and delivered beyond expectations.',
-    rating: 5,
-    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
-    results_achieved: '250% lead generation improvement',
-    sort_order: 1,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '3',
-    service_type: serviceType,
-    client_name: 'Emily Rodriguez',
-    company: 'Digital Innovators',
-    review_text: 'Outstanding service and remarkable outcomes. Our conversion rates improved dramatically and ROI exceeded all projections.',
-    rating: 5,
-    avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
-    results_achieved: '400% ROI improvement, 180% conversion rate boost',
-    sort_order: 2,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '4',
-    service_type: serviceType,
-    client_name: 'David Thompson',
-    company: 'Enterprise Solutions',
-    review_text: 'Game-changing partnership! Their strategic approach and execution helped us dominate our market segment.',
-    rating: 5,
-    avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
-    results_achieved: '500% market share growth',
-    sort_order: 3,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '5',
-    service_type: serviceType,
-    client_name: 'Lisa Wang',
-    company: 'Future Tech Co',
-    review_text: 'Exceptional expertise and customer service. They delivered results that transformed our business trajectory completely.',
-    rating: 5,
-    avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
-    results_achieved: '350% business growth, expanded to 5 new markets',
-    sort_order: 4,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '6',
-    service_type: serviceType,
-    client_name: 'Robert Martinez',
-    company: 'Scale Ventures',
-    review_text: 'Incredible team with deep industry knowledge. They helped us scale our operations and achieve sustainable growth.',
-    rating: 5,
-    avatar_url: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=face',
-    results_achieved: '600% operational efficiency, 200% profit margins',
-    sort_order: 5,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
+  return baseStats[serviceType as keyof typeof baseStats] || [];
+};
+
+const getMockReviews = (serviceType: string): ServiceReview[] => {
+  const baseReviews = {
+    'amazon-advertising': [
+      {
+        id: '1',
+        client_name: 'Sarah Johnson',
+        company: 'TechFlow Electronics',
+        review_text: 'The Amazon advertising expertise transformed our business. Our ROI increased by 450% and we now dominate our category. The team understands Amazon like no other.',
+        rating: 5,
+        results_achieved: '450% ROI increase, 65% ACoS reduction'
+      },
+      {
+        id: '2',
+        client_name: 'Mike Rodriguez',
+        company: 'GreenSpace Solutions',
+        review_text: 'From unknown to market leader in 8 months. The strategic approach to Amazon advertising was exactly what we needed to compete with established brands.',
+        rating: 5,
+        results_achieved: '75% market share increase, 420% revenue growth'
+      }
+    ],
+    'walmart-advertising': [
+      {
+        id: '1',
+        client_name: 'Lisa Chen',
+        company: 'FreshLife Essentials',
+        review_text: 'Walmart Connect became our fastest-growing channel. The expertise in Walmart-specific optimization was game-changing for our consumer goods brand.',
+        rating: 5,
+        results_achieved: '350% revenue growth, 400% market penetration'
+      },
+      {
+        id: '2',
+        client_name: 'David Thompson',
+        company: 'VitalBoost Nutrition',
+        review_text: 'We achieved category leadership on Walmart thanks to their strategic approach. The audience targeting and keyword optimization were phenomenal.',
+        rating: 5,
+        results_achieved: 'Top 5 category ranking, 275% sales volume increase'
+      }
+    ],
+    'google-advertising': [
+      {
+        id: '1',
+        client_name: 'Jennifer Martinez',
+        company: 'CloudSync Pro',
+        review_text: 'Google Ads became our primary growth engine. We scaled to $2M annual revenue with incredible ROI. The multi-channel approach was perfect.',
+        rating: 5,
+        results_achieved: '$2M+ annual revenue, 45% cost reduction'
+      },
+      {
+        id: '2',
+        client_name: 'Alex Kim',
+        company: 'StyleHub Fashion',
+        review_text: 'Our Google Ads performance during peak season exceeded all expectations. 500% ROAS was beyond what we thought possible.',
+        rating: 5,
+        results_achieved: '500% ROAS, 350% seasonal revenue growth'
+      }
+    ],
+    'meta-advertising': [
+      {
+        id: '1',
+        client_name: 'Maria Gonzalez',
+        company: 'FitForce Equipment',
+        review_text: 'We built an incredible community of 100K+ engaged users. Social media became our strongest sales channel with authentic engagement.',
+        rating: 5,
+        results_achieved: '100K+ community, 400% social commerce sales'
+      },
+      {
+        id: '2',
+        client_name: 'Taylor Davis',
+        company: 'GlowUp Cosmetics',
+        review_text: 'We became the go-to brand for Gen Z. The authentic storytelling and trend-based content strategy was perfectly executed.',
+        rating: 5,
+        results_achieved: '300% revenue growth, 250% Gen Z engagement'
+      }
+    ],
+    'website-development': [
+      {
+        id: '1',
+        client_name: 'Robert Wilson',
+        company: 'ModernMart Online',
+        review_text: 'Our new website transformed our business completely. The conversion improvements exceeded all expectations with 275% increase.',
+        rating: 5,
+        results_achieved: '275% conversion rate boost, 85% faster loading'
+      },
+      {
+        id: '2',
+        client_name: 'Amanda Foster',
+        company: 'Sterling Legal Partners',
+        review_text: 'Our website now generates more leads than all other marketing channels combined. The professional design built incredible credibility.',
+        rating: 5,
+        results_achieved: '400% more leads, 250% credibility increase'
+      }
+    ],
+    'account-management': [
+      {
+        id: '1',
+        client_name: 'Chris Johnson',
+        company: 'Urban Lifestyle Co.',
+        review_text: 'Having expert account management across all platforms was a game-changer. The unified strategy delivered 325% revenue growth.',
+        rating: 5,
+        results_achieved: '325% cross-channel revenue, 35% cost optimization'
+      },
+      {
+        id: '2',
+        client_name: 'Nicole Brown',
+        company: 'InnovateTech Solutions',
+        review_text: 'Professional account management enabled us to scale without losing performance. Critical for our transition to enterprise level.',
+        rating: 5,
+        results_achieved: '500% operational scale, 180% performance consistency'
+      }
+    ],
+    'shopify-development': [
+      {
+        id: '1',
+        client_name: 'Victoria Hayes',
+        company: 'Luxe Fashion House',
+        review_text: 'Our Shopify store exceeded all expectations. The design and functionality are absolutely perfect. We hit $500K in our first year.',
+        rating: 5,
+        results_achieved: '$500K+ first-year revenue, 4.2% conversion rate'
+      },
+      {
+        id: '2',
+        client_name: 'Ryan Mitchell',
+        company: 'Pure Wellness Labs',
+        review_text: 'The mobile experience is incredible. Our mobile sales became our primary revenue source with 280% conversion boost.',
+        rating: 5,
+        results_achieved: '280% mobile conversion boost, 75% mobile revenue share'
+      }
+    ],
+    'shopify-integration': [
+      {
+        id: '1',
+        client_name: 'Steven Clark',
+        company: 'OmniStore Solutions',
+        review_text: 'The integrations transformed our operations completely. We can now manage everything from one central system with 60% efficiency gain.',
+        rating: 5,
+        results_achieved: '60% efficiency gain, 99.5% inventory accuracy'
+      },
+      {
+        id: '2',
+        client_name: 'Rachel Adams',
+        company: 'GrowthCo Brands',
+        review_text: 'The CRM integration allows us to maintain personal relationships with thousands of customers. Incredible scalability achievement.',
+        rating: 5,
+        results_achieved: '85% customer retention, 150% marketing efficiency'
+      }
+    ]
+  };
+
+  return baseReviews[serviceType as keyof typeof baseReviews] || [];
+};
 
 export const useServiceData = (serviceType: string) => {
   const [caseStudies, setCaseStudies] = useState<ServiceCaseStudy[]>([]);
@@ -1140,46 +638,14 @@ export const useServiceData = (serviceType: string) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchServiceData = async () => {
-      try {
-        // Try to fetch from database first, fall back to mock data
-        const { data: caseStudiesData } = await supabase
-          .from('service_case_studies')
-          .select('*')
-          .eq('service_type', serviceType)
-          .eq('is_active', true)
-          .order('sort_order');
-
-        const { data: statsData } = await supabase
-          .from('service_stats')
-          .select('*')
-          .eq('service_type', serviceType)
-          .eq('is_active', true)
-          .order('sort_order');
-
-        const { data: reviewsData } = await supabase
-          .from('service_reviews')
-          .select('*')
-          .eq('service_type', serviceType)
-          .eq('is_active', true)
-          .order('sort_order');
-
-        // Use database data if available, otherwise use mock data
-        setCaseStudies(caseStudiesData && caseStudiesData.length > 0 ? caseStudiesData : getServiceSpecificCaseStudies(serviceType));
-        setStats(statsData && statsData.length > 0 ? statsData : getMockStats(serviceType));
-        setReviews(reviewsData && reviewsData.length > 0 ? reviewsData : getMockReviews(serviceType));
-      } catch (error) {
-        console.error('Error fetching service data:', error);
-        // Fall back to mock data on error
-        setCaseStudies(getServiceSpecificCaseStudies(serviceType));
-        setStats(getMockStats(serviceType));
-        setReviews(getMockReviews(serviceType));
-      } finally {
-        setLoading(false);
-      }
+    const loadData = () => {
+      setCaseStudies(getMockCaseStudies(serviceType));
+      setStats(getMockStats(serviceType));
+      setReviews(getMockReviews(serviceType));
+      setLoading(false);
     };
 
-    fetchServiceData();
+    loadData();
   }, [serviceType]);
 
   return { caseStudies, stats, reviews, loading };

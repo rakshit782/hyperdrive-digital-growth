@@ -6,6 +6,9 @@ const NavigationOptimizer = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Scroll to top on route change
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     // Preload critical resources
     const preloadCriticalResources = () => {
       const criticalResources = [
@@ -44,12 +47,6 @@ const NavigationOptimizer = () => {
     // Cache frequently accessed data
     const optimizeLocalStorage = () => {
       try {
-        // Preload commonly used settings
-        const logoSettings = localStorage.getItem('logoSettings');
-        const clienteleLogos = localStorage.getItem('clienteleLogos');
-        const headerSettings = localStorage.getItem('headerSettings');
-        
-        // Validate and clean up old data
         const now = Date.now();
         const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
         
@@ -78,10 +75,9 @@ const NavigationOptimizer = () => {
       const commonRoutes = ['/about', '/pricing', '/contact', '/free-audit'];
       const currentPath = location.pathname;
       
-      // Prefetch routes that are likely to be visited next
       commonRoutes
         .filter(route => route !== currentPath)
-        .slice(0, 2) // Limit to 2 prefetches to avoid overloading
+        .slice(0, 2)
         .forEach(route => {
           const link = document.createElement('link');
           link.rel = 'prefetch';
@@ -103,16 +99,6 @@ const NavigationOptimizer = () => {
       performance.mark('navigation-optimized');
     }
 
-  }, [location.pathname]);
-
-  // Clean up on route changes
-  useEffect(() => {
-    const startTime = performance.now();
-    
-    return () => {
-      const endTime = performance.now();
-      console.log(`Navigation optimization took ${endTime - startTime}ms`);
-    };
   }, [location.pathname]);
 
   return null;

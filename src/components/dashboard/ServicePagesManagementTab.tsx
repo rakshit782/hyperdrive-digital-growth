@@ -6,14 +6,14 @@ import { Edit, Eye, RefreshCw, Settings, FileText, Database } from 'lucide-react
 import { useServicePageConfig } from '@/hooks/useServicePageConfig';
 import ServicePageEditor from './ServicePageEditor';
 import ServicePageCustomizer from './ServicePageCustomizer';
-import ServicePageContentManager from './ServicePageContentManager';
+import UnifiedServiceContentManager from './UnifiedServiceContentManager';
 import ServiceDataEditor from './ServiceDataEditor';
 
 const ServicePagesManagementTab = () => {
   const { configs, loading, saveConfig, refetch } = useServicePageConfig();
   const [editingService, setEditingService] = useState<string | null>(null);
   const [customizingService, setCustomizingService] = useState<string | null>(null);
-  const [managingContent, setManagingContent] = useState<string | null>(null);
+  const [showUnifiedManager, setShowUnifiedManager] = useState(false);
   const [editingData, setEditingData] = useState<string | null>(null);
 
   const handleSave = async (config: any) => {
@@ -52,11 +52,10 @@ const ServicePagesManagementTab = () => {
     );
   }
 
-  if (managingContent) {
+  if (showUnifiedManager) {
     return (
-      <ServicePageContentManager
-        serviceType={managingContent}
-        onClose={() => setManagingContent(null)}
+      <UnifiedServiceContentManager
+        onClose={() => setShowUnifiedManager(false)}
       />
     );
   }
@@ -74,10 +73,19 @@ const ServicePagesManagementTab = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">Service Pages Management</h2>
-        <Button onClick={refetch} variant="outline">
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Refresh
-        </Button>
+        <div className="flex gap-3">
+          <Button 
+            onClick={() => setShowUnifiedManager(true)}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            Unified Content Manager
+          </Button>
+          <Button onClick={refetch} variant="outline">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -103,13 +111,6 @@ const ServicePagesManagementTab = () => {
                     onClick={() => setEditingData(serviceType)}
                   >
                     <Database className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setManagingContent(serviceType)}
-                  >
-                    <FileText className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="outline"
@@ -145,17 +146,37 @@ const ServicePagesManagementTab = () => {
         ))}
       </div>
 
-      <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <h3 className="font-semibold text-blue-900 mb-2">Service Page Management Features:</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• <strong>Edit Page Content:</strong> Customize hero sections, titles, descriptions, and call-to-action buttons</li>
-          <li>• <strong>Real-time Data Editor:</strong> Edit stats, case studies, and reviews with live preview</li>
-          <li>• <strong>Manage Content:</strong> Select and add case studies and reviews from your overall collection</li>
-          <li>• <strong>Customize Components:</strong> Manage stat blocks, case studies, reviews, and feature sections</li>
-          <li>• <strong>Content Selection:</strong> Choose which case studies and reviews to display on each page</li>
-          <li>• <strong>Real-time Preview:</strong> View changes instantly with live preview functionality</li>
-          <li>• <strong>Performance Tracking:</strong> Monitor page performance and conversion metrics</li>
-        </ul>
+      <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+        <h3 className="font-semibold text-blue-900 mb-3">✨ NEW: Unified Content Management</h3>
+        <div className="grid md:grid-cols-2 gap-4 text-sm text-blue-800">
+          <div>
+            <h4 className="font-medium mb-2">Unified Features:</h4>
+            <ul className="space-y-1">
+              <li>• Manage all 8 service pages from one interface</li>
+              <li>• Switch between services instantly</li>
+              <li>• Consistent content management experience</li>
+              <li>• Real-time content updates across all pages</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium mb-2">Content Types:</h4>
+            <ul className="space-y-1">
+              <li>• Case Studies with detailed information</li>
+              <li>• Statistics and performance metrics</li>
+              <li>• Client reviews and testimonials</li>
+              <li>• Service features and benefits</li>
+            </ul>
+          </div>
+        </div>
+        <div className="mt-4">
+          <Button 
+            onClick={() => setShowUnifiedManager(true)}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            Open Unified Content Manager
+          </Button>
+        </div>
       </div>
     </div>
   );
