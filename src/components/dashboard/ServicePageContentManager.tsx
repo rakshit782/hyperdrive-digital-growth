@@ -6,8 +6,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, Save, X } from 'lucide-react';
-import { useSupabaseData } from '@/hooks/useSupabaseData';
+import { Eye, Save, X, Plus, Edit, Trash2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ServicePageContentManagerProps {
   serviceType: string;
@@ -16,80 +20,183 @@ interface ServicePageContentManagerProps {
 
 const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentManagerProps) => {
   const { toast } = useToast();
-  const supabaseHooks = useSupabaseData();
   
-  const [allCaseStudies, setAllCaseStudies] = useState<any[]>([]);
-  const [allReviews, setAllReviews] = useState<any[]>([]);
-  const [selectedCaseStudies, setSelectedCaseStudies] = useState<string[]>([]);
-  const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
-
-  // Load data on component mount
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        // For now, we'll use empty arrays since we need to implement proper data fetching
-        // In a real implementation, you'd fetch from your data source here
-        setAllCaseStudies([]);
-        setAllReviews([]);
-      } catch (error) {
-        console.error('Error loading data:', error);
-        setAllCaseStudies([]);
-        setAllReviews([]);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  // Filter case studies and reviews for this service type
-  const serviceCaseStudies = allCaseStudies.filter(cs => cs.service_type === serviceType);
-  const serviceReviews = allReviews.filter(r => r.service_type === serviceType);
-
-  // Available case studies and reviews from other services
-  const availableCaseStudies = allCaseStudies.filter(cs => cs.service_type !== serviceType);
-  const availableReviews = allReviews.filter(r => r.service_type !== serviceType);
+  const [caseStudies, setCaseStudies] = useState<any[]>([]);
+  const [stats, setStats] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [editingType, setEditingType] = useState<string>('');
 
   useEffect(() => {
-    // Load existing selections from localStorage
-    const savedCaseStudies = localStorage.getItem(`${serviceType}-case-studies`);
-    const savedReviews = localStorage.getItem(`${serviceType}-reviews`);
-    
-    if (savedCaseStudies) {
-      setSelectedCaseStudies(JSON.parse(savedCaseStudies));
-    }
-    if (savedReviews) {
-      setSelectedReviews(JSON.parse(savedReviews));
-    }
+    fetchData();
   }, [serviceType]);
 
-  const handleSaveSelections = () => {
-    // Save selections to localStorage
-    localStorage.setItem(`${serviceType}-case-studies`, JSON.stringify(selectedCaseStudies));
-    localStorage.setItem(`${serviceType}-reviews`, JSON.stringify(selectedReviews));
-    
-    toast({
-      title: "Content Updated",
-      description: `Selected case studies and reviews have been saved for ${serviceType}.`
-    });
-    
-    onClose();
+  const fetchData = async () => {
+    try {
+      const [caseStudiesRes, statsRes, reviewsRes] = await Promise.all([
+        supabase.from('service_case_studies').select('*').eq('service_type', serviceType),
+        supabase.from('service_stats').select('*').eq('service_type', serviceType),
+        supabase.from('service_reviews').select('*').eq('service_type', serviceType)
+      ]);
+
+      setCaseStudies(caseStudiesRes.data || []);
+      setStats(statsRes.data || []);
+      setReviews(reviewsRes.data || []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const toggleCaseStudy = (id: string) => {
-    setSelectedCaseStudies(prev => 
-      prev.includes(id) 
-        ? prev.filter(csId => csId !== id)
-        : [...prev, id]
-    );
+  const handleAdd = (type: string) => {
+    const newItem = {
+      service_type: serviceType,
+      is_active: true,
+      sort_order: 0
+    };
+
+    switch (type) {
+      case 'case-study':
+        setEditingItem({
+          ...newItem,
+          title: '',
+          description: '',
+          client_name: '',
+          industry: '',
+          results: {},
+          image_url: ''
+        });
+        break;
+      case 'stat':
+        setEditingItem({
+          ...newItem,
+          stat_label: '',
+          stat_value: '',
+          stat_description: '',
+          icon_name: ''
+        });
+        break;
+      case 'review':
+        setEditingItem({
+          ...newItem,
+          client_name: '',
+          company: '',
+          review_text: '',
+          rating: 5,
+          avatar_url: '',
+          results_achieved: ''
+        });
+        break;
+    }
+    setEditingType(type);
   };
 
-  const toggleReview = (id: string) => {
-    setSelectedReviews(prev => 
-      prev.includes(id) 
-        ? prev.filter(rId => rId !== id)
-        : [...prev, id]
-    );
+  const handleEdit = (item: any, type: string) => {
+    setEditingItem(item);
+    setEditingType(type);
   };
+
+  const handleSave = async () => {
+    try {
+      let table = '';
+      switch (editingType) {
+        case 'case-study':
+          table = 'service_case_studies';
+          break;
+        case 'stat':
+          table = 'service_stats';
+          break;
+        case 'review':
+          table = 'service_reviews';
+          break;
+      }
+
+      if (editingItem.id) {
+        await supabase.from(table).update(editingItem).eq('id', editingItem.id);
+      } else {
+        await supabase.from(table).insert(editingItem);
+      }
+
+      toast({
+        title: "Success",
+        description: `${editingType} saved successfully`,
+      });
+
+      setEditingItem(null);
+      setEditingType('');
+      fetchData();
+    } catch (error) {
+      console.error('Error saving:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save changes",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDelete = async (id: string, type: string) => {
+    try {
+      let table = '';
+      switch (type) {
+        case 'case-study':
+          table = 'service_case_studies';
+          break;
+        case 'stat':
+          table = 'service_stats';
+          break;
+        case 'review':
+          table = 'service_reviews';
+          break;
+      }
+
+      await supabase.from(table).delete().eq('id', id);
+      toast({
+        title: "Success",
+        description: `${type} deleted successfully`,
+      });
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete item",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const toggleActive = async (item: any, type: string) => {
+    try {
+      let table = '';
+      switch (type) {
+        case 'case-study':
+          table = 'service_case_studies';
+          break;
+        case 'stat':
+          table = 'service_stats';
+          break;
+        case 'review':
+          table = 'service_reviews';
+          break;
+      }
+
+      await supabase
+        .from(table)
+        .update({ is_active: !item.is_active })
+        .eq('id', item.id);
+
+      fetchData();
+    } catch (error) {
+      console.error('Error toggling active state:', error);
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -98,10 +205,10 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-semibold capitalize">
-                {serviceType.replace('-', ' ')} - Content Selection
+                {serviceType.replace('-', ' ')} - Content Management
               </h2>
               <p className="text-gray-600">
-                Select additional case studies and reviews to display on this service page
+                Manage case studies, stats, and reviews for this service page
               </p>
             </div>
             <Button variant="outline" onClick={onClose}>
@@ -113,179 +220,278 @@ const ServicePageContentManager = ({ serviceType, onClose }: ServicePageContentM
         <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 180px)' }}>
           <Tabs defaultValue="case-studies" className="space-y-4">
             <TabsList>
-              <TabsTrigger value="case-studies">Case Studies</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+              <TabsTrigger value="case-studies">Case Studies ({caseStudies.length}/8)</TabsTrigger>
+              <TabsTrigger value="stats">Stats ({stats.length}/4)</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews ({reviews.length}/6)</TabsTrigger>
             </TabsList>
 
             <TabsContent value="case-studies" className="space-y-4">
-              <div className="grid gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-blue-900 mb-2">
-                    Current {serviceType.replace('-', ' ')} Case Studies ({serviceCaseStudies.length})
-                  </h3>
-                  <div className="grid gap-2">
-                    {serviceCaseStudies.length === 0 ? (
-                      <p className="text-sm text-gray-500">No case studies found for this service type.</p>
-                    ) : (
-                      serviceCaseStudies.map((caseStudy) => (
-                        <div key={caseStudy.id} className="flex items-center justify-between bg-white p-3 rounded border">
-                          <div>
-                            <h4 className="font-medium">{caseStudy.title}</h4>
-                            <p className="text-sm text-gray-600">{caseStudy.client_name} - {caseStudy.industry}</p>
-                          </div>
-                          <Badge variant="secondary">Current</Badge>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Case Studies</h3>
+                <Button onClick={() => handleAdd('case-study')} size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Case Study
+                </Button>
+              </div>
 
-                <div>
-                  <h3 className="font-semibold mb-4">
-                    Available Case Studies from Other Services ({availableCaseStudies.length})
-                  </h3>
-                  {availableCaseStudies.length === 0 ? (
-                    <p className="text-sm text-gray-500">No additional case studies available.</p>
-                  ) : (
-                    <div className="grid gap-3">
-                      {availableCaseStudies.map((caseStudy) => (
-                        <Card key={caseStudy.id} className={`cursor-pointer transition-all ${
-                          selectedCaseStudies.includes(caseStudy.id) ? 'ring-2 ring-blue-500 bg-blue-50' : ''
-                        }`}>
-                          <CardContent className="p-4">
-                            <div className="flex items-start space-x-3">
-                              <Checkbox
-                                checked={selectedCaseStudies.includes(caseStudy.id)}
-                                onCheckedChange={() => toggleCaseStudy(caseStudy.id)}
-                              />
-                              <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <h4 className="font-medium">{caseStudy.title}</h4>
-                                    <p className="text-sm text-gray-600 mb-2">
-                                      {caseStudy.client_name} - {caseStudy.industry}
-                                    </p>
-                                    <p className="text-sm text-gray-700 line-clamp-2">
-                                      {caseStudy.description}
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <Badge variant="outline" className="capitalize">
-                                      {caseStudy.service_type.replace('-', ' ')}
-                                    </Badge>
-                                    <Button variant="outline" size="sm">
-                                      <Eye className="w-3 h-3" />
-                                    </Button>
-                                  </div>
-                                </div>
-                                {caseStudy.results && (
-                                  <div className="mt-2 text-xs text-green-600">
-                                    Results: {Object.entries(caseStudy.results).map(([key, value]) => 
-                                      `${key}: ${value}`
-                                    ).join(', ')}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              <div className="grid gap-4">
+                {caseStudies.map((item) => (
+                  <Card key={item.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Checkbox
+                            checked={item.is_active}
+                            onCheckedChange={() => toggleActive(item, 'case-study')}
+                          />
+                          <div>
+                            <h4 className="font-semibold">{item.title}</h4>
+                            <p className="text-sm text-gray-600">{item.client_name} - {item.industry}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button variant="outline" size="sm" onClick={() => handleEdit(item, 'case-study')}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete(item.id, 'case-study')}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="stats" className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Statistics</h3>
+                <Button onClick={() => handleAdd('stat')} size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Stat
+                </Button>
+              </div>
+
+              <div className="grid gap-4">
+                {stats.map((item) => (
+                  <Card key={item.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Checkbox
+                            checked={item.is_active}
+                            onCheckedChange={() => toggleActive(item, 'stat')}
+                          />
+                          <div>
+                            <h4 className="font-semibold">{item.stat_label}</h4>
+                            <p className="text-sm text-gray-600">{item.stat_value} - {item.stat_description}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button variant="outline" size="sm" onClick={() => handleEdit(item, 'stat')}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete(item.id, 'stat')}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </TabsContent>
 
             <TabsContent value="reviews" className="space-y-4">
-              <div className="grid gap-4">
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-green-900 mb-2">
-                    Current {serviceType.replace('-', ' ')} Reviews ({serviceReviews.length})
-                  </h3>
-                  <div className="grid gap-2">
-                    {serviceReviews.length === 0 ? (
-                      <p className="text-sm text-gray-500">No reviews found for this service type.</p>
-                    ) : (
-                      serviceReviews.map((review) => (
-                        <div key={review.id} className="flex items-center justify-between bg-white p-3 rounded border">
-                          <div>
-                            <h4 className="font-medium">{review.client_name}</h4>
-                            <p className="text-sm text-gray-600">{review.company} - {review.rating}/5 stars</p>
-                          </div>
-                          <Badge variant="secondary">Current</Badge>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Reviews</h3>
+                <Button onClick={() => handleAdd('review')} size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Review
+                </Button>
+              </div>
 
-                <div>
-                  <h3 className="font-semibold mb-4">
-                    Available Reviews from Other Services ({availableReviews.length})
-                  </h3>
-                  {availableReviews.length === 0 ? (
-                    <p className="text-sm text-gray-500">No additional reviews available.</p>
-                  ) : (
-                    <div className="grid gap-3">
-                      {availableReviews.map((review) => (
-                        <Card key={review.id} className={`cursor-pointer transition-all ${
-                          selectedReviews.includes(review.id) ? 'ring-2 ring-green-500 bg-green-50' : ''
-                        }`}>
-                          <CardContent className="p-4">
-                            <div className="flex items-start space-x-3">
-                              <Checkbox
-                                checked={selectedReviews.includes(review.id)}
-                                onCheckedChange={() => toggleReview(review.id)}
-                              />
-                              <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <h4 className="font-medium">{review.client_name}</h4>
-                                    <p className="text-sm text-gray-600 mb-1">
-                                      {review.company} - {review.rating}/5 stars
-                                    </p>
-                                    <p className="text-sm text-gray-700 line-clamp-3">
-                                      "{review.review_text}"
-                                    </p>
-                                  </div>
-                                  <Badge variant="outline" className="capitalize">
-                                    {review.service_type.replace('-', ' ')}
-                                  </Badge>
-                                </div>
-                                {review.results_achieved && (
-                                  <div className="mt-2 text-xs text-blue-600">
-                                    Results: {review.results_achieved}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              <div className="grid gap-4">
+                {reviews.map((item) => (
+                  <Card key={item.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Checkbox
+                            checked={item.is_active}
+                            onCheckedChange={() => toggleActive(item, 'review')}
+                          />
+                          <div>
+                            <h4 className="font-semibold">{item.client_name}</h4>
+                            <p className="text-sm text-gray-600">{item.company} - {item.rating}/5 stars</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button variant="outline" size="sm" onClick={() => handleEdit(item, 'review')}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleDelete(item.id, 'review')}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </TabsContent>
           </Tabs>
         </div>
 
-        <div className="p-6 border-t bg-gray-50">
-          <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-600">
-              Selected: {selectedCaseStudies.length} case studies, {selectedReviews.length} reviews
-            </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button onClick={handleSaveSelections}>
-                <Save className="w-4 h-4 mr-2" />
-                Save Selections
-              </Button>
-            </div>
+        {/* Edit Modal */}
+        {editingItem && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-2xl max-h-[80vh] overflow-y-auto m-4">
+              <CardHeader>
+                <CardTitle>Edit {editingType.replace('-', ' ')}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {editingType === 'case-study' && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Title</Label>
+                        <Input
+                          value={editingItem.title || ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, title: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Client Name</Label>
+                        <Input
+                          value={editingItem.client_name || ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, client_name: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Description</Label>
+                      <Textarea
+                        value={editingItem.description || ''}
+                        onChange={(e) => setEditingItem(prev => ({ ...prev, description: e.target.value }))}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Industry</Label>
+                        <Input
+                          value={editingItem.industry || ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, industry: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Image URL</Label>
+                        <Input
+                          value={editingItem.image_url || ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, image_url: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {editingType === 'stat' && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Label</Label>
+                        <Input
+                          value={editingItem.stat_label || ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, stat_label: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Value</Label>
+                        <Input
+                          value={editingItem.stat_value || ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, stat_value: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Description</Label>
+                      <Textarea
+                        value={editingItem.stat_description || ''}
+                        onChange={(e) => setEditingItem(prev => ({ ...prev, stat_description: e.target.value }))}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {editingType === 'review' && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Client Name</Label>
+                        <Input
+                          value={editingItem.client_name || ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, client_name: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Company</Label>
+                        <Input
+                          value={editingItem.company || ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, company: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Review Text</Label>
+                      <Textarea
+                        value={editingItem.review_text || ''}
+                        onChange={(e) => setEditingItem(prev => ({ ...prev, review_text: e.target.value }))}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Rating</Label>
+                        <Select 
+                          value={editingItem.rating?.toString() || '5'} 
+                          onValueChange={(value) => setEditingItem(prev => ({ ...prev, rating: parseInt(value) }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {[1, 2, 3, 4, 5].map(rating => (
+                              <SelectItem key={rating} value={rating.toString()}>
+                                {rating} Stars
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Results Achieved</Label>
+                        <Input
+                          value={editingItem.results_achieved || ''}
+                          onChange={(e) => setEditingItem(prev => ({ ...prev, results_achieved: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button variant="outline" onClick={() => { setEditingItem(null); setEditingType(''); }}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSave}>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

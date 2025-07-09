@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, ArrowUpRight, Star } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
@@ -66,6 +66,7 @@ const UnifiedServicePage = ({
   const { caseStudies, stats, reviews, loading } = useServiceData(serviceType);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 
   const handleCaseStudyClick = (caseStudy: any) => {
     setSelectedCaseStudy(caseStudy);
@@ -88,6 +89,22 @@ const UnifiedServicePage = ({
     ));
   };
 
+  const nextReviews = () => {
+    setCurrentReviewIndex((prev) => 
+      prev + 3 >= reviews.length ? 0 : prev + 3
+    );
+  };
+
+  const prevReviews = () => {
+    setCurrentReviewIndex((prev) => 
+      prev - 3 < 0 ? Math.max(0, reviews.length - 3) : prev - 3
+    );
+  };
+
+  const getCurrentReviews = () => {
+    return reviews.slice(currentReviewIndex, currentReviewIndex + 3);
+  };
+
   if (loading) {
     return (
       <>
@@ -102,6 +119,12 @@ const UnifiedServicePage = ({
       </>
     );
   }
+
+  // Ensure we have exactly the required number of items
+  const displayFeatures = features.slice(0, 4);
+  const displayStats = stats.slice(0, 4);
+  const displayCaseStudies = caseStudies.slice(0, 8);
+  const displayReviews = reviews.slice(0, 6);
 
   return (
     <>
@@ -179,7 +202,7 @@ const UnifiedServicePage = ({
             </div>
           </section>
 
-          {/* Features Section */}
+          {/* Features Section - Exactly 4 cards */}
           <section className="py-20 bg-white/50 backdrop-blur-sm">
             <div className="max-w-6xl mx-auto px-6 lg:px-8">
               <div className="text-center mb-20">
@@ -192,7 +215,7 @@ const UnifiedServicePage = ({
               </div>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {features.map((feature, index) => {
+                {displayFeatures.map((feature, index) => {
                   const IconComponent = feature.icon;
                   return (
                     <div key={index} className="text-center p-8 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-2 bg-white border border-gray-100">
@@ -208,8 +231,8 @@ const UnifiedServicePage = ({
             </div>
           </section>
 
-          {/* Stats Section */}
-          {stats.length > 0 && (
+          {/* Stats Section - Exactly 4 blocks */}
+          {displayStats.length > 0 && (
             <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
               <div className="max-w-6xl mx-auto px-6 lg:px-8">
                 <h2 className="text-4xl md:text-5xl font-bold text-center text-slate-900 mb-16">
@@ -217,7 +240,7 @@ const UnifiedServicePage = ({
                 </h2>
                 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {stats.slice(0, 4).map((stat, index) => (
+                  {displayStats.map((stat, index) => (
                     <Card key={stat.id} className="text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                       <CardHeader className="pb-3">
                         <div className={`w-16 h-16 bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500 rounded-2xl flex items-center justify-center mx-auto mb-4`}>
@@ -236,8 +259,8 @@ const UnifiedServicePage = ({
             </section>
           )}
 
-          {/* Case Studies Section */}
-          {caseStudies.length > 0 && (
+          {/* Case Studies Section - Exactly 8 blocks */}
+          {displayCaseStudies.length > 0 && (
             <section className="py-20 bg-white">
               <div className="max-w-6xl mx-auto px-6 lg:px-8">
                 <div className="text-center mb-16">
@@ -249,8 +272,8 @@ const UnifiedServicePage = ({
                   </p>
                 </div>
                 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {caseStudies.slice(0, 6).map((study, index) => (
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {displayCaseStudies.map((study, index) => (
                     <div 
                       key={study.id}
                       className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer group"
@@ -272,21 +295,18 @@ const UnifiedServicePage = ({
                           <span className={`px-3 py-1 bg-${primaryColor}-100 text-${primaryColor}-800 rounded-full text-xs font-medium`}>
                             {study.industry}
                           </span>
-                          <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
-                            {study.client_name}
-                          </span>
                         </div>
                         
-                        <h3 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2">
+                        <h3 className="text-lg font-bold text-slate-900 mb-3 line-clamp-2">
                           {study.title}
                         </h3>
                         
-                        <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
+                        <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2">
                           {study.description}
                         </p>
                         
-                        <div className="grid grid-cols-2 gap-2 mb-4">
-                          {Object.entries(study.results).slice(0, 2).map(([key, value]) => (
+                        <div className="grid grid-cols-1 gap-2 mb-4">
+                          {Object.entries(study.results).slice(0, 1).map(([key, value]) => (
                             <div key={key} className="text-center">
                               <div className={`text-lg font-bold text-${primaryColor}-600`}>{value}</div>
                               <div className="text-xs text-slate-500">{key}</div>
@@ -297,7 +317,7 @@ const UnifiedServicePage = ({
                         <Button 
                           className={`w-full bg-gradient-to-r from-${primaryColor}-600 to-${secondaryColor}-600 text-white py-2 px-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center text-sm`}
                         >
-                          View Full Case Study
+                          View Case Study
                           <ArrowUpRight className="ml-2 w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
                         </Button>
                       </div>
@@ -308,8 +328,8 @@ const UnifiedServicePage = ({
             </section>
           )}
 
-          {/* Reviews Section */}
-          {reviews.length > 0 && (
+          {/* Reviews Section - 6 cards with carousel */}
+          {displayReviews.length > 0 && (
             <section className="py-20 bg-gradient-to-br from-slate-50 to-purple-50">
               <div className="max-w-6xl mx-auto px-6 lg:px-8">
                 <div className="text-center mb-16">
@@ -321,38 +341,65 @@ const UnifiedServicePage = ({
                   </p>
                 </div>
                 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {reviews.slice(0, 6).map((review) => (
-                    <div key={review.id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100">
-                      <div className="flex items-center mb-4">
-                        <div className={`w-12 h-12 bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500 rounded-full flex items-center justify-center mr-4`}>
-                          <span className="text-white font-semibold text-lg">
-                            {review.client_name.charAt(0)}
-                          </span>
+                <div className="relative">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {getCurrentReviews().map((review) => (
+                      <div key={review.id} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100">
+                        <div className="flex items-center mb-4">
+                          <div className={`w-12 h-12 bg-gradient-to-r from-${primaryColor}-500 to-${secondaryColor}-500 rounded-full flex items-center justify-center mr-4`}>
+                            <span className="text-white font-semibold text-lg">
+                              {review.client_name.charAt(0)}
+                            </span>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-slate-900">{review.client_name}</h4>
+                            <p className="text-slate-600 text-sm">{review.company}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-semibold text-slate-900">{review.client_name}</h4>
-                          <p className="text-slate-600 text-sm">{review.company}</p>
+                        
+                        <div className="flex items-center mb-4">
+                          {renderStars(review.rating)}
                         </div>
+                        
+                        <p className="text-slate-700 leading-relaxed mb-4 text-sm">
+                          "{review.review_text}"
+                        </p>
+                        
+                        {review.results_achieved && (
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <p className="text-green-800 text-sm font-medium">
+                              Results: {review.results_achieved}
+                            </p>
+                          </div>
+                        )}
                       </div>
-                      
-                      <div className="flex items-center mb-4">
-                        {renderStars(review.rating)}
-                      </div>
-                      
-                      <p className="text-slate-700 leading-relaxed mb-4 text-sm">
-                        "{review.review_text}"
-                      </p>
-                      
-                      {review.results_achieved && (
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                          <p className="text-green-800 text-sm font-medium">
-                            Results: {review.results_achieved}
-                          </p>
-                        </div>
-                      )}
+                    ))}
+                  </div>
+
+                  {/* Carousel Navigation */}
+                  {displayReviews.length > 3 && (
+                    <div className="flex justify-center items-center gap-4 mt-8">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={prevReviews}
+                        className="rounded-full p-2"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+                      <span className="text-sm text-slate-600">
+                        {Math.floor(currentReviewIndex / 3) + 1} of {Math.ceil(displayReviews.length / 3)}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={nextReviews}
+                        className="rounded-full p-2"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </section>
