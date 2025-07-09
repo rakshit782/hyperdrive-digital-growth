@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Facebook, Instagram, Linkedin, Twitter, Youtube, Mail, Phone, MapPin, Share2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import AuthorizedPartners from "./AuthorizedPartners";
+import NewsletterForm from "./NewsletterForm";
 
 interface SocialMediaLink {
   id: string;
@@ -351,21 +351,14 @@ const Footer = () => {
         {/* Newsletter Signup */}
         {footerSettings.showNewsletter && (
           <div className="mt-16 pt-8 border-t border-slate-700">
-            <div className="max-w-2xl mx-auto text-center">
+            <div className="max-w-2xl mx-auto text-center mb-6">
               <h4 className="text-xl font-semibold mb-4">{footerSettings.newsletterTitle}</h4>
               <p className="text-slate-300 mb-6">
                 {footerSettings.newsletterDescription}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 max-w-md px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3">
-                  Subscribe
-                </Button>
-              </div>
+            </div>
+            <div className="max-w-md mx-auto">
+              <NewsletterForm />
             </div>
           </div>
         )}
