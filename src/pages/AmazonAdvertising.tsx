@@ -89,87 +89,25 @@ const AmazonAdvertising = () => {
         description="Professional Amazon PPC management services. Increase sales, improve rankings, and dominate your competition with our proven Amazon advertising strategies."
       />
       <Header />
-      
-      {/* Custom Hero Section with consistent padding */}
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <section className="py-24 md:py-32 lg:py-40">
-          <div className="max-w-6xl mx-auto px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-full border border-orange-200/50 mb-6">
-                  <span className="text-sm font-medium text-orange-700">Amazon PPC Experts</span>
-                </div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-                  Amazon Advertising Services
-                </h1>
-                <h2 className="text-xl md:text-2xl text-slate-700 font-medium mb-4">
-                  Boost Your Sales & Dominate Your Competition
-                </h2>
-                <p className="text-xl text-slate-600 leading-relaxed mb-8">
-                  Professional Amazon PPC management services to increase sales, improve rankings, and maximize your ROI with proven advertising strategies.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <button 
-                    className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center"
-                    onClick={() => window.location.href = '/free-audit'}
-                  >
-                    Get Free Amazon Audit
-                    <span className="ml-2">→</span>
-                  </button>
-                  
-                  <button 
-                    className="border-2 border-slate-300 bg-white/80 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-                    onClick={() => window.location.href = '/case-studies'}
-                  >
-                    View Case Studies
-                  </button>
-                </div>
-              </div>
-              
-              <div className="relative">
-                <img
-                  src={imageUrl || "https://images.unsplash.com/photo-1523474438810-b04a6f72e20f?w=600&h=400&fit=crop&crop=center"}
-                  alt={altText || "Amazon Advertising Services"}
-                  className="rounded-2xl shadow-2xl object-cover w-full h-[400px]"
-                />
-                <div className="absolute -bottom-6 -right-6 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold">📈</span>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-slate-900">300% ROAS</div>
-                      <div className="text-sm text-slate-600">Average Client Results</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Use ServicePageLayout for the rest of the content */}
-        <ServicePageLayout
-          title="Amazon Advertising"
-          subtitle="Professional Amazon PPC Management"
-          heroDescription="Increase sales, improve rankings, and maximize ROI with our proven Amazon advertising strategies."
-          primaryButtonText="Get Free Amazon Audit"
-          secondaryButtonText="View Case Studies"
-          primaryButtonUrl="/free-audit"
-          secondaryButtonUrl="/case-studies"
-          stats={stats}
-          caseStudies={caseStudies}
-          reviews={reviews}
-          services={services}
-          benefits={benefits}
-          ctaTitle="Ready to Dominate Amazon?"
-          ctaDescription="Get a free Amazon advertising audit and discover how we can boost your sales and rankings."
-          ctaButtonText="Get Free Audit"
-          ctaButtonUrl="/free-audit"
-          loading={loading}
-        />
-      </div>
+      <ServicePageLayout
+        title="Amazon Advertising Services"
+        subtitle="Boost Your Sales & Dominate Your Competition"
+        heroDescription="Professional Amazon PPC management services to increase sales, improve rankings, and maximize your ROI with proven advertising strategies."
+        primaryButtonText="Get Free Amazon Audit"
+        secondaryButtonText="View Case Studies"
+        primaryButtonUrl="/free-audit"
+        secondaryButtonUrl="/case-studies"
+        stats={stats}
+        caseStudies={caseStudies}
+        reviews={reviews}
+        services={services}
+        benefits={benefits}
+        ctaTitle="Ready to Dominate Amazon?"
+        ctaDescription="Get a free Amazon advertising audit and discover how we can boost your sales and rankings."
+        ctaButtonText="Get Free Audit"
+        ctaButtonUrl="/free-audit"
+        loading={loading}
+      />
       <Footer />
     </>
   );

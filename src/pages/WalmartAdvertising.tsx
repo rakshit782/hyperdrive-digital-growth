@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -146,7 +147,7 @@ const WalmartAdvertising = () => {
         {/* Hero Section */}
         <section className="pt-40 pb-20 bg-agency-gradient-light relative overflow-hidden">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-          <div className="container-standard relative px-6 sm:px-8 lg:px-12">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8 relative">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <div className="mb-8">
@@ -211,7 +212,7 @@ const WalmartAdvertising = () => {
 
         {/* Features Section */}
         <section className="py-20 bg-white">
-          <div className="container-standard">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-20">
               <h2 className="text-4xl md:text-5xl font-heading font-bold text-agency-dark mb-6">
                 Master Walmart Advertising
@@ -240,7 +241,7 @@ const WalmartAdvertising = () => {
 
         {/* Case Studies Section */}
         <section className="py-20 bg-agency-gradient-light">
-          <div className="container-standard">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-heading font-bold text-agency-dark mb-6">
                 Walmart Ads Success Stories
@@ -308,7 +309,7 @@ const WalmartAdvertising = () => {
 
         {/* Reviews Section */}
         <section className="py-20 bg-white">
-          <div className="container-standard">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-heading font-bold text-agency-dark mb-6">
                 What Our Walmart Clients Say

@@ -76,7 +76,7 @@ const ShopifyDevelopment = () => {
         
         {/* Hero Section */}
         <section className="py-24 md:py-32 lg:py-40">
-          <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-full border border-orange-200/50 mb-6">
@@ -137,7 +137,7 @@ const ShopifyDevelopment = () => {
 
         {/* Technologies Section */}
         <section className="py-16 bg-white/50 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-center text-slate-900 mb-12">
               Technologies We Use
             </h2>
@@ -159,7 +159,7 @@ const ShopifyDevelopment = () => {
         {/* Stats Section */}
         {stats.length > 0 && (
           <section className="py-16">
-            <div className="max-w-6xl mx-auto px-6">
+            <div className="max-w-6xl mx-auto px-6 lg:px-8">
               <h2 className="text-4xl font-bold text-center bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent mb-16">
                 Development Results
               </h2>
@@ -190,12 +190,13 @@ const ShopifyDevelopment = () => {
                 })}
               </div>
             </div>
-          </section>
+          </div>
+        </section>
         )}
 
         {/* Services Section */}
         <section className="py-16 bg-gradient-to-br from-orange-50 to-red-50">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
             <h2 className="text-4xl font-bold text-center bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent mb-16">
               Our Development Services
             </h2>
@@ -228,7 +229,7 @@ const ShopifyDevelopment = () => {
 
         {/* Development Process */}
         <section className="py-16">
-          <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
             <h2 className="text-4xl font-bold text-center bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent mb-16">
               Our Development Process
             </h2>
@@ -258,7 +259,7 @@ const ShopifyDevelopment = () => {
 
         {/* CTA Section */}
         <section className="py-16 bg-gradient-to-br from-blue-50 to-indigo-50">
-          <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8 text-center">
             <h2 className="text-4xl font-bold text-slate-900 mb-6">
               Ready to Transform Your Store?
             </h2>
