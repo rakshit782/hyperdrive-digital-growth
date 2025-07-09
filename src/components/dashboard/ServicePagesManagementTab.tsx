@@ -2,17 +2,19 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Eye, RefreshCw, Settings, FileText } from 'lucide-react';
+import { Edit, Eye, RefreshCw, Settings, FileText, Database } from 'lucide-react';
 import { useServicePageConfig } from '@/hooks/useServicePageConfig';
 import ServicePageEditor from './ServicePageEditor';
 import ServicePageCustomizer from './ServicePageCustomizer';
 import ServicePageContentManager from './ServicePageContentManager';
+import ServiceDataEditor from './ServiceDataEditor';
 
 const ServicePagesManagementTab = () => {
   const { configs, loading, saveConfig, refetch } = useServicePageConfig();
   const [editingService, setEditingService] = useState<string | null>(null);
   const [customizingService, setCustomizingService] = useState<string | null>(null);
   const [managingContent, setManagingContent] = useState<string | null>(null);
+  const [editingData, setEditingData] = useState<string | null>(null);
 
   const handleSave = async (config: any) => {
     await saveConfig(config.serviceType, config);
@@ -59,6 +61,15 @@ const ServicePagesManagementTab = () => {
     );
   }
 
+  if (editingData) {
+    return (
+      <ServiceDataEditor
+        serviceType={editingData}
+        onClose={() => setEditingData(null)}
+      />
+    );
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -85,6 +96,13 @@ const ServicePagesManagementTab = () => {
                     onClick={() => window.open(`/${serviceType === 'meta' ? 'meta-advertising' : serviceType === 'amazon' ? 'amazon-advertising' : serviceType === 'walmart' ? 'walmart-advertising' : serviceType}`, '_blank')}
                   >
                     <Eye className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingData(serviceType)}
+                  >
+                    <Database className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="outline"
@@ -131,6 +149,7 @@ const ServicePagesManagementTab = () => {
         <h3 className="font-semibold text-blue-900 mb-2">Service Page Management Features:</h3>
         <ul className="text-sm text-blue-800 space-y-1">
           <li>• <strong>Edit Page Content:</strong> Customize hero sections, titles, descriptions, and call-to-action buttons</li>
+          <li>• <strong>Real-time Data Editor:</strong> Edit stats, case studies, and reviews with live preview</li>
           <li>• <strong>Manage Content:</strong> Select and add case studies and reviews from your overall collection</li>
           <li>• <strong>Customize Components:</strong> Manage stat blocks, case studies, reviews, and feature sections</li>
           <li>• <strong>Content Selection:</strong> Choose which case studies and reviews to display on each page</li>
