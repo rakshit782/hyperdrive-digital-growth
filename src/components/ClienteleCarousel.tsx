@@ -116,11 +116,11 @@ const ClienteleCarousel = () => {
               {clienteleLogos.map((logo) => (
                 <CarouselItem key={logo.id} className="pl-2 md:pl-3 basis-1/3 md:basis-1/5 lg:basis-1/6">
                   <div className="group relative">
-                    <div className="flex items-center justify-center p-2 bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200/50 hover:bg-white hover:border-slate-300/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center justify-center p-2 transition-all duration-300 hover:-translate-y-1">
                       <img
                         src={logo.imageUrl}
                         alt={logo.name}
-                        className="h-6 w-auto object-contain opacity-90 group-hover:opacity-100 transition-all duration-300"
+                        className="h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-all duration-300"
                         onError={(e) => {
                           e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAzMkg4MFY0OEg0MFYzMloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                         }}

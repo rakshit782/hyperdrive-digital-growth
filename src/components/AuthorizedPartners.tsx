@@ -52,11 +52,11 @@ const AuthorizedPartners = () => {
             <div className="flex items-center justify-center gap-8 min-w-max">
               {[...partnerImages, ...partnerImages].map((partner, index) => (
                 <div key={`${partner.id}-${index}`} className="flex-shrink-0 group">
-                  <div className="relative p-3 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105">
+                  <div className="relative p-2 transition-all duration-300 hover:scale-105">
                     <img
                       src={partner.imageUrl}
                       alt={partner.name}
-                      className="h-6 w-auto object-contain opacity-70 group-hover:opacity-100 transition-all duration-300 filter brightness-0 invert"
+                      className="h-8 w-auto object-contain opacity-70 group-hover:opacity-100 transition-all duration-300 filter brightness-0 invert"
                       onError={(e) => {
                         e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAyNEg4MFYzNkg0MFYyNFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                       }}
