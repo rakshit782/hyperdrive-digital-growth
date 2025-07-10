@@ -98,15 +98,16 @@ const ClienteleManagementTab = () => {
   };
 
   const handleGoogleDriveUpload = (id: string, googleDriveUrl: string) => {
-    if (googleDriveUrl.trim()) {
-      const directUrl = convertGoogleDriveUrl(googleDriveUrl.trim());
-      updateClienteleLogo(id, 'imageUrl', directUrl);
-      toast({
-        title: "Success",
-        description: "Google Drive image URL converted successfully!",
-      });
-    }
-  };
+  if (googleDriveUrl.trim()) {
+    const directUrl = convertGoogleDriveUrl(googleDriveUrl.trim());
+    console.log('Converted URL:', directUrl);
+    updateClienteleLogo(id, 'imageUrl', directUrl);
+    toast({
+      title: "Success",
+      description: "Google Drive image URL converted successfully!",
+    });
+  }
+};
 
   const handleSave = () => {
     localStorage.setItem('clienteleLogos', JSON.stringify(clienteleLogos));
@@ -135,10 +136,10 @@ const ClienteleManagementTab = () => {
   };
 
   const updateClienteleLogo = (id: string, field: keyof ClienteleLogo, value: string | boolean) => {
-    setClienteleLogos(prev => prev.map(logo => 
-      logo.id === id ? { ...logo, [field]: value } : logo
-    ));
-  };
+  setClienteleLogos(prev => prev.map(logo => 
+    logo.id === id ? { ...logo, [field]: value } : logo
+  ));
+};
 
   return (
     <div className="space-y-6">
