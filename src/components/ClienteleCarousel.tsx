@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import useEmblaCarousel from "embla-carousel-react";
@@ -90,10 +89,10 @@ const ClienteleCarousel = () => {
   if (clienteleLogos.length === 0) return null;
 
   return (
-    <section className="py-4 bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-200/50">
+    <section className="py-6 bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-200/50">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-3">
-          <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">Trusted by Leading Brands</h3>
+        <div className="text-center mb-4">
+          <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-2">Trusted by Leading Brands</h3>
           <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto"></div>
         </div>
         
@@ -114,13 +113,13 @@ const ClienteleCarousel = () => {
           >
             <CarouselContent className="-ml-2 md:-ml-3">
               {clienteleLogos.map((logo) => (
-                <CarouselItem key={logo.id} className="pl-2 md:pl-3 basis-1/3 md:basis-1/5 lg:basis-1/6">
+                <CarouselItem key={logo.id} className="pl-2 md:pl-3 basis-1/2 md:basis-1/4 lg:basis-1/5">
                   <div className="group relative">
-                    <div className="flex items-center justify-center p-2 transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center justify-center p-4 transition-all duration-300 hover:-translate-y-1">
                       <img
                         src={logo.imageUrl}
                         alt={logo.name}
-                        className="h-8 w-auto object-contain opacity-90 group-hover:opacity-100 transition-all duration-300"
+                        className="h-16 w-auto max-w-full object-contain opacity-90 group-hover:opacity-100 transition-all duration-300"
                         onError={(e) => {
                           e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAzMkg4MFY0OEg0MFYzMloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                         }}
