@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus, Users } from "lucide-react";
+import { Trash2, Plus, Users, Upload, Link } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ClienteleLogo {
@@ -76,6 +76,38 @@ const ClienteleManagementTab = () => {
     }
   }, []);
 
+  const convertGoogleDriveUrl = (url: string) => {
+    const cleanUrl = url.trim();
+    let fileId = '';
+    
+    let match = cleanUrl.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+    if (match) {
+      fileId = match[1];
+    } else {
+      match = cleanUrl.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+      if (match) {
+        fileId = match[1];
+      }
+    }
+    
+    if (fileId) {
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+    }
+    
+    return cleanUrl;
+  };
+
+  const handleGoogleDriveUpload = (id: string, googleDriveUrl: string) => {
+    if (googleDriveUrl.trim()) {
+      const directUrl = convertGoogleDriveUrl(googleDriveUrl.trim());
+      updateClienteleLogo(id, 'imageUrl', directUrl);
+      toast({
+        title: "Success",
+        description: "Google Drive image URL converted successfully!",
+      });
+    }
+  };
+
   const handleSave = () => {
     localStorage.setItem('clienteleLogos', JSON.stringify(clienteleLogos));
     window.dispatchEvent(new CustomEvent('clienteleLogosUpdated'));
@@ -117,7 +149,7 @@ const ClienteleManagementTab = () => {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Clientele Logos</h2>
-            <p className="text-gray-600">Manage the client logos displayed in the carousel</p>
+            <p className="text-gray-600">Manage the client logos displayed in the carousel (shown in color)</p>
           </div>
         </div>
         <Button onClick={addClienteleLogo} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
@@ -172,6 +204,41 @@ const ClienteleManagementTab = () => {
                     placeholder="https://example.com/logo.png"
                     className="bg-white/70 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                   />
+                </div>
+              </div>
+
+              {/* Google Drive Upload Section */}
+              <div className="mt-4 space-y-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200/30">
+                <div className="flex items-center">
+                  <Upload className="w-5 h-5 mr-3 text-blue-600" />
+                  <Label className="text-sm font-semibold text-blue-700">Upload from Google Drive</Label>
+                </div>
+                <div className="space-y-3">
+                  <Input
+                    placeholder="Paste Google Drive sharing link here..."
+                    className="bg-white/80 border-blue-200/50"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleGoogleDriveUpload(logo.id, e.currentTarget.value);
+                        e.currentTarget.value = '';
+                      }
+                    }}
+                  />
+                  <Button 
+                    onClick={() => {
+                      const input = document.querySelector(`input[placeholder="Paste Google Drive sharing link here..."]`) as HTMLInputElement;
+                      if (input?.value) {
+                        handleGoogleDriveUpload(logo.id, input.value);
+                        input.value = '';
+                      }
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    <Link className="w-4 h-4 mr-2" />
+                    Use Google Drive Image
+                  </Button>
                 </div>
               </div>
               
