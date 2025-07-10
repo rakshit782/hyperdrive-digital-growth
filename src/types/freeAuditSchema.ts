@@ -15,7 +15,10 @@ export const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   company: z.string().min(2, "Company name is required"),
   phone: z.string().min(10, "Please enter a valid phone number"),
-  platform: z.enum(["amazon", "walmart", "meta", "multiple"], {
+  service: z.enum(["amazon-advertising", "walmart-advertising", "meta-advertising", "google-advertising", "shopify-development", "shopify-integration", "website-development", "multiple"], {
+    required_error: "Please select a service",
+  }),
+  platform: z.enum(["amazon", "walmart", "meta", "google", "shopify", "multiple"], {
     required_error: "Please select a platform",
   }),
   monthlyAdSpend: z.string().min(1, "Please select your monthly ad spend range"),

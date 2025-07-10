@@ -21,6 +21,7 @@ const auditFormSchema = z.object({
   phone: z.string().optional(),
   company: z.string().optional(),
   website: z.string().url('Please enter a valid website URL').optional().or(z.literal('')),
+  service: z.string().min(1, 'Please select a service'),
   monthlyAdSpend: z.string().min(1, 'Please select your monthly ad spend'),
   primaryPlatform: z.string().min(1, 'Please select your primary platform'),
   businessGoals: z.string().min(10, 'Please describe your business goals (minimum 10 characters)'),
@@ -129,6 +130,7 @@ const FreeAuditForm = () => {
         primaryPlatform: data.primaryPlatform,
         currentChallenges: data.currentChallenges,
         uploadedFiles: uploadedFilePaths,
+        message: `Service: ${data.service}\n\nBusiness Goals: ${data.businessGoals}\n\nCurrent Challenges: ${data.currentChallenges}`,
       });
 
       if (result.success) {
@@ -302,6 +304,29 @@ const FreeAuditForm = () => {
             )}
           </div>
 
+          {/* Service Selection */}
+          <div>
+            <Label htmlFor="service" className="text-slate-700 font-medium">Service Needed *</Label>
+            <Select onValueChange={(value) => setValue('service', value)}>
+              <SelectTrigger className="mt-2 h-11 border-slate-300 focus:border-blue-400">
+                <SelectValue placeholder="Select service" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="amazon-advertising">Amazon Advertising</SelectItem>
+                <SelectItem value="walmart-advertising">Walmart Advertising</SelectItem>
+                <SelectItem value="meta-advertising">Meta Advertising</SelectItem>
+                <SelectItem value="google-advertising">Google Advertising</SelectItem>
+                <SelectItem value="shopify-development">Shopify Development</SelectItem>
+                <SelectItem value="shopify-integration">Shopify Integration</SelectItem>
+                <SelectItem value="website-development">Website Development</SelectItem>
+                <SelectItem value="multiple">Multiple Services</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.service && (
+              <p className="text-red-500 text-sm mt-1">{errors.service.message}</p>
+            )}
+          </div>
+
           {/* Business Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -317,6 +342,7 @@ const FreeAuditForm = () => {
                   <SelectItem value="10k-25k">$10,000 - $25,000</SelectItem>
                   <SelectItem value="25k-50k">$25,000 - $50,000</SelectItem>
                   <SelectItem value="50k-plus">$50,000+</SelectItem>
+                  <SelectItem value="not-applicable">Not Applicable</SelectItem>
                 </SelectContent>
               </Select>
               {errors.monthlyAdSpend && (
@@ -335,6 +361,7 @@ const FreeAuditForm = () => {
                   <SelectItem value="walmart">Walmart</SelectItem>
                   <SelectItem value="meta">Meta (Facebook/Instagram)</SelectItem>
                   <SelectItem value="google">Google Ads</SelectItem>
+                  <SelectItem value="shopify">Shopify</SelectItem>
                   <SelectItem value="multiple">Multiple Platforms</SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
