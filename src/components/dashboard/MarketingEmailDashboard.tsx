@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -16,15 +14,12 @@ import {
   Send, 
   Users, 
   FileSpreadsheet,
-  Database,
   Plus,
-  Eye,
   Trash2,
   Download,
   Upload,
   Clock,
   CheckCircle,
-  XCircle,
   AlertCircle
 } from 'lucide-react';
 import { useZeptoMailAutomation } from '@/hooks/useZeptoMailAutomation';
@@ -43,6 +38,7 @@ interface EmailCampaign {
   clickRate?: number;
   scheduledDate?: string;
   createdAt: string;
+  selectedRecipients: string[];
 }
 
 interface EmailRecipient {
@@ -67,7 +63,7 @@ interface GoogleSheetsConnection {
 
 const MarketingEmailDashboard = () => {
   const { toast } = useToast();
-  const { getZeptoMailSettings, sendZeptoMailEmail, isSending } = useZeptoMailAutomation();
+  const { getZeptoMailSettings, getEmailTemplates, saveEmailTemplate, isSending } = useZeptoMailAutomation();
   const { emails: newsletterEmails } = useNewsletterEmails();
   const { leads } = useLocalLeads();
 
@@ -252,8 +248,20 @@ const MarketingEmailDashboard = () => {
         status: 'draft',
         recipientCount: selectedRecipients.length,
         sentCount: 0,
+        selectedRecipients: [...selectedRecipients],
         createdAt: new Date().toISOString()
       };
+
+      // Save as email template for future use
+      const emailTemplate = {
+        id: `campaign_${newCampaign.id}`,
+        name: newCampaign.name,
+        subject: newCampaign.subject,
+        content: newCampaign.content,
+        trigger: 'form_submission' as const,
+        isActive: true
+      };
+      saveEmailTemplate(emailTemplate);
 
       const updatedCampaigns = [...campaigns, newCampaign];
       saveCampaigns(updatedCampaigns);
@@ -287,13 +295,23 @@ const MarketingEmailDashboard = () => {
 
   const handleSendCampaign = async (campaign: EmailCampaign) => {
     const selectedRecipientsData = recipients.filter(r => 
-      selectedRecipients.includes(r.id)
+      campaign.selectedRecipients.includes(r.id)
     );
 
     if (selectedRecipientsData.length === 0) {
       toast({
         title: "Error",
-        description: "No recipients selected for this campaign",
+        description: "No recipients found for this campaign",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const zeptoSettings = getZeptoMailSettings();
+    if (!zeptoSettings) {
+      toast({
+        title: "Error",
+        description: "Please configure ZeptoMail settings first",
         variant: "destructive",
       });
       return;
@@ -310,17 +328,58 @@ const MarketingEmailDashboard = () => {
     // Send emails to all selected recipients
     for (const recipient of selectedRecipientsData) {
       try {
-        await sendZeptoMailEmail(
-          recipient.email,
-          'marketing_campaign',
-          {
-            name: recipient.name,
-            email: recipient.email,
-            company: recipient.company || '',
-            phone: recipient.phone || ''
-          }
-        );
-        sentCount++;
+        // Replace variables in subject and content
+        let subject = campaign.subject;
+        let content = campaign.content;
+
+        const variables = {
+          name: recipient.name,
+          email: recipient.email,
+          company: recipient.company || '',
+          phone: recipient.phone || ''
+        };
+
+        Object.entries(variables).forEach(([key, value]) => {
+          const placeholder = `{{${key}}}`;
+          subject = subject.replace(new RegExp(placeholder, 'g'), value);
+          content = content.replace(new RegExp(placeholder, 'g'), value);
+        });
+
+        // Send via ZeptoMail API
+        const zeptoMailData = {
+          from: {
+            address: zeptoSettings.fromEmail,
+            name: zeptoSettings.fromName
+          },
+          to: [
+            {
+              email_address: {
+                address: recipient.email
+              }
+            }
+          ],
+          subject: subject,
+          htmlbody: content,
+          bounce_address: zeptoSettings.bounceAddress || zeptoSettings.fromEmail
+        };
+
+        const response = await fetch('https://api.zeptomail.com/v1.1/email', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Zoho-enczapikey ${zeptoSettings.apiKey}`
+          },
+          body: JSON.stringify(zeptoMailData)
+        });
+
+        if (response.ok) {
+          sentCount++;
+          console.log(`Email sent successfully to ${recipient.email}`);
+        } else {
+          const errorData = await response.json();
+          console.error(`Failed to send email to ${recipient.email}:`, errorData);
+        }
       } catch (error) {
         console.error(`Failed to send email to ${recipient.email}:`, error);
       }
@@ -342,7 +401,7 @@ const MarketingEmailDashboard = () => {
 
     toast({
       title: "Campaign Sent",
-      description: `Campaign sent to ${sentCount} recipients`,
+      description: `Campaign sent to ${sentCount} out of ${selectedRecipientsData.length} recipients`,
     });
   };
 

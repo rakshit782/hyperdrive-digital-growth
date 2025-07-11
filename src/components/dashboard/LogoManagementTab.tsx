@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { Image, Upload, Link, Eye, Save, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -111,6 +110,7 @@ const LogoManagementTab = () => {
   };
 
   const sizeOptions = [
+    { value: "h-4", label: "Tiny (16px)" },
     { value: "h-6", label: "Extra Small (24px)" },
     { value: "h-8", label: "Small (32px)" },
     { value: "h-10", label: "Medium (40px)" },
@@ -118,7 +118,13 @@ const LogoManagementTab = () => {
     { value: "h-14", label: "Extra Large (56px)" },
     { value: "h-16", label: "XXL (64px)" },
     { value: "h-20", label: "XXXL (80px)" },
-    { value: "h-24", label: "Huge (96px)" }
+    { value: "h-24", label: "Huge (96px)" },
+    { value: "h-28", label: "Massive (112px)" },
+    { value: "h-32", label: "Giant (128px)" },
+    { value: "h-40", label: "Colossal (160px)" },
+    { value: "h-48", label: "Enormous (192px)" },
+    { value: "h-56", label: "Gigantic (224px)" },
+    { value: "h-64", label: "Maximum (256px)" }
   ];
 
   return (
@@ -211,7 +217,7 @@ const LogoManagementTab = () => {
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60">
                     {sizeOptions.map(option => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -289,8 +295,8 @@ const LogoManagementTab = () => {
               {/* Size Comparison */}
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6">
                 <h4 className="font-semibold text-slate-700 mb-4">Size Comparison</h4>
-                <div className="grid grid-cols-4 gap-4">
-                  {sizeOptions.slice(0, 4).map((size) => (
+                <div className="grid grid-cols-2 gap-4 max-h-60 overflow-y-auto">
+                  {sizeOptions.slice(0, 8).map((size) => (
                     <div key={size.value} className="text-center">
                       <img 
                         src={settings.logoUrl}

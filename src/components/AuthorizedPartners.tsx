@@ -21,6 +21,45 @@ const AuthorizedPartners = () => {
     sectionHeight: 6
   });
 
+  const getDefaultPartners = (): PartnerImage[] => [
+    {
+      id: "partner-1",
+      name: "TechPartner",
+      imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-2", 
+      name: "InnovatePartner",
+      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-3",
+      name: "GlobalPartner",
+      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-4",
+      name: "FuturePartner",
+      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-5",
+      name: "BusinessPartner",
+      imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-6",
+      name: "ProPartner",
+      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    }
+  ];
+
   useEffect(() => {
     const loadPartnerImages = () => {
       const savedPartners = localStorage.getItem('partnerImages');
@@ -30,7 +69,12 @@ const AuthorizedPartners = () => {
           setPartnerImages(parsed.filter((partner: PartnerImage) => partner.isActive));
         } catch (error) {
           console.error('Failed to parse partner images:', error);
+          const defaultPartners = getDefaultPartners();
+          setPartnerImages(defaultPartners.filter(partner => partner.isActive));
         }
+      } else {
+        const defaultPartners = getDefaultPartners();
+        setPartnerImages(defaultPartners.filter(partner => partner.isActive));
       }
     };
 
