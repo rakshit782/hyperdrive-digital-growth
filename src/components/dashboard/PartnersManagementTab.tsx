@@ -227,6 +227,7 @@ const PartnersManagementTab = () => {
                 </div>
                 <div className="space-y-3">
                   <Input
+                    id={`google-drive-input-${partner.id}`}
                     placeholder="Paste Google Drive sharing link here..."
                     className="bg-white/80 border-slate-200/50"
                     onKeyDown={(e) => {
@@ -238,7 +239,7 @@ const PartnersManagementTab = () => {
                   />
                   <Button 
                     onClick={() => {
-                      const input = e.currentTarget.parentElement?.previousElementSibling as HTMLInputElement;
+                      const input = document.getElementById(`google-drive-input-${partner.id}`) as HTMLInputElement;
                       if (input?.value) {
                         handleGoogleDriveUpload(partner.id, input.value);
                         input.value = '';
