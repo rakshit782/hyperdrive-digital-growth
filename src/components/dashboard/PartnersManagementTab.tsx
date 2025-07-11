@@ -29,6 +29,45 @@ const PartnersManagementTab = () => {
   });
   const [isSaved, setIsSaved] = useState(false);
 
+  const getDefaultPartners = (): PartnerImage[] => [
+    {
+      id: "partner-1",
+      name: "TechPartner",
+      imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-2", 
+      name: "InnovatePartner",
+      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-3",
+      name: "GlobalPartner",
+      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-4",
+      name: "FuturePartner",
+      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-5",
+      name: "BusinessPartner",
+      imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-6",
+      name: "ProPartner",
+      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    }
+  ];
+
   useEffect(() => {
     const savedPartners = localStorage.getItem('partnerImages');
     if (savedPartners) {
@@ -37,7 +76,14 @@ const PartnersManagementTab = () => {
         setPartnerImages(parsed);
       } catch (error) {
         console.error('Failed to parse partner images:', error);
+        const defaultPartners = getDefaultPartners();
+        setPartnerImages(defaultPartners);
+        localStorage.setItem('partnerImages', JSON.stringify(defaultPartners));
       }
+    } else {
+      const defaultPartners = getDefaultPartners();
+      setPartnerImages(defaultPartners);
+      localStorage.setItem('partnerImages', JSON.stringify(defaultPartners));
     }
 
     const savedSettings = localStorage.getItem('partnerSettings');
@@ -72,10 +118,13 @@ const PartnersManagementTab = () => {
     return cleanUrl;
   };
 
-  const handleGoogleDriveUpload = (id: string, googleDriveUrl: string) => {
-    if (googleDriveUrl.trim()) {
-      const directUrl = convertGoogleDriveUrl(googleDriveUrl.trim());
+  const handleGoogleDriveUpload = (id: string, inputElement: HTMLInputElement) => {
+    const googleDriveUrl = inputElement.value.trim();
+    if (googleDriveUrl) {
+      const directUrl = convertGoogleDriveUrl(googleDriveUrl);
+      console.log('Converted URL:', directUrl);
       updatePartnerImage(id, 'imageUrl', directUrl);
+      inputElement.value = '';
       toast({
         title: "Success",
         description: "Google Drive image URL converted successfully!",
@@ -99,7 +148,7 @@ const PartnersManagementTab = () => {
 
   const addPartnerImage = () => {
     const newPartner: PartnerImage = {
-      id: `partner-${Date.now()}`,
+      id: `partner-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: "New Partner",
       imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
       isActive: true
@@ -150,7 +199,7 @@ const PartnersManagementTab = () => {
             <Slider
               value={[settings.logoSize]}
               onValueChange={(value) => updateSettings({ logoSize: value[0] })}
-              max={32}
+              max={64}
               min={8}
               step={2}
               className="w-full"
@@ -227,22 +276,20 @@ const PartnersManagementTab = () => {
                 </div>
                 <div className="space-y-3">
                   <Input
-                    id={`google-drive-input-${partner.id}`}
+                    id={`gdrive-input-${partner.id}`}
                     placeholder="Paste Google Drive sharing link here..."
                     className="bg-white/80 border-slate-200/50"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
-                        handleGoogleDriveUpload(partner.id, e.currentTarget.value);
-                        e.currentTarget.value = '';
+                        handleGoogleDriveUpload(partner.id, e.currentTarget);
                       }
                     }}
                   />
                   <Button 
                     onClick={() => {
-                      const input = document.getElementById(`google-drive-input-${partner.id}`) as HTMLInputElement;
-                      if (input?.value) {
-                        handleGoogleDriveUpload(partner.id, input.value);
-                        input.value = '';
+                      const input = document.getElementById(`gdrive-input-${partner.id}`) as HTMLInputElement;
+                      if (input) {
+                        handleGoogleDriveUpload(partner.id, input);
                       }
                     }}
                     variant="outline"

@@ -49,6 +49,7 @@ import {
   Home,
   Scale
 } from "lucide-react";
+import PartnersManagementTab from "@/components/dashboard/PartnersManagementTab";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('services');
@@ -92,6 +93,7 @@ const Dashboard = () => {
       'newsletter-email-management': Mail,
       'email-workflow': Mail,
       'clientele-management': Users,
+      'partners-management': Users,
       'form-security': Shield,
       'security-settings': Shield,
       'service-header-images': Image,
@@ -122,6 +124,7 @@ const Dashboard = () => {
       'newsletter-email-management': 'Newsletter Email Management',
       'email-workflow': 'Email Workflow',
       'clientele-management': 'Clientele Management',
+      'partners-management': 'Partners Management',
       'form-security': 'Form Security Monitor',
       'security-settings': 'Security Settings',
       'service-header-images': 'Service Images',
@@ -152,6 +155,7 @@ const Dashboard = () => {
       'newsletter-email-management': 'Manage newsletter email subscribers and campaigns',
       'email-workflow': 'Set up automated email sequences and campaigns',
       'clientele-management': 'Manage client logos and testimonials',
+      'partners-management': 'Manage partner logos and testimonials',
       'form-security': 'Monitor form security and spam protection',
       'security-settings': 'Configure security features and reCAPTCHA',
       'service-header-images': 'Upload and manage service page header images',
@@ -210,6 +214,8 @@ const Dashboard = () => {
         return <EmailWorkflowTab />;
       case 'clientele-management':
         return <ClienteleManagementTab />;
+      case 'partners-management':
+        return <PartnersManagementTab />;
       case 'form-security':
         return <FormSecurityTab />;
       case 'security-settings':
