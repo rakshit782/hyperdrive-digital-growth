@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Slider } from "@/components/ui/slider";
 import { Trash2, Plus, Edit, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,6 +20,8 @@ interface FooterSettings {
   partnersTitle: string;
   showPartners: boolean;
   showNewsletter: boolean;
+  logoSize: number;
+  sectionHeight: number;
 }
 
 interface PartnerImage {
@@ -39,6 +41,8 @@ const FooterManagementTab = () => {
     partnersTitle: "Authorized Partners",
     showPartners: true,
     showNewsletter: true,
+    logoSize: 16,
+    sectionHeight: 6,
   });
 
   const [partnerImages, setPartnerImages] = useState<PartnerImage[]>([]);
@@ -99,7 +103,7 @@ const FooterManagementTab = () => {
     }));
   };
 
-  const handleInputChange = (field: keyof FooterSettings, value: string | boolean) => {
+  const handleInputChange = (field: keyof FooterSettings, value: string | boolean | number) => {
     setFooterSettings(prev => ({
       ...prev,
       [field]: value
@@ -176,9 +180,10 @@ const FooterManagementTab = () => {
       </div>
 
       <Tabs defaultValue="content" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="partners">Partner Logos</TabsTrigger>
+          <TabsTrigger value="sizing">Logo Sizing</TabsTrigger>
           <TabsTrigger value="sections">Sections</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
         </TabsList>
@@ -401,6 +406,84 @@ const FooterManagementTab = () => {
           </Card>
         </TabsContent>
 
+        <TabsContent value="sizing" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Partner Logo Sizing</CardTitle>
+              <CardDescription>
+                Control the size and spacing of partner logos in the footer
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="logoSize">Logo Size: {footerSettings.logoSize * 4}px</Label>
+                  <Slider
+                    id="logoSize"
+                    value={[footerSettings.logoSize]}
+                    onValueChange={(value) => handleInputChange('logoSize', value[0])}
+                    max={64}
+                    min={8}
+                    step={2}
+                    className="w-full mt-2"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Adjust the height of partner logos (32px - 256px)
+                  </p>
+                </div>
+                
+                <div>
+                  <Label htmlFor="sectionHeight">Section Padding: {footerSettings.sectionHeight * 0.25}rem</Label>
+                  <Slider
+                    id="sectionHeight"
+                    value={[footerSettings.sectionHeight]}
+                    onValueChange={(value) => handleInputChange('sectionHeight', value[0])}
+                    max={16}
+                    min={4}
+                    step={1}
+                    className="w-full mt-2"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Adjust the vertical padding around the partner section (1rem - 4rem)
+                  </p>
+                </div>
+              </div>
+
+              {/* Live Preview */}
+              <div className="bg-slate-900 p-6 rounded-lg">
+                <h4 className="text-center text-white font-semibold mb-4">{footerSettings.partnersTitle}</h4>
+                <div className="flex justify-center items-center gap-6" style={{ paddingTop: `${footerSettings.sectionHeight * 0.25}rem`, paddingBottom: `${footerSettings.sectionHeight * 0.25}rem` }}>
+                  {partnerImages.filter(p => p.isActive).slice(0, 3).map((partner) => (
+                    <img
+                      key={partner.id}
+                      src={partner.imageUrl}
+                      alt={partner.name}
+                      style={{ height: `${footerSettings.logoSize * 4}px` }}
+                      className="w-auto object-contain opacity-70 filter brightness-0 invert"
+                      onError={(e) => {
+                        e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAzMkg4MFY0OEg0MFYzMloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                      }}
+                    />
+                  ))}
+                  {partnerImages.filter(p => p.isActive).length === 0 && (
+                    <>
+                      <div style={{ height: `${footerSettings.logoSize * 4}px` }} className="w-16 bg-slate-700 rounded flex items-center justify-center text-xs text-white">
+                        Logo 1
+                      </div>
+                      <div style={{ height: `${footerSettings.logoSize * 4}px` }} className="w-16 bg-slate-700 rounded flex items-center justify-center text-xs text-white">
+                        Logo 2
+                      </div>
+                      <div style={{ height: `${footerSettings.logoSize * 4}px` }} className="w-16 bg-slate-700 rounded flex items-center justify-center text-xs text-white">
+                        Logo 3
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="sections" className="space-y-6">
           <Card>
             <CardHeader>
@@ -488,7 +571,7 @@ const FooterManagementTab = () => {
 
                 {/* Partners Preview */}
                 {footerSettings.showPartners && (
-                  <div className="mt-8 pt-8 border-t border-slate-700">
+                  <div className="mt-8 pt-8 border-t border-slate-700" style={{ paddingTop: `${footerSettings.sectionHeight * 0.25 + 2}rem` }}>
                     <h4 className="text-center text-lg font-semibold mb-4">{footerSettings.partnersTitle}</h4>
                     <div className="flex justify-center items-center gap-6">
                       {partnerImages.filter(p => p.isActive).slice(0, 4).map((partner) => (
@@ -496,18 +579,19 @@ const FooterManagementTab = () => {
                           key={partner.id}
                           src={partner.imageUrl}
                           alt={partner.name}
-                          className="h-8 w-auto object-contain opacity-70"
+                          style={{ height: `${footerSettings.logoSize * 4}px` }}
+                          className="w-auto object-contain opacity-70 filter brightness-0 invert"
                         />
                       ))}
                       {partnerImages.filter(p => p.isActive).length === 0 && (
                         <>
-                          <div className="w-16 h-8 bg-slate-700 rounded flex items-center justify-center text-xs">
+                          <div style={{ height: `${footerSettings.logoSize * 4}px` }} className="w-16 bg-slate-700 rounded flex items-center justify-center text-xs">
                             Logo 1
                           </div>
-                          <div className="w-16 h-8 bg-slate-700 rounded flex items-center justify-center text-xs">
+                          <div style={{ height: `${footerSettings.logoSize * 4}px` }} className="w-16 bg-slate-700 rounded flex items-center justify-center text-xs">
                             Logo 2
                           </div>
-                          <div className="w-16 h-8 bg-slate-700 rounded flex items-center justify-center text-xs">
+                          <div style={{ height: `${footerSettings.logoSize * 4}px` }} className="w-16 bg-slate-700 rounded flex items-center justify-center text-xs">
                             Logo 3
                           </div>
                         </>

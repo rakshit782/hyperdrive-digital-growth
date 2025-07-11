@@ -20,7 +20,8 @@ import {
   Upload,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Search
 } from 'lucide-react';
 import { useZeptoMailAutomation } from '@/hooks/useZeptoMailAutomation';
 import { useNewsletterEmails } from '@/hooks/useNewsletterEmails';
@@ -70,6 +71,9 @@ const MarketingEmailDashboard = () => {
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>([]);
   const [recipients, setRecipients] = useState<EmailRecipient[]>([]);
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]);
+  const [filteredRecipients, setFilteredRecipients] = useState<EmailRecipient[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterSource, setFilterSource] = useState<string>('all');
   const [currentCampaign, setCurrentCampaign] = useState<Partial<EmailCampaign>>({
     name: '',
     subject: '',
@@ -93,6 +97,25 @@ const MarketingEmailDashboard = () => {
     loadGoogleSheetsConfig();
     fetchAllRecipients();
   }, []);
+
+  useEffect(() => {
+    // Filter recipients based on search term and source
+    let filtered = recipients;
+    
+    if (searchTerm) {
+      filtered = filtered.filter(recipient => 
+        recipient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        recipient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (recipient.company && recipient.company.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+    
+    if (filterSource !== 'all') {
+      filtered = filtered.filter(recipient => recipient.source === filterSource);
+    }
+    
+    setFilteredRecipients(filtered);
+  }, [recipients, searchTerm, filterSource]);
 
   const loadCampaigns = () => {
     const stored = localStorage.getItem('marketing_campaigns');
@@ -190,8 +213,8 @@ const MarketingEmailDashboard = () => {
 
   const handleSelectAll = (source?: string) => {
     const recipientsToSelect = source 
-      ? recipients.filter(r => r.source === source)
-      : recipients;
+      ? filteredRecipients.filter(r => r.source === source)
+      : filteredRecipients;
     
     const allSelected = recipientsToSelect.every(r => selectedRecipients.includes(r.id));
     
@@ -466,7 +489,7 @@ const MarketingEmailDashboard = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             <TabsList>
               <TabsTrigger value="compose">Compose Campaign</TabsTrigger>
-              <TabsTrigger value="recipients">Recipients ({recipients.length})</TabsTrigger>
+              <TabsTrigger value="recipients">Recipients ({filteredRecipients.length})</TabsTrigger>
               <TabsTrigger value="campaigns">Campaigns ({campaigns.length})</TabsTrigger>
               <TabsTrigger value="settings">Google Sheets</TabsTrigger>
             </TabsList>
@@ -558,7 +581,7 @@ const MarketingEmailDashboard = () => {
                     </div>
                     <div className="flex gap-2">
                       <Button onClick={() => handleSelectAll()} variant="outline" size="sm">
-                        Select All ({recipients.length})
+                        {filteredRecipients.every(r => selectedRecipients.includes(r.id)) ? 'Deselect All' : 'Select All'} ({filteredRecipients.length})
                       </Button>
                       <Button onClick={() => fetchAllRecipients()} variant="outline" size="sm">
                         <Upload className="w-4 h-4 mr-1" />
@@ -569,6 +592,31 @@ const MarketingEmailDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    {/* Search and Filter Controls */}
+                    <div className="flex gap-4 mb-4">
+                      <div className="flex-1">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                          <Input
+                            placeholder="Search by email, name, or company..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                      </div>
+                      <select
+                        value={filterSource}
+                        onChange={(e) => setFilterSource(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="all">All Sources</option>
+                        <option value="newsletter">Newsletter</option>
+                        <option value="leads">Leads</option>
+                        <option value="google_sheets">Google Sheets</option>
+                      </select>
+                    </div>
+
                     {/* Source filters */}
                     <div className="flex gap-2 mb-4">
                       <Button 
@@ -576,22 +624,29 @@ const MarketingEmailDashboard = () => {
                         variant="outline" 
                         size="sm"
                       >
-                        Newsletter ({recipients.filter(r => r.source === 'newsletter').length})
+                        Newsletter ({filteredRecipients.filter(r => r.source === 'newsletter').length})
                       </Button>
                       <Button 
                         onClick={() => handleSelectAll('leads')} 
                         variant="outline" 
                         size="sm"
                       >
-                        Leads ({recipients.filter(r => r.source === 'leads').length})
+                        Leads ({filteredRecipients.filter(r => r.source === 'leads').length})
                       </Button>
                       <Button 
                         onClick={() => handleSelectAll('google_sheets')} 
                         variant="outline" 
                         size="sm"
                       >
-                        Google Sheets ({recipients.filter(r => r.source === 'google_sheets').length})
+                        Google Sheets ({filteredRecipients.filter(r => r.source === 'google_sheets').length})
                       </Button>
+                    </div>
+
+                    {/* Selected Count */}
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <p className="text-sm text-blue-800">
+                        <strong>{selectedRecipients.length}</strong> recipients selected for campaign
+                      </p>
                     </div>
 
                     <Table>
@@ -606,7 +661,7 @@ const MarketingEmailDashboard = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {recipients.map((recipient) => (
+                        {filteredRecipients.map((recipient) => (
                           <TableRow key={recipient.id}>
                             <TableCell>
                               <Checkbox
@@ -627,6 +682,12 @@ const MarketingEmailDashboard = () => {
                         ))}
                       </TableBody>
                     </Table>
+
+                    {filteredRecipients.length === 0 && (
+                      <div className="text-center py-8 text-gray-500">
+                        No recipients found matching your criteria
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
