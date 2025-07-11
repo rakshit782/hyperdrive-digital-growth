@@ -8,91 +8,45 @@ import { Slider } from "@/components/ui/slider";
 import { Trash2, Plus, Users, Upload, Link } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-interface ClienteleLogo {
+interface PartnerImage {
   id: string;
   name: string;
   imageUrl: string;
   isActive: boolean;
 }
 
-interface ClienteleSettings {
+interface PartnerSettings {
   logoSize: number;
   sectionHeight: number;
 }
 
-const ClienteleManagementTab = () => {
+const PartnersManagementTab = () => {
   const { toast } = useToast();
-  const [clienteleLogos, setClienteleLogos] = useState<ClienteleLogo[]>([]);
-  const [settings, setSettings] = useState<ClienteleSettings>({
+  const [partnerImages, setPartnerImages] = useState<PartnerImage[]>([]);
+  const [settings, setSettings] = useState<PartnerSettings>({
     logoSize: 16,
     sectionHeight: 6
   });
   const [isSaved, setIsSaved] = useState(false);
 
-  const getDefaultClientele = (): ClienteleLogo[] => [
-    {
-      id: "client-1",
-      name: "TechCorp",
-      imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-2", 
-      name: "InnovateLabs",
-      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-3",
-      name: "GlobalSolutions",
-      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-4",
-      name: "FutureTech",
-      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-5",
-      name: "StartupHub",
-      imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-6",
-      name: "BusinessPro",
-      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    }
-  ];
-
   useEffect(() => {
-    const savedClientele = localStorage.getItem('clienteleLogos');
-    if (savedClientele) {
+    const savedPartners = localStorage.getItem('partnerImages');
+    if (savedPartners) {
       try {
-        const parsed = JSON.parse(savedClientele);
-        setClienteleLogos(parsed);
+        const parsed = JSON.parse(savedPartners);
+        setPartnerImages(parsed);
       } catch (error) {
-        console.error('Failed to parse clientele logos:', error);
-        const defaultLogos = getDefaultClientele();
-        setClienteleLogos(defaultLogos);
-        localStorage.setItem('clienteleLogos', JSON.stringify(defaultLogos));
+        console.error('Failed to parse partner images:', error);
       }
-    } else {
-      const defaultLogos = getDefaultClientele();
-      setClienteleLogos(defaultLogos);
-      localStorage.setItem('clienteleLogos', JSON.stringify(defaultLogos));
     }
 
-    const savedSettings = localStorage.getItem('clienteleSettings');
+    const savedSettings = localStorage.getItem('partnerSettings');
     if (savedSettings) {
       try {
         const parsed = JSON.parse(savedSettings);
         setSettings(parsed);
       } catch (error) {
-        console.error('Failed to parse clientele settings:', error);
+        console.error('Failed to parse partner settings:', error);
       }
     }
   }, []);
@@ -118,13 +72,10 @@ const ClienteleManagementTab = () => {
     return cleanUrl;
   };
 
-  const handleGoogleDriveUpload = (id: string, inputElement: HTMLInputElement) => {
-    const googleDriveUrl = inputElement.value.trim();
-    if (googleDriveUrl) {
-      const directUrl = convertGoogleDriveUrl(googleDriveUrl);
-      console.log('Converted URL:', directUrl);
-      updateClienteleLogo(id, 'imageUrl', directUrl);
-      inputElement.value = '';
+  const handleGoogleDriveUpload = (id: string, googleDriveUrl: string) => {
+    if (googleDriveUrl.trim()) {
+      const directUrl = convertGoogleDriveUrl(googleDriveUrl.trim());
+      updatePartnerImage(id, 'imageUrl', directUrl);
       toast({
         title: "Success",
         description: "Google Drive image URL converted successfully!",
@@ -133,40 +84,40 @@ const ClienteleManagementTab = () => {
   };
 
   const handleSave = () => {
-    localStorage.setItem('clienteleLogos', JSON.stringify(clienteleLogos));
-    localStorage.setItem('clienteleSettings', JSON.stringify(settings));
-    window.dispatchEvent(new CustomEvent('clienteleLogosUpdated'));
-    window.dispatchEvent(new CustomEvent('clienteleSettingsUpdated', { detail: settings }));
+    localStorage.setItem('partnerImages', JSON.stringify(partnerImages));
+    localStorage.setItem('partnerSettings', JSON.stringify(settings));
+    window.dispatchEvent(new CustomEvent('partnerImagesUpdated'));
+    window.dispatchEvent(new CustomEvent('partnerSettingsUpdated', { detail: settings }));
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
     
     toast({
       title: "Success",
-      description: "Clientele logos updated successfully!",
+      description: "Partner settings updated successfully!",
     });
   };
 
-  const addClienteleLogo = () => {
-    const newLogo: ClienteleLogo = {
-      id: `client-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      name: "New Client",
+  const addPartnerImage = () => {
+    const newPartner: PartnerImage = {
+      id: `partner-${Date.now()}`,
+      name: "New Partner",
       imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
       isActive: true
     };
-    setClienteleLogos(prev => [...prev, newLogo]);
+    setPartnerImages(prev => [...prev, newPartner]);
   };
 
-  const removeClienteleLogo = (id: string) => {
-    setClienteleLogos(prev => prev.filter(logo => logo.id !== id));
+  const removePartnerImage = (id: string) => {
+    setPartnerImages(prev => prev.filter(partner => partner.id !== id));
   };
 
-  const updateClienteleLogo = (id: string, field: keyof ClienteleLogo, value: string | boolean) => {
-    setClienteleLogos(prev => prev.map(logo => 
-      logo.id === id ? { ...logo, [field]: value } : logo
+  const updatePartnerImage = (id: string, field: keyof PartnerImage, value: string | boolean) => {
+    setPartnerImages(prev => prev.map(partner => 
+      partner.id === id ? { ...partner, [field]: value } : partner
     ));
   };
 
-  const updateSettings = (updates: Partial<ClienteleSettings>) => {
+  const updateSettings = (updates: Partial<PartnerSettings>) => {
     setSettings(prev => ({ ...prev, ...updates }));
   };
 
@@ -174,17 +125,17 @@ const ClienteleManagementTab = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+          <div className="p-2 bg-gradient-to-r from-slate-500 to-slate-700 rounded-lg">
             <Users className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Clientele Logos</h2>
-            <p className="text-gray-600">Manage the client logos displayed in the carousel (shown in color)</p>
+            <h2 className="text-2xl font-bold text-gray-900">Authorized Partners</h2>
+            <p className="text-gray-600">Manage authorized partner logos (shown inverted on dark background)</p>
           </div>
         </div>
-        <Button onClick={addClienteleLogo} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+        <Button onClick={addPartnerImage} className="bg-gradient-to-r from-slate-500 to-slate-700 hover:from-slate-600 hover:to-slate-800">
           <Plus className="w-4 h-4 mr-2" />
-          Add Client Logo
+          Add Partner Logo
         </Button>
       </div>
 
@@ -220,23 +171,23 @@ const ClienteleManagementTab = () => {
       </Card>
 
       <div className="grid gap-4">
-        {clienteleLogos.map((logo, index) => (
-          <Card key={logo.id} className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg">
+        {partnerImages.map((partner, index) => (
+          <Card key={partner.id} className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h4 className="font-semibold text-gray-900">Client {index + 1}</h4>
+                <h4 className="font-semibold text-gray-900">Partner {index + 1}</h4>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center space-x-2">
                     <Label className="text-sm text-gray-600">Active:</Label>
                     <input
                       type="checkbox"
-                      checked={logo.isActive}
-                      onChange={(e) => updateClienteleLogo(logo.id, 'isActive', e.target.checked)}
+                      checked={partner.isActive}
+                      onChange={(e) => updatePartnerImage(partner.id, 'isActive', e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                     />
                   </div>
                   <Button 
-                    onClick={() => removeClienteleLogo(logo.id)} 
+                    onClick={() => removePartnerImage(partner.id)} 
                     size="sm" 
                     variant="outline"
                     className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
@@ -248,11 +199,11 @@ const ClienteleManagementTab = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Client Name</Label>
+                  <Label className="text-sm font-medium text-gray-700">Partner Name</Label>
                   <Input
-                    value={logo.name}
-                    onChange={(e) => updateClienteleLogo(logo.id, 'name', e.target.value)}
-                    placeholder="Client Name"
+                    value={partner.name}
+                    onChange={(e) => updatePartnerImage(partner.id, 'name', e.target.value)}
+                    placeholder="Partner Name"
                     className="bg-white/70 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
@@ -260,8 +211,8 @@ const ClienteleManagementTab = () => {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Logo URL</Label>
                   <Input
-                    value={logo.imageUrl}
-                    onChange={(e) => updateClienteleLogo(logo.id, 'imageUrl', e.target.value)}
+                    value={partner.imageUrl}
+                    onChange={(e) => updatePartnerImage(partner.id, 'imageUrl', e.target.value)}
                     placeholder="https://example.com/logo.png"
                     className="bg-white/70 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                   />
@@ -269,27 +220,28 @@ const ClienteleManagementTab = () => {
               </div>
 
               {/* Google Drive Upload Section */}
-              <div className="mt-4 space-y-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200/30">
+              <div className="mt-4 space-y-4 p-4 bg-gradient-to-r from-slate-50 to-gray-50 rounded-lg border border-slate-200/30">
                 <div className="flex items-center">
-                  <Upload className="w-5 h-5 mr-3 text-blue-600" />
-                  <Label className="text-sm font-semibold text-blue-700">Upload from Google Drive</Label>
+                  <Upload className="w-5 h-5 mr-3 text-slate-600" />
+                  <Label className="text-sm font-semibold text-slate-700">Upload from Google Drive</Label>
                 </div>
                 <div className="space-y-3">
                   <Input
-                    id={`gdrive-input-${logo.id}`}
                     placeholder="Paste Google Drive sharing link here..."
-                    className="bg-white/80 border-blue-200/50"
+                    className="bg-white/80 border-slate-200/50"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
-                        handleGoogleDriveUpload(logo.id, e.currentTarget);
+                        handleGoogleDriveUpload(partner.id, e.currentTarget.value);
+                        e.currentTarget.value = '';
                       }
                     }}
                   />
                   <Button 
                     onClick={() => {
-                      const input = document.getElementById(`gdrive-input-${logo.id}`) as HTMLInputElement;
-                      if (input) {
-                        handleGoogleDriveUpload(logo.id, input);
+                      const input = e.currentTarget.parentElement?.previousElementSibling as HTMLInputElement;
+                      if (input?.value) {
+                        handleGoogleDriveUpload(partner.id, input.value);
+                        input.value = '';
                       }
                     }}
                     variant="outline"
@@ -302,13 +254,13 @@ const ClienteleManagementTab = () => {
                 </div>
               </div>
               
-              {logo.imageUrl && (
+              {partner.imageUrl && (
                 <div className="mt-4 flex justify-center">
-                  <div className="p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  <div className="p-3 bg-slate-800 rounded-lg border border-gray-200 shadow-sm">
                     <img
-                      src={logo.imageUrl}
-                      alt={logo.name}
-                      className="h-12 w-auto object-contain"
+                      src={partner.imageUrl}
+                      alt={partner.name}
+                      className="h-12 w-auto object-contain filter brightness-0 invert"
                       onError={(e) => {
                         e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAzMkg4MFY0OEg0MFYzMloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                       }}
@@ -326,13 +278,13 @@ const ClienteleManagementTab = () => {
         className={`w-full py-3 transition-all duration-300 ${
           isSaved 
             ? "bg-green-600 hover:bg-green-700" 
-            : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+            : "bg-gradient-to-r from-slate-500 to-slate-700 hover:from-slate-600 hover:to-slate-800"
         } shadow-lg`}
       >
-        {isSaved ? "✓ Saved Successfully!" : "Save Clientele Logos"}
+        {isSaved ? "✓ Saved Successfully!" : "Save Partner Settings"}
       </Button>
     </div>
   );
 };
 
-export default ClienteleManagementTab;
+export default PartnersManagementTab;

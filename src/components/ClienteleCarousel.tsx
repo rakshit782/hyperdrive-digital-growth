@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import useEmblaCarousel from "embla-carousel-react";
@@ -10,8 +11,17 @@ interface ClienteleLogo {
   isActive: boolean;
 }
 
+interface ClienteleSettings {
+  logoSize: number;
+  sectionHeight: number;
+}
+
 const ClienteleCarousel = () => {
   const [clienteleLogos, setClienteleLogos] = useState<ClienteleLogo[]>([]);
+  const [settings, setSettings] = useState<ClienteleSettings>({
+    logoSize: 16,
+    sectionHeight: 6
+  });
 
   // Default clientele logos
   const getDefaultClientele = (): ClienteleLogo[] => [
@@ -73,23 +83,45 @@ const ClienteleCarousel = () => {
       }
     };
 
+    const loadSettings = () => {
+      const savedSettings = localStorage.getItem('clienteleSettings');
+      if (savedSettings) {
+        try {
+          const parsed = JSON.parse(savedSettings);
+          setSettings(parsed);
+        } catch (error) {
+          console.error('Failed to parse clientele settings:', error);
+        }
+      }
+    };
+
     loadClienteleLogos();
+    loadSettings();
 
     const handleClienteleUpdate = () => {
       loadClienteleLogos();
     };
 
+    const handleSettingsUpdate = (event: CustomEvent) => {
+      setSettings(event.detail);
+    };
+
     window.addEventListener('clienteleLogosUpdated', handleClienteleUpdate);
+    window.addEventListener('clienteleSettingsUpdated', handleSettingsUpdate as EventListener);
     
     return () => {
       window.removeEventListener('clienteleLogosUpdated', handleClienteleUpdate);
+      window.removeEventListener('clienteleSettingsUpdated', handleSettingsUpdate as EventListener);
     };
   }, []);
 
   if (clienteleLogos.length === 0) return null;
 
+  const logoHeight = `h-${settings.logoSize}`;
+  const sectionPadding = `py-${settings.sectionHeight}`;
+
   return (
-    <section className="py-6 bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-200/50">
+    <section className={`${sectionPadding} bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-200/50`}>
       <div className="container mx-auto px-6">
         <div className="text-center mb-4">
           <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-2">Trusted by Leading Brands</h3>
@@ -101,12 +133,15 @@ const ClienteleCarousel = () => {
             opts={{
               align: "start",
               loop: true,
+              duration: 30,
+              dragFree: true,
             }}
             plugins={[
               AutoPlay({
-                delay: 2000,
+                delay: 3000,
                 stopOnInteraction: false,
                 stopOnMouseEnter: true,
+                playOnInit: true,
               })
             ]}
             className="w-full"
@@ -115,11 +150,11 @@ const ClienteleCarousel = () => {
               {clienteleLogos.map((logo) => (
                 <CarouselItem key={logo.id} className="pl-2 md:pl-3 basis-1/2 md:basis-1/4 lg:basis-1/5">
                   <div className="group relative">
-                    <div className="flex items-center justify-center p-4 transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center justify-center p-6 transition-all duration-500 hover:-translate-y-2">
                       <img
                         src={logo.imageUrl}
                         alt={logo.name}
-                        className="h-16 w-auto max-w-full object-contain opacity-90 group-hover:opacity-100 transition-all duration-300"
+                        className={`${logoHeight} w-auto max-w-full object-contain opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110`}
                         onError={(e) => {
                           e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAzMkg4MFY0OEg0MFYzMloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                         }}

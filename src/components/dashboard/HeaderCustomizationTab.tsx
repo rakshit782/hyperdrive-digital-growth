@@ -149,8 +149,6 @@ const HeaderCustomizationTab = () => {
                     <SelectItem value="h-48">Ultra (192px)</SelectItem>
                     <SelectItem value="h-56">Mega (224px)</SelectItem>
                     <SelectItem value="h-64">Super (256px)</SelectItem>
-                    <SelectItem value="h-72">Giant (288px)</SelectItem>
-                    <SelectItem value="h-80">Colossal (320px)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
