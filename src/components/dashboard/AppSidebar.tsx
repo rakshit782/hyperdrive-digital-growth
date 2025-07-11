@@ -58,6 +58,7 @@ export const AppSidebar = ({ activeTab, onTabChange }: { activeTab: string; onTa
         { id: "contact-management", label: "Contact Forms", icon: Mail },
         { id: "newsletter-email-management", label: "Newsletter", icon: Mail },
         { id: "email-workflow", label: "Email Workflow", icon: Mail },
+        { id: "marketing-email-dashboard", label: "Marketing Emails", icon: Mail },
         { id: "clientele-management", label: "Clientele", icon: Users },
       ]
     },

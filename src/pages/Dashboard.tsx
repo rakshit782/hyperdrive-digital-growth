@@ -50,6 +50,7 @@ import {
   Scale
 } from "lucide-react";
 import PartnersManagementTab from "@/components/dashboard/PartnersManagementTab";
+import MarketingEmailDashboard from "@/components/dashboard/MarketingEmailDashboard";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('services');
@@ -123,6 +124,7 @@ const Dashboard = () => {
       'contact-management': 'Contact Management',
       'newsletter-email-management': 'Newsletter Email Management',
       'email-workflow': 'Email Workflow',
+      'marketing-email-dashboard': 'Marketing Email Dashboard',
       'clientele-management': 'Clientele Management',
       'partners-management': 'Partners Management',
       'form-security': 'Form Security Monitor',
@@ -154,6 +156,7 @@ const Dashboard = () => {
       'contact-management': 'Handle contact form submissions and messages',
       'newsletter-email-management': 'Manage newsletter email subscribers and campaigns',
       'email-workflow': 'Set up automated email sequences and campaigns',
+      'marketing-email-dashboard': 'Create and send marketing campaigns with multi-source email integration',
       'clientele-management': 'Manage client logos and testimonials',
       'partners-management': 'Manage partner logos and testimonials',
       'form-security': 'Monitor form security and spam protection',
@@ -232,6 +235,8 @@ const Dashboard = () => {
         return <LogoManagementTab />;
       case 'website-settings':
         return <WebsiteTab />;
+      case 'marketing-email-dashboard':
+        return <MarketingEmailDashboard />;
       default:
         return (
           <ServicesTab 
