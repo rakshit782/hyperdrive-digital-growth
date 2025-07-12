@@ -191,12 +191,7 @@ const Dashboard = () => {
       case 'blog-management':
         return <BlogManagement />;
       case 'reviews':
-        return (
-          <ReviewsTab 
-            reviews={reviews}
-            updateReviews={updateReviews}
-          />
-        );
+        return <ReviewsTab />;
       case 'faq-management':
         return <FAQManagementTab />;
       case 'pricing-management':

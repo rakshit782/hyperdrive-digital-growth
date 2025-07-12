@@ -1,70 +1,92 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2, Plus, Edit, Save } from "lucide-react";
-import { Review } from "@/types/dashboard";
 import { useToast } from "@/hooks/use-toast";
+import useSupabaseData, { ServiceReview } from "@/hooks/useSupabaseData";
 
-interface ReviewsTabProps {
-  reviews: Review[];
-  updateReviews: (reviews: Review[]) => void;
-}
-
-const ReviewsTab = ({ reviews, updateReviews }: ReviewsTabProps) => {
+const ReviewsTab = () => {
   const { toast } = useToast();
-  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const { useServiceReviews } = useSupabaseData();
+  const { reviews: serviceReviews, loading, createReview, updateReview, deleteReview } = useServiceReviews();
+  
+  const [editingReview, setEditingReview] = useState<ServiceReview | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleEdit = (review: Review) => {
+  const handleEdit = (review: ServiceReview) => {
     setEditingReview(review);
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    const updatedReviews = reviews.filter(r => r.id !== id);
-    updateReviews(updatedReviews);
-    toast({
-      title: "Review Deleted",
-      description: "Review has been removed successfully.",
-    });
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteReview(id);
+      toast({
+        title: "Review Deleted",
+        description: "Review has been removed successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete review.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAdd = () => {
-    const newReview: Review = {
-      id: `review-${Date.now()}`,
-      name: "New Customer",
+    const newReview: Omit<ServiceReview, 'id' | 'created_at' | 'updated_at'> = {
+      service_type: "general",
+      client_name: "New Customer",
       company: "Company Name",
       rating: 5,
-      review: "Great service!"
+      review_text: "Great service!",
+      avatar_url: null,
+      results_achieved: null,
+      sort_order: serviceReviews.length,
+      is_active: true
     };
-    setEditingReview(newReview);
+    setEditingReview(newReview as ServiceReview);
     setIsDialogOpen(true);
   };
 
-  const handleSave = (updatedReview: Review) => {
-    if (reviews.find(r => r.id === updatedReview.id)) {
-      // Update existing
-      const updatedReviews = reviews.map(r => 
-        r.id === updatedReview.id ? updatedReview : r
-      );
-      updateReviews(updatedReviews);
-    } else {
-      // Add new
-      updateReviews([...reviews, updatedReview]);
+  const handleSave = async (updatedReview: ServiceReview) => {
+    try {
+      if (serviceReviews.find(r => r.id === updatedReview.id)) {
+        // Update existing
+        await updateReview(updatedReview.id, updatedReview);
+      } else {
+        // Add new
+        await createReview(updatedReview);
+      }
+      setIsDialogOpen(false);
+      setEditingReview(null);
+      toast({
+        title: "Review Saved",
+        description: "Review has been saved successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save review.",
+        variant: "destructive",
+      });
     }
-    setIsDialogOpen(false);
-    setEditingReview(null);
-    toast({
-      title: "Review Saved",
-      description: "Review has been saved successfully.",
-    });
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -77,13 +99,13 @@ const ReviewsTab = ({ reviews, updateReviews }: ReviewsTabProps) => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {reviews.map((review) => (
+        {serviceReviews.map((review) => (
           <Card key={review.id} className="relative">
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-lg">{review.name}</CardTitle>
-                  <CardDescription>{review.company}</CardDescription>
+                  <CardTitle className="text-lg">{review.client_name}</CardTitle>
+                  <CardDescription>{review.company} • {review.service_type}</CardDescription>
                 </div>
                 <div className="flex space-x-2">
                   <Button
@@ -111,7 +133,16 @@ const ReviewsTab = ({ reviews, updateReviews }: ReviewsTabProps) => {
                   </span>
                 ))}
               </div>
-              <p className="text-sm">{review.review}</p>
+              <p className="text-sm mb-2">"{review.review_text}"</p>
+              {review.results_achieved && (
+                <p className="text-xs text-green-600 font-medium">Results: {review.results_achieved}</p>
+              )}
+              <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+                <span>Sort Order: {review.sort_order}</span>
+                <span className={`px-2 py-1 rounded ${review.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  {review.is_active ? 'Active' : 'Inactive'}
+                </span>
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -120,9 +151,11 @@ const ReviewsTab = ({ reviews, updateReviews }: ReviewsTabProps) => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{editingReview?.id.includes('review-') && editingReview.id.includes(Date.now().toString().slice(-5)) ? 'Add New Review' : 'Edit Review'}</DialogTitle>
+            <DialogTitle>
+              {editingReview && serviceReviews.find(r => r.id === editingReview.id) ? 'Edit Review' : 'Add New Review'}
+            </DialogTitle>
             <DialogDescription>
-              {editingReview?.id.includes('review-') && editingReview.id.includes(Date.now().toString().slice(-5)) ? 'Add a new customer review.' : 'Make changes to the review here.'}
+              {editingReview && serviceReviews.find(r => r.id === editingReview.id) ? 'Make changes to the review here.' : 'Add a new customer review.'}
             </DialogDescription>
           </DialogHeader>
           {editingReview && (
@@ -139,13 +172,13 @@ const ReviewsTab = ({ reviews, updateReviews }: ReviewsTabProps) => {
 };
 
 interface ReviewEditFormProps {
-  review: Review;
-  onSave: (review: Review) => void;
+  review: ServiceReview;
+  onSave: (review: ServiceReview) => void;
   onCancel: () => void;
 }
 
 const ReviewEditForm = ({ review, onSave, onCancel }: ReviewEditFormProps) => {
-  const [formData, setFormData] = useState<Review>(review);
+  const [formData, setFormData] = useState<ServiceReview>(review);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,11 +188,11 @@ const ReviewEditForm = ({ review, onSave, onCancel }: ReviewEditFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="name">Customer Name</Label>
+        <Label htmlFor="client_name">Customer Name</Label>
         <Input
-          id="name"
-          value={formData.name}
-          onChange={(e) => setFormData({...formData, name: e.target.value})}
+          id="client_name"
+          value={formData.client_name}
+          onChange={(e) => setFormData({...formData, client_name: e.target.value})}
           required
         />
       </div>
@@ -171,6 +204,28 @@ const ReviewEditForm = ({ review, onSave, onCancel }: ReviewEditFormProps) => {
           onChange={(e) => setFormData({...formData, company: e.target.value})}
           required
         />
+      </div>
+      <div>
+        <Label htmlFor="service_type">Service Type</Label>
+        <Select 
+          value={formData.service_type} 
+          onValueChange={(value) => setFormData({...formData, service_type: value})}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select service type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="general">General</SelectItem>
+            <SelectItem value="amazon">Amazon Advertising</SelectItem>
+            <SelectItem value="meta">Meta Advertising</SelectItem>
+            <SelectItem value="google">Google Advertising</SelectItem>
+            <SelectItem value="walmart">Walmart Advertising</SelectItem>
+            <SelectItem value="shopify-development">Shopify Development</SelectItem>
+            <SelectItem value="shopify-integration">Shopify Integration</SelectItem>
+            <SelectItem value="website-development">Website Development</SelectItem>
+            <SelectItem value="account-management">Account Management</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div>
         <Label htmlFor="rating">Rating</Label>
@@ -191,14 +246,41 @@ const ReviewEditForm = ({ review, onSave, onCancel }: ReviewEditFormProps) => {
         </Select>
       </div>
       <div>
-        <Label htmlFor="review">Review Text</Label>
+        <Label htmlFor="review_text">Review Text</Label>
         <Textarea
-          id="review"
-          value={formData.review}
-          onChange={(e) => setFormData({...formData, review: e.target.value})}
+          id="review_text"
+          value={formData.review_text}
+          onChange={(e) => setFormData({...formData, review_text: e.target.value})}
           required
           rows={4}
         />
+      </div>
+      <div>
+        <Label htmlFor="results_achieved">Results Achieved (Optional)</Label>
+        <Input
+          id="results_achieved"
+          value={formData.results_achieved || ''}
+          onChange={(e) => setFormData({...formData, results_achieved: e.target.value || null})}
+          placeholder="e.g., 300% increase in sales"
+        />
+      </div>
+      <div>
+        <Label htmlFor="sort_order">Sort Order</Label>
+        <Input
+          id="sort_order"
+          type="number"
+          value={formData.sort_order}
+          onChange={(e) => setFormData({...formData, sort_order: parseInt(e.target.value) || 0})}
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="is_active"
+          checked={formData.is_active}
+          onChange={(e) => setFormData({...formData, is_active: e.target.checked})}
+        />
+        <Label htmlFor="is_active">Active (visible on website)</Label>
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>
