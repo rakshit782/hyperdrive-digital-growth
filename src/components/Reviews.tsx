@@ -3,103 +3,60 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Review {
   id: string;
-  name: string;
+  client_name: string;
   company: string;
   rating: number;
-  review: string;
-  avatar?: string;
+  review_text: string;
 }
 
-const defaultReviews: Review[] = [
-  {
-    id: "1",
-    name: "Sarah Johnson",
-    company: "E-commerce Store Owner",
-    rating: 5,
-    review: "AMZ Ad Scout transformed our Amazon business. Our sales increased by 400% in just 3 months!",
-  },
-  {
-    id: "2",
-    name: "Michael Chen",
-    company: "Product Manager",
-    rating: 5,
-    review: "The team's expertise in Amazon advertising is unmatched. They delivered results beyond our expectations.",
-  },
-  {
-    id: "3",
-    name: "Emily Rodriguez",
-    company: "Brand Director",
-    rating: 5,
-    review: "Professional, results-driven, and always available. Our ROAS improved dramatically with their strategies.",
-  },
-  {
-    id: "4",
-    name: "David Thompson",
-    company: "Startup Founder",
-    rating: 5,
-    review: "From zero to hero on Amazon! Their campaign management and optimization skills are top-notch.",
-  },
-  {
-    id: "5",
-    name: "Lisa Wang",
-    company: "Brand Manager",
-    rating: 5,
-    review: "Outstanding results! Our conversion rates doubled within the first month of working with them.",
-  },
-  {
-    id: "6",
-    name: "Robert Miller",
-    company: "Online Retailer",
-    rating: 5,
-    review: "Best investment we made for our business. Their strategic approach to Amazon advertising is phenomenal.",
-  }
-];
-
 const Reviews = () => {
-  const [reviews, setReviews] = useState<Review[]>(defaultReviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Reviews: Component mounted, initializing...");
-    
-    const loadReviews = () => {
-      const savedReviews = localStorage.getItem('reviewsData');
-      if (savedReviews) {
-        try {
-          const parsedData = JSON.parse(savedReviews);
-          if (Array.isArray(parsedData) && parsedData.length > 0) {
-            console.log("Reviews: Loaded from localStorage:", parsedData.length);
-            setReviews(parsedData);
-          } else {
-            console.log("Reviews: Invalid localStorage data, using defaults");
-            setReviews(defaultReviews);
-          }
-        } catch (error) {
-          console.error("Reviews: Error parsing saved reviews:", error);
-          setReviews(defaultReviews);
-        }
-      }
-    };
-
-    loadReviews();
-
-    const handleReviewsUpdate = (event: CustomEvent) => {
-      console.log("Reviews: Received update event:", event.detail);
-      if (event.detail && Array.isArray(event.detail)) {
-        setReviews(event.detail);
-      }
-    };
-
-    window.addEventListener('reviewsUpdated', handleReviewsUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener('reviewsUpdated', handleReviewsUpdate as EventListener);
-    };
+    console.log("Reviews: Component mounted, fetching from Supabase...");
+    fetchReviews();
   }, []);
+
+  const fetchReviews = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('service_reviews')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) {
+        console.error("Reviews: Error fetching reviews:", error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        console.log("Reviews: Loaded from Supabase:", data.length);
+        const mappedReviews = data.map(review => ({
+          id: review.id,
+          client_name: review.client_name,
+          company: review.company,
+          rating: review.rating,
+          review_text: review.review_text
+        }));
+        setReviews(mappedReviews);
+      } else {
+        console.log("Reviews: No reviews found in Supabase");
+        setReviews([]);
+      }
+    } catch (error) {
+      console.error("Reviews: Error fetching reviews:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Auto-scroll functionality with smooth looping
   useEffect(() => {
@@ -152,8 +109,38 @@ const Reviews = () => {
     return visibleReviews;
   };
 
+  const getInitial = (name: string) => {
+    return name.charAt(0).toUpperCase();
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-slate-600">Loading reviews...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (reviews.length === 0) {
-    return null;
+    return (
+      <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
+              What Our Clients Say
+            </h2>
+            <p className="text-xl text-slate-600">
+              No reviews available at the moment. Check back soon!
+            </p>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   const visibleReviews = getVisibleReviews();
@@ -207,16 +194,21 @@ const Reviews = () => {
                     </div>
                     
                     <p className="text-slate-700 mb-6 leading-relaxed flex-grow">
-                      "{review.review}"
+                      "{review.review_text}"
                     </p>
                     
                     <div className="flex items-center mb-4">
                       {renderStars(review.rating)}
                     </div>
                     
-                    <div className="mt-auto">
-                      <h4 className="font-semibold text-slate-900 text-lg">{review.name}</h4>
-                      <p className="text-blue-600 font-medium">{review.company}</p>
+                    <div className="mt-auto flex items-center">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-semibold text-lg mr-4">
+                        {getInitial(review.client_name)}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-slate-900 text-lg">{review.client_name}</h4>
+                        <p className="text-blue-600 font-medium">{review.company}</p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
