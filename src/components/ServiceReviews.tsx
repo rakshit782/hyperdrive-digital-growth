@@ -32,19 +32,11 @@ const ServiceReviews = ({ reviews, title = "What Our Clients Say" }: ServiceRevi
           {reviews.map((review) => (
             <div key={review.id} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow duration-300">
               <div className="flex items-center mb-4">
-                {review.avatar_url ? (
-                  <img
-                    src={review.avatar_url}
-                    alt={review.client_name}
-                    className="w-12 h-12 rounded-full object-cover mr-4"
-                  />
-                ) : (
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
-                    <span className="text-white font-semibold text-lg">
-                      {review.client_name.charAt(0)}
-                    </span>
-                  </div>
-                )}
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
+                  <span className="text-white font-semibold text-lg">
+                    {review.client_name.charAt(0)}
+                  </span>
+                </div>
                 <div>
                   <h4 className="font-semibold text-slate-900">{review.client_name}</h4>
                   <p className="text-slate-600 text-sm">{review.company}</p>

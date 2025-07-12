@@ -10,43 +10,37 @@ const CircularReviews = () => {
       name: "Sarah Johnson",
       company: "TechStart Inc.",
       rating: 5,
-      review: "Our Amazon sales increased by 400% in just 3 months. The team's expertise in PPC optimization is unmatched. They transformed our struggling campaigns into profit-generating machines.",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612c788?w=150&h=150&fit=crop&crop=face"
+      review: "Our Amazon sales increased by 400% in just 3 months. The team's expertise in PPC optimization is unmatched. They transformed our struggling campaigns into profit-generating machines."
     },
     {
       name: "Michael Chen",
       company: "Global Retail Co.",
       rating: 5,
-      review: "Working with this agency was a game-changer for our Walmart advertising. Their strategic approach and attention to detail resulted in a 250% increase in ROAS within the first quarter.",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+      review: "Working with this agency was a game-changer for our Walmart advertising. Their strategic approach and attention to detail resulted in a 250% increase in ROAS within the first quarter."
     },
     {
       name: "Emily Rodriguez",
       company: "Fashion Forward",
       rating: 5,
-      review: "The Meta advertising campaigns they created for us generated over 10,000 new customers in 6 months. Their creative strategies and targeting precision exceeded all our expectations.",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+      review: "The Meta advertising campaigns they created for us generated over 10,000 new customers in 6 months. Their creative strategies and targeting precision exceeded all our expectations."
     },
     {
       name: "David Thompson",
       company: "Home Essentials",
       rating: 5,
-      review: "Professional, results-driven, and incredibly knowledgeable. They optimized our advertising spend and increased our conversion rates by 180%. Highly recommend their services!",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
+      review: "Professional, results-driven, and incredibly knowledgeable. They optimized our advertising spend and increased our conversion rates by 180%. Highly recommend their services!"
     },
     {
       name: "Lisa Wang",
       company: "Wellness Products",
       rating: 5,
-      review: "Their comprehensive approach to multi-platform advertising helped us scale from $10K to $100K monthly revenue. The team is responsive and delivers on every promise.",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+      review: "Their comprehensive approach to multi-platform advertising helped us scale from $10K to $100K monthly revenue. The team is responsive and delivers on every promise."
     },
     {
       name: "Robert Martinez",
       company: "Sports Gear Pro",
       rating: 5,
-      review: "Amazing results across Amazon and Meta platforms. Our brand visibility increased dramatically and sales followed suit. The ROI has been exceptional from day one.",
-      avatar: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=150&h=150&fit=crop&crop=face"
+      review: "Amazing results across Amazon and Meta platforms. Our brand visibility increased dramatically and sales followed suit. The ROI has been exceptional from day one."
     }
   ];
 
@@ -121,11 +115,11 @@ const CircularReviews = () => {
 
                 {/* Author */}
                 <div className="flex items-center">
-                  <img 
-                    src={review.avatar} 
-                    alt={review.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-blue-100 mr-4"
-                  />
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
+                    <span className="text-white font-semibold text-lg">
+                      {review.name.charAt(0)}
+                    </span>
+                  </div>
                   <div>
                     <div className="font-semibold text-slate-900">{review.name}</div>
                     <div className="text-sm text-slate-500">{review.company}</div>
