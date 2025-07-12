@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -11,6 +11,7 @@ interface Review {
   company: string;
   rating: number;
   review_text: string;
+  results_achieved?: string;
 }
 
 const Reviews = () => {
@@ -44,7 +45,8 @@ const Reviews = () => {
           client_name: review.client_name,
           company: review.company,
           rating: review.rating,
-          review_text: review.review_text
+          review_text: review.review_text,
+          results_achieved: review.results_achieved
         }));
         setReviews(mappedReviews);
       } else {
@@ -65,7 +67,6 @@ const Reviews = () => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => {
         const nextIndex = prev + 1;
-        // Create seamless loop by going back to 0 when reaching the end
         return nextIndex >= reviews.length ? 0 : nextIndex;
       });
     }, 4000);
@@ -115,8 +116,8 @@ const Reviews = () => {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-12 bg-gradient-to-br from-slate-50 to-blue-50/50">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-4 text-slate-600">Loading reviews...</p>
@@ -128,13 +129,13 @@ const Reviews = () => {
 
   if (reviews.length === 0) {
     return (
-      <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-12 bg-gradient-to-br from-slate-50 to-blue-50/50">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="text-center">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
               What Our Clients Say
             </h2>
-            <p className="text-xl text-slate-600">
+            <p className="text-lg text-slate-600">
               No reviews available at the moment. Check back soon!
             </p>
           </div>
@@ -146,90 +147,92 @@ const Reviews = () => {
   const visibleReviews = getVisibleReviews();
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
+    <section className="py-12 bg-gradient-to-br from-slate-50 to-blue-50/50">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             What Our Clients Say
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Don't just take our word for it. Here's what successful Amazon sellers and e-commerce brands have to say about working with us.
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            Real feedback from businesses that have transformed their growth with our services.
           </p>
         </div>
 
         <div className="relative">
           {/* Navigation Buttons */}
-          <div className="flex justify-center gap-4 mb-8">
-            <Button
-              onClick={prevSlide}
-              variant="outline"
-              size="sm"
-              className="h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white hover:scale-105 transition-all duration-300"
-              disabled={isTransitioning}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <Button
-              onClick={nextSlide}
-              variant="outline"
-              size="sm"
-              className="h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white hover:scale-105 transition-all duration-300"
-              disabled={isTransitioning}
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
+          {reviews.length > 3 && (
+            <div className="flex justify-center gap-4 mb-8">
+              <Button
+                onClick={prevSlide}
+                variant="outline"
+                size="sm"
+                className="bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white hover:scale-105 transition-all duration-300"
+                disabled={isTransitioning}
+                aria-label="Previous reviews"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                onClick={nextSlide}
+                variant="outline" 
+                size="sm"
+                className="bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white hover:scale-105 transition-all duration-300"
+                disabled={isTransitioning}
+                aria-label="Next reviews"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
 
           {/* Reviews Grid */}
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {visibleReviews.map((review, index) => (
-              <div 
-                key={`${review.id}-${currentIndex}-${index}`}
-                className="transform transition-all duration-500 ease-in-out"
-              >
-                <Card className="group hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm border-white/20 hover:-translate-y-2 h-full">
-                  <CardContent className="p-8 h-full flex flex-col">
-                    <div className="flex items-center mb-6">
-                      <Quote className="w-8 h-8 text-blue-600 mb-4" />
-                    </div>
-                    
-                    <p className="text-slate-700 mb-6 leading-relaxed flex-grow">
-                      "{review.review_text}"
-                    </p>
-                    
-                    <div className="flex items-center mb-4">
-                      {renderStars(review.rating)}
-                    </div>
-                    
-                    <div className="mt-auto flex items-center">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-semibold text-lg mr-4">
-                        {getInitial(review.client_name)}
-                      </div>
+              <Card key={`${review.id}-${currentIndex}-${index}`} className="bg-white/90 backdrop-blur-sm border-0 shadow-md hover:shadow-lg transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4" role="img" aria-label={`${review.rating} out of 5 stars`}>
+                    {renderStars(review.rating)}
+                  </div>
+                  
+                  <blockquote className="text-slate-700 text-sm leading-relaxed mb-4 line-clamp-4">
+                    "{review.review_text}"
+                  </blockquote>
+                  
+                  <div className="border-t pt-4">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-semibold text-slate-900 text-lg">{review.client_name}</h4>
-                        <p className="text-blue-600 font-medium">{review.company}</p>
+                        <div className="font-semibold text-slate-900 text-sm">{review.client_name}</div>
+                        <div className="text-slate-600 text-xs">{review.company}</div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                    {review.results_achieved && (
+                      <div className="mt-3 p-2 bg-green-50 rounded-lg border border-green-100">
+                        <div className="text-xs font-medium text-green-700">Results: {review.results_achieved}</div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center mt-8 gap-2">
-            {reviews.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentIndex
-                    ? "bg-blue-600 scale-125"
-                    : "bg-slate-300 hover:bg-slate-400"
-                }`}
-              />
-            ))}
-          </div>
+          {reviews.length > 3 && (
+            <div className="flex justify-center mt-8 gap-2">
+              {reviews.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentIndex
+                      ? "bg-blue-600 scale-125"
+                      : "bg-slate-300 hover:bg-slate-400"
+                  }`}
+                  aria-label={`Go to review ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
