@@ -16,8 +16,8 @@ export type ContactSubmission = Database['public']['Tables']['contact_submission
 export type Lead = Database['public']['Tables']['leads']['Row'];
 export type SecurityLog = Database['public']['Tables']['form_security_logs']['Row'];
 
-// Simple hook without complex generics
-export const useSupabaseData = (tableName: keyof Database['public']['Tables']) => {
+// Simple hook with basic types
+export const useSupabaseData = (tableName: string) => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -26,7 +26,7 @@ export const useSupabaseData = (tableName: keyof Database['public']['Tables']) =
     try {
       setLoading(true);
       const { data: result, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -47,7 +47,7 @@ export const useSupabaseData = (tableName: keyof Database['public']['Tables']) =
   const insert = async (record: any) => {
     try {
       const { data: result, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .insert([record])
         .select()
         .single();
@@ -64,7 +64,7 @@ export const useSupabaseData = (tableName: keyof Database['public']['Tables']) =
   const update = async (id: string, updates: any) => {
     try {
       const { data: result, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
@@ -82,7 +82,7 @@ export const useSupabaseData = (tableName: keyof Database['public']['Tables']) =
   const remove = async (id: string) => {
     try {
       const { error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .delete()
         .eq('id', id);
 
@@ -183,6 +183,45 @@ export const useServiceStats = () => {
     createStat: insert,
     updateStat: update,
     deleteStat: remove,
+    refetch
+  };
+};
+
+export const useNewsletterEmails = () => {
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData('newsletter_emails');
+  
+  return {
+    emails: data as NewsletterEmail[],
+    loading,
+    createEmail: insert,
+    updateEmail: update,
+    deleteEmail: remove,
+    refetch
+  };
+};
+
+export const useLeads = () => {
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData('leads');
+  
+  return {
+    leads: data as Lead[],
+    loading,
+    createLead: insert,
+    updateLead: update,
+    deleteLead: remove,
+    refetch
+  };
+};
+
+export const useContactSubmissions = () => {
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData('contact_submissions');
+  
+  return {
+    submissions: data as ContactSubmission[],
+    loading,
+    createSubmission: insert,
+    updateSubmission: update,
+    deleteSubmission: remove,
     refetch
   };
 };
