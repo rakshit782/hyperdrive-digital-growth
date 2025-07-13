@@ -2,17 +2,9 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 
-export interface NewsletterEmail {
-  id?: string;
-  email: string;
-  name?: string;
-  status: 'subscribed' | 'unsubscribed';
-  source?: string;
-  tags?: string[];
-  created_at?: string;
-  updated_at?: string;
-}
+export type NewsletterEmail = Database['public']['Tables']['newsletter_emails']['Row'];
 
 export const useNewsletterEmails = () => {
   const [emails, setEmails] = useState<NewsletterEmail[]>([]);
@@ -28,7 +20,10 @@ export const useNewsletterEmails = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setEmails(data || []);
+      setEmails(data.map(email => ({
+        ...email,
+        status: email.status as 'subscribed' | 'unsubscribed'
+      })));
     } catch (error) {
       console.error('Error fetching newsletter emails:', error);
       toast({

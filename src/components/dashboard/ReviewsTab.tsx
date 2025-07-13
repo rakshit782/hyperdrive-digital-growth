@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,11 +8,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2, Plus, Edit, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import useSupabaseData, { ServiceReview } from "@/hooks/useSupabaseData";
+import { useServiceReviews, ServiceReview } from "@/hooks/useSupabaseData";
 
 const ReviewsTab = () => {
   const { toast } = useToast();
-  const { useServiceReviews } = useSupabaseData();
   const { reviews: serviceReviews, loading, createReview, updateReview, deleteReview } = useServiceReviews();
   
   const [editingReview, setEditingReview] = useState<ServiceReview | null>(null);
@@ -60,7 +58,7 @@ const ReviewsTab = () => {
     try {
       if (serviceReviews.find(r => r.id === updatedReview.id)) {
         // Update existing
-        await updateReview(updatedReview.id, updatedReview);
+        await updateReview(updatedReview.id!, updatedReview);
       } else {
         // Add new
         await createReview(updatedReview);
@@ -118,7 +116,7 @@ const ReviewsTab = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDelete(review.id)}
+                    onClick={() => handleDelete(review.id!)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

@@ -79,6 +79,7 @@ const NewsletterEmailManagementTab = () => {
         email: newEmail,
         name: newEmail.split('@')[0],
         source: 'manual_entry',
+        status: 'subscribed',
         tags: ['manual_add']
       });
 

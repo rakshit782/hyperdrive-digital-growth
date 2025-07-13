@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import {
   Hash
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { localDB } from "@/utils/localStorageDB";
+import { supabase } from '@/integrations/supabase/client';
 import LeadDetailsModal from "./LeadDetailsModal";
 
 type LeadStatus = 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
@@ -79,14 +80,20 @@ const LeadManagementTab = () => {
   const loadLeads = async () => {
     try {
       setLoading(true);
-      const leadsData = await localDB.findAll('leads');
-      setLeads(leadsData);
-      console.log('Leads loaded from local storage:', leadsData);
+      const { data, error } = await supabase
+        .from('leads')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      setLeads(data || []);
+      console.log('Leads loaded from Supabase:', data);
     } catch (error) {
       console.error('Error loading leads:', error);
       toast({
         title: "Error",
-        description: "Failed to load leads from local storage",
+        description: "Failed to load leads from database",
         variant: "destructive",
       });
     } finally {
@@ -100,7 +107,13 @@ const LeadManagementTab = () => {
 
   const handleStatusChange = async (leadId: string, newStatus: LeadStatus) => {
     try {
-      await localDB.update('leads', leadId, { status: newStatus });
+      const { error } = await supabase
+        .from('leads')
+        .update({ status: newStatus })
+        .eq('id', leadId);
+
+      if (error) throw error;
+
       toast({
         title: "Success",
         description: "Lead status updated successfully",
@@ -119,7 +132,13 @@ const LeadManagementTab = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this lead?')) {
       try {
-        await localDB.delete('leads', id);
+        const { error } = await supabase
+          .from('leads')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+
         toast({
           title: "Success",
           description: "Lead deleted successfully",
@@ -165,7 +184,7 @@ const LeadManagementTab = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Loading leads from local storage...</span>
+        <span className="ml-3 text-gray-600">Loading leads from database...</span>
       </div>
     );
   }
@@ -180,8 +199,8 @@ const LeadManagementTab = () => {
                 <Users className="w-5 h-5 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl font-bold text-slate-900">Lead Management (Local Storage)</CardTitle>
-                <CardDescription>Track and manage your leads with local browser storage</CardDescription>
+                <CardTitle className="text-xl font-bold text-slate-900">Lead Management</CardTitle>
+                <CardDescription>Track and manage your leads with database storage</CardDescription>
               </div>
             </div>
             <Button variant="outline" onClick={loadLeads} className="flex items-center gap-2">

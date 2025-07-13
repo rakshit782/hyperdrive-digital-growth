@@ -1,71 +1,35 @@
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Shield, AlertTriangle, CheckCircle, Clock } from "lucide-react";
+import { databaseService, SecurityLog } from "@/services/databaseService";
+import { useToast } from "@/hooks/use-toast";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle, CheckCircle, XCircle, Shield, Eye } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { databaseService, type SecurityLog } from '@/services/databaseService';
-
-export const FormSecurityTab = () => {
+const FormSecurityTab = () => {
   const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    totalSubmissions: 0,
-    validSubmissions: 0,
-    blockedSubmissions: 0,
-    avgRecaptchaScore: 0
-  });
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchSecurityLogs();
+    loadSecurityLogs();
   }, []);
 
-  const fetchSecurityLogs = async () => {
+  const loadSecurityLogs = async () => {
     try {
-      const data = await databaseService.getSecurityLogs(100);
-      setSecurityLogs(data);
-      calculateStats(data);
+      setLoading(true);
+      const logs = await databaseService.getFormSecurityLogs();
+      setSecurityLogs(logs);
     } catch (error) {
-      console.error('Error fetching security logs:', error);
+      console.error('Error loading security logs:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch security logs",
+        description: "Failed to load security logs",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  };
-
-  const calculateStats = (logs: SecurityLog[]) => {
-    const total = logs.length;
-    const valid = logs.filter(log => 
-      !log.honeypot_triggered && 
-      log.csrf_valid && 
-      (log.recaptcha_score || 0) >= 0.5
-    ).length;
-    const blocked = total - valid;
-    const avgScore = logs.reduce((sum, log) => sum + (log.recaptcha_score || 0), 0) / total;
-
-    setStats({
-      totalSubmissions: total,
-      validSubmissions: valid,
-      blockedSubmissions: blocked,
-      avgRecaptchaScore: avgScore || 0
-    });
-  };
-
-  const getSecurityStatus = (log: SecurityLog) => {
-    if (log.honeypot_triggered) return { status: 'blocked', reason: 'Honeypot triggered' };
-    if (!log.csrf_valid) return { status: 'blocked', reason: 'Invalid CSRF token' };
-    if ((log.recaptcha_score || 0) < 0.5) return { status: 'blocked', reason: 'Low reCAPTCHA score' };
-    return { status: 'valid', reason: 'Passed all checks' };
-  };
-
-  const formatIpAddress = (ip: string | null): string => {
-    return ip || 'Unknown';
   };
 
   if (loading) {
@@ -76,128 +40,120 @@ export const FormSecurityTab = () => {
     );
   }
 
+  const stats = {
+    total: securityLogs.length,
+    honeypotTriggered: securityLogs.filter(log => log.honeypot_triggered).length,
+    validSubmissions: securityLogs.filter(log => log.csrf_valid && !log.honeypot_triggered).length,
+    highRiskSubmissions: securityLogs.filter(log => log.recaptcha_score && log.recaptcha_score < 0.5).length
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Form Security Monitor</h2>
-        <p className="text-slate-600">Monitor form submission security and spam protection.</p>
-      </div>
-
       {/* Security Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <Shield className="h-8 w-8 text-blue-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Total Submissions</p>
-                <p className="text-2xl font-bold">{stats.totalSubmissions}</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
+            <Shield className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.total}</div>
           </CardContent>
         </Card>
-
+        
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Valid Submissions</p>
-                <p className="text-2xl font-bold text-green-600">{stats.validSubmissions}</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Honeypot Triggered</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">{stats.honeypotTriggered}</div>
           </CardContent>
         </Card>
-
+        
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <XCircle className="h-8 w-8 text-red-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Blocked Submissions</p>
-                <p className="text-2xl font-bold text-red-600">{stats.blockedSubmissions}</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Valid Submissions</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{stats.validSubmissions}</div>
           </CardContent>
         </Card>
-
+        
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <AlertTriangle className="h-8 w-8 text-yellow-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Avg reCAPTCHA Score</p>
-                <p className="text-2xl font-bold">{stats.avgRecaptchaScore.toFixed(2)}</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">High Risk</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-orange-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-500">{stats.highRiskSubmissions}</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Security Logs */}
+      {/* Security Logs Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Security Events</CardTitle>
-          <CardDescription>Latest form submission security checks</CardDescription>
+          <CardTitle>Form Security Logs</CardTitle>
+          <CardDescription>
+            Monitor form submissions and security events
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {securityLogs.map((log) => {
-              const securityStatus = getSecurityStatus(log);
-              return (
-                <div key={log.id} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <Badge variant={securityStatus.status === 'valid' ? 'default' : 'destructive'}>
-                        {log.form_type}
-                      </Badge>
-                      <Badge variant="outline">
-                        Score: {(log.recaptcha_score || 0).toFixed(2)}
-                      </Badge>
-                      {log.honeypot_triggered && (
-                        <Badge variant="destructive">Honeypot</Badge>
-                      )}
-                      {!log.csrf_valid && (
-                        <Badge variant="destructive">CSRF</Badge>
-                      )}
-                    </div>
-                    <span className="text-sm text-slate-500">
-                      {new Date(log.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p><span className="font-medium">Status:</span> {securityStatus.reason}</p>
-                      <p><span className="font-medium">IP:</span> {formatIpAddress(log.ip_address)}</p>
-                    </div>
-                    <div>
-                      <p><span className="font-medium">User Agent:</span> 
-                        <span className="text-slate-600 truncate block">
-                          {log.user_agent ? log.user_agent.substring(0, 50) + '...' : 'Unknown'}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {securityLogs.length === 0 && (
-            <div className="text-center py-8 text-slate-500">
-              No security logs available yet.
+          {securityLogs.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              No security logs found
             </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Form Type</TableHead>
+                  <TableHead>IP Address</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>reCAPTCHA Score</TableHead>
+                  <TableHead>Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {securityLogs.map((log) => (
+                  <TableRow key={log.id}>
+                    <TableCell className="font-medium">{log.form_type}</TableCell>
+                    <TableCell>{log.ip_address || 'N/A'}</TableCell>
+                    <TableCell>
+                      {log.honeypot_triggered ? (
+                        <Badge variant="destructive">Honeypot Triggered</Badge>
+                      ) : log.csrf_valid ? (
+                        <Badge variant="default">Valid</Badge>
+                      ) : (
+                        <Badge variant="secondary">Invalid CSRF</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {log.recaptcha_score ? (
+                        <Badge variant={log.recaptcha_score >= 0.5 ? 'default' : 'destructive'}>
+                          {log.recaptcha_score.toFixed(2)}
+                        </Badge>
+                      ) : (
+                        'N/A'
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm text-gray-600">
+                        <Clock className="w-3 h-3" />
+                        {new Date(log.created_at).toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
-
-      <div className="flex justify-end">
-        <Button onClick={fetchSecurityLogs} variant="outline">
-          <Eye className="w-4 h-4 mr-2" />
-          Refresh Logs
-        </Button>
-      </div>
     </div>
   );
 };
+
+export default FormSecurityTab;

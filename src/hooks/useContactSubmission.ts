@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { localDB } from '@/utils/localStorageDB';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ContactSubmissionData {
   name: string;
@@ -8,7 +8,7 @@ export interface ContactSubmissionData {
   phone?: string;
   company?: string;
   message?: string;
-  formType?: string;
+  form_type?: string;
 }
 
 export const useContactSubmission = () => {
@@ -26,13 +26,20 @@ export const useContactSubmission = () => {
         phone: data.phone || null,
         company: data.company || null,
         message: data.message || null,
-        form_type: data.formType || 'contact'
+        form_type: data.form_type || 'contact'
       };
 
-      const contactId = await localDB.insert('contact_submissions', contactData);
-      console.log('Contact submission stored successfully with ID:', contactId);
+      const { data: result, error } = await supabase
+        .from('contact_submissions')
+        .insert([contactData])
+        .select()
+        .single();
 
-      return { success: true, contactId };
+      if (error) throw error;
+
+      console.log('Contact submission stored successfully with ID:', result.id);
+
+      return { success: true, contactId: result.id };
     } catch (error) {
       console.error('Contact submission error:', error);
       return { success: false, error: 'Failed to store contact submission' };
