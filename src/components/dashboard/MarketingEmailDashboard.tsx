@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Mail, 
@@ -21,7 +22,10 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  Search
+  Search,
+  Eye,
+  Reply,
+  Activity
 } from 'lucide-react';
 import { useZeptoMailAutomation } from '@/hooks/useZeptoMailAutomation';
 import { useNewsletterEmails } from '@/hooks/useNewsletterEmails';
@@ -32,6 +36,7 @@ interface EmailCampaign {
   name: string;
   subject: string;
   content: string;
+  replyTo?: string;
   status: 'draft' | 'scheduled' | 'sent' | 'sending';
   recipientCount: number;
   sentCount: number;
@@ -40,6 +45,21 @@ interface EmailCampaign {
   scheduledDate?: string;
   createdAt: string;
   selectedRecipients: string[];
+  emailGapMinutes: number;
+}
+
+interface EmailLog {
+  id: string;
+  campaignId: string;
+  recipientEmail: string;
+  recipientName: string;
+  status: 'sent' | 'failed' | 'bounced';
+  sentAt: string;
+  opened?: boolean;
+  openedAt?: string;
+  clicked?: boolean;
+  clickedAt?: string;
+  error?: string;
 }
 
 interface EmailRecipient {
@@ -69,6 +89,7 @@ const MarketingEmailDashboard = () => {
   const { leads } = useLocalLeads();
 
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>([]);
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
   const [recipients, setRecipients] = useState<EmailRecipient[]>([]);
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]);
   const [filteredRecipients, setFilteredRecipients] = useState<EmailRecipient[]>([]);
@@ -78,7 +99,9 @@ const MarketingEmailDashboard = () => {
     name: '',
     subject: '',
     content: '',
-    status: 'draft'
+    replyTo: '',
+    status: 'draft',
+    emailGapMinutes: 5
   });
   const [googleSheetsConfig, setGoogleSheetsConfig] = useState<GoogleSheetsConnection>({
     isEnabled: false,
@@ -94,6 +117,7 @@ const MarketingEmailDashboard = () => {
 
   useEffect(() => {
     loadCampaigns();
+    loadEmailLogs();
     loadGoogleSheetsConfig();
     fetchAllRecipients();
   }, []);
@@ -122,6 +146,27 @@ const MarketingEmailDashboard = () => {
     if (stored) {
       setCampaigns(JSON.parse(stored));
     }
+  };
+
+  const loadEmailLogs = () => {
+    const stored = localStorage.getItem('email_logs');
+    if (stored) {
+      setEmailLogs(JSON.parse(stored));
+    }
+  };
+
+  const saveEmailLog = (log: EmailLog) => {
+    const logs = [...emailLogs, log];
+    setEmailLogs(logs);
+    localStorage.setItem('email_logs', JSON.stringify(logs));
+  };
+
+  const updateEmailLog = (logId: string, updates: Partial<EmailLog>) => {
+    const updatedLogs = emailLogs.map(log => 
+      log.id === logId ? { ...log, ...updates } : log
+    );
+    setEmailLogs(updatedLogs);
+    localStorage.setItem('email_logs', JSON.stringify(updatedLogs));
   };
 
   const saveCampaigns = (campaignsToSave: EmailCampaign[]) => {
@@ -268,11 +313,13 @@ const MarketingEmailDashboard = () => {
         name: currentCampaign.name!,
         subject: currentCampaign.subject!,
         content: currentCampaign.content!,
+        replyTo: currentCampaign.replyTo || zeptoSettings.fromEmail,
         status: 'draft',
         recipientCount: selectedRecipients.length,
         sentCount: 0,
         selectedRecipients: [...selectedRecipients],
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        emailGapMinutes: currentCampaign.emailGapMinutes || 5
       };
 
       // Save as email template for future use
@@ -299,7 +346,9 @@ const MarketingEmailDashboard = () => {
         name: '',
         subject: '',
         content: '',
-        status: 'draft'
+        replyTo: '',
+        status: 'draft',
+        emailGapMinutes: 5
       });
       setSelectedRecipients([]);
       setActiveTab('campaigns');
@@ -348,8 +397,15 @@ const MarketingEmailDashboard = () => {
 
     let sentCount = 0;
     
-    // Send emails to all selected recipients
-    for (const recipient of selectedRecipientsData) {
+    // Send emails to all selected recipients with gap
+    for (let i = 0; i < selectedRecipientsData.length; i++) {
+      const recipient = selectedRecipientsData[i];
+      
+      // Add delay between emails (except for the first one)
+      if (i > 0) {
+        await new Promise(resolve => setTimeout(resolve, campaign.emailGapMinutes * 60 * 1000));
+      }
+      
       try {
         // Replace variables in subject and content
         let subject = campaign.subject;
@@ -368,6 +424,10 @@ const MarketingEmailDashboard = () => {
           content = content.replace(new RegExp(placeholder, 'g'), value);
         });
 
+        // Add tracking pixel for open tracking
+        const trackingPixel = `<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="1" height="1" style="display:none;" onload="fetch('/api/track-open?log=${campaign.id}_${recipient.id}').catch(()=>{})" />`;
+        content += trackingPixel;
+
         // Send via ZeptoMail API
         const zeptoMailData = {
           from: {
@@ -381,6 +441,7 @@ const MarketingEmailDashboard = () => {
               }
             }
           ],
+          reply_to: campaign.replyTo ? [{ address: campaign.replyTo }] : undefined,
           subject: subject,
           htmlbody: content,
           bounce_address: zeptoSettings.bounceAddress || zeptoSettings.fromEmail
@@ -396,15 +457,49 @@ const MarketingEmailDashboard = () => {
           body: JSON.stringify(zeptoMailData)
         });
 
+        const logId = `${campaign.id}_${recipient.id}_${Date.now()}`;
+        
         if (response.ok) {
           sentCount++;
           console.log(`Email sent successfully to ${recipient.email}`);
+          
+          // Log successful send
+          saveEmailLog({
+            id: logId,
+            campaignId: campaign.id,
+            recipientEmail: recipient.email,
+            recipientName: recipient.name,
+            status: 'sent',
+            sentAt: new Date().toISOString()
+          });
         } else {
           const errorData = await response.json();
           console.error(`Failed to send email to ${recipient.email}:`, errorData);
+          
+          // Log failed send
+          saveEmailLog({
+            id: logId,
+            campaignId: campaign.id,
+            recipientEmail: recipient.email,
+            recipientName: recipient.name,
+            status: 'failed',
+            sentAt: new Date().toISOString(),
+            error: errorData.message || 'Unknown error'
+          });
         }
       } catch (error) {
         console.error(`Failed to send email to ${recipient.email}:`, error);
+        
+        // Log failed send
+        saveEmailLog({
+          id: `${campaign.id}_${recipient.id}_${Date.now()}`,
+          campaignId: campaign.id,
+          recipientEmail: recipient.email,
+          recipientName: recipient.name,
+          status: 'failed',
+          sentAt: new Date().toISOString(),
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
       }
     }
 
@@ -458,6 +553,32 @@ const MarketingEmailDashboard = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  const exportEmailLogs = () => {
+    const csvContent = [
+      ['Campaign', 'Recipient Email', 'Recipient Name', 'Status', 'Sent At', 'Opened', 'Opened At', 'Clicked', 'Clicked At', 'Error'],
+      ...emailLogs.map(log => [
+        campaigns.find(c => c.id === log.campaignId)?.name || log.campaignId,
+        log.recipientEmail,
+        log.recipientName,
+        log.status,
+        log.sentAt,
+        log.opened ? 'Yes' : 'No',
+        log.openedAt || '',
+        log.clicked ? 'Yes' : 'No',
+        log.clickedAt || '',
+        log.error || ''
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `email-logs-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
@@ -481,6 +602,14 @@ const MarketingEmailDashboard = () => {
                 <Download className="w-4 h-4 mr-2" />
                 Export Recipients
               </Button>
+              <Button
+                onClick={exportEmailLogs}
+                variant="outline"
+                size="sm"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export Logs
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -491,6 +620,7 @@ const MarketingEmailDashboard = () => {
               <TabsTrigger value="compose">Compose Campaign</TabsTrigger>
               <TabsTrigger value="recipients">Recipients ({filteredRecipients.length})</TabsTrigger>
               <TabsTrigger value="campaigns">Campaigns ({campaigns.length})</TabsTrigger>
+              <TabsTrigger value="logs">Email Logs ({emailLogs.length})</TabsTrigger>
               <TabsTrigger value="settings">Google Sheets</TabsTrigger>
             </TabsList>
 
@@ -499,7 +629,7 @@ const MarketingEmailDashboard = () => {
                 <CardHeader>
                   <CardTitle className="text-lg">Create New Campaign</CardTitle>
                   <CardDescription>
-                    Design your marketing email campaign
+                    Design your marketing email campaign with advanced settings
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -527,6 +657,44 @@ const MarketingEmailDashboard = () => {
                         })}
                         placeholder="e.g., Don't miss our latest updates!"
                       />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="replyTo">Reply-To Email</Label>
+                      <Input
+                        id="replyTo"
+                        type="email"
+                        value={currentCampaign.replyTo || ''}
+                        onChange={(e) => setCurrentCampaign({
+                          ...currentCampaign,
+                          replyTo: e.target.value
+                        })}
+                        placeholder="reply@yourdomain.com"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="emailGap">Gap Between Emails (minutes)</Label>
+                      <Select
+                        value={currentCampaign.emailGapMinutes?.toString() || '5'}
+                        onValueChange={(value) => setCurrentCampaign({
+                          ...currentCampaign,
+                          emailGapMinutes: parseInt(value)
+                        })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 minute</SelectItem>
+                          <SelectItem value="2">2 minutes</SelectItem>
+                          <SelectItem value="5">5 minutes</SelectItem>
+                          <SelectItem value="10">10 minutes</SelectItem>
+                          <SelectItem value="30">30 minutes</SelectItem>
+                          <SelectItem value="60">1 hour</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   
@@ -768,6 +936,99 @@ const MarketingEmailDashboard = () => {
                                   <Trash2 className="w-3 h-3" />
                                 </Button>
                               </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="logs" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Email Logs & Tracking</CardTitle>
+                  <CardDescription>
+                    Monitor email delivery status and tracking
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {emailLogs.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      No email logs found
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Campaign</TableHead>
+                          <TableHead>Recipient</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Sent At</TableHead>
+                          <TableHead>Tracking</TableHead>
+                          <TableHead>Error</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {emailLogs.map((log) => (
+                          <TableRow key={log.id}>
+                            <TableCell>
+                              <div className="font-medium">
+                                {campaigns.find(c => c.id === log.campaignId)?.name || 'Unknown Campaign'}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <div className="font-medium">{log.recipientName}</div>
+                                <div className="text-sm text-gray-500">{log.recipientEmail}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={
+                                log.status === 'sent' ? 'default' :
+                                log.status === 'failed' ? 'destructive' : 'secondary'
+                              }>
+                                {log.status === 'sent' && <CheckCircle className="w-3 h-3 mr-1" />}
+                                {log.status === 'failed' && <AlertCircle className="w-3 h-3 mr-1" />}
+                                {log.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {new Date(log.sentAt).toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                {log.opened ? (
+                                  <Badge variant="outline" className="text-green-600">
+                                    <Eye className="w-3 h-3 mr-1" />
+                                    Opened
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-gray-500">
+                                    Not Opened
+                                  </Badge>
+                                )}
+                                {log.clicked && (
+                                  <Badge variant="outline" className="text-blue-600">
+                                    <Activity className="w-3 h-3 mr-1" />
+                                    Clicked
+                                  </Badge>
+                                )}
+                              </div>
+                              {log.openedAt && (
+                                <div className="text-xs text-gray-500 mt-1">
+                                  Opened: {new Date(log.openedAt).toLocaleString()}
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {log.error && (
+                                <div className="text-sm text-red-600 max-w-xs truncate" title={log.error}>
+                                  {log.error}
+                                </div>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}

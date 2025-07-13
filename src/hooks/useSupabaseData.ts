@@ -16,9 +16,9 @@ export type ContactSubmission = Database['public']['Tables']['contact_submission
 export type Lead = Database['public']['Tables']['leads']['Row'];
 export type SecurityLog = Database['public']['Tables']['form_security_logs']['Row'];
 
-// Generic hook for Supabase operations - simplified to avoid complex type constraints
-export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof Database['public']['Tables']) => {
-  const [data, setData] = useState<T[]>([]);
+// Simplified hook without complex generics
+export const useSupabaseData = (tableName: keyof Database['public']['Tables']) => {
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -31,7 +31,7 @@ export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof 
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setData((result as unknown as T[]) || []);
+      setData(result || []);
     } catch (error) {
       console.error(`Error fetching ${tableName}:`, error);
       toast({
@@ -44,7 +44,7 @@ export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof 
     }
   };
 
-  const insert = async (record: Partial<T>) => {
+  const insert = async (record: any) => {
     try {
       const { data: result, error } = await supabase
         .from(tableName)
@@ -53,15 +53,15 @@ export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof 
         .single();
 
       if (error) throw error;
-      setData(prev => [result as unknown as T, ...prev]);
-      return result as unknown as T;
+      setData(prev => [result, ...prev]);
+      return result;
     } catch (error) {
       console.error(`Error inserting into ${tableName}:`, error);
       throw error;
     }
   };
 
-  const update = async (id: string, updates: Partial<T>) => {
+  const update = async (id: string, updates: any) => {
     try {
       const { data: result, error } = await supabase
         .from(tableName)
@@ -71,8 +71,8 @@ export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof 
         .single();
 
       if (error) throw error;
-      setData(prev => prev.map(item => item.id === id ? result as unknown as T : item));
-      return result as unknown as T;
+      setData(prev => prev.map(item => item.id === id ? result : item));
+      return result;
     } catch (error) {
       console.error(`Error updating ${tableName}:`, error);
       throw error;
@@ -110,10 +110,10 @@ export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof 
 
 // Specific hooks for different data types
 export const useServiceReviews = () => {
-  const { data, loading, insert, update, remove, refetch } = useSupabaseData<ServiceReview>('service_reviews');
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData('service_reviews');
   
   return {
-    reviews: data,
+    reviews: data as ServiceReview[],
     loading,
     createReview: insert,
     updateReview: update,
@@ -123,10 +123,10 @@ export const useServiceReviews = () => {
 };
 
 export const useBlogPosts = () => {
-  const { data, loading, insert, update, remove, refetch } = useSupabaseData<BlogPost>('blog_posts');
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData('blog_posts');
   
   return {
-    posts: data,
+    posts: data as BlogPost[],
     loading,
     createPost: insert,
     updatePost: update,
@@ -136,10 +136,10 @@ export const useBlogPosts = () => {
 };
 
 export const useFAQs = () => {
-  const { data, loading, insert, update, remove, refetch } = useSupabaseData<FAQ>('faqs');
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData('faqs');
   
   return {
-    faqs: data,
+    faqs: data as FAQ[],
     loading,
     createFAQ: insert,
     updateFAQ: update,
@@ -149,10 +149,10 @@ export const useFAQs = () => {
 };
 
 export const usePricingPlans = () => {
-  const { data, loading, insert, update, remove, refetch } = useSupabaseData<PricingPlan>('pricing_plans');
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData('pricing_plans');
   
   return {
-    plans: data,
+    plans: data as PricingPlan[],
     loading,
     createPlan: insert,
     updatePlan: update,
@@ -162,10 +162,10 @@ export const usePricingPlans = () => {
 };
 
 export const useServiceCaseStudies = () => {
-  const { data, loading, insert, update, remove, refetch } = useSupabaseData<ServiceCaseStudy>('service_case_studies');
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData('service_case_studies');
   
   return {
-    caseStudies: data,
+    caseStudies: data as ServiceCaseStudy[],
     loading,
     createCaseStudy: insert,
     updateCaseStudy: update,
@@ -175,10 +175,10 @@ export const useServiceCaseStudies = () => {
 };
 
 export const useServiceStats = () => {
-  const { data, loading, insert, update, remove, refetch } = useSupabaseData<ServiceStat>('service_stats');
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData('service_stats');
   
   return {
-    stats: data,
+    stats: data as ServiceStat[],
     loading,
     createStat: insert,
     updateStat: update,

@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { BarChart3, Users, Mail, Settings, Shield, FileText, Globe, Zap, PlusCircle, Edit, Trash2 } from "lucide-react";
+import { BarChart3, Users, Mail, Settings, Shield, FileText, Globe, Zap, PlusCircle, Edit, Trash2, Send } from "lucide-react";
 import NewsletterEmailManagementTab from "@/components/dashboard/NewsletterEmailManagementTab";
 import LeadManagementTab from "@/components/dashboard/LeadManagementTab";
 import ContentManagementTab from "@/components/dashboard/ContentManagementTab";
@@ -12,6 +13,8 @@ import ReviewsTab from "@/components/dashboard/ReviewsTab";
 import ServicesTab from "@/components/dashboard/ServicesTab";
 import FormSecurityTab from "@/components/dashboard/FormSecurityTab";
 import SecuritySettingsTab from "@/components/dashboard/SecuritySettingsTab";
+import EmailWorkflowTab from "@/components/dashboard/EmailWorkflowTab";
+import MarketingEmailDashboard from "@/components/dashboard/MarketingEmailDashboard";
 
 interface ServiceCard {
   id: string;
@@ -46,7 +49,7 @@ const Dashboard = () => {
     },
     {
       id: "4",
-      title: "Google Advertising",
+      title: "Google Advertising",  
       description: "Drive targeted traffic to your website and increase conversions with our data-driven Google Ads management.",
       image: "/images/google-ads.png",
       url: "/google-advertising"
@@ -92,7 +95,7 @@ const Dashboard = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 xl:grid-cols-9">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Overview
@@ -104,6 +107,10 @@ const Dashboard = () => {
             <TabsTrigger value="newsletter" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
               Newsletter
+            </TabsTrigger>
+            <TabsTrigger value="marketing" className="flex items-center gap-2">
+              <Send className="w-4 h-4" />
+              Marketing
             </TabsTrigger>
             <TabsTrigger value="content" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
@@ -184,6 +191,10 @@ const Dashboard = () => {
 
           <TabsContent value="newsletter">
             <NewsletterEmailManagementTab />
+          </TabsContent>
+
+          <TabsContent value="marketing">
+            <MarketingEmailDashboard />
           </TabsContent>
 
           <TabsContent value="content">
