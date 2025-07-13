@@ -16,7 +16,7 @@ export type ContactSubmission = Database['public']['Tables']['contact_submission
 export type Lead = Database['public']['Tables']['leads']['Row'];
 export type SecurityLog = Database['public']['Tables']['form_security_logs']['Row'];
 
-// Simplified hook without complex generics
+// Simple hook without complex generics
 export const useSupabaseData = (tableName: keyof Database['public']['Tables']) => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +108,7 @@ export const useSupabaseData = (tableName: keyof Database['public']['Tables']) =
   };
 };
 
-// Specific hooks for different data types
+// Specific hooks for different data types with proper typing
 export const useServiceReviews = () => {
   const { data, loading, insert, update, remove, refetch } = useSupabaseData('service_reviews');
   
