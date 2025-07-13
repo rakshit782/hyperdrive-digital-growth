@@ -38,7 +38,7 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setData((result as T[]) || []);
+      setData((result || []) as T[]);
     } catch (error) {
       console.error(`Error fetching ${tableName}:`, error);
       toast({

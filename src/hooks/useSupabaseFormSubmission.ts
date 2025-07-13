@@ -18,6 +18,7 @@ export interface FormSubmissionData {
   monthlyAdSpend?: string;
   primaryPlatform?: string;
   currentChallenges?: string;
+  uploadedFiles?: Record<string, string | null>;
 }
 
 export const useSupabaseFormSubmission = () => {

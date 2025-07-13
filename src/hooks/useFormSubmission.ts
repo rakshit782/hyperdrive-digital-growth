@@ -11,7 +11,6 @@ export interface ContactSubmissionData {
   message?: string;
   form_type: string;
   source?: string;
-  formType?: string; // Keep for backward compatibility
 }
 
 export const useFormSubmission = () => {
@@ -27,15 +26,15 @@ export const useFormSubmission = () => {
       if (securityData) {
         const { error: securityError } = await supabase
           .from('form_security_logs')
-          .insert([{
+          .insert({
             form_type: formData.form_type,
             honeypot_triggered: securityData.honeypot_triggered || false,
             csrf_valid: securityData.csrf_valid !== false,
             recaptcha_score: securityData.recaptcha_score || null,
             ip_address: securityData.ip_address || null,
             user_agent: securityData.user_agent || null,
-            submission_data: formData
-          }]);
+            submission_data: formData as any
+          });
 
         if (securityError) {
           console.error('Security log error:', securityError);
@@ -45,14 +44,14 @@ export const useFormSubmission = () => {
       // Submit the form data
       const { error: submitError } = await supabase
         .from('contact_submissions')
-        .insert([{
+        .insert({
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
           company: formData.company,
           message: formData.message,
-          form_type: formData.form_type || formData.formType || 'contact'
-        }]);
+          form_type: formData.form_type
+        });
 
       if (submitError) {
         throw submitError;
