@@ -16,15 +16,8 @@ export type ContactSubmission = Database['public']['Tables']['contact_submission
 export type Lead = Database['public']['Tables']['leads']['Row'];
 export type SecurityLog = Database['public']['Tables']['form_security_logs']['Row'];
 
-export interface SupabaseRecord {
-  id?: string;
-  created_at?: string;
-  updated_at?: string;
-  [key: string]: any;
-}
-
-// Generic hook for Supabase operations
-export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Database['public']['Tables']) => {
+// Generic hook for Supabase operations - simplified to avoid complex type constraints
+export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof Database['public']['Tables']) => {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -38,7 +31,7 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setData((result as unknown as T[]) || []);
+      setData((result as T[]) || []);
     } catch (error) {
       console.error(`Error fetching ${tableName}:`, error);
       toast({
@@ -51,7 +44,7 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
     }
   };
 
-  const insert = async (record: Omit<T, 'id' | 'created_at' | 'updated_at'>) => {
+  const insert = async (record: Partial<T>) => {
     try {
       const { data: result, error } = await supabase
         .from(tableName)
@@ -60,8 +53,8 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
         .single();
 
       if (error) throw error;
-      setData(prev => [result as unknown as T, ...prev]);
-      return result as unknown as T;
+      setData(prev => [result as T, ...prev]);
+      return result as T;
     } catch (error) {
       console.error(`Error inserting into ${tableName}:`, error);
       throw error;
@@ -78,8 +71,8 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
         .single();
 
       if (error) throw error;
-      setData(prev => prev.map(item => item.id === id ? result as unknown as T : item));
-      return result as unknown as T;
+      setData(prev => prev.map(item => item.id === id ? result as T : item));
+      return result as T;
     } catch (error) {
       console.error(`Error updating ${tableName}:`, error);
       throw error;
