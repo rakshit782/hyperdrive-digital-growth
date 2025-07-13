@@ -31,7 +31,7 @@ export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof 
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setData((result as T[]) || []);
+      setData((result as unknown as T[]) || []);
     } catch (error) {
       console.error(`Error fetching ${tableName}:`, error);
       toast({
@@ -53,8 +53,8 @@ export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof 
         .single();
 
       if (error) throw error;
-      setData(prev => [result as T, ...prev]);
-      return result as T;
+      setData(prev => [result as unknown as T, ...prev]);
+      return result as unknown as T;
     } catch (error) {
       console.error(`Error inserting into ${tableName}:`, error);
       throw error;
@@ -71,8 +71,8 @@ export const useSupabaseData = <T extends Record<string, any>>(tableName: keyof 
         .single();
 
       if (error) throw error;
-      setData(prev => prev.map(item => item.id === id ? result as T : item));
-      return result as T;
+      setData(prev => prev.map(item => item.id === id ? result as unknown as T : item));
+      return result as unknown as T;
     } catch (error) {
       console.error(`Error updating ${tableName}:`, error);
       throw error;
