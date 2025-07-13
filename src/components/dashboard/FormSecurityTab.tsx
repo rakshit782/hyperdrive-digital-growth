@@ -39,7 +39,13 @@ const FormSecurityTab = () => {
     try {
       setLoading(true);
       const logs = await databaseService.getFormSecurityLogs();
-      setSecurityLogs(logs);
+      // Cast the data to match our SecurityLog interface
+      const typedLogs = logs.map(log => ({
+        ...log,
+        ip_address: log.ip_address as string | null,
+        submission_data: (log.submission_data as Record<string, any>) || {}
+      }));
+      setSecurityLogs(typedLogs);
     } catch (error) {
       console.error('Error loading security logs:', error);
       toast({

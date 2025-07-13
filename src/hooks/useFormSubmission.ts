@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { databaseService } from '@/services/databaseService';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ContactSubmissionData {
   name: string;
@@ -10,6 +10,8 @@ export interface ContactSubmissionData {
   company?: string;
   message?: string;
   form_type: string;
+  source?: string;
+  formType?: string; // Keep for backward compatibility
 }
 
 export const useFormSubmission = () => {
@@ -23,26 +25,38 @@ export const useFormSubmission = () => {
 
       // Log security data if provided
       if (securityData) {
-        await databaseService.logFormSecurity({
-          form_type: formData.form_type,
-          honeypot_triggered: securityData.honeypot_triggered || false,
-          csrf_valid: securityData.csrf_valid !== false,
-          recaptcha_score: securityData.recaptcha_score || null,
-          ip_address: securityData.ip_address || null,
-          user_agent: securityData.user_agent || null,
-          submission_data: formData
-        });
+        const { error: securityError } = await supabase
+          .from('form_security_logs')
+          .insert([{
+            form_type: formData.form_type,
+            honeypot_triggered: securityData.honeypot_triggered || false,
+            csrf_valid: securityData.csrf_valid !== false,
+            recaptcha_score: securityData.recaptcha_score || null,
+            ip_address: securityData.ip_address || null,
+            user_agent: securityData.user_agent || null,
+            submission_data: formData
+          }]);
+
+        if (securityError) {
+          console.error('Security log error:', securityError);
+        }
       }
 
       // Submit the form data
-      await databaseService.submitContactForm({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        company: formData.company,
-        message: formData.message,
-        form_type: formData.form_type
-      });
+      const { error: submitError } = await supabase
+        .from('contact_submissions')
+        .insert([{
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          message: formData.message,
+          form_type: formData.form_type || formData.formType || 'contact'
+        }]);
+
+      if (submitError) {
+        throw submitError;
+      }
 
       console.log('Form submission successful');
       

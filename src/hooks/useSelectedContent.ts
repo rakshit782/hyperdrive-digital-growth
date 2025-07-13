@@ -1,6 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+
+type TableName = keyof Database['public']['Tables'];
 
 export const useSelectedContent = (contentType: string) => {
   const [content, setContent] = useState<any[]>([]);
@@ -12,7 +15,7 @@ export const useSelectedContent = (contentType: string) => {
         setLoading(true);
         
         // Map content types to actual table names
-        const tableMap: Record<string, string> = {
+        const tableMap: Record<string, TableName> = {
           'blog_posts': 'blog_posts',
           'faqs': 'faqs',
           'service_reviews': 'service_reviews',

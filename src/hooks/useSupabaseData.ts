@@ -33,12 +33,12 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
     try {
       setLoading(true);
       const { data: result, error } = await supabase
-        .from(tableName as any)
+        .from(tableName)
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setData(result as T[] || []);
+      setData((result as T[]) || []);
     } catch (error) {
       console.error(`Error fetching ${tableName}:`, error);
       toast({
@@ -54,7 +54,7 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
   const insert = async (record: Omit<T, 'id' | 'created_at' | 'updated_at'>) => {
     try {
       const { data: result, error } = await supabase
-        .from(tableName as any)
+        .from(tableName)
         .insert([record])
         .select()
         .single();
@@ -71,7 +71,7 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
   const update = async (id: string, updates: Partial<T>) => {
     try {
       const { data: result, error } = await supabase
-        .from(tableName as any)
+        .from(tableName)
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
@@ -89,7 +89,7 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
   const remove = async (id: string) => {
     try {
       const { error } = await supabase
-        .from(tableName as any)
+        .from(tableName)
         .delete()
         .eq('id', id);
 

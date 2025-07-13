@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useFormSubmission } from '@/hooks/useFormSubmission';
+import { useSupabaseFormSubmission } from '@/hooks/useSupabaseFormSubmission';
 import { supabase } from '@/integrations/supabase/client';
 import { Upload, FileText, AlertCircle } from 'lucide-react';
 
@@ -45,7 +45,7 @@ const FreeAuditForm = () => {
   });
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   const { toast } = useToast();
-  const { submitForm } = useFormSubmission();
+  const { submitForm } = useSupabaseFormSubmission();
 
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<AuditFormData>({
     resolver: zodResolver(auditFormSchema),
@@ -120,7 +120,6 @@ const FreeAuditForm = () => {
         email: data.email,
         phone: data.phone,
         company: data.company,
-        source: 'free_audit_form',
         formType: 'free_audit',
         firstName: data.firstName,
         lastName: data.lastName,

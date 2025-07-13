@@ -18,8 +18,7 @@ const ModernCTA = () => {
     const result = await submitForm({
       email,
       name: email.split('@')[0], // Use email prefix as name
-      formType: 'contact',
-      source: 'cta_form',
+      form_type: 'contact',
       message: 'Requested free audit from CTA section'
     });
 
