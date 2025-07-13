@@ -33,12 +33,12 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
     try {
       setLoading(true);
       const { data: result, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setData((result as T[]) || []);
+      setData(result as T[] || []);
     } catch (error) {
       console.error(`Error fetching ${tableName}:`, error);
       toast({
@@ -54,7 +54,7 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
   const insert = async (record: Omit<T, 'id' | 'created_at' | 'updated_at'>) => {
     try {
       const { data: result, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .insert([record])
         .select()
         .single();
@@ -71,7 +71,7 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
   const update = async (id: string, updates: Partial<T>) => {
     try {
       const { data: result, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
@@ -89,7 +89,7 @@ export const useSupabaseData = <T extends SupabaseRecord>(tableName: keyof Datab
   const remove = async (id: string) => {
     try {
       const { error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .delete()
         .eq('id', id);
 
@@ -164,6 +164,32 @@ export const usePricingPlans = () => {
     createPlan: insert,
     updatePlan: update,
     deletePlan: remove,
+    refetch
+  };
+};
+
+export const useServiceCaseStudies = () => {
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData<ServiceCaseStudy>('service_case_studies');
+  
+  return {
+    caseStudies: data,
+    loading,
+    createCaseStudy: insert,
+    updateCaseStudy: update,
+    deleteCaseStudy: remove,
+    refetch
+  };
+};
+
+export const useServiceStats = () => {
+  const { data, loading, insert, update, remove, refetch } = useSupabaseData<ServiceStat>('service_stats');
+  
+  return {
+    stats: data,
+    loading,
+    createStat: insert,
+    updateStat: update,
+    deleteStat: remove,
     refetch
   };
 };

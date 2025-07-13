@@ -19,7 +19,8 @@ const Newsletter = () => {
       email: email.trim(),
       name: email.split('@')[0],
       source: 'newsletter_footer',
-      status: 'subscribed'
+      status: 'subscribed',
+      tags: ['newsletter_signup']
     });
 
     if (result.success) {

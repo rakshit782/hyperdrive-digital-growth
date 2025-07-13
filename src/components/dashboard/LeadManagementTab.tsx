@@ -87,12 +87,17 @@ const LeadManagementTab = () => {
 
       if (error) throw error;
       
-      setLeads(data || []);
-      console.log('Leads loaded from Supabase:', data);
+      // Type cast the data to ensure status field matches our LeadStatus type
+      const typedLeads = (data || []).map(lead => ({
+        ...lead,
+        status: lead.status as LeadStatus
+      }));
+      
+      setLeads(typedLeads);
+      console.log('Leads loaded from Supabase:', typedLeads);
     } catch (error) {
       console.error('Error loading leads:', error);
-      toast({
-        title: "Error",
+      toast({        title: "Error",
         description: "Failed to load leads from database",
         variant: "destructive",
       });

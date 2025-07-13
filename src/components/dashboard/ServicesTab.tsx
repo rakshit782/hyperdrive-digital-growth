@@ -1,244 +1,362 @@
-import { useState } from "react";
+
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trash2, Plus, Edit } from "lucide-react";
-import { ServiceCard } from "@/types/dashboard";
-import useSupabaseData, { ServiceCaseStudy, ServiceStat, ServiceReview } from "@/hooks/useSupabaseData";
-import ServicePagesManagementTab from "./ServicePagesManagementTab";
+import { useServiceCaseStudies, useServiceStats, useServiceReviews } from '@/hooks/useSupabaseData';
+import { 
+  Briefcase, 
+  Edit, 
+  Trash2, 
+  Plus,
+  RefreshCw,
+  Eye,
+  Star,
+  TrendingUp,
+  Users
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-interface ServicesTabProps {
-  services: ServiceCard[];
-  onEdit: (service: ServiceCard) => void;
-  onDelete: (id: string) => void;
-  onAdd: () => void;
-}
+const ServicesTab = () => {
+  const { toast } = useToast();
+  const { caseStudies, loading: casesLoading, deleteCaseStudy, refetch: refetchCases } = useServiceCaseStudies();
+  const { stats, loading: statsLoading, deleteStat, refetch: refetchStats } = useServiceStats();
+  const { reviews, loading: reviewsLoading, deleteReview, refetch: refetchReviews } = useServiceReviews();
 
-const ServicesTab = ({ services, onEdit, onDelete, onAdd }: ServicesTabProps) => {
-  const { useServiceCaseStudies, useServiceStats, useServiceReviews } = useSupabaseData();
-  const { caseStudies, createCaseStudy, updateCaseStudy, deleteCaseStudy } = useServiceCaseStudies();
-  const { stats, createStat, updateStat, deleteStat } = useServiceStats();
-  const { reviews, createReview, updateReview, deleteReview } = useServiceReviews();
+  const handleDeleteCaseStudy = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this case study?')) {
+      try {
+        await deleteCaseStudy(id);
+        toast({
+          title: "Success",
+          description: "Case study deleted successfully",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete case study",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
-  const [selectedService, setSelectedService] = useState<string>('all');
+  const handleDeleteStat = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this statistic?')) {
+      try {
+        await deleteStat(id);
+        toast({
+          title: "Success",
+          description: "Statistic deleted successfully",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete statistic",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
-  const filteredCaseStudies = selectedService === 'all' 
-    ? caseStudies 
-    : caseStudies.filter(study => study.service_type === selectedService);
-
-  const filteredStats = selectedService === 'all' 
-    ? stats 
-    : stats.filter(stat => stat.service_type === selectedService);
-
-  const filteredReviews = selectedService === 'all' 
-    ? reviews 
-    : reviews.filter(review => review.service_type === selectedService);
+  const handleDeleteReview = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this review?')) {
+      try {
+        await deleteReview(id);
+        toast({
+          title: "Success",
+          description: "Review deleted successfully",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete review",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900">Manage Services</h2>
-        <Button onClick={onAdd}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Service
-        </Button>
-      </div>
+    <div className="space-y-6">
+      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg mr-3">
+                <Briefcase className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-bold text-slate-900">Services Management</CardTitle>
+                <CardDescription>Manage case studies, statistics, and reviews</CardDescription>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        
+        <CardContent>
+          <Tabs defaultValue="cases" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="cases">Case Studies</TabsTrigger>
+              <TabsTrigger value="stats">Statistics</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            </TabsList>
 
-      <Tabs defaultValue="service-pages" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="service-pages">Service Pages</TabsTrigger>
-          <TabsTrigger value="services">Service Cards</TabsTrigger>
-          <TabsTrigger value="case-studies">Case Studies</TabsTrigger>
-          <TabsTrigger value="stats">Stats</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews</TabsTrigger>
-        </TabsList>
+            <TabsContent value="cases" className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Case Studies</h3>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={refetchCases} size="sm">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh
+                  </Button>
+                  <Button size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Case Study
+                  </Button>
+                </div>
+              </div>
 
-        <TabsContent value="service-pages" className="space-y-6">
-          <ServicePagesManagementTab />
-        </TabsContent>
+              {casesLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+                </div>
+              ) : (
+                <div className="border rounded-lg">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Industry</TableHead>
+                        <TableHead>Service Type</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {caseStudies.length > 0 ? (
+                        caseStudies.map((caseStudy) => (
+                          <TableRow key={caseStudy.id}>
+                            <TableCell className="font-medium">{caseStudy.title}</TableCell>
+                            <TableCell>{caseStudy.client_name || 'Anonymous'}</TableCell>
+                            <TableCell>{caseStudy.industry || 'N/A'}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">
+                                {caseStudy.service_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={caseStudy.is_active ? 'default' : 'secondary'}>
+                                {caseStudy.is_active ? 'Active' : 'Inactive'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Button variant="outline" size="sm">
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                                <Button variant="outline" size="sm">
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => handleDeleteCaseStudy(caseStudy.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-8">
+                            <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600">No case studies found</p>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </TabsContent>
 
-        <TabsContent value="services" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
-              <Card key={service.id} className="relative">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg">{service.title}</CardTitle>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onEdit(service)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onDelete(service.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <CardDescription>{service.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">Features: {service.features.join(', ')}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
+            <TabsContent value="stats" className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Service Statistics</h3>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={refetchStats} size="sm">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh
+                  </Button>
+                  <Button size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Statistic
+                  </Button>
+                </div>
+              </div>
 
-        <TabsContent value="case-studies" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold">Service Case Studies</h3>
-            <Button onClick={() => console.log('Add case study')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Case Study
-            </Button>
-          </div>
-          
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredCaseStudies.map((study) => (
-              <Card key={study.id}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{study.title}</CardTitle>
-                      <CardDescription>{study.service_type} • {study.industry}</CardDescription>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => console.log('Edit study', study.id)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => deleteCaseStudy(study.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 mb-2">{study.description}</p>
-                  <div className="text-xs text-gray-500">
-                    Client: {study.client_name || 'Anonymous'}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
+              {statsLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+                </div>
+              ) : (
+                <div className="border rounded-lg">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Label</TableHead>
+                        <TableHead>Value</TableHead>
+                        <TableHead>Service Type</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {stats.length > 0 ? (
+                        stats.map((stat) => (
+                          <TableRow key={stat.id}>
+                            <TableCell className="font-medium">{stat.stat_label}</TableCell>
+                            <TableCell className="text-lg font-bold text-green-600">
+                              <div className="flex items-center gap-1">
+                                <TrendingUp className="w-4 h-4" />
+                                {stat.stat_value}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">
+                                {stat.service_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={stat.is_active ? 'default' : 'secondary'}>
+                                {stat.is_active ? 'Active' : 'Inactive'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Button variant="outline" size="sm">
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => handleDeleteStat(stat.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center py-8">
+                            <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600">No statistics found</p>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </TabsContent>
 
-        <TabsContent value="stats" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold">Service Statistics</h3>
-            <Button onClick={() => console.log('Add stat')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Stat
-            </Button>
-          </div>
-          
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {filteredStats.map((stat) => (
-              <Card key={stat.id}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="text-center w-full">
-                      <div className="text-2xl font-bold text-blue-600">{stat.stat_value}</div>
-                      <CardTitle className="text-sm">{stat.stat_label}</CardTitle>
-                      <CardDescription className="text-xs">{stat.service_type}</CardDescription>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => console.log('Edit stat', stat.id)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => deleteStat(stat.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                {stat.stat_description && (
-                  <CardContent>
-                    <p className="text-xs text-gray-600">{stat.stat_description}</p>
-                  </CardContent>
-                )}
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
+            <TabsContent value="reviews" className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Service Reviews</h3>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={refetchReviews} size="sm">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh
+                  </Button>
+                  <Button size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Review
+                  </Button>
+                </div>
+              </div>
 
-        <TabsContent value="reviews" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold">Service Reviews</h3>
-            <Button onClick={() => console.log('Add review')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Review
-            </Button>
-          </div>
-          
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredReviews.map((review) => (
-              <Card key={review.id}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{review.client_name}</CardTitle>
-                      <CardDescription>{review.company} • {review.service_type}</CardDescription>
-                      <div className="flex items-center mt-2">
-                        {Array.from({ length: review.rating }, (_, i) => (
-                          <span key={i} className="text-yellow-400">★</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => console.log('Edit review', review.id)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => deleteReview(review.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 mb-2">"{review.review_text}"</p>
-                  {review.results_achieved && (
-                    <div className="text-xs text-green-600 font-medium">
-                      Results: {review.results_achieved}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+              {reviewsLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+                </div>
+              ) : (
+                <div className="border rounded-lg">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Company</TableHead>
+                        <TableHead>Rating</TableHead>
+                        <TableHead>Service Type</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {reviews.length > 0 ? (
+                        reviews.map((review) => (
+                          <TableRow key={review.id}>
+                            <TableCell className="font-medium">{review.client_name}</TableCell>
+                            <TableCell>{review.company}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1">
+                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                <span className="font-medium">{review.rating}/5</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">
+                                {review.service_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={review.is_active ? 'default' : 'secondary'}>
+                                {review.is_active ? 'Active' : 'Inactive'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Button variant="outline" size="sm">
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                                <Button variant="outline" size="sm">
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => handleDeleteReview(review.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-8">
+                            <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600">No reviews found</p>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };

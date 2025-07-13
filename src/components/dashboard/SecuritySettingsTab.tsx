@@ -1,14 +1,12 @@
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Shield, AlertTriangle, CheckCircle, Key, Globe } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Shield, Save, RefreshCw, AlertTriangle, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 
@@ -19,15 +17,11 @@ interface SecuritySettings {
   recaptcha_site_key: string;
   recaptcha_secret_key: string;
   rate_limiting: boolean;
-  max_submissions_per_hour: number;
+  max_requests_per_minute: number;
   ip_blocking: boolean;
   blocked_ips: string[];
-  form_validation_rules: {
-    min_name_length: number;
-    max_name_length: number;
-    required_fields: string[];
-    email_domains_blocked: string[];
-  };
+  user_agent_filtering: boolean;
+  suspicious_patterns: string[];
 }
 
 const SecuritySettingsTab = () => {
@@ -38,26 +32,15 @@ const SecuritySettingsTab = () => {
     recaptcha_site_key: '',
     recaptcha_secret_key: '',
     rate_limiting: true,
-    max_submissions_per_hour: 10,
+    max_requests_per_minute: 10,
     ip_blocking: false,
     blocked_ips: [],
-    form_validation_rules: {
-      min_name_length: 2,
-      max_name_length: 50,
-      required_fields: ['name', 'email'],
-      email_domains_blocked: []
-    }
+    user_agent_filtering: true,
+    suspicious_patterns: ['bot', 'crawler', 'spider']
   });
-  
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [newBlockedIp, setNewBlockedIp] = useState('');
-  const [newBlockedDomain, setNewBlockedDomain] = useState('');
   const { toast } = useToast();
-
-  useEffect(() => {
-    loadSettings();
-  }, []);
 
   const loadSettings = async () => {
     try {
@@ -65,13 +48,28 @@ const SecuritySettingsTab = () => {
       const { data, error } = await supabase
         .from('website_settings')
         .select('*')
-        .eq('setting_key', 'form_security')
+        .eq('setting_key', 'security_settings')
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error;
-      
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
       if (data && data.setting_value) {
-        setSettings({ ...settings, ...data.setting_value });
+        const securityData = data.setting_value as Record<string, any>;
+        setSettings({
+          honeypot_enabled: securityData.honeypot_enabled ?? true,
+          csrf_protection: securityData.csrf_protection ?? true,
+          recaptcha_enabled: securityData.recaptcha_enabled ?? false,
+          recaptcha_site_key: securityData.recaptcha_site_key ?? '',
+          recaptcha_secret_key: securityData.recaptcha_secret_key ?? '',
+          rate_limiting: securityData.rate_limiting ?? true,
+          max_requests_per_minute: securityData.max_requests_per_minute ?? 10,
+          ip_blocking: securityData.ip_blocking ?? false,
+          blocked_ips: securityData.blocked_ips ?? [],
+          user_agent_filtering: securityData.user_agent_filtering ?? true,
+          suspicious_patterns: securityData.suspicious_patterns ?? ['bot', 'crawler', 'spider']
+        });
       }
     } catch (error) {
       console.error('Error loading security settings:', error);
@@ -92,16 +90,16 @@ const SecuritySettingsTab = () => {
       const { error } = await supabase
         .from('website_settings')
         .upsert({
-          setting_key: 'form_security',
-          setting_value: settings,
+          setting_key: 'security_settings',
+          setting_value: settings as any,
           setting_type: 'security'
         });
 
       if (error) throw error;
 
       toast({
-        title: "Settings Saved",
-        description: "Security settings have been updated successfully",
+        title: "Success",
+        description: "Security settings saved successfully",
       });
     } catch (error) {
       console.error('Error saving security settings:', error);
@@ -115,357 +113,295 @@ const SecuritySettingsTab = () => {
     }
   };
 
-  const addBlockedIp = () => {
-    if (newBlockedIp && !settings.blocked_ips.includes(newBlockedIp)) {
-      setSettings({
-        ...settings,
-        blocked_ips: [...settings.blocked_ips, newBlockedIp]
-      });
-      setNewBlockedIp('');
-    }
-  };
+  useEffect(() => {
+    loadSettings();
+  }, []);
 
-  const removeBlockedIp = (ip: string) => {
-    setSettings({
-      ...settings,
-      blocked_ips: settings.blocked_ips.filter(blockedIp => blockedIp !== ip)
-    });
-  };
-
-  const addBlockedDomain = () => {
-    if (newBlockedDomain && !settings.form_validation_rules.email_domains_blocked.includes(newBlockedDomain)) {
-      setSettings({
-        ...settings,
-        form_validation_rules: {
-          ...settings.form_validation_rules,
-          email_domains_blocked: [...settings.form_validation_rules.email_domains_blocked, newBlockedDomain]
-        }
-      });
-      setNewBlockedDomain('');
-    }
-  };
-
-  const removeBlockedDomain = (domain: string) => {
-    setSettings({
-      ...settings,
-      form_validation_rules: {
-        ...settings.form_validation_rules,
-        email_domains_blocked: settings.form_validation_rules.email_domains_blocked.filter(d => d !== domain)
-      }
-    });
+  const updateSetting = (key: keyof SecuritySettings, value: any) => {
+    setSettings(prev => ({
+      ...prev,
+      [key]: value
+    }));
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-gray-600">Loading security settings...</span>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Security Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Honeypot Protection</CardTitle>
-            <Shield className={`h-4 w-4 ${settings.honeypot_enabled ? 'text-green-600' : 'text-red-600'}`} />
-          </CardHeader>
-          <CardContent>
-            <Badge variant={settings.honeypot_enabled ? 'default' : 'destructive'}>
-              {settings.honeypot_enabled ? 'Enabled' : 'Disabled'}
-            </Badge>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">CSRF Protection</CardTitle>
-            <CheckCircle className={`h-4 w-4 ${settings.csrf_protection ? 'text-green-600' : 'text-red-600'}`} />
-          </CardHeader>
-          <CardContent>
-            <Badge variant={settings.csrf_protection ? 'default' : 'destructive'}>
-              {settings.csrf_protection ? 'Enabled' : 'Disabled'}
-            </Badge>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rate Limiting</CardTitle>
-            <AlertTriangle className={`h-4 w-4 ${settings.rate_limiting ? 'text-green-600' : 'text-red-600'}`} />
-          </CardHeader>
-          <CardContent>
-            <Badge variant={settings.rate_limiting ? 'default' : 'destructive'}>
-              {settings.rate_limiting ? `${settings.max_submissions_per_hour}/hour` : 'Disabled'}
-            </Badge>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Basic Security Settings */}
-      <Card>
+      <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
         <CardHeader>
-          <CardTitle>Basic Security Settings</CardTitle>
-          <CardDescription>
-            Configure basic form protection mechanisms
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="honeypot">Honeypot Protection</Label>
-              <p className="text-sm text-muted-foreground">
-                Hide form fields to catch automated bot submissions
-              </p>
-            </div>
-            <Switch
-              id="honeypot"
-              checked={settings.honeypot_enabled}
-              onCheckedChange={(checked) => setSettings({...settings, honeypot_enabled: checked})}
-            />
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="csrf">CSRF Protection</Label>
-              <p className="text-sm text-muted-foreground">
-                Protect against cross-site request forgery attacks
-              </p>
-            </div>
-            <Switch
-              id="csrf"
-              checked={settings.csrf_protection}
-              onCheckedChange={(checked) => setSettings({...settings, csrf_protection: checked})}
-            />
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="rateLimit">Rate Limiting</Label>
-              <p className="text-sm text-muted-foreground">
-                Limit form submissions per IP address per hour
-              </p>
-            </div>
-            <Switch
-              id="rateLimit"
-              checked={settings.rate_limiting}
-              onCheckedChange={(checked) => setSettings({...settings, rate_limiting: checked})}
-            />
-          </div>
-          
-          {settings.rate_limiting && (
-            <div>
-              <Label htmlFor="maxSubmissions">Max Submissions Per Hour</Label>
-              <Input
-                id="maxSubmissions"
-                type="number"
-                value={settings.max_submissions_per_hour}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  max_submissions_per_hour: parseInt(e.target.value) || 10
-                })}
-                className="w-24"
-                min="1"
-                max="100"
-              />
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* reCAPTCHA Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Key className="w-5 h-5" />
-            reCAPTCHA Settings
-          </CardTitle>
-          <CardDescription>
-            Configure Google reCAPTCHA v3 for advanced bot protection
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="recaptcha">Enable reCAPTCHA</Label>
-              <p className="text-sm text-muted-foreground">
-                Use Google reCAPTCHA v3 to score form submissions
-              </p>
-            </div>
-            <Switch
-              id="recaptcha"
-              checked={settings.recaptcha_enabled}
-              onCheckedChange={(checked) => setSettings({...settings, recaptcha_enabled: checked})}
-            />
-          </div>
-          
-          {settings.recaptcha_enabled && (
-            <>
+            <div className="flex items-center">
+              <div className="p-2 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg mr-3">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
               <div>
-                <Label htmlFor="siteKey">Site Key</Label>
-                <Input
-                  id="siteKey"
-                  value={settings.recaptcha_site_key}
-                  onChange={(e) => setSettings({...settings, recaptcha_site_key: e.target.value})}
-                  placeholder="Your reCAPTCHA site key"
-                />
+                <CardTitle className="text-xl font-bold text-slate-900">Security Settings</CardTitle>
+                <CardDescription>Configure form security and protection measures</CardDescription>
               </div>
-              
-              <div>
-                <Label htmlFor="secretKey">Secret Key</Label>
-                <Input
-                  id="secretKey"
-                  type="password"
-                  value={settings.recaptcha_secret_key}
-                  onChange={(e) => setSettings({...settings, recaptcha_secret_key: e.target.value})}
-                  placeholder="Your reCAPTCHA secret key"
-                />
-              </div>
-              
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  Get your reCAPTCHA keys from the Google reCAPTCHA Admin Console
-                </AlertDescription>
-              </Alert>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* IP Blocking */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Globe className="w-5 h-5" />
-            IP Address Blocking
-          </CardTitle>
-          <CardDescription>
-            Block specific IP addresses from submitting forms
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="ipBlocking">Enable IP Blocking</Label>
-              <p className="text-sm text-muted-foreground">
-                Block form submissions from specific IP addresses
-              </p>
             </div>
-            <Switch
-              id="ipBlocking"
-              checked={settings.ip_blocking}
-              onCheckedChange={(checked) => setSettings({...settings, ip_blocking: checked})}
-            />
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={loadSettings} size="sm">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh
+              </Button>
+              <Button onClick={saveSettings} disabled={saving} size="sm">
+                <Save className="w-4 h-4 mr-2" />
+                {saving ? 'Saving...' : 'Save Settings'}
+              </Button>
+            </div>
           </div>
-          
-          {settings.ip_blocking && (
-            <>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="IP address to block"
-                  value={newBlockedIp}
-                  onChange={(e) => setNewBlockedIp(e.target.value)}
-                />
-                <Button onClick={addBlockedIp}>Add</Button>
-              </div>
-              
-              {settings.blocked_ips.length > 0 && (
-                <div>
-                  <Label>Blocked IP Addresses</Label>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {settings.blocked_ips.map((ip) => (
-                      <Badge key={ip} variant="destructive" className="cursor-pointer" onClick={() => removeBlockedIp(ip)}>
-                        {ip} ×
-                      </Badge>
-                    ))}
+        </CardHeader>
+        
+        <CardContent>
+          <Tabs defaultValue="protection" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="protection">Protection</TabsTrigger>
+              <TabsTrigger value="recaptcha">reCAPTCHA</TabsTrigger>
+              <TabsTrigger value="advanced">Advanced</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="protection" className="space-y-6">
+              <div className="grid gap-6">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <Label className="text-base font-medium">Honeypot Protection</Label>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Add hidden fields to detect bot submissions
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.honeypot_enabled}
+                    onCheckedChange={(value) => updateSetting('honeypot_enabled', value)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-blue-500" />
+                      <Label className="text-base font-medium">CSRF Protection</Label>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Protect against cross-site request forgery attacks
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.csrf_protection}
+                    onCheckedChange={(value) => updateSetting('csrf_protection', value)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                      <Label className="text-base font-medium">Rate Limiting</Label>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Limit form submissions per minute per IP
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      value={settings.max_requests_per_minute}
+                      onChange={(e) => updateSetting('max_requests_per_minute', parseInt(e.target.value) || 10)}
+                      className="w-20"
+                      min="1"
+                      max="100"
+                    />
+                    <Switch
+                      checked={settings.rate_limiting}
+                      onCheckedChange={(value) => updateSetting('rate_limiting', value)}
+                    />
                   </div>
                 </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
 
-      {/* Form Validation Rules */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Form Validation Rules</CardTitle>
-          <CardDescription>
-            Configure validation rules for form fields
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="minNameLength">Minimum Name Length</Label>
-              <Input
-                id="minNameLength"
-                type="number"
-                value={settings.form_validation_rules.min_name_length}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  form_validation_rules: {
-                    ...settings.form_validation_rules,
-                    min_name_length: parseInt(e.target.value) || 2
-                  }
-                })}
-                min="1"
-                max="10"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="maxNameLength">Maximum Name Length</Label>
-              <Input
-                id="maxNameLength"
-                type="number"
-                value={settings.form_validation_rules.max_name_length}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  form_validation_rules: {
-                    ...settings.form_validation_rules,
-                    max_name_length: parseInt(e.target.value) || 50
-                  }
-                })}
-                min="10"
-                max="100"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <Label>Blocked Email Domains</Label>
-            <div className="flex gap-2 mt-2">
-              <Input
-                placeholder="domain.com"
-                value={newBlockedDomain}
-                onChange={(e) => setNewBlockedDomain(e.target.value)}
-              />
-              <Button onClick={addBlockedDomain}>Add</Button>
-            </div>
-            
-            {settings.form_validation_rules.email_domains_blocked.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {settings.form_validation_rules.email_domains_blocked.map((domain) => (
-                  <Badge key={domain} variant="destructive" className="cursor-pointer" onClick={() => removeBlockedDomain(domain)}>
-                    {domain} ×
-                  </Badge>
-                ))}
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-purple-500" />
+                      <Label className="text-base font-medium">User Agent Filtering</Label>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Block suspicious user agents and bots
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.user_agent_filtering}
+                    onCheckedChange={(value) => updateSetting('user_agent_filtering', value)}
+                  />
+                </div>
               </div>
-            )}
-          </div>
+            </TabsContent>
+
+            <TabsContent value="recaptcha" className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <Label className="text-base font-medium">Enable reCAPTCHA v3</Label>
+                    <p className="text-sm text-gray-600">
+                      Use Google reCAPTCHA to verify human users
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.recaptcha_enabled}
+                    onCheckedChange={(value) => updateSetting('recaptcha_enabled', value)}
+                  />
+                </div>
+
+                {settings.recaptcha_enabled && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="recaptcha_site_key">Site Key</Label>
+                      <Input
+                        id="recaptcha_site_key"
+                        value={settings.recaptcha_site_key}
+                        onChange={(e) => updateSetting('recaptcha_site_key', e.target.value)}
+                        placeholder="Enter your reCAPTCHA site key"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="recaptcha_secret_key">Secret Key</Label>
+                      <Input
+                        id="recaptcha_secret_key"
+                        type="password"
+                        value={settings.recaptcha_secret_key}
+                        onChange={(e) => updateSetting('recaptcha_secret_key', e.target.value)}
+                        placeholder="Enter your reCAPTCHA secret key"
+                      />
+                    </div>
+
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="w-4 h-4 text-blue-500 mt-0.5" />
+                        <div className="text-sm">
+                          <p className="font-medium text-blue-900">reCAPTCHA Setup</p>
+                          <p className="text-blue-700">
+                            Get your keys from the{' '}
+                            <a 
+                              href="https://www.google.com/recaptcha/admin" 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="underline hover:no-underline"
+                            >
+                              Google reCAPTCHA console
+                            </a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="advanced" className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <Label className="text-base font-medium">IP Blocking</Label>
+                    <p className="text-sm text-gray-600">
+                      Block specific IP addresses from submitting forms
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.ip_blocking}
+                    onCheckedChange={(value) => updateSetting('ip_blocking', value)}
+                  />
+                </div>
+
+                {settings.ip_blocking && (
+                  <div className="space-y-2">
+                    <Label>Blocked IP Addresses</Label>
+                    <div className="space-y-2">
+                      {settings.blocked_ips.map((ip, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Input
+                            value={ip}
+                            onChange={(e) => {
+                              const newIps = [...settings.blocked_ips];
+                              newIps[index] = e.target.value;
+                              updateSetting('blocked_ips', newIps);
+                            }}
+                            placeholder="192.168.1.1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newIps = settings.blocked_ips.filter((_, i) => i !== index);
+                              updateSetting('blocked_ips', newIps);
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
+                      <Button
+                        variant="outline"
+                        onClick={() => updateSetting('blocked_ips', [...settings.blocked_ips, ''])}
+                      >
+                        Add IP Address
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label>Suspicious Patterns</Label>
+                  <p className="text-sm text-gray-600">
+                    User agent patterns that should be flagged as suspicious
+                  </p>
+                  <div className="space-y-2">
+                    {settings.suspicious_patterns.map((pattern, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <Input
+                          value={pattern}
+                          onChange={(e) => {
+                            const newPatterns = [...settings.suspicious_patterns];
+                            newPatterns[index] = e.target.value;
+                            updateSetting('suspicious_patterns', newPatterns);
+                          }}
+                          placeholder="bot, crawler, spider"
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newPatterns = settings.suspicious_patterns.filter((_, i) => i !== index);
+                            updateSetting('suspicious_patterns', newPatterns);
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      onClick={() => updateSetting('suspicious_patterns', [...settings.suspicious_patterns, ''])}
+                    >
+                      Add Pattern
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
-
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <Button onClick={saveSettings} disabled={saving}>
-          {saving ? 'Saving...' : 'Save Security Settings'}
-        </Button>
-      </div>
     </div>
   );
 };
