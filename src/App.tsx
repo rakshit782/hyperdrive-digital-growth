@@ -1,15 +1,17 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Index from '@/pages/Index';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
-import Services from '@/pages/Services';
+import ServicesPage from '@/pages/ServicesPage';
 import CaseStudies from '@/pages/CaseStudies';
 import Blog from '@/pages/Blog';
 import BlogArticle from '@/pages/BlogArticle';
 import PricingPage from '@/pages/PricingPage';
-import Terms from '@/pages/Terms';
-import Privacy from '@/pages/Privacy';
+import TermsOfService from '@/pages/TermsOfService';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import NotFound from '@/pages/NotFound';
 import Dashboard from '@/pages/Dashboard';
 import ServicePage from '@/pages/ServicePage';
@@ -23,12 +25,13 @@ import ShopifyIntegrationPage from '@/pages/ShopifyIntegrationPage';
 import AccountManagementPage from '@/pages/AccountManagementPage';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { QueryClient } from '@tanstack/react-query';
 import TrackingScriptInjector from '@/components/TrackingScriptInjector';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClient>
+    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <BrowserRouter>
@@ -37,13 +40,13 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/services" element={<Services />} />
+            <Route path="/services" element={<ServicesPage />} />
             <Route path="/case-studies" element={<CaseStudies />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogArticle />} />
             <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/service/:slug" element={<ServicePage />} />
 
@@ -61,7 +64,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClient>
+    </QueryClientProvider>
   );
 }
 

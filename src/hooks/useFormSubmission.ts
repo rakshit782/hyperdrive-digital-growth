@@ -17,31 +17,12 @@ export const useFormSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const submitForm = async (formData: ContactSubmissionData, securityData?: any) => {
+  const submitForm = async (formData: ContactSubmissionData) => {
     setIsSubmitting(true);
     try {
       console.log('Form submission started:', formData);
 
-      // Log security data if provided
-      if (securityData) {
-        const { error: securityError } = await supabase
-          .from('form_security_logs')
-          .insert({
-            form_type: formData.form_type,
-            honeypot_triggered: securityData.honeypot_triggered || false,
-            csrf_valid: securityData.csrf_valid !== false,
-            recaptcha_score: securityData.recaptcha_score || null,
-            ip_address: securityData.ip_address || null,
-            user_agent: securityData.user_agent || null,
-            submission_data: formData as any
-          });
-
-        if (securityError) {
-          console.error('Security log error:', securityError);
-        }
-      }
-
-      // Submit the form data
+      // Submit the form data directly to contact_submissions
       const { error: submitError } = await supabase
         .from('contact_submissions')
         .insert({

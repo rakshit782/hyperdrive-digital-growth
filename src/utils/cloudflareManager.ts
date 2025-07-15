@@ -1,5 +1,5 @@
 
-interface CloudflareConfig {
+export interface CloudflareConfig {
   accountId: string;
   apiToken: string;
   zoneId?: string;
@@ -17,44 +17,46 @@ class CloudflareManager {
     return CloudflareManager.instance;
   }
 
-  configure(config: CloudflareConfig) {
-    this.config = config;
-    console.log('Cloudflare configured:', { accountId: config.accountId, active: config.isActive });
+  getConfig(): CloudflareConfig | null {
+    return this.config;
   }
 
-  async purgeCache(urls?: string[]): Promise<boolean> {
-    if (!this.config?.isActive || !this.config?.apiToken || !this.config?.zoneId) {
-      console.warn('Cloudflare not configured properly');
-      return false;
-    }
+  async saveConfig(config: CloudflareConfig): Promise<void> {
+    this.config = config;
+    localStorage.setItem('cloudflare_config', JSON.stringify(config));
+  }
 
+  loadSavedConfig(): CloudflareConfig | null {
     try {
-      const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${this.config.zoneId}/purge_cache`, {
-        method: 'POST',
+      const saved = localStorage.getItem('cloudflare_config');
+      if (saved) {
+        this.config = JSON.parse(saved);
+        return this.config;
+      }
+    } catch (error) {
+      console.error('Error loading Cloudflare config:', error);
+    }
+    return null;
+  }
+
+  async testConnection(): Promise<boolean> {
+    if (!this.config?.accountId || !this.config?.apiToken) return false;
+    
+    try {
+      const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${this.config.accountId}`, {
         headers: {
           'Authorization': `Bearer ${this.config.apiToken}`,
-          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          purge_everything: !urls,
-          files: urls || undefined,
-        }),
       });
-
-      const data = await response.json();
-      return data.success;
+      return response.ok;
     } catch (error) {
-      console.error('Cloudflare API error:', error);
+      console.error('Cloudflare connection test failed:', error);
       return false;
     }
   }
 
   isActive(): boolean {
-    return !!(this.config && this.config.isActive && this.config.apiToken);
-  }
-
-  getConfig(): CloudflareConfig | null {
-    return this.config;
+    return this.config?.isActive || false;
   }
 }
 

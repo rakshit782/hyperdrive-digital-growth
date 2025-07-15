@@ -1,9 +1,10 @@
 
-interface ChatGPTConfig {
+export interface ChatGPTConfig {
   apiKey: string;
+  model: string;
+  temperature: number;
+  maxTokens: number;
   isActive: boolean;
-  model?: string;
-  maxTokens?: number;
 }
 
 class ChatGPTManager {
@@ -17,14 +18,47 @@ class ChatGPTManager {
     return ChatGPTManager.instance;
   }
 
-  configure(config: ChatGPTConfig) {
-    this.config = config;
-    console.log('ChatGPT configured:', { active: config.isActive });
+  getConfig(): ChatGPTConfig | null {
+    return this.config;
   }
 
-  async sendMessage(message: string): Promise<string> {
-    if (!this.config?.isActive || !this.config?.apiKey) {
-      throw new Error('ChatGPT not configured or not active');
+  loadSavedConfig(): ChatGPTConfig | null {
+    try {
+      const saved = localStorage.getItem('chatgpt_config');
+      if (saved) {
+        this.config = JSON.parse(saved);
+        return this.config;
+      }
+    } catch (error) {
+      console.error('Error loading ChatGPT config:', error);
+    }
+    return null;
+  }
+
+  async saveConfig(config: ChatGPTConfig): Promise<void> {
+    this.config = config;
+    localStorage.setItem('chatgpt_config', JSON.stringify(config));
+  }
+
+  async testConnection(): Promise<boolean> {
+    if (!this.config?.apiKey) return false;
+    
+    try {
+      const response = await fetch('https://api.openai.com/v1/models', {
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+        },
+      });
+      return response.ok;
+    } catch (error) {
+      console.error('ChatGPT connection test failed:', error);
+      return false;
+    }
+  }
+
+  async optimizeContent(content: string): Promise<string> {
+    if (!this.config?.apiKey || !this.config?.isActive) {
+      throw new Error('ChatGPT not configured');
     }
 
     try {
@@ -35,30 +69,32 @@ class ChatGPTManager {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: this.config.model || 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: message }],
-          max_tokens: this.config.maxTokens || 150,
+          model: this.config.model,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a content optimization expert. Improve the given content for better engagement and SEO.'
+            },
+            {
+              role: 'user',
+              content: content
+            }
+          ],
+          temperature: this.config.temperature,
+          max_tokens: this.config.maxTokens,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get response from ChatGPT');
-      }
-
       const data = await response.json();
-      return data.choices[0]?.message?.content || 'No response';
+      return data.choices[0].message.content;
     } catch (error) {
-      console.error('ChatGPT API error:', error);
+      console.error('Content optimization failed:', error);
       throw error;
     }
   }
 
   isActive(): boolean {
-    return !!(this.config && this.config.isActive && this.config.apiKey);
-  }
-
-  getConfig(): ChatGPTConfig | null {
-    return this.config;
+    return this.config?.isActive || false;
   }
 }
 
