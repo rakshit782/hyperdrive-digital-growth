@@ -10,7 +10,6 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useSupabaseFormSubmission } from '@/hooks/useSupabaseFormSubmission';
 import { supabase } from '@/integrations/supabase/client';
 import { Upload, FileText, AlertCircle } from 'lucide-react';
 
@@ -45,9 +44,8 @@ const FreeAuditForm = () => {
   });
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   const { toast } = useToast();
-  const { submitForm } = useSupabaseFormSubmission();
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<AuditFormData>({
+  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<AuditFormData>({
     resolver: zodResolver(auditFormSchema),
   });
 
@@ -83,6 +81,8 @@ const FreeAuditForm = () => {
     setIsSubmitting(true);
     
     try {
+      console.log('Starting audit form submission...', data);
+
       // Upload files to Supabase storage
       const uploadedFilePaths: { [key: string]: string | null } = {};
       
@@ -113,46 +113,106 @@ const FreeAuditForm = () => {
         setUploadProgress({ advertisedProductReport: 100 });
       }
 
-      const fullName = `${data.firstName} ${data.lastName}`;
-      
-      const result = await submitForm({
-        name: fullName,
+      // Prepare lead data for insertion
+      const leadData = {
+        name: `${data.firstName} ${data.lastName}`,
         email: data.email,
-        phone: data.phone,
-        company: data.company,
-        formType: 'free_audit',
-        firstName: data.firstName,
-        lastName: data.lastName,
-        businessGoals: data.businessGoals,
-        website: data.website,
-        monthlyAdSpend: data.monthlyAdSpend,
-        primaryPlatform: data.primaryPlatform,
-        currentChallenges: data.currentChallenges,
-        uploadedFiles: uploadedFilePaths,
-        message: `Service: ${data.service}\n\nBusiness Goals: ${data.businessGoals}\n\nCurrent Challenges: ${data.currentChallenges}`,
+        phone: data.phone || null,
+        company: data.company || null,
+        source: 'website',
+        status: 'new',
+        audit_type: 'free_audit',
+        website_url: data.website || null,
+        current_spend: data.monthlyAdSpend,
+        goals: data.businessGoals,
+        notes: `Service: ${data.service}\n\nBusiness Goals: ${data.businessGoals}\n\nCurrent Challenges: ${data.currentChallenges}`,
+        lead_data: {
+          formType: 'free_audit',
+          firstName: data.firstName,
+          lastName: data.lastName,
+          service: data.service,
+          monthlyAdSpend: data.monthlyAdSpend,
+          primaryPlatform: data.primaryPlatform,
+          businessGoals: data.businessGoals,
+          currentChallenges: data.currentChallenges,
+          website: data.website,
+          uploadedFiles: uploadedFilePaths,
+          submissionTime: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
+        },
+        form_security: {
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
+        }
+      };
+
+      console.log('Inserting lead data:', leadData);
+
+      // Insert lead directly into Supabase
+      const { data: leadResult, error: leadError } = await supabase
+        .from('leads')
+        .insert([leadData])
+        .select()
+        .single();
+
+      if (leadError) {
+        console.error('Lead insertion error:', leadError);
+        throw new Error(`Failed to create lead: ${leadError.message}`);
+      }
+
+      console.log('Lead created successfully:', leadResult);
+
+      // Also insert into contact_submissions for backup
+      try {
+        const contactData = {
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          phone: data.phone || null,
+          company: data.company || null,
+          message: `Free Audit Request - Service: ${data.service}\n\nBusiness Goals: ${data.businessGoals}\n\nCurrent Challenges: ${data.currentChallenges}`,
+          form_type: 'free_audit'
+        };
+
+        const { error: contactError } = await supabase
+          .from('contact_submissions')
+          .insert([contactData]);
+
+        if (contactError) {
+          console.warn('Contact submission error (non-fatal):', contactError);
+        }
+      } catch (contactError) {
+        console.warn('Contact submission failed (non-fatal):', contactError);
+      }
+
+      toast({
+        title: "Audit Request Submitted Successfully!",
+        description: "We'll review your information and get back to you within 24 hours with your comprehensive audit.",
       });
 
-      if (result.success) {
-        toast({
-          title: "Audit Request Submitted!",
-          description: "We'll review your information and get back to you within 24 hours with your comprehensive audit.",
-        });
-        
-        // Reset form
-        setUploadedFiles({
-          businessSalesReport: null,
-          searchTermReport: null,
-          advertisedProductReport: null,
-        });
-        setUploadProgress({});
-      } else {
-        throw new Error(result.error || 'Failed to submit audit request');
-      }
+      // Reset form and files
+      reset();
+      setUploadedFiles({
+        businessSalesReport: null,
+        searchTermReport: null,
+        advertisedProductReport: null,
+      });
+      setUploadProgress({});
+
     } catch (error) {
       console.error('Form submission error:', error);
+      
+      let errorMessage = "There was an error submitting your audit request. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Submission Failed",
-        description: error instanceof Error ? error.message : "There was an error submitting your audit request. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
