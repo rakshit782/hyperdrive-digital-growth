@@ -70,10 +70,7 @@ const ChatGPTTab = () => {
     
     setIsOptimizing(true);
     try {
-      const optimized = await chatGPTManager.optimizeContent({
-        type: 'content',
-        content: testContent
-      });
+      const optimized = await chatGPTManager.optimizeContent(testContent);
       setOptimizedContent(optimized);
     } catch (error) {
       console.error('Optimization test failed:', error);
