@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,7 +34,13 @@ const Pricing = () => {
       
       const formattedPlans = data?.map(plan => ({
         ...plan,
-        features: Array.isArray(plan.features) ? plan.features : []
+        features: Array.isArray(plan.features) ? plan.features.map(String) : [],
+        price: plan.price || 0,
+        billing_period: plan.billing_period || 'monthly',
+        description: plan.description || '',
+        is_popular: plan.is_popular || false,
+        is_active: plan.is_active || true,
+        sort_order: plan.sort_order || 0
       })) || [];
       
       setPlans(formattedPlans);

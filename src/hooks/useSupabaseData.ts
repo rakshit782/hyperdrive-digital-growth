@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -14,7 +13,6 @@ export type ServiceStat = Database['public']['Tables']['service_stats']['Row'];
 export type NewsletterEmail = Database['public']['Tables']['newsletter_emails']['Row'];
 export type ContactSubmission = Database['public']['Tables']['contact_submissions']['Row'];
 export type Lead = Database['public']['Tables']['leads']['Row'];
-export type SecurityLog = Database['public']['Tables']['form_security_logs']['Row'];
 
 // Simple hook with basic types
 export const useSupabaseData = (tableName: string) => {
