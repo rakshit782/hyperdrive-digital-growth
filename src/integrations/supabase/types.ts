@@ -497,39 +497,87 @@ export type Database = {
         }
         Relationships: []
       }
-      form_security_logs: {
+      google_analytics_config: {
         Row: {
           created_at: string
-          csrf_valid: boolean | null
-          form_type: string
-          honeypot_triggered: boolean | null
+          custom_events: boolean
+          enable_conversion_tracking: boolean
+          enable_enhanced_measurement: boolean
           id: string
-          ip_address: unknown | null
-          recaptcha_score: number | null
-          submission_data: Json | null
-          user_agent: string | null
+          is_active: boolean
+          measurement_id: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
-          csrf_valid?: boolean | null
-          form_type: string
-          honeypot_triggered?: boolean | null
+          custom_events?: boolean
+          enable_conversion_tracking?: boolean
+          enable_enhanced_measurement?: boolean
           id?: string
-          ip_address?: unknown | null
-          recaptcha_score?: number | null
-          submission_data?: Json | null
-          user_agent?: string | null
+          is_active?: boolean
+          measurement_id: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
-          csrf_valid?: boolean | null
-          form_type?: string
-          honeypot_triggered?: boolean | null
+          custom_events?: boolean
+          enable_conversion_tracking?: boolean
+          enable_enhanced_measurement?: boolean
           id?: string
-          ip_address?: unknown | null
-          recaptcha_score?: number | null
-          submission_data?: Json | null
-          user_agent?: string | null
+          is_active?: boolean
+          measurement_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      google_search_console_config: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          site_url: string
+          updated_at: string
+          verification_code: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          site_url: string
+          updated_at?: string
+          verification_code?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          site_url?: string
+          updated_at?: string
+          verification_code?: string | null
+        }
+        Relationships: []
+      }
+      google_tag_manager_config: {
+        Row: {
+          container_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          updated_at: string
+        }
+        Insert: {
+          container_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Update: {
+          container_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
         }
         Relationships: []
       }
@@ -575,10 +623,13 @@ export type Database = {
       leads: {
         Row: {
           assigned_to: string | null
+          audit_type: string | null
           company: string | null
           created_at: string | null
+          current_spend: string | null
           email: string
           form_security: Json | null
+          goals: string | null
           id: string
           lead_data: Json | null
           lead_number: string | null
@@ -588,13 +639,17 @@ export type Database = {
           source: string | null
           status: string | null
           updated_at: string | null
+          website_url: string | null
         }
         Insert: {
           assigned_to?: string | null
+          audit_type?: string | null
           company?: string | null
           created_at?: string | null
+          current_spend?: string | null
           email: string
           form_security?: Json | null
+          goals?: string | null
           id?: string
           lead_data?: Json | null
           lead_number?: string | null
@@ -604,13 +659,17 @@ export type Database = {
           source?: string | null
           status?: string | null
           updated_at?: string | null
+          website_url?: string | null
         }
         Update: {
           assigned_to?: string | null
+          audit_type?: string | null
           company?: string | null
           created_at?: string | null
+          current_spend?: string | null
           email?: string
           form_security?: Json | null
+          goals?: string | null
           id?: string
           lead_data?: Json | null
           lead_number?: string | null
@@ -620,6 +679,7 @@ export type Database = {
           source?: string | null
           status?: string | null
           updated_at?: string | null
+          website_url?: string | null
         }
         Relationships: []
       }

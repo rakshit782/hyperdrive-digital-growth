@@ -3,86 +3,59 @@ interface CloudflareConfig {
   accountId: string;
   apiToken: string;
   zoneId?: string;
-  streamAccountId?: string;
-  streamApiToken?: string;
+  isActive: boolean;
 }
 
 class CloudflareManager {
+  private static instance: CloudflareManager;
   private config: CloudflareConfig | null = null;
-  private isConfigured = false;
+
+  static getInstance(): CloudflareManager {
+    if (!CloudflareManager.instance) {
+      CloudflareManager.instance = new CloudflareManager();
+    }
+    return CloudflareManager.instance;
+  }
 
   configure(config: CloudflareConfig) {
-    try {
-      this.config = config;
-      this.isConfigured = true;
-      console.log('Cloudflare configured successfully');
-      this.saveConfig(config);
-    } catch (error) {
-      console.error('Cloudflare configuration error:', error);
+    this.config = config;
+    console.log('Cloudflare configured:', { accountId: config.accountId, active: config.isActive });
+  }
+
+  async purgeCache(urls?: string[]): Promise<boolean> {
+    if (!this.config?.isActive || !this.config?.apiToken || !this.config?.zoneId) {
+      console.warn('Cloudflare not configured properly');
+      return false;
     }
-  }
 
-  private saveConfig(config: CloudflareConfig) {
-    localStorage.setItem('cloudflare_config', JSON.stringify(config));
-  }
+    try {
+      const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${this.config.zoneId}/purge_cache`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          purge_everything: !urls,
+          files: urls || undefined,
+        }),
+      });
 
-  getConfig(): CloudflareConfig | null {
-    const stored = localStorage.getItem('cloudflare_config');
-    return stored ? JSON.parse(stored) : null;
+      const data = await response.json();
+      return data.success;
+    } catch (error) {
+      console.error('Cloudflare API error:', error);
+      return false;
+    }
   }
 
   isActive(): boolean {
-    return this.isConfigured && this.config !== null;
+    return !!(this.config && this.config.isActive && this.config.apiToken);
   }
 
-  loadSavedConfig() {
-    const config = this.getConfig();
-    if (config) {
-      this.configure(config);
-    }
-  }
-
-  async purgeCache(urls?: string[]) {
-    if (!this.config) {
-      throw new Error('Cloudflare not configured');
-    }
-
-    const purgeData = urls ? { files: urls } : { purge_everything: true };
-
-    const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${this.config.zoneId}/purge_cache`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.config.apiToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(purgeData),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Cloudflare API error: ${response.statusText}`);
-    }
-
-    return await response.json();
-  }
-
-  async getZoneAnalytics() {
-    if (!this.config) {
-      throw new Error('Cloudflare not configured');
-    }
-
-    const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${this.config.zoneId}/analytics/dashboard`, {
-      headers: {
-        'Authorization': `Bearer ${this.config.apiToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Cloudflare API error: ${response.statusText}`);
-    }
-
-    return await response.json();
+  getConfig(): CloudflareConfig | null {
+    return this.config;
   }
 }
 
-export const cloudflareManager = new CloudflareManager();
+export const cloudflareManager = CloudflareManager.getInstance();

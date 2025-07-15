@@ -1,5 +1,5 @@
 
-export interface Auth0Config {
+interface Auth0Config {
   domain: string;
   clientId: string;
   redirectUri: string;
@@ -19,35 +19,36 @@ class Auth0ConfigManager {
     return Auth0ConfigManager.instance;
   }
 
-  async saveConfig(config: Auth0Config): Promise<void> {
+  configure(config: Auth0Config) {
     this.config = config;
-    localStorage.setItem('auth0_config', JSON.stringify(config));
+    console.log('Auth0 configured:', { domain: config.domain, active: config.isActive });
   }
 
-  getConfig(): Auth0Config | null {
-    if (this.config) return this.config;
+  getLoginUrl(): string | null {
+    if (!this.config?.isActive) return null;
 
-    const stored = localStorage.getItem('auth0_config');
-    if (stored) {
-      try {
-        this.config = JSON.parse(stored);
-        return this.config;
-      } catch (error) {
-        console.error('Failed to parse Auth0 config:', error);
-        return null;
-      }
-    }
-    return null;
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: this.config.clientId,
+      redirect_uri: this.config.redirectUri,
+      scope: this.config.scope,
+      audience: this.config.audience || '',
+    });
+
+    return `https://${this.config.domain}/authorize?${params.toString()}`;
+  }
+
+  getLogoutUrl(): string | null {
+    if (!this.config?.isActive) return null;
+    return `https://${this.config.domain}/v2/logout?client_id=${this.config.clientId}&returnTo=${encodeURIComponent(this.config.redirectUri)}`;
   }
 
   isConfigured(): boolean {
-    const config = this.getConfig();
-    return !!(config && config.domain && config.clientId && config.isActive);
+    return !!(this.config && this.config.isActive && this.config.domain && this.config.clientId);
   }
 
-  clearConfig(): void {
-    this.config = null;
-    localStorage.removeItem('auth0_config');
+  getConfig(): Auth0Config | null {
+    return this.config;
   }
 }
 

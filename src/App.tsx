@@ -1,74 +1,67 @@
-
-import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster } from "@/components/ui/toaster"
-import { ErrorBoundary } from 'react-error-boundary'
-import ErrorFallback from '@/components/ErrorFallback'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Index from '@/pages/Index';
+import About from '@/pages/About';
+import Contact from '@/pages/Contact';
+import Services from '@/pages/Services';
+import CaseStudies from '@/pages/CaseStudies';
+import Blog from '@/pages/Blog';
+import BlogArticle from '@/pages/BlogArticle';
+import PricingPage from '@/pages/PricingPage';
+import Terms from '@/pages/Terms';
+import Privacy from '@/pages/Privacy';
+import NotFound from '@/pages/NotFound';
+import Dashboard from '@/pages/Dashboard';
+import ServicePage from '@/pages/ServicePage';
+import AmazonAdvertisingPage from '@/pages/AmazonAdvertisingPage';
+import MetaAdvertisingPage from '@/pages/MetaAdvertisingPage';
+import GoogleAdvertisingPage from '@/pages/GoogleAdvertisingPage';
+import WalmartAdvertisingPage from '@/pages/WalmartAdvertisingPage';
+import ShopifyDevelopmentPage from '@/pages/ShopifyDevelopmentPage';
+import WebsiteDevelopmentPage from '@/pages/WebsiteDevelopmentPage';
+import ShopifyIntegrationPage from '@/pages/ShopifyIntegrationPage';
+import AccountManagementPage from '@/pages/AccountManagementPage';
+import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from "@/components/ui/tooltip"
-import PerformanceOptimizer from '@/components/PerformanceOptimizer'
-import ModernLayout from '@/layouts/ModernLayout'
-import PricingPage from '@/pages/PricingPage'
-import AboutPage from '@/pages/AboutPage'
-import ContactPage from '@/pages/ContactPage'
-import CaseStudiesPage from '@/pages/CaseStudiesPage'
-import FreeAuditPage from '@/pages/FreeAuditPage'
-import ServicesPage from '@/pages/ServicesPage'
-import AmazonAdvertisingPage from '@/pages/AmazonAdvertisingPage'
-import WalmartAdvertisingPage from '@/pages/WalmartAdvertisingPage'
-import GoogleAdvertisingPage from '@/pages/GoogleAdvertisingPage'
-import MetaAdvertisingPage from '@/pages/MetaAdvertisingPage'
-import WebsiteDevelopmentPage from '@/pages/WebsiteDevelopmentPage'
-import AccountManagementPage from '@/pages/AccountManagementPage'
-import ShopifyDevelopmentPage from '@/pages/ShopifyDevelopmentPage'
-import ShopifyIntegrationPage from '@/pages/ShopifyIntegrationPage'
-import PrivacyPolicy from '@/pages/PrivacyPolicy'
-import TermsOfService from '@/pages/TermsOfService'
-import TermsConditions from '@/pages/TermsConditions'
-import Dashboard from '@/pages/Dashboard'
-import NavigationOptimizer from "@/components/NavigationOptimizer";
-
-const queryClient = new QueryClient()
+import { QueryClient } from '@tanstack/react-query';
+import TrackingScriptInjector from '@/components/TrackingScriptInjector';
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClient>
       <TooltipProvider>
         <Toaster />
         <BrowserRouter>
-          <NavigationOptimizer />
-          <ErrorBoundary
-            FallbackComponent={ErrorFallback}
-            onError={(error, info) => {
-              console.error('ErrorBoundary caught an error:', error, info);
-            }}
-          >
-            <PerformanceOptimizer />
-            <Routes>
-              <Route path="/" element={<ModernLayout />} />
-              <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/case-studies" element={<CaseStudiesPage />} />
-              <Route path="/free-audit" element={<FreeAuditPage />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/amazon-advertising" element={<AmazonAdvertisingPage />} />
-              <Route path="/walmart-advertising" element={<WalmartAdvertisingPage />} />
-              <Route path="/google-advertising" element={<GoogleAdvertisingPage />} />
-              <Route path="/meta-advertising" element={<MetaAdvertisingPage />} />
-              <Route path="/website-development" element={<WebsiteDevelopmentPage />} />
-              <Route path="/account-management" element={<AccountManagementPage />} />
-              <Route path="/shopify-development" element={<ShopifyDevelopmentPage />} />
-              <Route path="/shopify-integration" element={<ShopifyIntegrationPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/terms-conditions" element={<TermsConditions />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Routes>
-          </ErrorBoundary>
+          <TrackingScriptInjector />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/case-studies" element={<CaseStudies />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogArticle />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/service/:slug" element={<ServicePage />} />
+
+            {/* Unified Service Pages */}
+            <Route path="/amazon-advertising" element={<AmazonAdvertisingPage />} />
+            <Route path="/meta-advertising" element={<MetaAdvertisingPage />} />
+            <Route path="/google-advertising" element={<GoogleAdvertisingPage />} />
+            <Route path="/walmart-advertising" element={<WalmartAdvertisingPage />} />
+            <Route path="/shopify-development" element={<ShopifyDevelopmentPage />} />
+            <Route path="/website-development" element={<WebsiteDevelopmentPage />} />
+            <Route path="/shopify-integration" element={<ShopifyIntegrationPage />} />
+            <Route path="/account-management" element={<AccountManagementPage />} />
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClientProvider>
+    </QueryClient>
   );
 }
 

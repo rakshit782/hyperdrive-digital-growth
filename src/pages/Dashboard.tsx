@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,10 +10,10 @@ import LeadManagementTab from "@/components/dashboard/LeadManagementTab";
 import ContentManagementTab from "@/components/dashboard/ContentManagementTab";
 import ReviewsTab from "@/components/dashboard/ReviewsTab";
 import ServicesTab from "@/components/dashboard/ServicesTab";
-import FormSecurityTab from "@/components/dashboard/FormSecurityTab";
 import SecuritySettingsTab from "@/components/dashboard/SecuritySettingsTab";
 import EmailWorkflowTab from "@/components/dashboard/EmailWorkflowTab";
 import MarketingEmailDashboard from "@/components/dashboard/MarketingEmailDashboard";
+import TrackingManagementTab from "@/components/dashboard/TrackingManagementTab";
 
 interface ServiceCard {
   id: string;
@@ -124,9 +123,9 @@ const Dashboard = () => {
               <Zap className="w-4 h-4" />
               Services
             </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              Security
+            <TabsTrigger value="tracking" className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Tracking
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
@@ -209,8 +208,8 @@ const Dashboard = () => {
             <ServicesTab />
           </TabsContent>
 
-          <TabsContent value="security">
-            <FormSecurityTab />
+          <TabsContent value="tracking" className="space-y-6">
+            <TrackingManagementTab />
           </TabsContent>
 
           <TabsContent value="settings">
