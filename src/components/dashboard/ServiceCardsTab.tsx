@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,22 +8,36 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Edit, Save, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { ServiceCard } from "@/types/dashboard";
+import { supabase } from "@/integrations/supabase/client";
 
-interface ServiceCardsTabProps {
-  services: ServiceCard[];
-  updateServices: (services: ServiceCard[]) => void;
+interface ServiceCard {
+  id?: string;
+  service_type: string;
+  title: string;
+  description: string;
+  features: string[];
+  icon?: string;
+  gradient?: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
-const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => {
+const ServiceCardsTab = () => {
+  const [services, setServices] = useState<ServiceCard[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingService, setEditingService] = useState<ServiceCard | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newService, setNewService] = useState({
+    service_type: "",
     title: "",
     description: "",
     features: [""],
     icon: "💼",
-    gradient: "from-blue-500 to-purple-600"
+    gradient: "from-blue-500 to-purple-600",
+    sort_order: 0,
+    is_active: true
   });
   const { toast } = useToast();
 
@@ -38,18 +52,55 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
 
   const iconOptions = ["💼", "🚀", "⚡", "🎯", "💡", "🔧", "📊", "🌟", "🏆", "🎨"];
 
-  const handleSave = () => {
-    toast({
-      title: "Services Updated",
-      description: "Service cards have been updated successfully.",
-    });
+  const serviceTypes = [
+    'meta-advertising',
+    'amazon-advertising',
+    'google-advertising',
+    'walmart-advertising',
+    'account-management',
+    'website-development',
+    'shopify-development',
+    'shopify-integration'
+  ];
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('service_cards')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      
+      // Convert features from JSON to string array
+      const servicesWithFeatures = (data || []).map(service => ({
+        ...service,
+        features: Array.isArray(service.features) ? service.features as string[] : []
+      }));
+      
+      setServices(servicesWithFeatures);
+    } catch (error) {
+      console.error('Error fetching services:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load service cards.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
 
   const handleEdit = (service: ServiceCard) => {
     setEditingService({ ...service });
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingService) return;
     
     if (!editingService.title.trim() || !editingService.description.trim()) {
@@ -61,19 +112,42 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
       return;
     }
 
-    const updatedServices = services.map(s => 
-      s.id === editingService.id ? editingService : s
-    );
-    updateServices(updatedServices);
-    setEditingService(null);
-    
-    toast({
-      title: "Service Updated",
-      description: "Service has been updated successfully."
-    });
+    try {
+      const { error } = await supabase
+        .from('service_cards')
+        .update({
+          service_type: editingService.service_type,
+          title: editingService.title,
+          description: editingService.description,
+          features: editingService.features,
+          icon: editingService.icon,
+          gradient: editingService.gradient,
+          sort_order: editingService.sort_order,
+          is_active: editingService.is_active,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', editingService.id);
+
+      if (error) throw error;
+
+      await fetchServices();
+      setEditingService(null);
+      
+      toast({
+        title: "Service Updated",
+        description: "Service has been updated successfully."
+      });
+    } catch (error) {
+      console.error('Error updating service:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update service.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleAddNew = () => {
+  const handleAddNew = async () => {
     if (!newService.title.trim() || !newService.description.trim()) {
       toast({
         title: "Error",
@@ -83,38 +157,71 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
       return;
     }
 
-    const service: ServiceCard = {
-      id: `service-${Date.now()}`,
-      title: newService.title.trim(),
-      description: newService.description.trim(),
-      features: newService.features.filter(f => f.trim() !== ""),
-      icon: newService.icon,
-      gradient: newService.gradient
-    };
+    try {
+      const { error } = await supabase
+        .from('service_cards')
+        .insert({
+          service_type: newService.service_type,
+          title: newService.title.trim(),
+          description: newService.description.trim(),
+          features: newService.features.filter(f => f.trim() !== ""),
+          icon: newService.icon,
+          gradient: newService.gradient,
+          sort_order: newService.sort_order,
+          is_active: newService.is_active
+        });
 
-    updateServices([...services, service]);
-    setNewService({
-      title: "",
-      description: "",
-      features: [""],
-      icon: "💼",
-      gradient: "from-blue-500 to-purple-600"
-    });
-    setIsAddingNew(false);
-    
-    toast({
-      title: "Service Added",
-      description: "New service has been added successfully."
-    });
+      if (error) throw error;
+
+      await fetchServices();
+      setNewService({
+        service_type: "",
+        title: "",
+        description: "",
+        features: [""],
+        icon: "💼",
+        gradient: "from-blue-500 to-purple-600",
+        sort_order: 0,
+        is_active: true
+      });
+      setIsAddingNew(false);
+      
+      toast({
+        title: "Service Added",
+        description: "New service has been added successfully."
+      });
+    } catch (error) {
+      console.error('Error adding service:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add service.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleDelete = (id: string) => {
-    const updatedServices = services.filter(s => s.id !== id);
-    updateServices(updatedServices);
-    toast({
-      title: "Service Deleted",
-      description: "Service has been removed successfully.",
-    });
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('service_cards')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await fetchServices();
+      toast({
+        title: "Service Deleted",
+        description: "Service has been removed successfully.",
+      });
+    } catch (error) {
+      console.error('Error deleting service:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete service.",
+        variant: "destructive"
+      });
+    }
   };
 
   const updateFeatures = (features: string, isEditing = false) => {
@@ -125,6 +232,14 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
       setNewService({ ...newService, features: featuresArray });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -158,6 +273,23 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
+                    <Label htmlFor="new-service-type">Service Type</Label>
+                    <select
+                      id="new-service-type"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white"
+                      value={newService.service_type}
+                      onChange={(e) => setNewService({ ...newService, service_type: e.target.value })}
+                    >
+                      <option value="">Select service type</option>
+                      {serviceTypes.map(type => (
+                        <option key={type} value={type}>
+                          {type.replace('-', ' ')}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
                     <Label htmlFor="new-title">Service Title</Label>
                     <Input
                       id="new-title"
@@ -166,24 +298,6 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
                       placeholder="Amazon PPC Management"
                       className="bg-white/80"
                     />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="new-icon">Icon</Label>
-                    <div className="flex gap-2 flex-wrap">
-                      {iconOptions.map(icon => (
-                        <Button
-                          key={icon}
-                          type="button"
-                          variant={newService.icon === icon ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setNewService({ ...newService, icon })}
-                          className="text-lg w-10 h-10 p-0"
-                        >
-                          {icon}
-                        </Button>
-                      ))}
-                    </div>
                   </div>
                 </div>
 
@@ -211,25 +325,6 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
                   />
                 </div>
 
-                <div>
-                  <Label>Gradient Background</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-                    {gradientOptions.map(option => (
-                      <Button
-                        key={option.value}
-                        type="button"
-                        variant={newService.gradient === option.value ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setNewService({ ...newService, gradient: option.value })}
-                        className="justify-start"
-                      >
-                        <div className={`w-4 h-4 rounded mr-2 ${option.preview}`}></div>
-                        {option.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
                 <div className="flex space-x-2">
                   <Button onClick={handleAddNew} className="bg-gradient-to-r from-green-600 to-emerald-600">
                     <Save className="w-4 h-4 mr-2" />
@@ -252,30 +347,28 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
                   // Edit Mode
                   <CardContent className="p-6 space-y-4">
                     <div>
+                      <Label>Service Type</Label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white"
+                        value={editingService.service_type}
+                        onChange={(e) => setEditingService({ ...editingService, service_type: e.target.value })}
+                      >
+                        <option value="">Select service type</option>
+                        {serviceTypes.map(type => (
+                          <option key={type} value={type}>
+                            {type.replace('-', ' ')}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
                       <Label>Service Title</Label>
                       <Input
                         value={editingService.title}
                         onChange={(e) => setEditingService({ ...editingService, title: e.target.value })}
                         className="bg-white/80"
                       />
-                    </div>
-                    
-                    <div>
-                      <Label>Icon</Label>
-                      <div className="flex gap-2 flex-wrap">
-                        {iconOptions.map(icon => (
-                          <Button
-                            key={icon}
-                            type="button"
-                            variant={editingService.icon === icon ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setEditingService({ ...editingService, icon })}
-                            className="text-lg w-8 h-8 p-0"
-                          >
-                            {icon}
-                          </Button>
-                        ))}
-                      </div>
                     </div>
 
                     <div>
@@ -298,25 +391,6 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
                       />
                     </div>
 
-                    <div>
-                      <Label>Gradient</Label>
-                      <div className="grid grid-cols-2 gap-2 mt-2">
-                        {gradientOptions.map(option => (
-                          <Button
-                            key={option.value}
-                            type="button"
-                            variant={editingService.gradient === option.value ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setEditingService({ ...editingService, gradient: option.value })}
-                            className="justify-start text-xs"
-                          >
-                            <div className={`w-3 h-3 rounded mr-1 ${option.preview}`}></div>
-                            {option.label.split(' ')[0]}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-
                     <div className="flex space-x-2">
                       <Button size="sm" onClick={handleSaveEdit} className="bg-gradient-to-r from-green-600 to-emerald-600">
                         <Save className="w-4 h-4 mr-1" />
@@ -333,8 +407,8 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
                   <>
                     <CardHeader className="pb-4">
                       <div className="flex items-center justify-between">
-                        <div className={`p-3 rounded-xl bg-gradient-to-r ${service.gradient} text-white shadow-lg`}>
-                          <span className="text-2xl">{service.icon}</span>
+                        <div className={`p-3 rounded-xl bg-gradient-to-r ${service.gradient || 'from-blue-500 to-purple-600'} text-white shadow-lg`}>
+                          <span className="text-2xl">{service.icon || '💼'}</span>
                         </div>
                         <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button
@@ -348,7 +422,7 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDelete(service.id)}
+                            onClick={() => handleDelete(service.id!)}
                             className="w-8 h-8 p-0 bg-white/80 hover:bg-white text-red-600 hover:text-red-700"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -374,18 +448,17 @@ const ServiceCardsTab = ({ services, updateServices }: ServiceCardsTabProps) => 
                           ))}
                         </div>
                       </div>
+                      <div className="mt-4 text-xs text-gray-500">
+                        <span>Service Type: {service.service_type}</span>
+                        <span className={`ml-2 px-2 py-1 rounded ${service.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          {service.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
                     </CardContent>
                   </>
                 )}
               </Card>
             ))}
-          </div>
-          
-          <div className="flex justify-end mt-6">
-            <Button onClick={handleSave} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              <Save className="w-4 h-4 mr-2" />
-              Save All Changes
-            </Button>
           </div>
         </CardContent>
       </Card>

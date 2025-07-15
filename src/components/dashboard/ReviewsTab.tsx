@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,14 +9,55 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2, Plus, Edit, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useServiceReviews, ServiceReview } from "@/hooks/useSupabaseData";
+import { supabase } from "@/integrations/supabase/client";
+
+interface ServiceReview {
+  id?: string;
+  service_type: string;
+  client_name: string;
+  company: string;
+  rating: number;
+  review_text: string;
+  avatar_url?: string | null;
+  results_achieved?: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
 
 const ReviewsTab = () => {
   const { toast } = useToast();
-  const { reviews: serviceReviews, loading, createReview, updateReview, deleteReview } = useServiceReviews();
-  
+  const [reviews, setReviews] = useState<ServiceReview[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingReview, setEditingReview] = useState<ServiceReview | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const fetchReviews = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('service_reviews')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      setReviews(data || []);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load reviews.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
 
   const handleEdit = (review: ServiceReview) => {
     setEditingReview(review);
@@ -24,12 +66,20 @@ const ReviewsTab = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteReview(id);
+      const { error } = await supabase
+        .from('service_reviews')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      await fetchReviews();
       toast({
         title: "Review Deleted",
         description: "Review has been removed successfully.",
       });
     } catch (error) {
+      console.error('Error deleting review:', error);
       toast({
         title: "Error",
         description: "Failed to delete review.",
@@ -39,7 +89,7 @@ const ReviewsTab = () => {
   };
 
   const handleAdd = () => {
-    const newReview: Omit<ServiceReview, 'id' | 'created_at' | 'updated_at'> = {
+    const newReview: ServiceReview = {
       service_type: "general",
       client_name: "New Customer",
       company: "Company Name",
@@ -47,22 +97,54 @@ const ReviewsTab = () => {
       review_text: "Great service!",
       avatar_url: null,
       results_achieved: null,
-      sort_order: serviceReviews.length,
+      sort_order: reviews.length,
       is_active: true
     };
-    setEditingReview(newReview as ServiceReview);
+    setEditingReview(newReview);
     setIsDialogOpen(true);
   };
 
   const handleSave = async (updatedReview: ServiceReview) => {
     try {
-      if (serviceReviews.find(r => r.id === updatedReview.id)) {
+      if (updatedReview.id) {
         // Update existing
-        await updateReview(updatedReview.id!, updatedReview);
+        const { error } = await supabase
+          .from('service_reviews')
+          .update({
+            service_type: updatedReview.service_type,
+            client_name: updatedReview.client_name,
+            company: updatedReview.company,
+            rating: updatedReview.rating,
+            review_text: updatedReview.review_text,
+            avatar_url: updatedReview.avatar_url,
+            results_achieved: updatedReview.results_achieved,
+            sort_order: updatedReview.sort_order,
+            is_active: updatedReview.is_active,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', updatedReview.id);
+
+        if (error) throw error;
       } else {
         // Add new
-        await createReview(updatedReview);
+        const { error } = await supabase
+          .from('service_reviews')
+          .insert({
+            service_type: updatedReview.service_type,
+            client_name: updatedReview.client_name,
+            company: updatedReview.company,
+            rating: updatedReview.rating,
+            review_text: updatedReview.review_text,
+            avatar_url: updatedReview.avatar_url,
+            results_achieved: updatedReview.results_achieved,
+            sort_order: updatedReview.sort_order,
+            is_active: updatedReview.is_active
+          });
+
+        if (error) throw error;
       }
+
+      await fetchReviews();
       setIsDialogOpen(false);
       setEditingReview(null);
       toast({
@@ -70,6 +152,7 @@ const ReviewsTab = () => {
         description: "Review has been saved successfully.",
       });
     } catch (error) {
+      console.error('Error saving review:', error);
       toast({
         title: "Error",
         description: "Failed to save review.",
@@ -97,7 +180,7 @@ const ReviewsTab = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {serviceReviews.map((review) => (
+        {reviews.map((review) => (
           <Card key={review.id} className="relative">
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -150,10 +233,10 @@ const ReviewsTab = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
-              {editingReview && serviceReviews.find(r => r.id === editingReview.id) ? 'Edit Review' : 'Add New Review'}
+              {editingReview?.id ? 'Edit Review' : 'Add New Review'}
             </DialogTitle>
             <DialogDescription>
-              {editingReview && serviceReviews.find(r => r.id === editingReview.id) ? 'Make changes to the review here.' : 'Add a new customer review.'}
+              {editingReview?.id ? 'Make changes to the review here.' : 'Add a new customer review.'}
             </DialogDescription>
           </DialogHeader>
           {editingReview && (
