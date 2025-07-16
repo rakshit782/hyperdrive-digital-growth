@@ -18,7 +18,8 @@ import {
   FileText,
   AlertTriangle,
   Shield,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -48,7 +49,7 @@ interface LeadDetailsModalProps {
 
 const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClose }) => {
   const { toast } = useToast();
-  const { validateURL, getSecurityBadge } = useURLSecurity();
+  const { validateURL, getSecurityBadge, getDetailedSecurityReport } = useURLSecurity();
   const [urlSecurityResults, setUrlSecurityResults] = useState<Record<string, any>>({});
   const [scanningUrls, setScanningUrls] = useState(false);
 
@@ -63,10 +64,21 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
 
     setScanningUrls(true);
     try {
-      const result = await validateURL(lead.lead_data.website);
+      console.log('Starting security scan for:', lead.lead_data.website);
+      const result = await URLSecurityValidator.scanWebsite(lead.lead_data.website);
+      console.log('Security scan result:', result);
+      
       setUrlSecurityResults({
         [lead.lead_data.website]: result
       });
+
+      if (!result.isSecure || result.riskLevel === 'high') {
+        toast({
+          title: "Security Alert",
+          description: `Website security scan completed: ${getDetailedSecurityReport(result)}`,
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error scanning URLs:', error);
       toast({
@@ -155,10 +167,54 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
 
     const badge = getSecurityBadge(result);
     return (
-      <Badge className={`${badge.color} ml-2`}>
+      <Badge className={`${badge.color} ml-2 border`}>
         <Shield className="w-3 h-3 mr-1" />
-        {badge.text}
+        {badge.icon} {badge.text}
       </Badge>
+    );
+  };
+
+  const SecurityDetails = ({ url }: { url: string }) => {
+    const result = urlSecurityResults[url];
+    if (!result || result.warnings.length === 0) return null;
+
+    const isHighRisk = !result.isSecure || result.riskLevel === 'high';
+    
+    return (
+      <div className={`mt-2 p-3 rounded-lg border ${
+        isHighRisk 
+          ? 'bg-red-50 border-red-200' 
+          : 'bg-yellow-50 border-yellow-200'
+      }`}>
+        <div className="flex items-center space-x-2 mb-2">
+          <AlertTriangle className={`w-4 h-4 ${
+            isHighRisk ? 'text-red-600' : 'text-yellow-600'
+          }`} />
+          <span className={`text-sm font-medium ${
+            isHighRisk ? 'text-red-800' : 'text-yellow-800'
+          }`}>
+            Security Analysis Results:
+          </span>
+        </div>
+        <ul className={`text-xs list-disc list-inside space-y-1 ${
+          isHighRisk ? 'text-red-700' : 'text-yellow-700'
+        }`}>
+          {result.warnings.map((warning: string, index: number) => (
+            <li key={index}>{warning}</li>
+          ))}
+        </ul>
+        {(result.malwareDetected || result.phishingDetected) && (
+          <div className="mt-2 p-2 bg-red-100 border border-red-300 rounded">
+            <div className="text-xs text-red-800 font-medium">
+              ⚠️ CRITICAL THREATS DETECTED:
+            </div>
+            <div className="text-xs text-red-700 mt-1">
+              {result.malwareDetected && "• Malware signatures found"}
+              {result.phishingDetected && "• Phishing indicators detected"}
+            </div>
+          </div>
+        )}
+      </div>
     );
   };
 
@@ -226,7 +282,7 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
                   <span className="text-sm">Scanning URLs for security threats...</span>
                 </div>
               </CardContent>
@@ -245,8 +301,8 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
               <CardContent className="space-y-4">
                 {leadData.website && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-1">Website</h4>
-                    <div className="flex items-center space-x-2">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Website</h4>
+                    <div className="flex items-center space-x-2 flex-wrap">
                       <Globe className="w-4 h-4 text-gray-500" />
                       <a 
                         href={leadData.website} 
@@ -259,19 +315,7 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
                       </a>
                       <SecurityBadge url={leadData.website} />
                     </div>
-                    {urlSecurityResults[leadData.website]?.warnings?.length > 0 && (
-                      <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                        <div className="flex items-center space-x-2">
-                          <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                          <span className="text-sm font-medium text-yellow-800">Security Warnings:</span>
-                        </div>
-                        <ul className="mt-1 text-xs text-yellow-700 list-disc list-inside">
-                          {urlSecurityResults[leadData.website].warnings.map((warning: string, index: number) => (
-                            <li key={index}>{warning}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    <SecurityDetails url={leadData.website} />
                   </div>
                 )}
                 
@@ -357,7 +401,6 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
             </Card>
           )}
 
-          {/* Technical Information */}
           {lead.form_security && (
             <Card>
               <CardHeader>
