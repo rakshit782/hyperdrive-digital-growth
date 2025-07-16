@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { BarChart3, Users, Mail, Settings, Shield, FileText, Globe, Zap, PlusCircle, Edit, Trash2, Send } from "lucide-react";
+import { BarChart3, Users, Mail, Settings, Shield, FileText, Globe, Zap, PlusCircle, Edit, Trash2, Send, DollarSign, HelpCircle } from "lucide-react";
 import NewsletterEmailManagementTab from "@/components/dashboard/NewsletterEmailManagementTab";
 import LeadManagementTab from "@/components/dashboard/LeadManagementTab";
 import ContentManagementTab from "@/components/dashboard/ContentManagementTab";
@@ -14,75 +14,10 @@ import SecuritySettingsTab from "@/components/dashboard/SecuritySettingsTab";
 import EmailWorkflowTab from "@/components/dashboard/EmailWorkflowTab";
 import MarketingEmailDashboard from "@/components/dashboard/MarketingEmailDashboard";
 import TrackingManagementTab from "@/components/dashboard/TrackingManagementTab";
-
-interface ServiceCard {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  url: string;
-}
+import PricingManagementTab from "@/components/dashboard/PricingManagementTab";
+import FAQManagementTab from "@/components/dashboard/FAQManagementTab";
 
 const Dashboard = () => {
-  const [services, setServices] = useState<ServiceCard[]>([
-    {
-      id: "1",
-      title: "Amazon Advertising",
-      description: "Maximize your product visibility and sales on Amazon with our expert advertising strategies.",
-      image: "/images/amazon-ads.png",
-      url: "/amazon-advertising"
-    },
-    {
-      id: "2",
-      title: "Walmart Advertising",
-      description: "Reach more customers and boost your sales on Walmart's marketplace with our tailored advertising solutions.",
-      image: "/images/walmart-ads.png",
-      url: "/walmart-advertising"
-    },
-    {
-      id: "3",
-      title: "Meta Advertising",
-      description: "Connect with your target audience on Facebook and Instagram through engaging and effective ad campaigns.",
-      image: "/images/meta-ads.png",
-      url: "/meta-advertising"
-    },
-    {
-      id: "4",
-      title: "Google Advertising",  
-      description: "Drive targeted traffic to your website and increase conversions with our data-driven Google Ads management.",
-      image: "/images/google-ads.png",
-      url: "/google-advertising"
-    },
-    {
-      id: "5",
-      title: "Shopify Development",
-      description: "Build a high-converting online store with our custom Shopify development services.",
-      image: "/images/shopify-dev.png",
-      url: "/shopify-development"
-    },
-    {
-      id: "6",
-      title: "Website Development",
-      description: "Create a professional and user-friendly website that attracts and converts visitors.",
-      image: "/images/website-dev.png",
-      url: "/website-development"
-    },
-  ]);
-
-  const [editingService, setEditingService] = useState<ServiceCard | null>(null);
-
-  const handleEditService = (service: ServiceCard) => {
-    setEditingService(service);
-  };
-
-  const handleDeleteService = (id: string) => {
-    setServices(services.filter((service) => service.id !== id));
-  };
-
-  const handleAddService = () => {
-    // Implement add service logic here
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       <div className="container mx-auto p-6">
@@ -94,7 +29,7 @@ const Dashboard = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 xl:grid-cols-9">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 xl:grid-cols-11">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Overview
@@ -122,6 +57,14 @@ const Dashboard = () => {
             <TabsTrigger value="services" className="flex items-center gap-2">
               <Zap className="w-4 h-4" />
               Services
+            </TabsTrigger>
+            <TabsTrigger value="pricing" className="flex items-center gap-2">
+              <DollarSign className="w-4 h-4" />
+              Pricing
+            </TabsTrigger>
+            <TabsTrigger value="faqs" className="flex items-center gap-2">
+              <HelpCircle className="w-4 h-4" />
+              FAQs
             </TabsTrigger>
             <TabsTrigger value="tracking" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
@@ -206,6 +149,14 @@ const Dashboard = () => {
 
           <TabsContent value="services">
             <ServicesTab />
+          </TabsContent>
+
+          <TabsContent value="pricing">
+            <PricingManagementTab />
+          </TabsContent>
+
+          <TabsContent value="faqs">
+            <FAQManagementTab />
           </TabsContent>
 
           <TabsContent value="tracking" className="space-y-6">

@@ -1,142 +1,121 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, Save, X, HelpCircle, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
-interface FAQItem {
+interface FAQ {
   id: string;
   question: string;
   answer: string;
-  category?: string;
+  category: string | null;
   is_active: boolean;
-  sort_order?: number;
+  sort_order: number;
 }
 
 const FAQManagementTab = () => {
-  const { toast } = useToast();
-  const [faqs, setFAQs] = useState<FAQItem[]>([]);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const [editingFaq, setEditingFaq] = useState<FAQ | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [editingFAQ, setEditingFAQ] = useState<FAQItem | null>(null);
-  const [isAddingNew, setIsAddingNew] = useState(false);
-  const [newFAQ, setNewFAQ] = useState({ question: '', answer: '', category: 'general', is_active: true });
+  const { toast } = useToast();
 
-  const fetchFAQs = async () => {
+  const emptyFaq: Omit<FAQ, 'id'> = {
+    question: '',
+    answer: '',
+    category: 'general',
+    is_active: true,
+    sort_order: 0
+  };
+
+  useEffect(() => {
+    fetchFaqs();
+  }, []);
+
+  const fetchFaqs = async () => {
     try {
-      setLoading(true);
       const { data, error } = await supabase
         .from('faqs')
         .select('*')
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      setFAQs(data || []);
+      setFaqs(data || []);
     } catch (error) {
       console.error('Error fetching FAQs:', error);
       toast({
-        title: "Error",
-        description: "Failed to load FAQs",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to fetch FAQs',
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchFAQs();
-  }, []);
-
-  const handleAddFAQ = async () => {
-    if (!newFAQ.question.trim() || !newFAQ.answer.trim()) {
-      toast({
-        title: "Error",
-        description: "Please fill in both question and answer.",
-        variant: "destructive"
-      });
-      return;
-    }
-
+  const handleSave = async (faqData: Omit<FAQ, 'id'> | FAQ) => {
     try {
-      const { error } = await supabase
-        .from('faqs')
-        .insert([{
-          question: newFAQ.question.trim(),
-          answer: newFAQ.answer.trim(),
-          category: newFAQ.category,
-          is_active: newFAQ.is_active,
-          sort_order: faqs.length
-        }]);
+      if ('id' in faqData) {
+        // Update existing FAQ
+        const { error } = await supabase
+          .from('faqs')
+          .update({
+            question: faqData.question,
+            answer: faqData.answer,
+            category: faqData.category,
+            is_active: faqData.is_active,
+            sort_order: faqData.sort_order
+          })
+          .eq('id', faqData.id);
 
-      if (error) throw error;
+        if (error) throw error;
+        
+        setFaqs(faqs.map(f => f.id === faqData.id ? faqData : f));
+        setEditingFaq(null);
+        
+        toast({
+          title: 'Success',
+          description: 'FAQ updated successfully'
+        });
+      } else {
+        // Create new FAQ
+        const { data, error } = await supabase
+          .from('faqs')
+          .insert([{
+            ...faqData,
+            sort_order: faqs.length
+          }])
+          .select()
+          .single();
 
-      toast({
-        title: "Success",
-        description: "FAQ added successfully"
-      });
-
-      setNewFAQ({ question: '', answer: '', category: 'general', is_active: true });
-      setIsAddingNew(false);
-      await fetchFAQs();
+        if (error) throw error;
+        
+        setFaqs([...faqs, data]);
+        setIsCreating(false);
+        
+        toast({
+          title: 'Success',
+          description: 'FAQ created successfully'
+        });
+      }
     } catch (error) {
-      console.error('Error adding FAQ:', error);
+      console.error('Error saving FAQ:', error);
       toast({
-        title: "Error",
-        description: "Failed to add FAQ",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Failed to save FAQ',
+        variant: 'destructive'
       });
     }
   };
 
-  const handleSaveEdit = async () => {
-    if (!editingFAQ) return;
-
-    if (!editingFAQ.question.trim() || !editingFAQ.answer.trim()) {
-      toast({
-        title: "Error",
-        description: "Please fill in both question and answer.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('faqs')
-        .update({
-          question: editingFAQ.question.trim(),
-          answer: editingFAQ.answer.trim(),
-          category: editingFAQ.category,
-          is_active: editingFAQ.is_active
-        })
-        .eq('id', editingFAQ.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "FAQ updated successfully"
-      });
-
-      setEditingFAQ(null);
-      await fetchFAQs();
-    } catch (error) {
-      console.error('Error updating FAQ:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update FAQ",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleDeleteFAQ = async (id: string) => {
+  const handleDelete = async (id: string) => {
     try {
       const { error } = await supabase
         .from('faqs')
@@ -144,209 +123,176 @@ const FAQManagementTab = () => {
         .eq('id', id);
 
       if (error) throw error;
-
+      
+      setFaqs(faqs.filter(f => f.id !== id));
+      
       toast({
-        title: "Success",
-        description: "FAQ deleted successfully"
+        title: 'Success',
+        description: 'FAQ deleted successfully'
       });
-
-      await fetchFAQs();
     } catch (error) {
       console.error('Error deleting FAQ:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete FAQ",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Failed to delete FAQ',
+        variant: 'destructive'
       });
     }
   };
 
-  const toggleFAQStatus = async (id: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('faqs')
-        .update({ is_active: !currentStatus })
-        .eq('id', id);
+  const FaqEditor = ({ faq, onSave, onCancel }: {
+    faq: Omit<FAQ, 'id'> | FAQ;
+    onSave: (faq: Omit<FAQ, 'id'> | FAQ) => void;
+    onCancel: () => void;
+  }) => {
+    const [editedFaq, setEditedFaq] = useState(faq);
 
-      if (error) throw error;
+    return (
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>{'id' in faq ? 'Edit FAQ' : 'Create New FAQ'}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="question">Question</Label>
+            <Input
+              id="question"
+              value={editedFaq.question}
+              onChange={(e) => setEditedFaq({ ...editedFaq, question: e.target.value })}
+              placeholder="Enter the question..."
+            />
+          </div>
 
-      await fetchFAQs();
-    } catch (error) {
-      console.error('Error updating FAQ status:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update FAQ status",
-        variant: "destructive"
-      });
-    }
+          <div>
+            <Label htmlFor="answer">Answer</Label>
+            <Textarea
+              id="answer"
+              value={editedFaq.answer}
+              onChange={(e) => setEditedFaq({ ...editedFaq, answer: e.target.value })}
+              placeholder="Enter the answer..."
+              rows={4}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="category">Category</Label>
+              <select
+                id="category"
+                value={editedFaq.category || 'general'}
+                onChange={(e) => setEditedFaq({ ...editedFaq, category: e.target.value })}
+                className="w-full p-2 border rounded-md"
+              >
+                <option value="general">General</option>
+                <option value="pricing">Pricing</option>
+                <option value="services">Services</option>
+                <option value="technical">Technical</option>
+                <option value="billing">Billing</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="sort">Sort Order</Label>
+              <Input
+                id="sort"
+                type="number"
+                value={editedFaq.sort_order}
+                onChange={(e) => setEditedFaq({ ...editedFaq, sort_order: Number(e.target.value) })}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={editedFaq.is_active}
+              onCheckedChange={(checked) => setEditedFaq({ ...editedFaq, is_active: checked })}
+            />
+            <Label>Active</Label>
+          </div>
+
+          <div className="flex space-x-2">
+            <Button onClick={() => onSave(editedFaq)}>
+              <Save className="w-4 h-4 mr-2" />
+              Save
+            </Button>
+            <Button variant="outline" onClick={onCancel}>
+              <X className="w-4 h-4 mr-2" />
+              Cancel
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <div>Loading FAQs...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900">FAQ Management</h2>
-          <p className="text-gray-600">Manage frequently asked questions displayed on your homepage</p>
+          <h2 className="text-2xl font-bold">FAQ Management</h2>
+          <p className="text-gray-600">Manage your frequently asked questions</p>
         </div>
-        <Button onClick={() => setIsAddingNew(true)} disabled={isAddingNew}>
+        <Button onClick={() => setIsCreating(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Add FAQ
+          Add New FAQ
         </Button>
       </div>
 
-      {/* Add New FAQ Form */}
-      {isAddingNew && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <HelpCircle className="w-5 h-5 mr-2" />
-              Add New FAQ
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Question</label>
-              <Input
-                value={newFAQ.question}
-                onChange={(e) => setNewFAQ({ ...newFAQ, question: e.target.value })}
-                placeholder="Enter the question..."
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Answer</label>
-              <Textarea
-                value={newFAQ.answer}
-                onChange={(e) => setNewFAQ({ ...newFAQ, answer: e.target.value })}
-                placeholder="Enter the answer..."
-                rows={4}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Category</label>
-              <Input
-                value={newFAQ.category}
-                onChange={(e) => setNewFAQ({ ...newFAQ, category: e.target.value })}
-                placeholder="Category (e.g., general, services)"
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={newFAQ.is_active}
-                onCheckedChange={(checked) => setNewFAQ({ ...newFAQ, is_active: checked })}
-              />
-              <label className="text-sm font-medium">Active</label>
-            </div>
-            <div className="flex space-x-2">
-              <Button onClick={handleAddFAQ}>
-                <Save className="w-4 h-4 mr-2" />
-                Save FAQ
-              </Button>
-              <Button variant="outline" onClick={() => setIsAddingNew(false)}>
-                <X className="w-4 h-4 mr-2" />
-                Cancel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      {isCreating && (
+        <FaqEditor
+          faq={emptyFaq}
+          onSave={handleSave}
+          onCancel={() => setIsCreating(false)}
+        />
       )}
 
-      {/* FAQ List */}
+      {editingFaq && (
+        <FaqEditor
+          faq={editingFaq}
+          onSave={handleSave}
+          onCancel={() => setEditingFaq(null)}
+        />
+      )}
+
       <div className="grid gap-4">
         {faqs.map((faq) => (
-          <Card key={faq.id} className={`${!faq.is_active ? 'opacity-60' : ''}`}>
+          <Card key={faq.id} className={!faq.is_active ? 'opacity-50' : ''}>
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  {editingFAQ?.id === faq.id ? (
-                    <div className="space-y-4">
-                      <Input
-                        value={editingFAQ.question}
-                        onChange={(e) => setEditingFAQ({ ...editingFAQ, question: e.target.value })}
-                        placeholder="Question"
-                      />
-                      <Textarea
-                        value={editingFAQ.answer}
-                        onChange={(e) => setEditingFAQ({ ...editingFAQ, answer: e.target.value })}
-                        placeholder="Answer"
-                        rows={4}
-                      />
-                      <Input
-                        value={editingFAQ.category || ''}
-                        onChange={(e) => setEditingFAQ({ ...editingFAQ, category: e.target.value })}
-                        placeholder="Category"
-                      />
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={editingFAQ.is_active}
-                          onCheckedChange={(checked) => setEditingFAQ({ ...editingFAQ, is_active: checked })}
-                        />
-                        <label className="text-sm font-medium">Active</label>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button size="sm" onClick={handleSaveEdit}>
-                          <Save className="w-4 h-4 mr-2" />
-                          Save
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => setEditingFAQ(null)}>
-                          <X className="w-4 h-4 mr-2" />
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-center gap-2 mb-2">
-                        <CardTitle className="text-lg">{faq.question}</CardTitle>
-                        <Badge variant={faq.is_active ? "default" : "secondary"}>
-                          {faq.is_active ? (
-                            <><Eye className="w-3 h-3 mr-1" />Active</>
-                          ) : (
-                            <><EyeOff className="w-3 h-3 mr-1" />Inactive</>
-                          )}
-                        </Badge>
-                        {faq.category && (
-                          <Badge variant="outline">{faq.category}</Badge>
-                        )}
-                      </div>
-                      <CardDescription className="text-sm">{faq.answer}</CardDescription>
-                    </>
-                  )}
+                  <CardTitle className="flex items-center gap-2">
+                    {faq.question}
+                    {faq.category && <Badge variant="outline">{faq.category}</Badge>}
+                    {!faq.is_active && <Badge variant="secondary">Inactive</Badge>}
+                  </CardTitle>
+                  <CardDescription className="mt-2">{faq.answer}</CardDescription>
                 </div>
-                {editingFAQ?.id !== faq.id && (
-                  <div className="flex space-x-2 ml-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => toggleFAQStatus(faq.id, faq.is_active)}
-                    >
-                      {faq.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditingFAQ({ ...faq })}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteFAQ(faq.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                )}
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingFaq(faq)}
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDelete(faq.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </CardHeader>
+            <CardContent>
+              <div className="text-sm text-gray-600">
+                Sort Order: {faq.sort_order}
+              </div>
+            </CardContent>
           </Card>
         ))}
       </div>

@@ -1,121 +1,171 @@
 
-import { Star, Quote } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { Star, Quote, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Review {
+  id: string;
+  client_name: string;
+  company: string;
+  review_text: string;
+  rating: number;
+  avatar_url?: string;
+  results_achieved?: string;
+  service_type: string;
+}
 
 const ModernReviews = () => {
-  const reviews = [
-    {
-      name: "Sarah Johnson",
-      company: "TechStart Inc.",
-      rating: 5,
-      review: "Our Amazon sales increased by 400% in just 3 months. The team's expertise in PPC optimization is unmatched. They transformed our struggling campaigns into profit-generating machines."
-    },
-    {
-      name: "Michael Chen",
-      company: "Global Retail Co.",
-      rating: 5,
-      review: "Working with this agency was a game-changer for our Walmart advertising. Their strategic approach and attention to detail resulted in a 250% increase in ROAS within the first quarter."
-    },
-    {
-      name: "Emily Rodriguez",
-      company: "Fashion Forward",
-      rating: 5,
-      review: "The Meta advertising campaigns they created for us generated over 10,000 new customers in 6 months. Their creative strategies and targeting precision exceeded all our expectations."
-    },
-    {
-      name: "David Thompson",
-      company: "Home Essentials",
-      rating: 5,
-      review: "Professional, results-driven, and incredibly knowledgeable. They optimized our advertising spend and increased our conversion rates by 180%. Highly recommend their services!"
-    },
-    {
-      name: "Lisa Wang",
-      company: "Wellness Products",
-      rating: 5,
-      review: "Their comprehensive approach to multi-platform advertising helped us scale from $10K to $100K monthly revenue. The team is responsive and delivers on every promise."
-    },
-    {
-      name: "Robert Martinez",
-      company: "Sports Gear Pro",
-      rating: 5,
-      review: "Amazing results across Amazon and Meta platforms. Our brand visibility increased dramatically and sales followed suit. The ROI has been exceptional from day one."
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('service_reviews')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      setReviews(data || []);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const nextReview = () => {
+    setCurrentIndex((prev) => (prev + 1) % reviews.length);
+  };
+
+  const prevReview = () => {
+    setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+  };
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`w-5 h-5 ${
+          i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+        }`}
+      />
+    ));
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center">Loading reviews...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (reviews.length === 0) {
+    return null;
+  }
+
+  const currentReview = reviews[currentIndex];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-slate-50 to-blue-50">
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       <div className="container mx-auto px-6">
-        {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-100 mb-6 shadow-sm">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              ))}
-            </div>
-            <span className="text-sm font-medium text-slate-700">4.9/5 from 500+ reviews</span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            What Our Clients
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent block">
-              Say About Us
-            </span>
+          <h2 className="text-4xl font-bold text-slate-900 mb-4">
+            What Our Clients Say
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Don't just take our word for it. See how we've helped businesses like yours achieve extraordinary growth.
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            Real results from real businesses. See how we've helped companies achieve their goals.
           </p>
         </div>
 
-        {/* Reviews Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {reviews.map((review, index) => (
-            <div 
-              key={index}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/50 hover:border-blue-200 transform hover:-translate-y-2"
-            >
-              {/* Quote icon */}
-              <div className="flex justify-between items-start mb-6">
-                <Quote className="w-8 h-8 text-blue-400 opacity-50" />
-                <div className="flex">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ))}
+        <div className="max-w-4xl mx-auto">
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-2xl">
+            <CardContent className="p-12">
+              <div className="text-center mb-8">
+                <Quote className="w-12 h-12 text-blue-600 mx-auto mb-6" />
+                <blockquote className="text-2xl text-slate-700 leading-relaxed mb-8 italic">
+                  "{currentReview.review_text}"
+                </blockquote>
+                
+                <div className="flex justify-center mb-6">
+                  {renderStars(currentReview.rating)}
+                </div>
+
+                {currentReview.results_achieved && (
+                  <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6 mb-8">
+                    <h4 className="font-semibold text-green-800 mb-2">Results Achieved:</h4>
+                    <p className="text-green-700">{currentReview.results_achieved}</p>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-center space-x-4">
+                  {currentReview.avatar_url && (
+                    <img
+                      src={currentReview.avatar_url}
+                      alt={currentReview.client_name}
+                      className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg"
+                    />
+                  )}
+                  <div className="text-left">
+                    <h4 className="font-bold text-slate-900 text-lg">
+                      {currentReview.client_name}
+                    </h4>
+                    <p className="text-slate-600">{currentReview.company}</p>
+                    <p className="text-sm text-blue-600 font-medium">
+                      {currentReview.service_type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Client
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Review text */}
-              <p className="text-slate-700 leading-relaxed mb-6 text-sm">
-                "{review.review}"
-              </p>
+              {reviews.length > 1 && (
+                <div className="flex justify-center items-center space-x-4 mt-8">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={prevReview}
+                    className="rounded-full"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </Button>
+                  
+                  <div className="flex space-x-2">
+                    {reviews.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`w-3 h-3 rounded-full transition-colors ${
+                          index === currentIndex 
+                            ? 'bg-blue-600' 
+                            : 'bg-gray-300 hover:bg-gray-400'
+                        }`}
+                      />
+                    ))}
+                  </div>
 
-              {/* Author */}
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-white font-semibold text-lg">
-                    {review.name.charAt(0)}
-                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={nextReview}
+                    className="rounded-full"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
                 </div>
-                <div>
-                  <div className="font-semibold text-slate-900">{review.name}</div>
-                  <div className="text-sm text-slate-500">{review.company}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-slate-900 mb-4">
-              Ready to Join Our Success Stories?
-            </h3>
-            <p className="text-slate-600 mb-6">
-              Get your free audit and see how we can transform your advertising performance.
-            </p>
-            <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-              Get Free Audit
-            </button>
-          </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>
