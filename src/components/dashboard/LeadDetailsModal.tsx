@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,10 +16,13 @@ import {
   MessageSquare,
   Download,
   FileText,
-  AlertTriangle
+  AlertTriangle,
+  Shield,
+  ExternalLink
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { URLSecurityValidator, useURLSecurity } from "@/utils/urlSecurity";
 
 interface Lead {
   id: string;
@@ -45,6 +48,36 @@ interface LeadDetailsModalProps {
 
 const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClose }) => {
   const { toast } = useToast();
+  const { validateURL, getSecurityBadge } = useURLSecurity();
+  const [urlSecurityResults, setUrlSecurityResults] = useState<Record<string, any>>({});
+  const [scanningUrls, setScanningUrls] = useState(false);
+
+  useEffect(() => {
+    if (lead && isOpen) {
+      scanUrlsForSecurity();
+    }
+  }, [lead, isOpen]);
+
+  const scanUrlsForSecurity = async () => {
+    if (!lead?.lead_data?.website) return;
+
+    setScanningUrls(true);
+    try {
+      const result = await validateURL(lead.lead_data.website);
+      setUrlSecurityResults({
+        [lead.lead_data.website]: result
+      });
+    } catch (error) {
+      console.error('Error scanning URLs:', error);
+      toast({
+        title: "Security Scan Error",
+        description: "Failed to scan URLs for security threats",
+        variant: "destructive",
+      });
+    } finally {
+      setScanningUrls(false);
+    }
+  };
 
   if (!lead) return null;
 
@@ -116,6 +149,19 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
     </Card>
   );
 
+  const SecurityBadge = ({ url }: { url: string }) => {
+    const result = urlSecurityResults[url];
+    if (!result) return null;
+
+    const badge = getSecurityBadge(result);
+    return (
+      <Badge className={`${badge.color} ml-2`}>
+        <Shield className="w-3 h-3 mr-1" />
+        {badge.text}
+      </Badge>
+    );
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -169,6 +215,24 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
             </CardContent>
           </Card>
 
+          {/* Security Status */}
+          {scanningUrls && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Shield className="w-5 h-5" />
+                  <span>Security Scan</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  <span className="text-sm">Scanning URLs for security threats...</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Business Information */}
           {leadData.businessGoals && (
             <Card>
@@ -188,11 +252,26 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
                         href={leadData.website} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline"
+                        className="text-sm text-blue-600 hover:underline flex items-center space-x-1"
                       >
-                        {leadData.website}
+                        <span>{leadData.website}</span>
+                        <ExternalLink className="w-3 h-3" />
                       </a>
+                      <SecurityBadge url={leadData.website} />
                     </div>
+                    {urlSecurityResults[leadData.website]?.warnings?.length > 0 && (
+                      <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                        <div className="flex items-center space-x-2">
+                          <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                          <span className="text-sm font-medium text-yellow-800">Security Warnings:</span>
+                        </div>
+                        <ul className="mt-1 text-xs text-yellow-700 list-disc list-inside">
+                          {urlSecurityResults[leadData.website].warnings.map((warning: string, index: number) => (
+                            <li key={index}>{warning}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
                 
