@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, TrendingUp, Target } from "lucide-react";
@@ -166,4 +165,5 @@ const CTA = () => {
   );
 };
 
+export { CTA };
 export default CTA;

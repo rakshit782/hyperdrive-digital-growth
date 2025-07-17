@@ -3,10 +3,10 @@ import React, { Suspense } from 'react';
 import OptimizedHero from '@/components/OptimizedHero';
 import OptimizedServices from '@/components/OptimizedServices';
 import OptimizedReviews from '@/components/OptimizedReviews';
-import { CTA } from '@/components/CTA';
-import { FAQ } from '@/components/FAQ';
+import CTA from '@/components/CTA'; // Changed to default import
+import FAQ from '@/components/FAQ'; // Changed to default import
 import { ScrollingLogos } from '@/components/AuthorizedPartners';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import ErrorBoundary from '@/components/ErrorBoundary'; // Changed to default import
 
 // Loading fallback component
 const LoadingFallback = ({ height = 'h-64' }: { height?: string }) => (

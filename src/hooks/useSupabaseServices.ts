@@ -7,16 +7,16 @@ export interface SupabaseService {
   id: string;
   title: string;
   description: string;
-  features: string[];
-  gradient: string;
-  bg_gradient: string;
-  link: string;
-  icon: string;
+  features: string[]; // Keep as string[] but handle conversion from Json
+  gradient: string | null;
+  bg_gradient: string | null;
+  link: string | null;
+  icon: string | null;
   service_type: string;
-  sort_order: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  sort_order: number | null;
+  is_active: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export const useSupabaseServices = () => {
@@ -38,10 +38,13 @@ export const useSupabaseServices = () => {
 
       if (error) throw error;
 
-      const formattedServices = data?.map(service => ({
+      // Transform the data to ensure features is always a string array
+      const formattedServices: SupabaseService[] = (data || []).map(service => ({
         ...service,
-        features: Array.isArray(service.features) ? service.features : []
-      })) || [];
+        features: Array.isArray(service.features) 
+          ? service.features.filter((item): item is string => typeof item === 'string')
+          : []
+      }));
 
       setServices(formattedServices);
       console.log('Services fetched from Supabase:', formattedServices.length);

@@ -7,16 +7,16 @@ export interface SupabaseCaseStudy {
   id: string;
   title: string;
   description: string;
-  client_name?: string;
-  industry?: string;
+  client_name?: string | null;
+  industry?: string | null;
   service_type: string;
-  results: Record<string, any>;
-  image_url?: string;
-  is_featured: boolean;
-  sort_order: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  results: any; // Changed from Record<string, any> to any to match Supabase Json type
+  image_url?: string | null;
+  is_featured: boolean | null;
+  sort_order: number | null;
+  is_active: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export const useSupabaseCaseStudies = () => {
@@ -38,8 +38,14 @@ export const useSupabaseCaseStudies = () => {
 
       if (error) throw error;
 
-      setCaseStudies(data || []);
-      console.log('Case studies fetched from Supabase:', data?.length || 0);
+      // Transform the data to match our interface
+      const transformedData: SupabaseCaseStudy[] = (data || []).map(item => ({
+        ...item,
+        results: item.results || {}
+      }));
+
+      setCaseStudies(transformedData);
+      console.log('Case studies fetched from Supabase:', transformedData.length);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch case studies';
       setError(errorMessage);
