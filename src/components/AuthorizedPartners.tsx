@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import "./ScrollingLogos.css";
 
@@ -14,7 +13,7 @@ interface PartnerSettings {
   sectionHeight: number;
 }
 
-const AuthorizedPartners = () => {
+export const ScrollingLogos = () => {
   const [partnerImages, setPartnerImages] = useState<PartnerImage[]>([]);
   const [settings, setSettings] = useState<PartnerSettings>({
     logoSize: 16,
@@ -148,4 +147,4 @@ const AuthorizedPartners = () => {
   );
 };
 
-export default AuthorizedPartners;
+export default ScrollingLogos;
