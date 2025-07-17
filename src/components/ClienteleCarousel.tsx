@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import useEmblaCarousel from "embla-carousel-react";
 import AutoPlay from "embla-carousel-autoplay";
 
 interface ClienteleLogo {
@@ -141,7 +142,7 @@ const ClienteleCarousel = () => {
                 stopOnInteraction: false,
                 stopOnMouseEnter: true,
                 playOnInit: true,
-              }) as any
+              })
             ]}
             className="w-full"
           >

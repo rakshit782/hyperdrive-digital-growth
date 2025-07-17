@@ -1,58 +1,82 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
+import { useSupabaseData } from './useSupabaseData';
+import { ServiceCaseStudy, ServiceReview } from './useServiceData';
 
-type TableName = keyof Database['public']['Tables'];
+export interface SelectedContent {
+  caseStudies: ServiceCaseStudy[];
+  reviews: ServiceReview[];
+}
 
-export const useSelectedContent = (contentType: string) => {
-  const [content, setContent] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export const useSelectedContent = (serviceType: string): SelectedContent => {
+  const supabaseHooks = useSupabaseData();
+  const [allCaseStudies, setAllCaseStudies] = useState<ServiceCaseStudy[]>([]);
+  const [allReviews, setAllReviews] = useState<ServiceReview[]>([]);
+  
+  const [selectedContent, setSelectedContent] = useState<SelectedContent>({
+    caseStudies: [],
+    reviews: []
+  });
 
+  // Load data using the service data hooks
   useEffect(() => {
-    const fetchContent = async () => {
+    // This is a temporary solution - we'll need to implement proper data fetching
+    // For now, let's use empty arrays and localStorage only
+    const loadData = async () => {
       try {
-        setLoading(true);
-        
-        // Map content types to actual table names
-        const tableMap: Record<string, TableName> = {
-          'blog_posts': 'blog_posts',
-          'faqs': 'faqs',
-          'service_reviews': 'service_reviews',
-          'service_case_studies': 'service_case_studies',
-          'service_stats': 'service_stats',
-          'pricing_plans': 'pricing_plans',
-          'newsletter_emails': 'newsletter_emails',
-          'contact_submissions': 'contact_submissions',
-          'leads': 'leads'
-        };
-
-        const tableName = tableMap[contentType];
-        if (!tableName) {
-          console.error(`Unknown content type: ${contentType}`);
-          setContent([]);
-          return;
-        }
-
-        const { data, error } = await supabase
-          .from(tableName)
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        setContent(data || []);
+        // In a real implementation, you'd fetch from your data source here
+        // For now, we'll work with localStorage only
+        setAllCaseStudies([]);
+        setAllReviews([]);
       } catch (error) {
-        console.error(`Error fetching ${contentType}:`, error);
-        setContent([]);
-      } finally {
-        setLoading(false);
+        console.error('Error loading data:', error);
+        setAllCaseStudies([]);
+        setAllReviews([]);
       }
     };
 
-    if (contentType) {
-      fetchContent();
-    }
-  }, [contentType]);
+    loadData();
+  }, []);
 
-  return { content, loading };
+  useEffect(() => {
+    // Get service-specific content (when we have real data)
+    const serviceCaseStudies = allCaseStudies.filter(cs => cs.service_type === serviceType);
+    const serviceReviews = allReviews.filter(r => r.service_type === serviceType);
+
+    // Get additional selected content from localStorage
+    const savedCaseStudies = localStorage.getItem(`${serviceType}-case-studies`);
+    const savedReviews = localStorage.getItem(`${serviceType}-reviews`);
+
+    let additionalCaseStudies: ServiceCaseStudy[] = [];
+    let additionalReviews: ServiceReview[] = [];
+
+    if (savedCaseStudies) {
+      const selectedIds = JSON.parse(savedCaseStudies);
+      additionalCaseStudies = allCaseStudies.filter(cs => selectedIds.includes(cs.id));
+    }
+
+    if (savedReviews) {
+      const selectedIds = JSON.parse(savedReviews);
+      additionalReviews = allReviews.filter(r => selectedIds.includes(r.id));
+    }
+
+    // Combine service-specific and selected content
+    const combinedCaseStudies = [...serviceCaseStudies, ...additionalCaseStudies];
+    const combinedReviews = [...serviceReviews, ...additionalReviews];
+
+    // Remove duplicates based on ID
+    const uniqueCaseStudies = combinedCaseStudies.filter((cs, index, self) => 
+      index === self.findIndex(item => item.id === cs.id)
+    );
+    const uniqueReviews = combinedReviews.filter((r, index, self) => 
+      index === self.findIndex(item => item.id === r.id)
+    );
+
+    setSelectedContent({
+      caseStudies: uniqueCaseStudies,
+      reviews: uniqueReviews
+    });
+  }, [serviceType, allCaseStudies, allReviews]);
+
+  return selectedContent;
 };

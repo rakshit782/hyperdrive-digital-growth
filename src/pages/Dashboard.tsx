@@ -1,173 +1,268 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { BarChart3, Users, Mail, Settings, Shield, FileText, Globe, Zap, PlusCircle, Edit, Trash2, Send, DollarSign, HelpCircle } from "lucide-react";
-import NewsletterEmailManagementTab from "@/components/dashboard/NewsletterEmailManagementTab";
-import LeadManagementTab from "@/components/dashboard/LeadManagementTab";
-import ContentManagementTab from "@/components/dashboard/ContentManagementTab";
-import ReviewsTab from "@/components/dashboard/ReviewsTab";
+import React, { useState } from "react";
+import { AppSidebar } from "@/components/dashboard/AppSidebar";
+import ModernDashboardLayout from "@/components/dashboard/ModernDashboardLayout";
 import ServicesTab from "@/components/dashboard/ServicesTab";
-import SecuritySettingsTab from "@/components/dashboard/SecuritySettingsTab";
-import EmailWorkflowTab from "@/components/dashboard/EmailWorkflowTab";
-import MarketingEmailDashboard from "@/components/dashboard/MarketingEmailDashboard";
-import TrackingManagementTab from "@/components/dashboard/TrackingManagementTab";
-import PricingManagementTab from "@/components/dashboard/PricingManagementTab";
+import ServicePagesManagementTab from "@/components/dashboard/ServicePagesManagementTab";
+import ReviewsTab from "@/components/dashboard/ReviewsTab";
 import FAQManagementTab from "@/components/dashboard/FAQManagementTab";
+import CTAManagementTab from "@/components/dashboard/CTAManagementTab";
+import FooterManagementTab from "@/components/dashboard/FooterManagementTab";
+import BlogManagement from "@/components/dashboard/BlogManagement";
+import LeadManagementTab from "@/components/dashboard/LeadManagementTab";
+import ContactManagement from "@/components/dashboard/ContactManagement";
+import NewsletterEmailManagementTab from "@/components/dashboard/NewsletterEmailManagementTab";
+import EmailWorkflowTab from "@/components/dashboard/EmailWorkflowTab";
+import ServiceHeaderImagesTab from "@/components/dashboard/ServiceHeaderImagesTab";
+import ClienteleManagementTab from "@/components/dashboard/ClienteleManagementTab";
+import PricingManagement from "@/components/dashboard/PricingManagement";
+import WebsiteIntegrationsTab from "@/components/dashboard/WebsiteIntegrationsTab";
+import IntegrationStatusTab from "@/components/dashboard/IntegrationStatusTab";
+import { FormSecurityTab } from "@/components/dashboard/FormSecurityTab";
+import HomepageCustomizationTab from "@/components/dashboard/HomepageCustomizationTab";
+import { SecuritySettingsTab } from "@/components/dashboard/SecuritySettingsTab";
+import AboutContentManagement from "@/components/dashboard/AboutContentManagement";
+import SEOManagement from "@/components/dashboard/SEOManagement";
+import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
+import LogoManagementTab from "@/components/dashboard/LogoManagementTab";
+import WebsiteTab from "@/components/dashboard/WebsiteTab";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { ServiceCard, Review } from "@/types/dashboard";
+import { 
+  Settings, 
+  LayoutDashboard, 
+  Star, 
+  Shield, 
+  Target,
+  Link2,
+  Database,
+  Mail,
+  Image,
+  Users,
+  Cog,
+  Zap,
+  Palette,
+  FileText,
+  Search,
+  BookOpen,
+  HelpCircle,
+  DollarSign,
+  Home,
+  Scale
+} from "lucide-react";
+import PartnersManagementTab from "@/components/dashboard/PartnersManagementTab";
+import MarketingEmailDashboard from "@/components/dashboard/MarketingEmailDashboard";
 
 const Dashboard = () => {
+  const [activeTab, setActiveTab] = useState('services');
+  const { services, reviews, updateServices, updateReviews } = useDashboardData();
+
+  const handleEditService = (service: ServiceCard) => {
+    console.log('Edit service:', service);
+  };
+
+  const handleDeleteService = (id: string) => {
+    const updatedServices = services.filter(s => s.id !== id);
+    updateServices(updatedServices);
+  };
+
+  const handleAddService = () => {
+    const newService: ServiceCard = {
+      id: `service-${Date.now()}`,
+      title: "New Service",
+      description: "Service description",
+      features: ["Feature 1", "Feature 2"],
+      icon: "🚀"
+    };
+    updateServices([...services, newService]);
+  };
+
+  const getTabIcon = (tabId: string) => {
+    const iconMap: { [key: string]: React.ComponentType<any> } = {
+      'services': Settings,
+      'service-pages': LayoutDashboard,
+      'about-content': FileText,
+      'seo-management': Search,
+      'blog-management': BookOpen,
+      'reviews': Star,
+      'faq-management': HelpCircle,
+      'pricing-management': DollarSign,
+      'cta-management': Target,
+      'homepage-customization': Home,
+      'footer-management': Link2,
+      'leads': Database,
+      'contact-management': Mail,
+      'newsletter-email-management': Mail,
+      'email-workflow': Mail,
+      'clientele-management': Users,
+      'partners-management': Users,
+      'form-security': Shield,
+      'security-settings': Shield,
+      'service-header-images': Image,
+      'website-integrations': Zap,
+      'integration-status': Zap,
+      'policy-pages': Scale,
+      'logo-management': Palette,
+      'website-settings': Cog,
+    };
+    return iconMap[tabId] || Settings;
+  };
+
+  const getTabTitle = (tabId: string) => {
+    const titleMap: { [key: string]: string } = {
+      'services': 'Services Management',
+      'service-pages': 'Service Pages Management',
+      'about-content': 'About Page Content',
+      'seo-management': 'SEO Management',
+      'blog-management': 'Blog Management',
+      'reviews': 'Reviews Management',
+      'faq-management': 'FAQ Management',
+      'pricing-management': 'Pricing Management',
+      'cta-management': 'CTA Management',
+      'homepage-customization': 'Homepage Customization',
+      'footer-management': 'Footer Management',
+      'leads': 'Lead Management',
+      'contact-management': 'Contact Management',
+      'newsletter-email-management': 'Newsletter Email Management',
+      'email-workflow': 'Email Workflow',
+      'marketing-email-dashboard': 'Marketing Email Dashboard',
+      'clientele-management': 'Clientele Management',
+      'partners-management': 'Partners Management',
+      'form-security': 'Form Security Monitor',
+      'security-settings': 'Security Settings',
+      'service-header-images': 'Service Images',
+      'website-integrations': 'Website Integrations',
+      'integration-status': 'Integration Status',
+      'policy-pages': 'Policy Pages Management',
+      'logo-management': 'Logo Management',
+      'website-settings': 'Website Settings',
+    };
+    return titleMap[tabId] || 'Dashboard';
+  };
+
+  const getTabDescription = (tabId: string) => {
+    const descriptionMap: { [key: string]: string } = {
+      'services': 'Add, edit, and organize your service offerings',
+      'service-pages': 'Manage service pages with real-time data editor for stats, case studies, and reviews',
+      'about-content': 'Customize and manage content sections for your About page',
+      'seo-management': 'Configure SEO settings, meta tags, and structured data for all pages',
+      'blog-management': 'Create and manage blog posts and articles',
+      'reviews': 'Manage customer reviews and testimonials',
+      'faq-management': 'Create and organize frequently asked questions',
+      'pricing-management': 'Configure pricing plans and packages',
+      'cta-management': 'Configure call-to-action sections and buttons',
+      'homepage-customization': 'Customize homepage design and layout',
+      'footer-management': 'Customize footer content and partner logos',
+      'leads': 'View and manage customer leads and inquiries',
+      'contact-management': 'Handle contact form submissions and messages',
+      'newsletter-email-management': 'Manage newsletter email subscribers and campaigns',
+      'email-workflow': 'Set up automated email sequences and campaigns',
+      'marketing-email-dashboard': 'Create and send marketing campaigns with multi-source email integration',
+      'clientele-management': 'Manage client logos and testimonials',
+      'partners-management': 'Manage partner logos and testimonials',
+      'form-security': 'Monitor form security and spam protection',
+      'security-settings': 'Configure security features and reCAPTCHA',
+      'service-header-images': 'Upload and manage service page header images',
+      'website-integrations': 'Manage third-party integrations and APIs',
+      'integration-status': 'Monitor integration health and status',
+      'policy-pages': 'Manage Privacy Policy, Terms of Service, and Terms & Conditions content',
+      'logo-management': 'Customize your brand logo and display settings across the website',
+      'website-settings': 'Configure website title, favicon, contact details, and branding with real-time updates',
+    };
+    return descriptionMap[tabId] || 'Manage your dashboard settings';
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'services':
+        return (
+          <ServicesTab 
+            services={services}
+            onEdit={handleEditService}
+            onDelete={handleDeleteService}
+            onAdd={handleAddService}
+          />
+        );
+      case 'service-pages':
+        return <ServicePagesManagementTab />;
+      case 'about-content':
+        return <AboutContentManagement />;
+      case 'seo-management':
+        return <SEOManagement />;
+      case 'blog-management':
+        return <BlogManagement />;
+      case 'reviews':
+        return (
+          <ReviewsTab 
+            reviews={reviews}
+            updateReviews={updateReviews}
+          />
+        );
+      case 'faq-management':
+        return <FAQManagementTab />;
+      case 'pricing-management':
+        return <PricingManagement />;
+      case 'cta-management':
+        return <CTAManagementTab />;
+      case 'homepage-customization':
+        return <HomepageCustomizationTab />;
+      case 'footer-management':
+        return <FooterManagementTab />;
+      case 'leads':
+        return <LeadManagementTab />;
+      case 'contact-management':
+        return <ContactManagement />;
+      case 'newsletter-email-management':
+        return <NewsletterEmailManagementTab />;
+      case 'email-workflow':
+        return <EmailWorkflowTab />;
+      case 'clientele-management':
+        return <ClienteleManagementTab />;
+      case 'partners-management':
+        return <PartnersManagementTab />;
+      case 'form-security':
+        return <FormSecurityTab />;
+      case 'security-settings':
+        return <SecuritySettingsTab />;
+      case 'service-header-images':
+        return <ServiceHeaderImagesTab />;
+      case 'website-integrations':
+        return <WebsiteIntegrationsTab />;
+      case 'integration-status':
+        return <IntegrationStatusTab />;
+      case 'policy-pages':
+        return <PolicyPagesTab />;
+      case 'logo-management':
+        return <LogoManagementTab />;
+      case 'website-settings':
+        return <WebsiteTab />;
+      case 'marketing-email-dashboard':
+        return <MarketingEmailDashboard />;
+      default:
+        return (
+          <ServicesTab 
+            services={services}
+            onEdit={handleEditService}
+            onDelete={handleDeleteService}
+            onAdd={handleAddService}
+          />
+        );
+    }
+  };
+
+  const TabIcon = getTabIcon(activeTab);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      <div className="container mx-auto p-6">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            Dashboard
-          </h1>
-          <p className="text-slate-600">Manage your website content and monitor performance</p>
-        </div>
-
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 xl:grid-cols-11">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="leads" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Leads
-            </TabsTrigger>
-            <TabsTrigger value="newsletter" className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              Newsletter
-            </TabsTrigger>
-            <TabsTrigger value="marketing" className="flex items-center gap-2">
-              <Send className="w-4 h-4" />
-              Marketing
-            </TabsTrigger>
-            <TabsTrigger value="content" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              Content
-            </TabsTrigger>
-            <TabsTrigger value="reviews" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Reviews
-            </TabsTrigger>
-            <TabsTrigger value="services" className="flex items-center gap-2">
-              <Zap className="w-4 h-4" />
-              Services
-            </TabsTrigger>
-            <TabsTrigger value="pricing" className="flex items-center gap-2">
-              <DollarSign className="w-4 h-4" />
-              Pricing
-            </TabsTrigger>
-            <TabsTrigger value="faqs" className="flex items-center gap-2">
-              <HelpCircle className="w-4 h-4" />
-              FAQs
-            </TabsTrigger>
-            <TabsTrigger value="tracking" className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
-              Tracking
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              Settings
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-6">
-            <Card className="bg-white/70 backdrop-blur-sm border-white/20 shadow-xl">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mr-3">
-                      <Globe className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-xl font-bold text-slate-900">Website Traffic</CardTitle>
-                      <CardDescription>Real-time website analytics and insights</CardDescription>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">Updated 5 minutes ago</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-600">
-                  Track your website's performance with detailed analytics. Monitor user engagement, traffic sources, and conversion rates to optimize your online presence.
-                </p>
-                <Separator className="my-4" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Card className="bg-blue-50 border-blue-200">
-                    <CardContent className="p-4">
-                      <p className="text-sm font-medium text-blue-600">Total Visits</p>
-                      <p className="text-2xl font-bold text-blue-900">12,456</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-purple-50 border-purple-200">
-                    <CardContent className="p-4">
-                      <p className="text-sm font-medium text-purple-600">Unique Visitors</p>
-                      <p className="text-2xl font-bold text-purple-900">8,789</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-green-50 border-green-200">
-                    <CardContent className="p-4">
-                      <p className="text-sm font-medium text-green-600">Page Views</p>
-                      <p className="text-2xl font-bold text-green-900">45,987</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-orange-50 border-orange-200">
-                    <CardContent className="p-4">
-                      <p className="text-sm font-medium text-orange-600">Bounce Rate</p>
-                      <p className="text-2xl font-bold text-orange-900">42.5%</p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="leads">
-            <LeadManagementTab />
-          </TabsContent>
-
-          <TabsContent value="newsletter">
-            <NewsletterEmailManagementTab />
-          </TabsContent>
-
-          <TabsContent value="marketing">
-            <MarketingEmailDashboard />
-          </TabsContent>
-
-          <TabsContent value="content">
-            <ContentManagementTab />
-          </TabsContent>
-
-          <TabsContent value="reviews">
-            <ReviewsTab />
-          </TabsContent>
-
-          <TabsContent value="services">
-            <ServicesTab />
-          </TabsContent>
-
-          <TabsContent value="pricing">
-            <PricingManagementTab />
-          </TabsContent>
-
-          <TabsContent value="faqs">
-            <FAQManagementTab />
-          </TabsContent>
-
-          <TabsContent value="tracking" className="space-y-6">
-            <TrackingManagementTab />
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <SecuritySettingsTab />
-          </TabsContent>
-        </Tabs>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <AppSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      <ModernDashboardLayout
+        title={getTabTitle(activeTab)}
+        description={getTabDescription(activeTab)}
+        icon={<TabIcon className="w-6 h-6" />}
+        category="Management"
+      >
+        {renderTabContent()}
+      </ModernDashboardLayout>
     </div>
   );
 };

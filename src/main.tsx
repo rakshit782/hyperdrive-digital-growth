@@ -1,16 +1,20 @@
 
-import { StrictMode } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { localDB } from './utils/localStorageDB';
 
-const queryClient = new QueryClient();
+// Initialize local database and seed default data
+localDB.seedDefaultData().then(() => {
+  console.log('Local database initialized');
+}).catch(error => {
+  console.error('Failed to initialize local database:', error);
+});
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
-  </StrictMode>
-);
+// Optimize rendering
+const container = document.getElementById("root");
+if (!container) throw new Error('Failed to find the root element');
+
+const root = createRoot(container);
+root.render(<App />);

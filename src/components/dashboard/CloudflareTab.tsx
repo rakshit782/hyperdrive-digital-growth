@@ -50,7 +50,6 @@ const CloudflareTab = () => {
       zoneId: config.zoneId || undefined,
       streamAccountId: config.streamAccountId || undefined,
       streamApiToken: config.streamApiToken || undefined,
-      isActive: true,
     });
     setIsEnabled(true);
     toast({

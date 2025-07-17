@@ -4,47 +4,97 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { Trash2, Plus, Users, Upload, Link } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface PartnerImage {
   id: string;
   name: string;
-  image_url: string;
-  is_active: boolean;
-  sort_order?: number;
+  imageUrl: string;
+  isActive: boolean;
+}
+
+interface PartnerSettings {
+  logoSize: number;
+  sectionHeight: number;
 }
 
 const PartnersManagementTab = () => {
   const { toast } = useToast();
   const [partnerImages, setPartnerImages] = useState<PartnerImage[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<PartnerSettings>({
+    logoSize: 16,
+    sectionHeight: 6
+  });
+  const [isSaved, setIsSaved] = useState(false);
 
-  const fetchPartnerImages = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('partner_images')
-        .select('*')
-        .order('sort_order', { ascending: true });
-
-      if (error) throw error;
-      setPartnerImages(data || []);
-    } catch (error) {
-      console.error('Error fetching partner images:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load partner images",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+  const getDefaultPartners = (): PartnerImage[] => [
+    {
+      id: "partner-1",
+      name: "TechPartner",
+      imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-2", 
+      name: "InnovatePartner",
+      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-3",
+      name: "GlobalPartner",
+      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-4",
+      name: "FuturePartner",
+      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-5",
+      name: "BusinessPartner",
+      imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    },
+    {
+      id: "partner-6",
+      name: "ProPartner",
+      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
+      isActive: true
     }
-  };
+  ];
 
   useEffect(() => {
-    fetchPartnerImages();
+    const savedPartners = localStorage.getItem('partnerImages');
+    if (savedPartners) {
+      try {
+        const parsed = JSON.parse(savedPartners);
+        setPartnerImages(parsed);
+      } catch (error) {
+        console.error('Failed to parse partner images:', error);
+        const defaultPartners = getDefaultPartners();
+        setPartnerImages(defaultPartners);
+        localStorage.setItem('partnerImages', JSON.stringify(defaultPartners));
+      }
+    } else {
+      const defaultPartners = getDefaultPartners();
+      setPartnerImages(defaultPartners);
+      localStorage.setItem('partnerImages', JSON.stringify(defaultPartners));
+    }
+
+    const savedSettings = localStorage.getItem('partnerSettings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setSettings(parsed);
+      } catch (error) {
+        console.error('Failed to parse partner settings:', error);
+      }
+    }
   }, []);
 
   const convertGoogleDriveUrl = (url: string) => {
@@ -68,11 +118,12 @@ const PartnersManagementTab = () => {
     return cleanUrl;
   };
 
-  const handleGoogleDriveUpload = async (id: string, inputElement: HTMLInputElement) => {
+  const handleGoogleDriveUpload = (id: string, inputElement: HTMLInputElement) => {
     const googleDriveUrl = inputElement.value.trim();
     if (googleDriveUrl) {
       const directUrl = convertGoogleDriveUrl(googleDriveUrl);
-      await updatePartnerImage(id, 'image_url', directUrl);
+      console.log('Converted URL:', directUrl);
+      updatePartnerImage(id, 'imageUrl', directUrl);
       inputElement.value = '';
       toast({
         title: "Success",
@@ -81,87 +132,43 @@ const PartnersManagementTab = () => {
     }
   };
 
-  const addPartnerImage = async () => {
-    try {
-      const { error } = await supabase
-        .from('partner_images')
-        .insert([{
-          name: "New Partner",
-          image_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
-          is_active: true,
-          sort_order: partnerImages.length
-        }]);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Partner image added successfully!",
-      });
-
-      await fetchPartnerImages();
-    } catch (error) {
-      console.error('Error adding partner image:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add partner image",
-        variant: "destructive",
-      });
-    }
+  const handleSave = () => {
+    localStorage.setItem('partnerImages', JSON.stringify(partnerImages));
+    localStorage.setItem('partnerSettings', JSON.stringify(settings));
+    window.dispatchEvent(new CustomEvent('partnerImagesUpdated'));
+    window.dispatchEvent(new CustomEvent('partnerSettingsUpdated', { detail: settings }));
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2000);
+    
+    toast({
+      title: "Success",
+      description: "Partner settings updated successfully!",
+    });
   };
 
-  const removePartnerImage = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('partner_images')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Partner image deleted successfully!",
-      });
-
-      await fetchPartnerImages();
-    } catch (error) {
-      console.error('Error deleting partner image:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete partner image",
-        variant: "destructive",
-      });
-    }
+  const addPartnerImage = () => {
+    const newPartner: PartnerImage = {
+      id: `partner-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: "New Partner",
+      imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
+      isActive: true
+    };
+    setPartnerImages(prev => [...prev, newPartner]);
   };
 
-  const updatePartnerImage = async (id: string, field: keyof PartnerImage, value: string | boolean) => {
-    try {
-      const { error } = await supabase
-        .from('partner_images')
-        .update({ [field]: value })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      await fetchPartnerImages();
-    } catch (error) {
-      console.error('Error updating partner image:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update partner image",
-        variant: "destructive",
-      });
-    }
+  const removePartnerImage = (id: string) => {
+    setPartnerImages(prev => prev.filter(partner => partner.id !== id));
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+  const updatePartnerImage = (id: string, field: keyof PartnerImage, value: string | boolean) => {
+    setPartnerImages(prev => prev.map(partner => 
+      partner.id === id ? { ...partner, [field]: value } : partner
+    ));
+  };
+
+  const updateSettings = (updates: Partial<PartnerSettings>) => {
+    setSettings(prev => ({ ...prev, ...updates }));
+  };
 
   return (
     <div className="space-y-6">
@@ -181,6 +188,37 @@ const PartnersManagementTab = () => {
         </Button>
       </div>
 
+      {/* Size Controls */}
+      <Card className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-gray-900">Size Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label>Logo Size: {settings.logoSize * 4}px</Label>
+            <Slider
+              value={[settings.logoSize]}
+              onValueChange={(value) => updateSettings({ logoSize: value[0] })}
+              max={64}
+              min={8}
+              step={2}
+              className="w-full"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Section Height: {settings.sectionHeight * 0.25}rem</Label>
+            <Slider
+              value={[settings.sectionHeight]}
+              onValueChange={(value) => updateSettings({ sectionHeight: value[0] })}
+              max={12}
+              min={4}
+              step={1}
+              className="w-full"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4">
         {partnerImages.map((partner, index) => (
           <Card key={partner.id} className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg">
@@ -192,8 +230,8 @@ const PartnersManagementTab = () => {
                     <Label className="text-sm text-gray-600">Active:</Label>
                     <input
                       type="checkbox"
-                      checked={partner.is_active}
-                      onChange={(e) => updatePartnerImage(partner.id, 'is_active', e.target.checked)}
+                      checked={partner.isActive}
+                      onChange={(e) => updatePartnerImage(partner.id, 'isActive', e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                     />
                   </div>
@@ -216,18 +254,16 @@ const PartnersManagementTab = () => {
                     onChange={(e) => updatePartnerImage(partner.id, 'name', e.target.value)}
                     placeholder="Partner Name"
                     className="bg-white/70 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                    onBlur={(e) => updatePartnerImage(partner.id, 'name', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Logo URL</Label>
                   <Input
-                    value={partner.image_url}
-                    onChange={(e) => updatePartnerImage(partner.id, 'image_url', e.target.value)}
+                    value={partner.imageUrl}
+                    onChange={(e) => updatePartnerImage(partner.id, 'imageUrl', e.target.value)}
                     placeholder="https://example.com/logo.png"
                     className="bg-white/70 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                    onBlur={(e) => updatePartnerImage(partner.id, 'image_url', e.target.value)}
                   />
                 </div>
               </div>
@@ -266,11 +302,11 @@ const PartnersManagementTab = () => {
                 </div>
               </div>
               
-              {partner.image_url && (
+              {partner.imageUrl && (
                 <div className="mt-4 flex justify-center">
                   <div className="p-3 bg-slate-800 rounded-lg border border-gray-200 shadow-sm">
                     <img
-                      src={partner.image_url}
+                      src={partner.imageUrl}
                       alt={partner.name}
                       className="h-12 w-auto object-contain filter brightness-0 invert"
                       onError={(e) => {
@@ -285,19 +321,16 @@ const PartnersManagementTab = () => {
         ))}
       </div>
 
-      {partnerImages.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-8">
-            <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Partners Yet</h3>
-            <p className="text-gray-600 mb-4">Add your first partner logo to get started.</p>
-            <Button onClick={addPartnerImage}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Partner Logo
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      <Button 
+        onClick={handleSave} 
+        className={`w-full py-3 transition-all duration-300 ${
+          isSaved 
+            ? "bg-green-600 hover:bg-green-700" 
+            : "bg-gradient-to-r from-slate-500 to-slate-700 hover:from-slate-600 hover:to-slate-800"
+        } shadow-lg`}
+      >
+        {isSaved ? "✓ Saved Successfully!" : "Save Partner Settings"}
+      </Button>
     </div>
   );
 };

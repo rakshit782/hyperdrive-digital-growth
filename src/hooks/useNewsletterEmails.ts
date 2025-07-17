@@ -1,10 +1,18 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
+import { localDB } from '@/utils/localStorageDB';
 
-export type NewsletterEmail = Database['public']['Tables']['newsletter_emails']['Row'];
+export interface NewsletterEmail {
+  id?: string;
+  email: string;
+  name?: string;
+  status: 'subscribed' | 'unsubscribed';
+  source?: string;
+  tags?: string[];
+  created_at?: string;
+  updated_at?: string;
+}
 
 export const useNewsletterEmails = () => {
   const [emails, setEmails] = useState<NewsletterEmail[]>([]);
@@ -14,21 +22,15 @@ export const useNewsletterEmails = () => {
   const fetchEmails = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('newsletter_emails')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setEmails(data.map(email => ({
-        ...email,
-        status: email.status as 'subscribed' | 'unsubscribed'
-      })));
+      console.log('Fetching newsletter emails from local storage...');
+      const emailsData = await localDB.findAll('newsletter_emails');
+      setEmails(emailsData);
+      console.log('Newsletter emails fetched from local storage:', emailsData);
     } catch (error) {
       console.error('Error fetching newsletter emails:', error);
       toast({
         title: "Error",
-        description: "Failed to load newsletter emails",
+        description: "Failed to load newsletter emails from local storage",
         variant: "destructive",
       });
     } finally {
@@ -36,34 +38,30 @@ export const useNewsletterEmails = () => {
     }
   };
 
-  const addEmail = async (emailData: Omit<NewsletterEmail, 'id' | 'created_at' | 'updated_at'>) => {
+  const addEmail = async (emailData: Omit<NewsletterEmail, 'id' | 'created_at' | 'updated_at' | 'status'> & { status?: 'subscribed' | 'unsubscribed' }) => {
     try {
+      console.log('Adding newsletter email:', emailData);
+      
       // Check if email already exists
-      const { data: existing } = await supabase
-        .from('newsletter_emails')
-        .select('*')
-        .eq('email', emailData.email.toLowerCase())
-        .single();
+      const existingEmail = await localDB.findWhere('newsletter_emails', 
+        (item) => item.email.toLowerCase() === emailData.email.toLowerCase()
+      );
 
-      if (existing) {
-        if (existing.status === 'unsubscribed') {
-          // Reactivate subscription
-          const { error } = await supabase
-            .from('newsletter_emails')
-            .update({ 
-              status: 'subscribed',
-              source: emailData.source || 'newsletter_form',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', existing.id);
-
-          if (error) throw error;
-          
+      if (existingEmail.length > 0) {
+        // Update existing email if it was unsubscribed
+        if (existingEmail[0].status === 'unsubscribed') {
+          await localDB.update('newsletter_emails', existingEmail[0].id, {
+            status: 'subscribed',
+            source: emailData.source || 'newsletter_form',
+            updated_at: new Date().toISOString()
+          });
+          console.log('Reactivated existing email subscription');
           toast({
             title: "Welcome Back!",
             description: "Email subscription reactivated successfully",
           });
         } else {
+          console.log('Email already subscribed');
           toast({
             title: "Already Subscribed",
             description: "This email is already subscribed to our newsletter",
@@ -73,23 +71,22 @@ export const useNewsletterEmails = () => {
         }
       } else {
         // Add new email
-        const { error } = await supabase
-          .from('newsletter_emails')
-          .insert([{
-            ...emailData,
-            email: emailData.email.toLowerCase(),
-            status: emailData.status || 'subscribed'
-          }]);
-
-        if (error) throw error;
+        const newEmailData = {
+          ...emailData,
+          status: emailData.status || 'subscribed',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
         
+        const id = await localDB.insert('newsletter_emails', newEmailData);
+        console.log('New email added with ID:', id);
         toast({
           title: "Success",
           description: "Email added to newsletter successfully",
         });
       }
 
-      await fetchEmails();
+      await fetchEmails(); // Refresh the list
       return { success: true };
     } catch (error) {
       console.error('Error adding newsletter email:', error);
@@ -104,21 +101,15 @@ export const useNewsletterEmails = () => {
 
   const updateEmailStatus = async (id: string, status: 'subscribed' | 'unsubscribed') => {
     try {
-      const { error } = await supabase
-        .from('newsletter_emails')
-        .update({ 
-          status,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-      
+      await localDB.update('newsletter_emails', id, { 
+        status,
+        updated_at: new Date().toISOString()
+      });
       toast({
         title: "Success",
         description: `Email ${status} successfully`,
       });
-      await fetchEmails();
+      await fetchEmails(); // Refresh the list
     } catch (error) {
       console.error('Error updating email status:', error);
       toast({
@@ -132,18 +123,12 @@ export const useNewsletterEmails = () => {
 
   const deleteEmail = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('newsletter_emails')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      
+      await localDB.delete('newsletter_emails', id);
       toast({
         title: "Success",
         description: "Email deleted successfully",
       });
-      await fetchEmails();
+      await fetchEmails(); // Refresh the list
     } catch (error) {
       console.error('Error deleting email:', error);
       toast({
@@ -153,6 +138,10 @@ export const useNewsletterEmails = () => {
       });
       throw error;
     }
+  };
+
+  const refetch = () => {
+    fetchEmails();
   };
 
   useEffect(() => {
@@ -165,6 +154,6 @@ export const useNewsletterEmails = () => {
     addEmail,
     updateEmailStatus,
     deleteEmail,
-    refetch: fetchEmails
+    refetch
   };
 };

@@ -19,31 +19,35 @@ class Auth0ConfigManager {
     return Auth0ConfigManager.instance;
   }
 
-  getConfig(): Auth0Config | null {
-    return this.config;
-  }
-
   async saveConfig(config: Auth0Config): Promise<void> {
     this.config = config;
-    // Save to localStorage for persistence
     localStorage.setItem('auth0_config', JSON.stringify(config));
   }
 
-  loadSavedConfig(): Auth0Config | null {
-    try {
-      const saved = localStorage.getItem('auth0_config');
-      if (saved) {
-        this.config = JSON.parse(saved);
+  getConfig(): Auth0Config | null {
+    if (this.config) return this.config;
+
+    const stored = localStorage.getItem('auth0_config');
+    if (stored) {
+      try {
+        this.config = JSON.parse(stored);
         return this.config;
+      } catch (error) {
+        console.error('Failed to parse Auth0 config:', error);
+        return null;
       }
-    } catch (error) {
-      console.error('Error loading Auth0 config:', error);
     }
     return null;
   }
 
   isConfigured(): boolean {
-    return this.config?.isActive && !!this.config?.domain && !!this.config?.clientId;
+    const config = this.getConfig();
+    return !!(config && config.domain && config.clientId && config.isActive);
+  }
+
+  clearConfig(): void {
+    this.config = null;
+    localStorage.removeItem('auth0_config');
   }
 }
 

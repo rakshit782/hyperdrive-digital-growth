@@ -50,7 +50,6 @@ const NewsletterForm = () => {
         email: email.trim(),
         name: email.split('@')[0],
         source: 'newsletter_form',
-        status: 'subscribed',
         tags: ['website_signup']
       });
 

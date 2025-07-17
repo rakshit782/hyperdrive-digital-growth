@@ -1,15 +1,16 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
-interface FormSubmissionData {
+export interface FormSubmissionData {
   name: string;
   email: string;
   phone?: string;
   company?: string;
-  formType: string;
   message?: string;
+  source?: string;
+  formType?: 'contact' | 'free_audit' | 'newsletter';
   firstName?: string;
   lastName?: string;
   businessGoals?: string;
@@ -17,58 +18,74 @@ interface FormSubmissionData {
   monthlyAdSpend?: string;
   primaryPlatform?: string;
   currentChallenges?: string;
-  uploadedFiles?: Record<string, any>;
-}
-
-interface FormSubmissionResult {
-  success: boolean;
-  error?: string;
-  data?: any;
 }
 
 export const useSupabaseFormSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const submitForm = async (formData: FormSubmissionData): Promise<FormSubmissionResult> => {
+  const submitForm = async (data: FormSubmissionData) => {
     setIsSubmitting(true);
     
     try {
-      console.log('Submitting form data:', formData);
+      console.log('Starting Supabase form submission with data:', data);
 
-      // Generate a unique lead number
-      const leadNumber = `LEAD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      // Validate required fields
+      if (!data.email || !data.name) {
+        throw new Error('Name and email are required');
+      }
 
-      // Prepare lead data
+      // Prepare the full name from firstName and lastName if available
+      const fullName = data.firstName && data.lastName 
+        ? `${data.firstName} ${data.lastName}` 
+        : data.name || '';
+
+      // Prepare detailed message for audit forms
+      let detailedMessage = data.message || '';
+      if (data.formType === 'free_audit') {
+        detailedMessage = `Free Audit Request Details:
+        
+Website: ${data.website || 'Not provided'}
+Monthly Ad Spend: ${data.monthlyAdSpend || 'Not provided'}
+Primary Platform: ${data.primaryPlatform || 'Not provided'}
+Business Goals: ${data.businessGoals || 'Not provided'}
+Current Challenges: ${data.currentChallenges || 'Not provided'}`;
+      }
+
+      // Prepare lead data for Supabase
       const leadData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || null,
-        company: formData.company || null,
-        source: 'website',
-        status: 'new',
-        lead_number: leadNumber,
-        audit_type: formData.formType === 'free_audit' ? 'free_audit' : null,
-        website_url: formData.website || null,
-        current_spend: formData.monthlyAdSpend || null,
-        goals: formData.businessGoals || null,
-        lead_data: {
-          formType: formData.formType,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          businessGoals: formData.businessGoals,
-          primaryPlatform: formData.primaryPlatform,
-          currentChallenges: formData.currentChallenges,
-          uploadedFiles: formData.uploadedFiles,
-          submissionTime: new Date().toISOString(),
+        name: fullName,
+        email: data.email,
+        phone: data.phone || null,
+        company: data.company || null,
+        source: data.source || 'website',
+        status: 'new' as const,
+        notes: detailedMessage || data.businessGoals || null,
+        form_security: {
+          timestamp: Date.now(),
           userAgent: navigator.userAgent,
-          pageUrl: window.location.href
+          pageUrl: window.location.href,
+          referrer: document.referrer
+        },
+        lead_data: {
+          formType: data.formType || 'contact',
+          firstName: data.firstName,
+          lastName: data.lastName,
+          businessGoals: data.businessGoals,
+          website: data.website,
+          monthlyAdSpend: data.monthlyAdSpend,
+          primaryPlatform: data.primaryPlatform,
+          currentChallenges: data.currentChallenges,
+          submittedAt: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer
         }
       };
 
-      console.log('Lead data to insert:', leadData);
+      console.log('Creating lead with Supabase data:', leadData);
 
-      // Insert into leads table
+      // Insert lead data using Supabase
       const { data: leadResult, error: leadError } = await supabase
         .from('leads')
         .insert([leadData])
@@ -76,55 +93,62 @@ export const useSupabaseFormSubmission = () => {
         .single();
 
       if (leadError) {
-        console.error('Lead insertion error:', leadError);
+        console.error('Supabase lead insertion error:', leadError);
         throw new Error(`Failed to create lead: ${leadError.message}`);
       }
 
-      console.log('Lead created successfully:', leadResult);
-
-      // Also insert into contact_submissions for backward compatibility
-      const contactData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || null,
-        company: formData.company || null,
-        message: formData.message || `${formData.formType} form submission`,
-        form_type: formData.formType
-      };
-
-      const { error: contactError } = await supabase
-        .from('contact_submissions')
-        .insert([contactData]);
-
-      if (contactError) {
-        console.warn('Contact submission error (non-fatal):', contactError);
+      if (!leadResult || !leadResult.id) {
+        throw new Error('Failed to create lead - Supabase returned invalid result');
       }
 
-      toast({
-        title: "Form Submitted Successfully!",
-        description: "We'll get back to you within 24 hours.",
-      });
+      console.log('Lead created successfully via Supabase:', leadResult);
+      
+      // Also store in contact_submissions for backward compatibility
+      try {
+        const contactData = {
+          name: fullName,
+          email: data.email,
+          phone: data.phone || null,
+          company: data.company || null,
+          message: detailedMessage,
+          form_type: data.formType || 'contact'
+        };
 
-      return {
-        success: true,
-        data: leadResult
-      };
+        const { error: contactError } = await supabase
+          .from('contact_submissions')
+          .insert([contactData]);
 
+        if (contactError) {
+          console.error('Failed to store contact submission via Supabase:', contactError);
+          // Don't fail the entire submission if contact submission fails
+        } else {
+          console.log('Contact submission stored successfully via Supabase');
+        }
+      } catch (contactError) {
+        console.error('Failed to store contact submission via Supabase:', contactError);
+        // Don't fail the entire submission if contact submission fails
+      }
+
+      // Dispatch custom event for real-time updates
+      window.dispatchEvent(new CustomEvent('leadCreated', {
+        detail: leadResult
+      }));
+
+      return { success: true, leadId: leadResult.id };
     } catch (error) {
-      console.error('Form submission error:', error);
+      console.error('Supabase form submission error:', error);
       
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      let errorMessage = "There was an error submitting your form. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Provide more specific error messages for common issues
+        if (error.message.includes('validation') || error.message.includes('required')) {
+          errorMessage = "Please fill in all required fields correctly.";
+        }
+      }
       
-      toast({
-        title: "Submission Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-
-      return {
-        success: false,
-        error: errorMessage
-      };
+      return { success: false, error: errorMessage };
     } finally {
       setIsSubmitting(false);
     }

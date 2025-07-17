@@ -1,10 +1,16 @@
 
-export interface ChatGPTConfig {
+interface ChatGPTConfig {
   apiKey: string;
   model: string;
-  temperature: number;
-  maxTokens: number;
   isActive: boolean;
+  maxTokens: number;
+  temperature: number;
+}
+
+interface OptimizationRequest {
+  type: 'content' | 'review' | 'seo' | 'service';
+  content: string;
+  context?: string;
 }
 
 class ChatGPTManager {
@@ -18,83 +24,129 @@ class ChatGPTManager {
     return ChatGPTManager.instance;
   }
 
-  getConfig(): ChatGPTConfig | null {
-    return this.config;
-  }
-
-  loadSavedConfig(): ChatGPTConfig | null {
+  loadSavedConfig() {
     try {
       const saved = localStorage.getItem('chatgpt_config');
       if (saved) {
         this.config = JSON.parse(saved);
-        return this.config;
       }
     } catch (error) {
-      console.error('Error loading ChatGPT config:', error);
+      console.error('Failed to load ChatGPT config:', error);
     }
-    return null;
   }
 
-  async saveConfig(config: ChatGPTConfig): Promise<void> {
+  saveConfig(config: ChatGPTConfig) {
     this.config = config;
     localStorage.setItem('chatgpt_config', JSON.stringify(config));
+    console.log('ChatGPT Manager: Configuration saved');
   }
 
-  async testConnection(): Promise<boolean> {
-    if (!this.config?.apiKey) return false;
-    
+  getConfig(): ChatGPTConfig | null {
+    return this.config;
+  }
+
+  isActive(): boolean {
+    return !!(this.config && this.config.isActive && this.config.apiKey);
+  }
+
+  async optimizeContent(request: OptimizationRequest): Promise<string> {
+    if (!this.isActive()) {
+      throw new Error('ChatGPT is not configured or active');
+    }
+
+    const prompts = {
+      content: `Optimize this website content for better engagement and clarity. Keep the same tone but make it more compelling:\n\n${request.content}`,
+      review: `Improve this customer review to be more detailed and helpful while maintaining authenticity:\n\n${request.content}`,
+      seo: `Optimize this content for SEO while maintaining readability. Focus on relevant keywords and structure:\n\n${request.content}`,
+      service: `Enhance this service description to be more persuasive and professional:\n\n${request.content}`
+    };
+
     try {
-      const response = await fetch('https://api.openai.com/v1/models', {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Authorization': `Bearer ${this.config!.apiKey}`,
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          model: this.config!.model,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a professional content optimizer specializing in website copy and marketing materials.'
+            },
+            {
+              role: 'user',
+              content: prompts[request.type]
+            }
+          ],
+          max_tokens: this.config!.maxTokens,
+          temperature: this.config!.temperature,
+        }),
       });
-      return response.ok;
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data.choices[0].message.content;
     } catch (error) {
-      console.error('ChatGPT connection test failed:', error);
-      return false;
+      console.error('ChatGPT optimization error:', error);
+      throw error;
     }
   }
 
-  async optimizeContent(content: string): Promise<string> {
-    if (!this.config?.apiKey || !this.config?.isActive) {
-      throw new Error('ChatGPT not configured');
+  async generateSuggestions(content: string, type: string): Promise<string[]> {
+    if (!this.isActive()) {
+      return [];
     }
 
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Authorization': `Bearer ${this.config!.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: this.config.model,
+          model: this.config!.model,
           messages: [
             {
               role: 'system',
-              content: 'You are a content optimization expert. Improve the given content for better engagement and SEO.'
+              content: 'Generate 3-5 brief improvement suggestions for the given content. Return as a JSON array of strings.'
             },
             {
               role: 'user',
-              content: content
+              content: `Analyze this ${type} content and suggest improvements:\n\n${content}`
             }
           ],
-          temperature: this.config.temperature,
-          max_tokens: this.config.maxTokens,
+          max_tokens: 300,
+          temperature: 0.7,
         }),
       });
 
       const data = await response.json();
-      return data.choices[0].message.content;
+      const suggestions = JSON.parse(data.choices[0].message.content);
+      return Array.isArray(suggestions) ? suggestions : [];
     } catch (error) {
-      console.error('Content optimization failed:', error);
-      throw error;
+      console.error('ChatGPT suggestions error:', error);
+      return [];
     }
   }
 
-  isActive(): boolean {
-    return this.config?.isActive || false;
+  testConnection(): Promise<boolean> {
+    if (!this.config || !this.config.apiKey) {
+      return Promise.resolve(false);
+    }
+
+    return fetch('https://api.openai.com/v1/models', {
+      headers: {
+        'Authorization': `Bearer ${this.config.apiKey}`,
+      },
+    })
+    .then(response => response.ok)
+    .catch(() => false);
   }
 }
 

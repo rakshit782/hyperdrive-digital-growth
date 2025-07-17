@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { localDB } from '@/utils/localStorageDB';
 
 export interface LeadSubmissionData {
   name: string;
@@ -40,31 +40,24 @@ export const useLeadSubmission = () => {
         throw new Error('Name and email are required');
       }
 
-      // Prepare the full name from firstName and lastName if available
-      const fullName = data.firstName && data.lastName 
-        ? `${data.firstName} ${data.lastName}` 
-        : data.name || '';
+      // Generate unique lead number (will be handled by database trigger in Supabase)
+      const generateLeadNumber = () => {
+        const today = new Date();
+        const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+        const randomStr = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        return `LEAD-${dateStr}-${randomStr}`;
+      };
 
-      // Prepare detailed message for audit forms
-      let detailedMessage = data.notes || '';
-      if (data.businessGoals || data.currentChallenges) {
-        detailedMessage = `Business Goals: ${data.businessGoals || 'Not provided'}
-        
-Current Challenges: ${data.currentChallenges || 'Not provided'}
-Website: ${data.website || 'Not provided'}
-Monthly Ad Spend: ${data.monthlyAdSpend || 'Not provided'}
-Primary Platform: ${data.primaryPlatform || 'Not provided'}`;
-      }
-
-      // Prepare lead data for Supabase
+      // Prepare lead data with all required fields
       const leadData = {
-        name: fullName,
+        name: data.name,
         email: data.email,
         phone: data.phone || null,
         company: data.company || null,
         source: data.source || 'website',
         status: data.status || 'new' as const,
-        notes: detailedMessage || null,
+        notes: data.notes || null,
+        lead_number: generateLeadNumber(), // For local storage, we generate it here
         form_security: {
           timestamp: Date.now(),
           userAgent: navigator.userAgent,
@@ -89,65 +82,27 @@ Primary Platform: ${data.primaryPlatform || 'Not provided'}`;
 
       console.log('Creating lead with data:', leadData);
 
-      // Insert lead data using Supabase
-      const { data: leadResult, error: leadError } = await supabase
-        .from('leads')
-        .insert([leadData])
-        .select()
-        .single();
+      // Insert lead data using local storage
+      const leadId = await localDB.insert('leads', leadData);
 
-      if (leadError) {
-        console.error('Supabase lead insertion error:', leadError);
-        throw new Error(`Failed to create lead: ${leadError.message}`);
+      if (!leadId) {
+        throw new Error('Failed to create lead - local storage returned null');
       }
 
-      if (!leadResult || !leadResult.id) {
-        throw new Error('Failed to create lead - Supabase returned invalid result');
-      }
-
-      console.log('Lead created successfully via Supabase:', leadResult);
-      
-      // Also store in contact_submissions for backward compatibility
-      try {
-        const contactData = {
-          name: fullName,
-          email: data.email,
-          phone: data.phone || null,
-          company: data.company || null,
-          message: detailedMessage,
-          form_type: 'lead_submission'
-        };
-
-        const { error: contactError } = await supabase
-          .from('contact_submissions')
-          .insert([contactData]);
-
-        if (contactError) {
-          console.error('Failed to store contact submission:', contactError);
-        } else {
-          console.log('Contact submission stored successfully');
-        }
-      } catch (contactError) {
-        console.error('Failed to store contact submission:', contactError);
-      }
+      console.log('Lead created successfully with ID:', leadId);
 
       // Dispatch custom event for real-time updates
       window.dispatchEvent(new CustomEvent('leadCreated', {
-        detail: leadResult
+        detail: { id: leadId, ...leadData }
       }));
 
-      return { success: true, leadId: leadResult.id };
+      return { success: true, leadId };
     } catch (error) {
       console.error('Lead submission error:', error);
       
       let errorMessage = "There was an error submitting your form. Please try again.";
       if (error instanceof Error) {
         errorMessage = error.message;
-        
-        // Provide more specific error messages for common issues
-        if (error.message.includes('validation') || error.message.includes('required')) {
-          errorMessage = "Please fill in all required fields correctly.";
-        }
       }
       
       return { success: false, error: errorMessage };

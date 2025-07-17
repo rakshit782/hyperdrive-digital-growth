@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,14 +16,10 @@ import {
   MessageSquare,
   Download,
   FileText,
-  AlertTriangle,
-  Shield,
-  ExternalLink,
-  Loader2
+  AlertTriangle
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { URLSecurityValidator, useURLSecurity } from "@/utils/urlSecurity";
 
 interface Lead {
   id: string;
@@ -49,47 +45,6 @@ interface LeadDetailsModalProps {
 
 const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClose }) => {
   const { toast } = useToast();
-  const { validateURL, getSecurityBadge, getDetailedSecurityReport } = useURLSecurity();
-  const [urlSecurityResults, setUrlSecurityResults] = useState<Record<string, any>>({});
-  const [scanningUrls, setScanningUrls] = useState(false);
-
-  useEffect(() => {
-    if (lead && isOpen) {
-      scanUrlsForSecurity();
-    }
-  }, [lead, isOpen]);
-
-  const scanUrlsForSecurity = async () => {
-    if (!lead?.lead_data?.website) return;
-
-    setScanningUrls(true);
-    try {
-      console.log('Starting security scan for:', lead.lead_data.website);
-      const result = await URLSecurityValidator.scanWebsite(lead.lead_data.website);
-      console.log('Security scan result:', result);
-      
-      setUrlSecurityResults({
-        [lead.lead_data.website]: result
-      });
-
-      if (!result.isSecure || result.riskLevel === 'high') {
-        toast({
-          title: "Security Alert",
-          description: `Website security scan completed: ${getDetailedSecurityReport(result)}`,
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Error scanning URLs:', error);
-      toast({
-        title: "Security Scan Error",
-        description: "Failed to scan URLs for security threats",
-        variant: "destructive",
-      });
-    } finally {
-      setScanningUrls(false);
-    }
-  };
 
   if (!lead) return null;
 
@@ -161,63 +116,6 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
     </Card>
   );
 
-  const SecurityBadge = ({ url }: { url: string }) => {
-    const result = urlSecurityResults[url];
-    if (!result) return null;
-
-    const badge = getSecurityBadge(result);
-    return (
-      <Badge className={`${badge.color} ml-2 border`}>
-        <Shield className="w-3 h-3 mr-1" />
-        {badge.icon} {badge.text}
-      </Badge>
-    );
-  };
-
-  const SecurityDetails = ({ url }: { url: string }) => {
-    const result = urlSecurityResults[url];
-    if (!result || result.warnings.length === 0) return null;
-
-    const isHighRisk = !result.isSecure || result.riskLevel === 'high';
-    
-    return (
-      <div className={`mt-2 p-3 rounded-lg border ${
-        isHighRisk 
-          ? 'bg-red-50 border-red-200' 
-          : 'bg-yellow-50 border-yellow-200'
-      }`}>
-        <div className="flex items-center space-x-2 mb-2">
-          <AlertTriangle className={`w-4 h-4 ${
-            isHighRisk ? 'text-red-600' : 'text-yellow-600'
-          }`} />
-          <span className={`text-sm font-medium ${
-            isHighRisk ? 'text-red-800' : 'text-yellow-800'
-          }`}>
-            Security Analysis Results:
-          </span>
-        </div>
-        <ul className={`text-xs list-disc list-inside space-y-1 ${
-          isHighRisk ? 'text-red-700' : 'text-yellow-700'
-        }`}>
-          {result.warnings.map((warning: string, index: number) => (
-            <li key={index}>{warning}</li>
-          ))}
-        </ul>
-        {(result.malwareDetected || result.phishingDetected) && (
-          <div className="mt-2 p-2 bg-red-100 border border-red-300 rounded">
-            <div className="text-xs text-red-800 font-medium">
-              ⚠️ CRITICAL THREATS DETECTED:
-            </div>
-            <div className="text-xs text-red-700 mt-1">
-              {result.malwareDetected && "• Malware signatures found"}
-              {result.phishingDetected && "• Phishing indicators detected"}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -271,24 +169,6 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
             </CardContent>
           </Card>
 
-          {/* Security Status */}
-          {scanningUrls && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Shield className="w-5 h-5" />
-                  <span>Security Scan</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                  <span className="text-sm">Scanning URLs for security threats...</span>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Business Information */}
           {leadData.businessGoals && (
             <Card>
@@ -301,21 +181,18 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
               <CardContent className="space-y-4">
                 {leadData.website && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Website</h4>
-                    <div className="flex items-center space-x-2 flex-wrap">
+                    <h4 className="text-sm font-medium text-gray-700 mb-1">Website</h4>
+                    <div className="flex items-center space-x-2">
                       <Globe className="w-4 h-4 text-gray-500" />
                       <a 
                         href={leadData.website} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline flex items-center space-x-1"
+                        className="text-sm text-blue-600 hover:underline"
                       >
-                        <span>{leadData.website}</span>
-                        <ExternalLink className="w-3 h-3" />
+                        {leadData.website}
                       </a>
-                      <SecurityBadge url={leadData.website} />
                     </div>
-                    <SecurityDetails url={leadData.website} />
                   </div>
                 )}
                 
@@ -401,6 +278,7 @@ const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({ lead, isOpen, onClo
             </Card>
           )}
 
+          {/* Technical Information */}
           {lead.form_security && (
             <Card>
               <CardHeader>

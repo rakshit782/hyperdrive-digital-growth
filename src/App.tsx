@@ -1,54 +1,75 @@
 
-import { Suspense, lazy } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from "@/components/ui/toaster"
+import { ErrorBoundary } from 'react-error-boundary'
+import ErrorFallback from '@/components/ErrorFallback'
+import { TooltipProvider } from "@/components/ui/tooltip"
+import PerformanceOptimizer from '@/components/PerformanceOptimizer'
+import ModernLayout from '@/layouts/ModernLayout'
+import PricingPage from '@/pages/PricingPage'
+import AboutPage from '@/pages/AboutPage'
+import ContactPage from '@/pages/ContactPage'
+import CaseStudiesPage from '@/pages/CaseStudiesPage'
+import FreeAuditPage from '@/pages/FreeAuditPage'
+import ServicesPage from '@/pages/ServicesPage'
+import AmazonAdvertisingPage from '@/pages/AmazonAdvertisingPage'
+import WalmartAdvertisingPage from '@/pages/WalmartAdvertisingPage'
+import GoogleAdvertisingPage from '@/pages/GoogleAdvertisingPage'
+import MetaAdvertisingPage from '@/pages/MetaAdvertisingPage'
+import WebsiteDevelopmentPage from '@/pages/WebsiteDevelopmentPage'
+import AccountManagementPage from '@/pages/AccountManagementPage'
+import ShopifyDevelopmentPage from '@/pages/ShopifyDevelopmentPage'
+import ShopifyIntegrationPage from '@/pages/ShopifyIntegrationPage'
+import PrivacyPolicy from '@/pages/PrivacyPolicy'
+import TermsOfService from '@/pages/TermsOfService'
+import TermsConditions from '@/pages/TermsConditions'
+import Dashboard from '@/pages/Dashboard'
+import NavigationOptimizer from "@/components/NavigationOptimizer";
 
-// Lazy load pages
-const Index = lazy(() => import("./pages/Index"));
-const Contact = lazy(() => import("./pages/Contact"));
-const About = lazy(() => import("./pages/About"));
-const ServicesPage = lazy(() => import("./pages/ServicesPage"));
-const Pricing = lazy(() => import("./pages/Pricing"));
-const Blog = lazy(() => import("./pages/Blog"));
-const BlogArticle = lazy(() => import("./pages/BlogArticle"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Terms = lazy(() => import("./pages/Terms"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const FreeAudit = lazy(() => import("./pages/FreeAudit"));
-const ServicePage = lazy(() => import("./pages/ServicePage"));
+const queryClient = new QueryClient()
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogArticle />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/free-audit" element={<FreeAudit />} />
-            <Route path="/services/:serviceType" element={<ServicePage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <BrowserRouter>
+          <NavigationOptimizer />
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onError={(error, info) => {
+              console.error('ErrorBoundary caught an error:', error, info);
+            }}
+          >
+            <PerformanceOptimizer />
+            <Routes>
+              <Route path="/" element={<ModernLayout />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/case-studies" element={<CaseStudiesPage />} />
+              <Route path="/free-audit" element={<FreeAuditPage />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/amazon-advertising" element={<AmazonAdvertisingPage />} />
+              <Route path="/walmart-advertising" element={<WalmartAdvertisingPage />} />
+              <Route path="/google-advertising" element={<GoogleAdvertisingPage />} />
+              <Route path="/meta-advertising" element={<MetaAdvertisingPage />} />
+              <Route path="/website-development" element={<WebsiteDevelopmentPage />} />
+              <Route path="/account-management" element={<AccountManagementPage />} />
+              <Route path="/shopify-development" element={<ShopifyDevelopmentPage />} />
+              <Route path="/shopify-integration" element={<ShopifyIntegrationPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/terms-conditions" element={<TermsConditions />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Routes>
+          </ErrorBoundary>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;

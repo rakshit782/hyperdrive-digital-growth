@@ -1,141 +1,243 @@
 
-import { useState, useEffect } from 'react';
-import { Star, Quote } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Review {
   id: string;
-  service_type: string;
-  client_name: string;
+  name: string;
   company: string;
   rating: number;
-  review_text: string;
-  avatar_url?: string;
-  results_achieved?: string;
-  is_active: boolean;
+  review: string;
+  avatar?: string;
 }
 
+const defaultReviews: Review[] = [
+  {
+    id: "1",
+    name: "Sarah Johnson",
+    company: "E-commerce Store Owner",
+    rating: 5,
+    review: "AMZ Ad Scout transformed our Amazon business. Our sales increased by 400% in just 3 months!",
+  },
+  {
+    id: "2",
+    name: "Michael Chen",
+    company: "Product Manager",
+    rating: 5,
+    review: "The team's expertise in Amazon advertising is unmatched. They delivered results beyond our expectations.",
+  },
+  {
+    id: "3",
+    name: "Emily Rodriguez",
+    company: "Brand Director",
+    rating: 5,
+    review: "Professional, results-driven, and always available. Our ROAS improved dramatically with their strategies.",
+  },
+  {
+    id: "4",
+    name: "David Thompson",
+    company: "Startup Founder",
+    rating: 5,
+    review: "From zero to hero on Amazon! Their campaign management and optimization skills are top-notch.",
+  },
+  {
+    id: "5",
+    name: "Lisa Wang",
+    company: "Brand Manager",
+    rating: 5,
+    review: "Outstanding results! Our conversion rates doubled within the first month of working with them.",
+  },
+  {
+    id: "6",
+    name: "Robert Miller",
+    company: "Online Retailer",
+    rating: 5,
+    review: "Best investment we made for our business. Their strategic approach to Amazon advertising is phenomenal.",
+  }
+];
+
 const Reviews = () => {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchReviews = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('service_reviews')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
-
-      if (error) throw error;
-      setReviews(data || []);
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [reviews, setReviews] = useState<Review[]>(defaultReviews);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
-    fetchReviews();
-
-    // Create a unique channel name to avoid conflicts
-    const channelName = `reviews-${Math.random().toString(36).substr(2, 9)}`;
+    console.log("Reviews: Component mounted, initializing...");
     
-    // Listen for real-time updates
-    const channel = supabase
-      .channel(channelName)
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'service_reviews' 
-        }, 
-        () => {
-          fetchReviews();
+    const loadReviews = () => {
+      const savedReviews = localStorage.getItem('reviewsData');
+      if (savedReviews) {
+        try {
+          const parsedData = JSON.parse(savedReviews);
+          if (Array.isArray(parsedData) && parsedData.length > 0) {
+            console.log("Reviews: Loaded from localStorage:", parsedData.length);
+            setReviews(parsedData);
+          } else {
+            console.log("Reviews: Invalid localStorage data, using defaults");
+            setReviews(defaultReviews);
+          }
+        } catch (error) {
+          console.error("Reviews: Error parsing saved reviews:", error);
+          setReviews(defaultReviews);
         }
-      )
-      .subscribe();
+      }
+    };
 
+    loadReviews();
+
+    const handleReviewsUpdate = (event: CustomEvent) => {
+      console.log("Reviews: Received update event:", event.detail);
+      if (event.detail && Array.isArray(event.detail)) {
+        setReviews(event.detail);
+      }
+    };
+
+    window.addEventListener('reviewsUpdated', handleReviewsUpdate as EventListener);
+    
     return () => {
-      supabase.removeChannel(channel);
+      window.removeEventListener('reviewsUpdated', handleReviewsUpdate as EventListener);
     };
   }, []);
 
-  if (loading) {
-    return (
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center">
-            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Auto-scroll functionality with smooth looping
+  useEffect(() => {
+    if (reviews.length === 0) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const nextIndex = prev + 1;
+        // Create seamless loop by going back to 0 when reaching the end
+        return nextIndex >= reviews.length ? 0 : nextIndex;
+      });
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [reviews.length]);
+
+  const renderStars = (rating: number) => {
+    return [...Array(5)].map((_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${
+          i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+        }`}
+      />
+    ));
+  };
+
+  const nextSlide = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => (prev + 1) % reviews.length);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
+
+  const prevSlide = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
+
+  const getVisibleReviews = () => {
+    if (reviews.length === 0) return [];
+    
+    const visibleReviews = [];
+    for (let i = 0; i < 3; i++) {
+      const index = (currentIndex + i) % reviews.length;
+      visibleReviews.push(reviews[index]);
+    }
+    return visibleReviews;
+  };
 
   if (reviews.length === 0) {
     return null;
   }
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star 
-        key={i} 
-        className={`w-4 h-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
-      />
-    ));
-  };
+  const visibleReviews = getVisibleReviews();
 
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
+    <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
             What Our Clients Say
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Don't just take our word for it. Here's what real clients have to say about their results with us.
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            Don't just take our word for it. Here's what successful Amazon sellers and e-commerce brands have to say about working with us.
           </p>
         </div>
-        
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {reviews.map((review) => (
-            <Card key={review.id} className="h-full bg-white hover:shadow-lg transition-all duration-300 border-0 shadow-md">
-              <CardContent className="p-8 h-full flex flex-col">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center space-x-1">
-                    {renderStars(review.rating)}
-                  </div>
-                  <Quote className="w-8 h-8 text-blue-100" />
-                </div>
-                
-                <blockquote className="text-gray-700 text-lg leading-relaxed mb-6 flex-grow">
-                  "{review.review_text}"
-                </blockquote>
-                
-                {review.results_achieved && (
-                  <div className="mb-6">
-                    <Badge variant="secondary" className="bg-green-100 text-green-800 font-medium px-3 py-1">
-                      🚀 {review.results_achieved}
-                    </Badge>
-                  </div>
-                )}
-                
-                <div className="flex items-center space-x-4 mt-auto pt-4 border-t border-gray-100">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-                    {review.client_name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">{review.client_name}</div>
-                    <div className="text-gray-600 text-sm">{review.company}</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+
+        <div className="relative">
+          {/* Navigation Buttons */}
+          <div className="flex justify-center gap-4 mb-8">
+            <Button
+              onClick={prevSlide}
+              variant="outline"
+              size="sm"
+              className="h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white hover:scale-105 transition-all duration-300"
+              disabled={isTransitioning}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <Button
+              onClick={nextSlide}
+              variant="outline"
+              size="sm"
+              className="h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm border-white/20 hover:bg-white hover:scale-105 transition-all duration-300"
+              disabled={isTransitioning}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* Reviews Grid */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {visibleReviews.map((review, index) => (
+              <div 
+                key={`${review.id}-${currentIndex}-${index}`}
+                className="transform transition-all duration-500 ease-in-out"
+              >
+                <Card className="group hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm border-white/20 hover:-translate-y-2 h-full">
+                  <CardContent className="p-8 h-full flex flex-col">
+                    <div className="flex items-center mb-6">
+                      <Quote className="w-8 h-8 text-blue-600 mb-4" />
+                    </div>
+                    
+                    <p className="text-slate-700 mb-6 leading-relaxed flex-grow">
+                      "{review.review}"
+                    </p>
+                    
+                    <div className="flex items-center mb-4">
+                      {renderStars(review.rating)}
+                    </div>
+                    
+                    <div className="mt-auto">
+                      <h4 className="font-semibold text-slate-900 text-lg">{review.name}</h4>
+                      <p className="text-blue-600 font-medium">{review.company}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
+
+          {/* Dots Indicator */}
+          <div className="flex justify-center mt-8 gap-2">
+            {reviews.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? "bg-blue-600 scale-125"
+                    : "bg-slate-300 hover:bg-slate-400"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

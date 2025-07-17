@@ -1,15 +1,11 @@
 
-import React from "react";
-import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
-import ModernHero from "@/components/ModernHero";
-import ModernServices from "@/components/ModernServices";
-import ModernFeatures from "@/components/ModernFeatures";
-import ModernReviews from "@/components/ModernReviews";
-import AuthorizedPartners from "@/components/AuthorizedPartners";
-import Clientele from "@/components/Clientele";
-import ModernCTA from "@/components/ModernCTA";
+import Hero from "@/components/Hero";
+import ClienteleCarousel from "@/components/ClienteleCarousel";
+import Services from "@/components/Services";
+import CircularReviews from "@/components/CircularReviews";
 import FAQ from "@/components/FAQ";
+import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 
@@ -17,20 +13,20 @@ const Index = () => {
   return (
     <>
       <SEOHead 
-        title="Professional Digital Marketing Agency | Amazon, Walmart, Meta Advertising"
-        description="Transform your business with our expert digital marketing services. Specializing in Amazon advertising, Walmart marketplace, Meta ads, and Shopify development."
-        url="/"
+        title="Expert Amazon, Walmart & Meta Advertising Agency | Drive Sales Growth"
+        description="Leading advertising agency specializing in Amazon PPC, Walmart Connect, and Meta ads. Boost your ROI with our proven strategies. Free audit available!"
+        keywords="Amazon advertising, Walmart advertising, Meta ads, PPC management, e-commerce marketing, digital advertising agency"
       />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      <div className="min-h-screen">
         <Header />
-        <ModernHero />
-        <ModernServices />
-        <ModernFeatures />
-        <ModernReviews />
-        <AuthorizedPartners />
-        <Clientele />
-        <FAQ category="general" limit={6} />
-        <ModernCTA />
+        <div className="space-y-12">
+          <Hero />
+          <ClienteleCarousel />
+          <Services />
+          <CircularReviews />
+          <FAQ />
+          <CTA />
+        </div>
         <Footer />
       </div>
     </>
