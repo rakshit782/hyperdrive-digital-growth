@@ -7,6 +7,7 @@ import CTA from '@/components/CTA';
 import FAQ from '@/components/FAQ';
 import { ScrollingLogos } from '@/components/AuthorizedPartners';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import SEOHead from '@/components/SEOHead';
 
 // Loading fallback component
 const LoadingFallback = ({ height = 'h-64' }: { height?: string }) => (
@@ -17,49 +18,57 @@ const LoadingFallback = ({ height = 'h-64' }: { height?: string }) => (
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
-      <ErrorBoundary>
-        {/* Hero Section */}
-        <Suspense fallback={<LoadingFallback height="h-screen" />}>
-          <OptimizedHero />
-        </Suspense>
-
-        {/* Partners/Logos Section */}
+    <>
+      <SEOHead 
+        title="Expert Marketing Agency - Scale Your Business with Proven Strategies"
+        description="Drive explosive growth with our proven Amazon, Walmart, Meta, and Google advertising strategies. Get measurable results from day one with our expert marketing services."
+        keywords="marketing agency, amazon advertising, walmart advertising, meta advertising, google ads, ppc management, roi optimization"
+      />
+      
+      <div className="min-h-screen">
         <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback height="h-32" />}>
-            <ScrollingLogos />
+          {/* Hero Section */}
+          <Suspense fallback={<LoadingFallback height="h-screen" />}>
+            <OptimizedHero />
           </Suspense>
-        </ErrorBoundary>
 
-        {/* Services Section */}
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback height="h-96" />}>
-            <OptimizedServices />
-          </Suspense>
-        </ErrorBoundary>
+          {/* Partners/Logos Section */}
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingFallback height="h-32" />}>
+              <ScrollingLogos />
+            </Suspense>
+          </ErrorBoundary>
 
-        {/* Reviews Section */}
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback height="h-96" />}>
-            <OptimizedReviews />
-          </Suspense>
-        </ErrorBoundary>
+          {/* Services Section */}
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingFallback height="h-96" />}>
+              <OptimizedServices />
+            </Suspense>
+          </ErrorBoundary>
 
-        {/* CTA Section */}
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback />}>
-            <CTA />
-          </Suspense>
-        </ErrorBoundary>
+          {/* Reviews Section */}
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingFallback height="h-96" />}>
+              <OptimizedReviews />
+            </Suspense>
+          </ErrorBoundary>
 
-        {/* FAQ Section */}
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback />}>
-            <FAQ />
-          </Suspense>
+          {/* CTA Section */}
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingFallback />}>
+              <CTA />
+            </Suspense>
+          </ErrorBoundary>
+
+          {/* FAQ Section */}
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingFallback />}>
+              <FAQ />
+            </Suspense>
+          </ErrorBoundary>
         </ErrorBoundary>
-      </ErrorBoundary>
-    </div>
+      </div>
+    </>
   );
 };
 

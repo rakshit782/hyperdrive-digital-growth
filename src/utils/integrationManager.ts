@@ -43,7 +43,10 @@ class IntegrationManager {
       await this.initializeAuth0();
 
       this.initialized = true;
-      console.log('Integration Manager: All integrations initialized');
+      console.log('Integration Manager: All integrations initialized successfully');
+      
+      // Dispatch event to notify dashboard
+      this.notifyIntegrationUpdate();
     } catch (error) {
       console.error('Integration Manager: Failed to initialize integrations:', error);
     }
@@ -135,7 +138,8 @@ class IntegrationManager {
 
   getIntegrationStatus(name?: string): IntegrationStatus[] {
     if (!this.initialized) {
-      this.initializeAllIntegrations();
+      // Initialize asynchronously but return current state
+      this.initializeAllIntegrations().catch(console.error);
     }
     
     if (name) {
@@ -147,7 +151,8 @@ class IntegrationManager {
 
   getAllIntegrationStatuses(): IntegrationStatus[] {
     if (!this.initialized) {
-      this.initializeAllIntegrations();
+      // Initialize asynchronously but return current state
+      this.initializeAllIntegrations().catch(console.error);
     }
     return Array.from(this.integrations.values());
   }
@@ -176,11 +181,24 @@ class IntegrationManager {
 
   notifyIntegrationUpdate(): void {
     // Trigger a custom event to notify components about integration updates
-    window.dispatchEvent(new CustomEvent('integrationStatusChanged'));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('integrationStatusChanged', {
+        detail: this.getAllIntegrationStatuses()
+      }));
+    }
+  }
+
+  // Method to refresh integration status
+  async refreshIntegrations(): Promise<void> {
+    this.initialized = false;
+    this.integrations.clear();
+    await this.initializeAllIntegrations();
   }
 }
 
 export const integrationManager = new IntegrationManager();
 
-// Initialize integrations when the module is loaded
-integrationManager.initializeAllIntegrations();
+// Initialize integrations when the module is loaded (only in browser)
+if (typeof window !== 'undefined') {
+  integrationManager.initializeAllIntegrations().catch(console.error);
+}

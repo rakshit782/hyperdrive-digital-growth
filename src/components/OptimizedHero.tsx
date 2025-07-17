@@ -58,6 +58,7 @@ const OptimizedHero = memo(() => {
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                onClick={() => window.location.href = '/free-audit'}
               >
                 Get Free Audit
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -92,22 +93,21 @@ const OptimizedHero = memo(() => {
             </div>
           </div>
           
-          {/* Hero image/illustration */}
+          {/* Hero image section - restored with proper image */}
           <div className="relative lg:order-2 animate-fade-in delay-700">
             <div className="relative mx-auto w-full max-w-lg">
-              {/* Main card */}
-              <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <ArrowRight className="w-8 h-8 text-white transform rotate-45" />
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Revenue Growth</h3>
-                  <div className="text-3xl font-bold text-green-500 mb-2">+347%</div>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm">Last Quarter</p>
-                </div>
-              </div>
+              {/* Background blur effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl blur-2xl opacity-20"></div>
               
-              {/* Floating metrics */}
+              {/* Main hero image */}
+              <img
+                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&crop=center&auto=format&q=80&fm=webp"
+                alt="Marketing Analytics Dashboard showing growth metrics and performance data"
+                className="relative w-full rounded-2xl shadow-xl object-cover h-80 lg:h-96"
+                loading="eager"
+              />
+              
+              {/* Floating metrics - these add visual interest */}
               <div className="absolute -top-4 -left-8 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-3 animate-bounce">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
