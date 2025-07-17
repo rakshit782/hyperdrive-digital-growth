@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,8 +39,10 @@ const Pricing = () => {
       // Transform the data to match our interface
       const transformedPlans = (data || []).map(plan => ({
         ...plan,
-        features: Array.isArray(plan.features) ? plan.features : []
-      }));
+        features: Array.isArray(plan.features) 
+          ? plan.features.map(feature => String(feature))
+          : []
+      })) as PricingPlan[];
       
       setPlans(transformedPlans);
     } catch (error) {

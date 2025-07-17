@@ -56,8 +56,10 @@ const PricingManagementTab = () => {
       // Transform the data to match our interface
       const transformedPlans = (data || []).map(plan => ({
         ...plan,
-        features: Array.isArray(plan.features) ? plan.features : []
-      }));
+        features: Array.isArray(plan.features) 
+          ? plan.features.map(feature => String(feature))
+          : []
+      })) as PricingPlan[];
       
       setPlans(transformedPlans);
     } catch (error) {
@@ -92,7 +94,7 @@ const PricingManagementTab = () => {
 
         if (error) throw error;
         
-        setPlans(plans.map(p => p.id === planData.id ? planData as PricingPlan : p));
+        setPlans(plans.map(p => p.id === planData.id ? planData : p));
         setEditingPlan(null);
         
         toast({
@@ -112,9 +114,11 @@ const PricingManagementTab = () => {
 
         if (error) throw error;
         
-        const newPlan = {
+        const newPlan: PricingPlan = {
           ...data,
-          features: Array.isArray(data.features) ? data.features : []
+          features: Array.isArray(data.features) 
+            ? data.features.map(feature => String(feature))
+            : []
         };
         
         setPlans([...plans, newPlan]);
