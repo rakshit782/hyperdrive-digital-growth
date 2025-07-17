@@ -24,10 +24,6 @@ const FAQ: React.FC<FAQProps> = ({ category, limit }) => {
   const [openItems, setOpenItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchFaqs();
-  }, [category]);
-
   const fetchFaqs = async () => {
     try {
       let query = supabase
@@ -54,6 +50,32 @@ const FAQ: React.FC<FAQProps> = ({ category, limit }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchFaqs();
+
+    // Create a unique channel name to avoid conflicts
+    const channelName = `faqs-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Listen for real-time updates
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'faqs' 
+        }, 
+        () => {
+          fetchFaqs();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [category, limit]);
 
   const toggleItem = (id: string) => {
     setOpenItems(prev => 

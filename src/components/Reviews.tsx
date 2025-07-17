@@ -41,9 +41,12 @@ const Reviews = () => {
   useEffect(() => {
     fetchReviews();
 
+    // Create a unique channel name to avoid conflicts
+    const channelName = `reviews-${Math.random().toString(36).substr(2, 9)}`;
+    
     // Listen for real-time updates
     const channel = supabase
-      .channel('service-reviews-changes')
+      .channel(channelName)
       .on('postgres_changes', 
         { 
           event: '*', 
