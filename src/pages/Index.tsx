@@ -11,7 +11,7 @@ import Clientele from "@/components/Clientele";
 import ModernCTA from "@/components/ModernCTA";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
-import { SEOHead } from "@/components/SEOHead";
+import SEOHead from "@/components/SEOHead";
 
 const Index = () => {
   return (
@@ -19,7 +19,7 @@ const Index = () => {
       <SEOHead 
         title="Professional Digital Marketing Agency | Amazon, Walmart, Meta Advertising"
         description="Transform your business with our expert digital marketing services. Specializing in Amazon advertising, Walmart marketplace, Meta ads, and Shopify development."
-        path="/"
+        url="/"
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
         <Header />

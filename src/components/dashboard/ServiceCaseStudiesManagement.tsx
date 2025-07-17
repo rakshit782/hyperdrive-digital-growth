@@ -56,7 +56,14 @@ const ServiceCaseStudiesManagement = () => {
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      setCaseStudies(data || []);
+      
+      // Transform the data to match our interface
+      const transformedStudies = (data || []).map(study => ({
+        ...study,
+        results: typeof study.results === 'object' && study.results !== null ? study.results : {}
+      }));
+      
+      setCaseStudies(transformedStudies);
     } catch (error) {
       console.error('Error fetching case studies:', error);
       toast({
@@ -91,7 +98,7 @@ const ServiceCaseStudiesManagement = () => {
 
         if (error) throw error;
         
-        setCaseStudies(caseStudies.map(s => s.id === studyData.id ? studyData : s));
+        setCaseStudies(caseStudies.map(s => s.id === studyData.id ? studyData as CaseStudy : s));
         setEditingStudy(null);
         
         toast({
@@ -111,7 +118,12 @@ const ServiceCaseStudiesManagement = () => {
 
         if (error) throw error;
         
-        setCaseStudies([...caseStudies, data]);
+        const newStudy = {
+          ...data,
+          results: typeof data.results === 'object' && data.results !== null ? data.results : {}
+        };
+        
+        setCaseStudies([...caseStudies, newStudy]);
         setIsCreating(false);
         
         toast({

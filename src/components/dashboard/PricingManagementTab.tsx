@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,7 +52,14 @@ const PricingManagementTab = () => {
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      setPlans(data || []);
+      
+      // Transform the data to match our interface
+      const transformedPlans = (data || []).map(plan => ({
+        ...plan,
+        features: Array.isArray(plan.features) ? plan.features : []
+      }));
+      
+      setPlans(transformedPlans);
     } catch (error) {
       console.error('Error fetching pricing plans:', error);
       toast({
@@ -86,7 +92,7 @@ const PricingManagementTab = () => {
 
         if (error) throw error;
         
-        setPlans(plans.map(p => p.id === planData.id ? planData : p));
+        setPlans(plans.map(p => p.id === planData.id ? planData as PricingPlan : p));
         setEditingPlan(null);
         
         toast({
@@ -106,7 +112,12 @@ const PricingManagementTab = () => {
 
         if (error) throw error;
         
-        setPlans([...plans, data]);
+        const newPlan = {
+          ...data,
+          features: Array.isArray(data.features) ? data.features : []
+        };
+        
+        setPlans([...plans, newPlan]);
         setIsCreating(false);
         
         toast({

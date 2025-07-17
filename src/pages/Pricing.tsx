@@ -36,7 +36,14 @@ const Pricing = () => {
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
-      setPlans(data || []);
+      
+      // Transform the data to match our interface
+      const transformedPlans = (data || []).map(plan => ({
+        ...plan,
+        features: Array.isArray(plan.features) ? plan.features : []
+      }));
+      
+      setPlans(transformedPlans);
     } catch (error) {
       console.error('Error fetching pricing plans:', error);
     } finally {
