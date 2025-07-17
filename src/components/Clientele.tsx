@@ -34,9 +34,12 @@ const Clientele = () => {
   useEffect(() => {
     fetchClienteleLogos();
 
+    // Create a unique channel name to avoid conflicts
+    const channelName = `clientele-logos-${Math.random().toString(36).substr(2, 9)}`;
+    
     // Listen for real-time updates
     const channel = supabase
-      .channel('clientele-logos-changes')
+      .channel(channelName)
       .on('postgres_changes', 
         { 
           event: '*', 

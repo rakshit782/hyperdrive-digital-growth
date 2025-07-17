@@ -42,9 +42,12 @@ const CTASection = () => {
   useEffect(() => {
     fetchCTAData();
 
+    // Create a unique channel name to avoid conflicts
+    const channelName = `cta-data-${Math.random().toString(36).substr(2, 9)}`;
+    
     // Listen for real-time updates
     const channel = supabase
-      .channel('cta-data-changes')
+      .channel(channelName)
       .on('postgres_changes', 
         { 
           event: '*', 

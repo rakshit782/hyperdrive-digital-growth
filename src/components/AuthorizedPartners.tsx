@@ -34,9 +34,12 @@ const AuthorizedPartners = () => {
   useEffect(() => {
     fetchPartnerImages();
 
+    // Create a unique channel name to avoid conflicts
+    const channelName = `partner-images-${Math.random().toString(36).substr(2, 9)}`;
+    
     // Listen for real-time updates
     const channel = supabase
-      .channel('partner-images-changes')
+      .channel(channelName)
       .on('postgres_changes', 
         { 
           event: '*', 
