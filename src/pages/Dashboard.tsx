@@ -26,7 +26,7 @@ import PolicyPagesTab from "@/components/dashboard/PolicyPagesTab";
 import LogoManagementTab from "@/components/dashboard/LogoManagementTab";
 import WebsiteTab from "@/components/dashboard/WebsiteTab";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { ServiceCard, Review } from "@/types/dashboard";
+import { ServiceCard } from "@/types/dashboard";
 import { 
   Settings, 
   LayoutDashboard, 
@@ -54,7 +54,7 @@ import MarketingEmailDashboard from "@/components/dashboard/MarketingEmailDashbo
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('services');
-  const { services, reviews, updateServices, updateReviews } = useDashboardData();
+  const { services, updateServices } = useDashboardData();
 
   const handleEditService = (service: ServiceCard) => {
     console.log('Edit service:', service);
@@ -191,12 +191,7 @@ const Dashboard = () => {
       case 'blog-management':
         return <BlogManagement />;
       case 'reviews':
-        return (
-          <ReviewsTab 
-            reviews={reviews}
-            updateReviews={updateReviews}
-          />
-        );
+        return <ReviewsTab />;
       case 'faq-management':
         return <FAQManagementTab />;
       case 'pricing-management':
