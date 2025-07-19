@@ -117,15 +117,16 @@ const ClienteleCarousel = () => {
 
   if (clienteleLogos.length === 0) return null;
 
-  const logoHeight = `h-${settings.logoSize}`;
   const sectionPadding = `py-${settings.sectionHeight}`;
 
   return (
-    <section className={`${sectionPadding} bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-200/50`}>
+    <section className={`${sectionPadding} bg-slate-50 dark:bg-slate-800`}>
       <div className="container mx-auto px-6">
-        <div className="text-center mb-4">
-          <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-2">Trusted by Leading Brands</h3>
-          <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto"></div>
+        <div className="text-center mb-8">
+          <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-3">
+            Trusted by Leading Brands
+          </h3>
+          <div className="w-16 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto"></div>
         </div>
         
         <div className="max-w-6xl mx-auto">
@@ -154,9 +155,10 @@ const ClienteleCarousel = () => {
                       <img
                         src={logo.imageUrl}
                         alt={logo.name}
-                        className={`${logoHeight} w-auto max-w-full object-contain opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110`}
+                        className="h-16 w-auto max-w-[140px] object-contain opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110"
+                        style={{ height: '64px', width: 'auto' }}
                         onError={(e) => {
-                          e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAzMkg4MFY0OEg0MFYzMloiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                          e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjY0IiB2aWV3Qm94PSIwIDAgMTQwIDY0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTQwIiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik01MCAyOEg5MFY0MEg1MFYyOFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                         }}
                       />
                     </div>

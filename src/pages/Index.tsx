@@ -5,7 +5,7 @@ import OptimizedServices from '@/components/OptimizedServices';
 import OptimizedReviews from '@/components/OptimizedReviews';
 import CTA from '@/components/CTA';
 import FAQ from '@/components/FAQ';
-import { ScrollingLogos } from '@/components/AuthorizedPartners';
+import ClienteleCarousel from '@/components/ClienteleCarousel';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import SEOHead from '@/components/SEOHead';
 
@@ -32,19 +32,21 @@ const Index = () => {
             <OptimizedHero />
           </Suspense>
 
-          {/* Partners/Logos Section */}
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingFallback height="h-32" />}>
-              <ScrollingLogos />
-            </Suspense>
-          </ErrorBoundary>
+          {/* Clientele Section (formerly Partners/Logos) - merged background with Services */}
+          <div className="bg-slate-50 dark:bg-slate-800">
+            <ErrorBoundary>
+              <Suspense fallback={<LoadingFallback height="h-32" />}>
+                <ClienteleCarousel />
+              </Suspense>
+            </ErrorBoundary>
 
-          {/* Services Section */}
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingFallback height="h-96" />}>
-              <OptimizedServices />
-            </Suspense>
-          </ErrorBoundary>
+            {/* Services Section - merged background */}
+            <ErrorBoundary>
+              <Suspense fallback={<LoadingFallback height="h-96" />}>
+                <OptimizedServices />
+              </Suspense>
+            </ErrorBoundary>
+          </div>
 
           {/* Reviews Section */}
           <ErrorBoundary>

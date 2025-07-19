@@ -55,7 +55,7 @@ const OptimizedReviews = memo(() => {
           {reviews.slice(0, 6).map((review, index) => (
             <Card 
               key={review.id} 
-              className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-md animate-fade-in"
+              className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-md animate-fade-in bg-white dark:bg-slate-700"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <CardContent className="p-6">

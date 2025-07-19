@@ -1,6 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { Facebook, Instagram, Linkedin, Twitter, Youtube, Mail, Phone, MapPin, Share2 } from "lucide-react";
-import AuthorizedPartners from "./AuthorizedPartners";
+import { Facebook, Instagram, Linkedin, Twitter, Youtube, Mail, Phone, MapPin, Share2, Star } from "lucide-react";
 import NewsletterForm from "./NewsletterForm";
 
 interface SocialMediaLink {
@@ -94,18 +94,6 @@ const Footer = () => {
       name: "Google Analytics Certified",
       imageUrl: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
       isActive: true
-    },
-    {
-      id: "tiktok-partner",
-      name: "TikTok Marketing Partner",
-      imageUrl: "https://sf16-website-login.neutral.ttwstatic.com/obj/tiktok_web_login_static/tiktok/webapp/main/webapp-desktop/8152caf0c8e8bc67ae0d.svg",
-      isActive: true
-    },
-    {
-      id: "klaviyo-partner", 
-      name: "Klaviyo Partner",
-      imageUrl: "https://www.klaviyo.com/wp-content/uploads/2020/02/klaviyo-logo.svg",
-      isActive: true
     }
   ];
 
@@ -155,13 +143,11 @@ const Footer = () => {
           console.log("Footer: Loaded partner images:", parsed.length);
         } catch (error) {
           console.error('Footer: Failed to parse partner images:', error);
-          // Set default partners on error
           const defaultPartners = getDefaultPartners();
           setPartnerImages(defaultPartners);
           localStorage.setItem('partnerImages', JSON.stringify(defaultPartners));
         }
       } else {
-        // Set default partner logos if none exist
         const defaultPartners = getDefaultPartners();
         setPartnerImages(defaultPartners);
         localStorage.setItem('partnerImages', JSON.stringify(defaultPartners));
@@ -262,8 +248,36 @@ const Footer = () => {
 
   return (
     <footer className="bg-slate-900 text-white">
-      {/* Authorized Partners at the top */}
-      <AuthorizedPartners />
+      {/* Authorized Partners Section - Merged with Footer */}
+      {footerSettings.showPartners && activePartners.length > 0 && (
+        <div className="border-b border-slate-700/50">
+          <div className="container mx-auto px-6 py-8">
+            <div className="text-center mb-8">
+              <h3 className="text-lg font-semibold text-slate-300 uppercase tracking-wide mb-3">
+                {footerSettings.partnersTitle}
+              </h3>
+              <div className="w-16 h-0.5 bg-gradient-to-r from-blue-400 to-purple-500 mx-auto"></div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center justify-items-center">
+              {activePartners.map((partner) => (
+                <div key={partner.id} className="flex-shrink-0 group">
+                  <div className="relative p-4 transition-all duration-500 hover:scale-110">
+                    <img
+                      src={partner.imageUrl}
+                      alt={partner.name}
+                      className="h-12 w-auto max-w-[120px] object-contain opacity-70 group-hover:opacity-100 transition-all duration-500 filter brightness-0 invert"
+                      onError={(e) => {
+                        e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCAyNEg4MFYzNkg0MFYyNFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Main Footer Content */}
       <div className="container mx-auto px-6 py-16">
