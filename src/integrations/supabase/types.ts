@@ -794,6 +794,39 @@ export type Database = {
         }
         Relationships: []
       }
+      policy_pages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_active: boolean
+          last_updated: string
+          page_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_updated: string
+          page_type: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_updated?: string
+          page_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pricing_plans: {
         Row: {
           billing_period: string | null

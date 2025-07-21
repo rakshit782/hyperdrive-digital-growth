@@ -1,95 +1,13 @@
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, HelpCircle, MessageCircle, Sparkles } from "lucide-react";
-
-interface FAQItem {
-  id: string;
-  question: string;
-  answer: string;
-  isActive: boolean;
-}
-
-const defaultFAQs: FAQItem[] = [
-  {
-    id: "1",
-    question: "How quickly can I see results from your advertising campaigns?",
-    answer: "Most clients see initial improvements within 2-4 weeks, with significant results typically visible within 60-90 days. However, timelines can vary based on your current account status, competition, and budget.",
-    isActive: true
-  },
-  {
-    id: "2",
-    question: "What makes your agency different from others?",
-    answer: "We specialize exclusively in e-commerce advertising with a data-driven approach. Our team has managed over $50M in ad spend and focuses on profitable growth, not just traffic. We provide transparent reporting and dedicated account management.",
-    isActive: true
-  },
-  {
-    id: "3",
-    question: "Do you guarantee results?",
-    answer: "While we can't guarantee specific numbers due to market variables, we do guarantee our commitment to improving your performance. If you're not satisfied with our service within the first 60 days, we'll work with you to make it right.",
-    isActive: true
-  },
-  {
-    id: "4",
-    question: "What platforms do you manage advertising on?",
-    answer: "We manage advertising campaigns on Amazon, Walmart, Meta (Facebook & Instagram), and provide Shopify integration and development services. Our expertise spans the entire e-commerce advertising ecosystem.",
-    isActive: true
-  },
-  {
-    id: "5",
-    question: "How much do your services cost?",
-    answer: "Our pricing is customized based on your needs and ad spend. We offer both percentage-based and flat fee structures. Contact us for a free consultation to discuss pricing that fits your budget and goals.",
-    isActive: true
-  },
-  {
-    id: "6",
-    question: "Do you work with businesses of all sizes?",
-    answer: "Yes! We work with startups, growing businesses, and established brands. Our strategies are scalable and customized to your business size, goals, and budget.",
-    isActive: true
-  }
-];
+import { useSupabaseFAQs } from "@/hooks/useSupabaseFAQs";
 
 const FAQ = () => {
-  const [faqs, setFAQs] = useState<FAQItem[]>(defaultFAQs);
+  const { faqs, loading, error } = useSupabaseFAQs();
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    console.log("FAQ: Component mounted, initializing...");
-    
-    const loadFAQs = () => {
-      const savedFAQs = localStorage.getItem('faqData');
-      if (savedFAQs) {
-        try {
-          const parsedData = JSON.parse(savedFAQs);
-          if (Array.isArray(parsedData) && parsedData.length > 0) {
-            console.log("FAQ: Loaded from localStorage:", parsedData.length);
-            setFAQs(parsedData.filter((faq: FAQItem) => faq.isActive));
-          } else {
-            console.log("FAQ: Invalid localStorage data, using defaults");
-            setFAQs(defaultFAQs);
-          }
-        } catch (error) {
-          console.error("FAQ: Error parsing saved FAQs:", error);
-          setFAQs(defaultFAQs);
-        }
-      }
-    };
-
-    loadFAQs();
-
-    const handleFAQUpdate = (event: CustomEvent) => {
-      console.log("FAQ: Received update event:", event.detail);
-      if (event.detail && Array.isArray(event.detail)) {
-        setFAQs(event.detail.filter((faq: FAQItem) => faq.isActive));
-      }
-    };
-
-    window.addEventListener('faqUpdated', handleFAQUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener('faqUpdated', handleFAQUpdate as EventListener);
-    };
-  }, []);
 
   const toggleItem = (id: string) => {
     setOpenItems(prev => ({
@@ -97,6 +15,36 @@ const FAQ = () => {
       [id]: !prev[id]
     }));
   };
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="h-8 bg-slate-200 rounded w-1/3 mx-auto mb-4 animate-pulse" />
+            <div className="h-4 bg-slate-200 rounded w-2/3 mx-auto animate-pulse" />
+          </div>
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="h-24 bg-slate-200 rounded-xl animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-red-600">Failed to load FAQs: {error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50">

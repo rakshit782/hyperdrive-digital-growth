@@ -1,63 +1,56 @@
 
-import { useState, useEffect } from "react";
+import { useSupabasePolicyPages } from "@/hooks/useSupabasePolicyPages";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 
-interface PolicyContent {
-  title: string;
-  lastUpdated: string;
-  content: string;
-}
-
 const TermsConditions = () => {
-  const [policyContent, setPolicyContent] = useState<PolicyContent>({
-    title: "Terms & Conditions",
-    lastUpdated: "December 2024",
-    content: `
-      <h2>General Terms</h2>
-      <p>These terms and conditions outline the rules and regulations for the use of our services and website.</p>
-      
-      <h2>Service Terms</h2>
-      <p>Our advertising services are provided subject to the terms outlined in our service agreements and these general terms and conditions.</p>
-      
-      <h2>Payment Terms</h2>
-      <p>Payment for services is due according to the payment schedule outlined in your service agreement. Late payments may result in service suspension.</p>
-      
-      <h2>Intellectual Property</h2>
-      <p>All content, designs, and materials created as part of our services remain our intellectual property unless otherwise specified in writing.</p>
-      
-      <h2>Termination</h2>
-      <p>Either party may terminate the service agreement with written notice as specified in the individual service contract.</p>
-      
-      <h2>Contact</h2>
-      <p>For questions regarding these terms and conditions, contact us at legal@youragency.com.</p>
-    `
-  });
+  const { getPolicyPageByType, loading, error } = useSupabasePolicyPages();
+  const policyContent = getPolicyPageByType('terms-conditions');
 
-  useEffect(() => {
-    const savedContent = localStorage.getItem('termsConditionsContent');
-    if (savedContent) {
-      try {
-        const parsed = JSON.parse(savedContent);
-        setPolicyContent(parsed);
-        console.log('Terms and conditions content loaded:', parsed);
-      } catch (error) {
-        console.error('Failed to parse terms conditions content:', error);
-      }
-    }
+  if (loading) {
+    return (
+      <>
+        <SEOHead title="Terms & Conditions" description="Terms and Conditions for Your Agency" />
+        <Header />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-20">
+          <div className="max-w-4xl mx-auto px-6 py-16">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12">
+              <div className="text-center mb-12">
+                <div className="h-8 bg-slate-200 rounded w-1/3 mx-auto mb-4 animate-pulse" />
+                <div className="h-4 bg-slate-200 rounded w-1/4 mx-auto animate-pulse" />
+              </div>
+              <div className="space-y-4">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="h-4 bg-slate-200 rounded animate-pulse" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
-    const handleContentUpdate = (event: CustomEvent) => {
-      console.log('Terms and conditions content updated via dashboard');
-      setPolicyContent(event.detail);
-    };
-
-    window.addEventListener('termsConditionsUpdated', handleContentUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener('termsConditionsUpdated', handleContentUpdate as EventListener);
-    };
-  }, []);
+  if (error || !policyContent) {
+    return (
+      <>
+        <SEOHead title="Terms & Conditions" description="Terms and Conditions for Your Agency" />
+        <Header />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-20">
+          <div className="max-w-4xl mx-auto px-6 py-16">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12">
+              <div className="text-center">
+                <p className="text-red-600">Failed to load terms and conditions: {error || 'Content not found'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -73,7 +66,7 @@ const TermsConditions = () => {
               <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-4">
                 {policyContent.title}
               </h1>
-              <p className="text-slate-600">Last updated: {policyContent.lastUpdated}</p>
+              <p className="text-slate-600">Last updated: {policyContent.last_updated}</p>
             </div>
             
             <div 
