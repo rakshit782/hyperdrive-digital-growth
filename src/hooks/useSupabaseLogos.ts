@@ -37,7 +37,8 @@ export const useSupabaseLogos = () => {
       if (error) throw error;
 
       if (data && data.setting_value) {
-        setLogoSettings(data.setting_value as LogoSettings);
+        // Safely cast the Json type to LogoSettings
+        setLogoSettings(data.setting_value as unknown as LogoSettings);
       } else {
         // Set default logo settings
         const defaultSettings: LogoSettings = {
@@ -67,7 +68,7 @@ export const useSupabaseLogos = () => {
         .upsert({
           setting_key: 'logo_settings',
           setting_type: 'branding',
-          setting_value: settings
+          setting_value: settings as unknown as any
         }, {
           onConflict: 'setting_key'
         })
