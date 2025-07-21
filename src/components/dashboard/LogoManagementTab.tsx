@@ -6,48 +6,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Image, Upload, Link, Eye, Save, RotateCcw } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-
-interface LogoSettings {
-  logoUrl: string;
-  logoSize: string;
-  logoAlt: string;
-  logoPosition: string;
-  showInHeader: boolean;
-  showInFooter: boolean;
-  googleDriveUrl: string;
-}
-
-const defaultSettings: LogoSettings = {
-  logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
-  logoSize: "h-12",
-  logoAlt: "AMZ AD SCOUT - The Growth Agency",
-  logoPosition: "left",
-  showInHeader: true,
-  showInFooter: true,
-  googleDriveUrl: ""
-};
+import { Image, Upload, Link, Eye, Save, RotateCcw, Loader2 } from "lucide-react";
+import { useSupabaseLogos, type LogoSettings } from "@/hooks/useSupabaseLogos";
 
 const LogoManagementTab = () => {
-  const { toast } = useToast();
-  const [settings, setSettings] = useState<LogoSettings>(defaultSettings);
+  const { logoSettings, loading, updateLogoSettings } = useSupabaseLogos();
+  const [formSettings, setFormSettings] = useState<LogoSettings | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [googleDriveUrl, setGoogleDriveUrl] = useState("");
 
   useEffect(() => {
-    const savedSettings = localStorage.getItem('logoSettings');
-    if (savedSettings) {
-      try {
-        const parsed = JSON.parse(savedSettings);
-        setSettings({ ...defaultSettings, ...parsed });
-      } catch (error) {
-        console.error('Failed to parse logo settings:', error);
-      }
+    if (logoSettings) {
+      setFormSettings(logoSettings);
     }
-  }, []);
+  }, [logoSettings]);
 
   const updateSettings = (updates: Partial<LogoSettings>) => {
-    setSettings(prev => ({ ...prev, ...updates }));
+    if (!formSettings) return;
+    
+    setFormSettings(prev => ({ ...prev!, ...updates }));
     setHasChanges(true);
   };
 
@@ -73,39 +51,38 @@ const LogoManagementTab = () => {
   };
 
   const handleGoogleDriveUpload = () => {
-    if (settings.googleDriveUrl.trim()) {
-      const directUrl = convertGoogleDriveUrl(settings.googleDriveUrl.trim());
-      updateSettings({ logoUrl: directUrl, googleDriveUrl: "" });
-      toast({
-        title: "Success",
-        description: "Google Drive image URL converted successfully!",
-      });
+    if (googleDriveUrl.trim()) {
+      const directUrl = convertGoogleDriveUrl(googleDriveUrl.trim());
+      updateSettings({ logoUrl: directUrl });
+      setGoogleDriveUrl("");
     }
   };
 
-  const saveSettings = () => {
-    localStorage.setItem('logoSettings', JSON.stringify(settings));
+  const saveSettings = async () => {
+    if (!formSettings) return;
     
-    // Dispatch events to update components
-    const logoEvent = new CustomEvent('logoUpdated', { 
-      detail: {
-        logoUrl: settings.logoUrl,
-        logoSize: settings.logoSize,
-        logoAlt: settings.logoAlt
-      }
-    });
-    window.dispatchEvent(logoEvent);
-    
-    setHasChanges(false);
-    
-    toast({
-      title: "Success",
-      description: "Logo settings saved successfully!",
-    });
+    setIsSubmitting(true);
+    try {
+      await updateLogoSettings(formSettings);
+      setHasChanges(false);
+    } catch (error) {
+      console.error('Error saving logo settings:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetToDefaults = () => {
-    setSettings(defaultSettings);
+    const defaultSettings: LogoSettings = {
+      logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
+      logoSize: "h-12",
+      logoAlt: "AMZ AD SCOUT - The Growth Agency",
+      logoPosition: "left",
+      showInHeader: true,
+      showInFooter: true,
+      isActive: true
+    };
+    setFormSettings(defaultSettings);
     setHasChanges(true);
   };
 
@@ -118,14 +95,17 @@ const LogoManagementTab = () => {
     { value: "h-14", label: "Extra Large (56px)" },
     { value: "h-16", label: "XXL (64px)" },
     { value: "h-20", label: "XXXL (80px)" },
-    { value: "h-24", label: "Huge (96px)" },
-    { value: "h-28", label: "Massive (112px)" },
-    { value: "h-32", label: "Giant (128px)" },
-    { value: "h-40", label: "Colossal (160px)" },
-    { value: "h-48", label: "Enormous (192px)" },
-    { value: "h-56", label: "Gigantic (224px)" },
-    { value: "h-64", label: "Maximum (256px)" }
+    { value: "h-24", label: "Huge (96px)" }
   ];
+
+  if (loading || !formSettings) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="w-8 h-8 animate-spin mr-2" />
+        <span>Loading logo settings...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -147,9 +127,18 @@ const LogoManagementTab = () => {
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
           </Button>
-          <Button onClick={saveSettings} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
-            <Save className="w-4 h-4 mr-2" />
-            Save Changes
+          <Button onClick={saveSettings} disabled={isSubmitting} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -167,7 +156,7 @@ const LogoManagementTab = () => {
                 <Label htmlFor="logoUrl">Logo URL</Label>
                 <Input
                   id="logoUrl"
-                  value={settings.logoUrl}
+                  value={formSettings.logoUrl}
                   onChange={(e) => updateSettings({ logoUrl: e.target.value })}
                   placeholder="https://example.com/logo.png"
                 />
@@ -180,8 +169,8 @@ const LogoManagementTab = () => {
                 </div>
                 <div className="space-y-3">
                   <Input
-                    value={settings.googleDriveUrl}
-                    onChange={(e) => updateSettings({ googleDriveUrl: e.target.value })}
+                    value={googleDriveUrl}
+                    onChange={(e) => setGoogleDriveUrl(e.target.value)}
                     placeholder="Paste Google Drive sharing link here..."
                     className="bg-white/80 border-blue-200/50"
                   />
@@ -190,7 +179,7 @@ const LogoManagementTab = () => {
                     variant="outline"
                     size="sm"
                     className="w-full"
-                    disabled={!settings.googleDriveUrl.trim()}
+                    disabled={!googleDriveUrl.trim()}
                   >
                     <Link className="w-4 h-4 mr-2" />
                     Use Google Drive Image
@@ -202,7 +191,7 @@ const LogoManagementTab = () => {
                 <Label htmlFor="logoAlt">Logo Alt Text</Label>
                 <Input
                   id="logoAlt"
-                  value={settings.logoAlt}
+                  value={formSettings.logoAlt}
                   onChange={(e) => updateSettings({ logoAlt: e.target.value })}
                   placeholder="Your company name"
                 />
@@ -211,7 +200,7 @@ const LogoManagementTab = () => {
               <div className="space-y-3">
                 <Label htmlFor="logoSize">Logo Size</Label>
                 <Select
-                  value={settings.logoSize}
+                  value={formSettings.logoSize}
                   onValueChange={(value) => updateSettings({ logoSize: value })}
                 >
                   <SelectTrigger>
@@ -232,7 +221,7 @@ const LogoManagementTab = () => {
                   <Label htmlFor="showInHeader">Show in Header</Label>
                   <Switch
                     id="showInHeader"
-                    checked={settings.showInHeader}
+                    checked={formSettings.showInHeader}
                     onCheckedChange={(checked) => updateSettings({ showInHeader: checked })}
                   />
                 </div>
@@ -240,7 +229,7 @@ const LogoManagementTab = () => {
                   <Label htmlFor="showInFooter">Show in Footer</Label>
                   <Switch
                     id="showInFooter"
-                    checked={settings.showInFooter}
+                    checked={formSettings.showInFooter}
                     onCheckedChange={(checked) => updateSettings({ showInFooter: checked })}
                   />
                 </div>
@@ -266,9 +255,9 @@ const LogoManagementTab = () => {
               <div className="bg-gradient-to-r from-slate-900 to-blue-900 rounded-lg p-6">
                 <div className="flex items-center justify-between">
                   <img 
-                    src={settings.logoUrl}
-                    alt={settings.logoAlt}
-                    className={`${settings.logoSize} w-auto object-contain`}
+                    src={formSettings.logoUrl}
+                    alt={formSettings.logoAlt}
+                    className={`${formSettings.logoSize} w-auto object-contain`}
                     onError={(e) => {
                       e.currentTarget.src = "/placeholder.svg";
                     }}
@@ -281,39 +270,15 @@ const LogoManagementTab = () => {
               <div className="bg-slate-800 rounded-lg p-6">
                 <div className="flex items-center justify-center">
                   <img 
-                    src={settings.logoUrl}
-                    alt={settings.logoAlt}
-                    className={`${settings.logoSize} w-auto object-contain opacity-80`}
+                    src={formSettings.logoUrl}
+                    alt={formSettings.logoAlt}
+                    className={`${formSettings.logoSize} w-auto object-contain opacity-80`}
                     onError={(e) => {
                       e.currentTarget.src = "/placeholder.svg";
                     }}
                   />
                 </div>
                 <p className="text-center text-slate-400 text-sm mt-4">Footer Context</p>
-              </div>
-
-              {/* Size Comparison */}
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6">
-                <h4 className="font-semibold text-slate-700 mb-4">Size Comparison</h4>
-                <div className="grid grid-cols-2 gap-4 max-h-60 overflow-y-auto">
-                  {sizeOptions.slice(0, 8).map((size) => (
-                    <div key={size.value} className="text-center">
-                      <img 
-                        src={settings.logoUrl}
-                        alt={settings.logoAlt}
-                        className={`${size.value} w-auto object-contain mx-auto transition-all duration-300 ${
-                          settings.logoSize === size.value 
-                            ? 'ring-2 ring-blue-500 rounded p-1' 
-                            : 'opacity-50 hover:opacity-75'
-                        }`}
-                        onError={(e) => {
-                          e.currentTarget.src = "/placeholder.svg";
-                        }}
-                      />
-                      <p className="text-xs text-slate-500 mt-2">{size.label.split(' ')[0]}</p>
-                    </div>
-                  ))}
-                </div>
               </div>
             </CardContent>
           </Card>

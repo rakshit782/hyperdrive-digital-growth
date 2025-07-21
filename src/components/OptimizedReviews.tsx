@@ -100,6 +100,11 @@ const OptimizedReviews = memo(() => {
                     <p className="text-sm text-slate-600 dark:text-slate-400">
                       {review.company}
                     </p>
+                    {review.service_type && (
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                        {review.service_type}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>

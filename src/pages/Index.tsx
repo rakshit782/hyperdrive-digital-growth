@@ -62,7 +62,7 @@ const Index = () => {
             </Suspense>
           </ErrorBoundary>
 
-          {/* FAQ Section */}
+          {/* FAQ Section - Connected to Dashboard */}
           <ErrorBoundary>
             <Suspense fallback={<LoadingFallback />}>
               <FAQ />
