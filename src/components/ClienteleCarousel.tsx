@@ -1,121 +1,12 @@
 
-import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import useEmblaCarousel from "embla-carousel-react";
 import AutoPlay from "embla-carousel-autoplay";
-
-interface ClienteleLogo {
-  id: string;
-  name: string;
-  imageUrl: string;
-  isActive: boolean;
-}
-
-interface ClienteleSettings {
-  logoSize: number;
-  sectionHeight: number;
-}
+import { useSupabaseClientele } from "@/hooks/useSupabaseClientele";
 
 const ClienteleCarousel = () => {
-  const [clienteleLogos, setClienteleLogos] = useState<ClienteleLogo[]>([]);
-  const [settings, setSettings] = useState<ClienteleSettings>({
-    logoSize: 16,
-    sectionHeight: 6
-  });
+  const { clienteleLogos, settings, loading } = useSupabaseClientele();
 
-  // Default clientele logos
-  const getDefaultClientele = (): ClienteleLogo[] => [
-    {
-      id: "client-1",
-      name: "TechCorp",
-      imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-2", 
-      name: "InnovateLabs",
-      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-3",
-      name: "GlobalSolutions",
-      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-4",
-      name: "FutureTech",
-      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-5",
-      name: "StartupHub",
-      imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-6",
-      name: "BusinessPro",
-      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    }
-  ];
-
-  useEffect(() => {
-    const loadClienteleLogos = () => {
-      const savedClientele = localStorage.getItem('clienteleLogos');
-      if (savedClientele) {
-        try {
-          const parsed = JSON.parse(savedClientele);
-          setClienteleLogos(parsed.filter((logo: ClienteleLogo) => logo.isActive));
-        } catch (error) {
-          console.error('Failed to parse clientele logos:', error);
-          const defaultLogos = getDefaultClientele();
-          setClienteleLogos(defaultLogos);
-          localStorage.setItem('clienteleLogos', JSON.stringify(defaultLogos));
-        }
-      } else {
-        const defaultLogos = getDefaultClientele();
-        setClienteleLogos(defaultLogos);
-        localStorage.setItem('clienteleLogos', JSON.stringify(defaultLogos));
-      }
-    };
-
-    const loadSettings = () => {
-      const savedSettings = localStorage.getItem('clienteleSettings');
-      if (savedSettings) {
-        try {
-          const parsed = JSON.parse(savedSettings);
-          setSettings(parsed);
-        } catch (error) {
-          console.error('Failed to parse clientele settings:', error);
-        }
-      }
-    };
-
-    loadClienteleLogos();
-    loadSettings();
-
-    const handleClienteleUpdate = () => {
-      loadClienteleLogos();
-    };
-
-    const handleSettingsUpdate = (event: CustomEvent) => {
-      setSettings(event.detail);
-    };
-
-    window.addEventListener('clienteleLogosUpdated', handleClienteleUpdate);
-    window.addEventListener('clienteleSettingsUpdated', handleSettingsUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener('clienteleLogosUpdated', handleClienteleUpdate);
-      window.removeEventListener('clienteleSettingsUpdated', handleSettingsUpdate as EventListener);
-    };
-  }, []);
-
-  if (clienteleLogos.length === 0) return null;
+  if (loading || clienteleLogos.length === 0) return null;
 
   const sectionPadding = `py-${settings.sectionHeight}`;
 
@@ -153,7 +44,7 @@ const ClienteleCarousel = () => {
                   <div className="group relative">
                     <div className="flex items-center justify-center p-6 transition-all duration-500 hover:-translate-y-2">
                       <img
-                        src={logo.imageUrl}
+                        src={logo.image_url}
                         alt={logo.name}
                         className="h-16 w-auto max-w-[140px] object-contain opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110"
                         style={{ height: '64px', width: 'auto' }}

@@ -1,100 +1,27 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Trash2, Plus, Users, Upload, Link } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-
-interface ClienteleLogo {
-  id: string;
-  name: string;
-  imageUrl: string;
-  isActive: boolean;
-}
-
-interface ClienteleSettings {
-  logoSize: number;
-  sectionHeight: number;
-}
+import { Trash2, Plus, Users, Upload, Link, Save, Loader2 } from "lucide-react";
+import { useSupabaseClientele, type ClienteleLogo, type ClienteleSettings } from "@/hooks/useSupabaseClientele";
 
 const ClienteleManagementTab = () => {
-  const { toast } = useToast();
-  const [clienteleLogos, setClienteleLogos] = useState<ClienteleLogo[]>([]);
-  const [settings, setSettings] = useState<ClienteleSettings>({
-    logoSize: 16,
-    sectionHeight: 6
-  });
-  const [isSaved, setIsSaved] = useState(false);
-
-  const getDefaultClientele = (): ClienteleLogo[] => [
-    {
-      id: "client-1",
-      name: "TechCorp",
-      imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-2", 
-      name: "InnovateLabs",
-      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-3",
-      name: "GlobalSolutions",
-      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-4",
-      name: "FutureTech",
-      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-5",
-      name: "StartupHub",
-      imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    },
-    {
-      id: "client-6",
-      name: "BusinessPro",
-      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=100&fit=crop&crop=center",
-      isActive: true
-    }
-  ];
+  const { clienteleLogos, settings, loading, updateClienteleLogo, updateSettings } = useSupabaseClientele();
+  const [localLogos, setLocalLogos] = useState<ClienteleLogo[]>([]);
+  const [localSettings, setLocalSettings] = useState<ClienteleSettings>(settings);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const savedClientele = localStorage.getItem('clienteleLogos');
-    if (savedClientele) {
-      try {
-        const parsed = JSON.parse(savedClientele);
-        setClienteleLogos(parsed);
-      } catch (error) {
-        console.error('Failed to parse clientele logos:', error);
-        const defaultLogos = getDefaultClientele();
-        setClienteleLogos(defaultLogos);
-        localStorage.setItem('clienteleLogos', JSON.stringify(defaultLogos));
-      }
-    } else {
-      const defaultLogos = getDefaultClientele();
-      setClienteleLogos(defaultLogos);
-      localStorage.setItem('clienteleLogos', JSON.stringify(defaultLogos));
-    }
+    setLocalLogos(clienteleLogos);
+  }, [clienteleLogos]);
 
-    const savedSettings = localStorage.getItem('clienteleSettings');
-    if (savedSettings) {
-      try {
-        const parsed = JSON.parse(savedSettings);
-        setSettings(parsed);
-      } catch (error) {
-        console.error('Failed to parse clientele settings:', error);
-      }
-    }
-  }, []);
+  useEffect(() => {
+    setLocalSettings(settings);
+  }, [settings]);
 
   const convertGoogleDriveUrl = (url: string) => {
     const cleanUrl = url.trim();
@@ -121,53 +48,67 @@ const ClienteleManagementTab = () => {
     const googleDriveUrl = inputElement.value.trim();
     if (googleDriveUrl) {
       const directUrl = convertGoogleDriveUrl(googleDriveUrl);
-      console.log('Converted URL:', directUrl);
-      updateClienteleLogo(id, 'imageUrl', directUrl);
+      updateLocalLogo(id, 'image_url', directUrl);
       inputElement.value = '';
-      toast({
-        title: "Success",
-        description: "Google Drive image URL converted successfully!",
-      });
     }
   };
 
-  const handleSave = () => {
-    localStorage.setItem('clienteleLogos', JSON.stringify(clienteleLogos));
-    localStorage.setItem('clienteleSettings', JSON.stringify(settings));
-    window.dispatchEvent(new CustomEvent('clienteleLogosUpdated'));
-    window.dispatchEvent(new CustomEvent('clienteleSettingsUpdated', { detail: settings }));
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 2000);
-    
-    toast({
-      title: "Success",
-      description: "Clientele logos updated successfully!",
-    });
+  const handleSave = async () => {
+    setIsSubmitting(true);
+    try {
+      // Save all logo changes
+      for (const logo of localLogos) {
+        await updateClienteleLogo(logo);
+      }
+      
+      // Save settings
+      await updateSettings(localSettings);
+      
+      setHasChanges(false);
+    } catch (error) {
+      console.error('Error saving clientele data:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const addClienteleLogo = () => {
     const newLogo: ClienteleLogo = {
-      id: `client-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: "New Client",
-      imageUrl: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
-      isActive: true
+      image_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=100&fit=crop&crop=center",
+      is_active: true,
+      sort_order: localLogos.length
     };
-    setClienteleLogos(prev => [...prev, newLogo]);
+    setLocalLogos(prev => [...prev, newLogo]);
+    setHasChanges(true);
   };
 
   const removeClienteleLogo = (id: string) => {
-    setClienteleLogos(prev => prev.filter(logo => logo.id !== id));
+    setLocalLogos(prev => prev.filter(logo => logo.id !== id));
+    setHasChanges(true);
   };
 
-  const updateClienteleLogo = (id: string, field: keyof ClienteleLogo, value: string | boolean) => {
-    setClienteleLogos(prev => prev.map(logo => 
+  const updateLocalLogo = (id: string, field: keyof ClienteleLogo, value: string | boolean | number) => {
+    setLocalLogos(prev => prev.map(logo => 
       logo.id === id ? { ...logo, [field]: value } : logo
     ));
+    setHasChanges(true);
   };
 
-  const updateSettings = (updates: Partial<ClienteleSettings>) => {
-    setSettings(prev => ({ ...prev, ...updates }));
+  const updateLocalSettings = (updates: Partial<ClienteleSettings>) => {
+    setLocalSettings(prev => ({ ...prev, ...updates }));
+    setHasChanges(true);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="w-8 h-8 animate-spin mr-2" />
+        <span>Loading clientele data...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -181,10 +122,28 @@ const ClienteleManagementTab = () => {
             <p className="text-gray-600">Manage the client logos displayed in the carousel (shown in color)</p>
           </div>
         </div>
-        <Button onClick={addClienteleLogo} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Client Logo
-        </Button>
+        <div className="flex items-center space-x-3">
+          {hasChanges && (
+            <span className="text-sm text-orange-600 font-medium animate-pulse">Unsaved changes</span>
+          )}
+          <Button onClick={addClienteleLogo} variant="outline">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Client Logo
+          </Button>
+          <Button onClick={handleSave} disabled={isSubmitting} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Save Changes
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Size Controls */}
@@ -194,10 +153,10 @@ const ClienteleManagementTab = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label>Logo Size: {settings.logoSize * 4}px</Label>
+            <Label>Logo Size: {localSettings.logoSize * 4}px</Label>
             <Slider
-              value={[settings.logoSize]}
-              onValueChange={(value) => updateSettings({ logoSize: value[0] })}
+              value={[localSettings.logoSize]}
+              onValueChange={(value) => updateLocalSettings({ logoSize: value[0] })}
               max={64}
               min={8}
               step={2}
@@ -205,10 +164,10 @@ const ClienteleManagementTab = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label>Section Height: {settings.sectionHeight * 0.25}rem</Label>
+            <Label>Section Height: {localSettings.sectionHeight * 0.25}rem</Label>
             <Slider
-              value={[settings.sectionHeight]}
-              onValueChange={(value) => updateSettings({ sectionHeight: value[0] })}
+              value={[localSettings.sectionHeight]}
+              onValueChange={(value) => updateLocalSettings({ sectionHeight: value[0] })}
               max={12}
               min={4}
               step={1}
@@ -219,7 +178,7 @@ const ClienteleManagementTab = () => {
       </Card>
 
       <div className="grid gap-4">
-        {clienteleLogos.map((logo, index) => (
+        {localLogos.map((logo, index) => (
           <Card key={logo.id} className="bg-white/80 backdrop-blur-sm border-white/30 shadow-lg">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-4">
@@ -229,8 +188,8 @@ const ClienteleManagementTab = () => {
                     <Label className="text-sm text-gray-600">Active:</Label>
                     <input
                       type="checkbox"
-                      checked={logo.isActive}
-                      onChange={(e) => updateClienteleLogo(logo.id, 'isActive', e.target.checked)}
+                      checked={logo.is_active}
+                      onChange={(e) => updateLocalLogo(logo.id, 'is_active', e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                     />
                   </div>
@@ -250,7 +209,7 @@ const ClienteleManagementTab = () => {
                   <Label className="text-sm font-medium text-gray-700">Client Name</Label>
                   <Input
                     value={logo.name}
-                    onChange={(e) => updateClienteleLogo(logo.id, 'name', e.target.value)}
+                    onChange={(e) => updateLocalLogo(logo.id, 'name', e.target.value)}
                     placeholder="Client Name"
                     className="bg-white/70 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                   />
@@ -259,8 +218,8 @@ const ClienteleManagementTab = () => {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Logo URL</Label>
                   <Input
-                    value={logo.imageUrl}
-                    onChange={(e) => updateClienteleLogo(logo.id, 'imageUrl', e.target.value)}
+                    value={logo.image_url}
+                    onChange={(e) => updateLocalLogo(logo.id, 'image_url', e.target.value)}
                     placeholder="https://example.com/logo.png"
                     className="bg-white/70 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                   />
@@ -301,11 +260,11 @@ const ClienteleManagementTab = () => {
                 </div>
               </div>
               
-              {logo.imageUrl && (
+              {logo.image_url && (
                 <div className="mt-4 flex justify-center">
                   <div className="p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
                     <img
-                      src={logo.imageUrl}
+                      src={logo.image_url}
                       alt={logo.name}
                       className="h-12 w-auto object-contain"
                       onError={(e) => {
@@ -319,17 +278,6 @@ const ClienteleManagementTab = () => {
           </Card>
         ))}
       </div>
-
-      <Button 
-        onClick={handleSave} 
-        className={`w-full py-3 transition-all duration-300 ${
-          isSaved 
-            ? "bg-green-600 hover:bg-green-700" 
-            : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-        } shadow-lg`}
-      >
-        {isSaved ? "✓ Saved Successfully!" : "Save Clientele Logos"}
-      </Button>
     </div>
   );
 };
