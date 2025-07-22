@@ -72,9 +72,18 @@ export const useSupabaseClientele = () => {
 
   const updateClienteleLogo = async (logoData: Partial<ClienteleLogo>) => {
     try {
+      // Ensure required fields are present for upsert
+      const upsertData = {
+        id: logoData.id || crypto.randomUUID(),
+        name: logoData.name || '',
+        image_url: logoData.image_url || '',
+        is_active: logoData.is_active ?? true,
+        sort_order: logoData.sort_order ?? 0
+      };
+
       const { data, error } = await supabase
         .from('clientele_logos')
-        .upsert(logoData)
+        .upsert(upsertData)
         .select()
         .single();
 

@@ -72,9 +72,18 @@ export const useSupabasePartners = () => {
 
   const updatePartnerImage = async (partnerData: Partial<PartnerImage>) => {
     try {
+      // Ensure required fields are present for upsert
+      const upsertData = {
+        id: partnerData.id || crypto.randomUUID(),
+        name: partnerData.name || '',
+        image_url: partnerData.image_url || '',
+        is_active: partnerData.is_active ?? true,
+        sort_order: partnerData.sort_order ?? 0
+      };
+
       const { data, error } = await supabase
         .from('partner_images')
-        .upsert(partnerData)
+        .upsert(upsertData)
         .select()
         .single();
 
