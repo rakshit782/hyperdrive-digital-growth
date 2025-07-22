@@ -30,7 +30,6 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
         .select('*')
         .order('sort_order', { ascending: true });
 
-      // Only filter by active status if activeOnly is true
       if (activeOnly) {
         query = query.eq('is_active', true);
       }
@@ -40,16 +39,11 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
       if (error) throw error;
 
       setFaqs(data || []);
-      console.log('FAQs fetched from Supabase:', data?.length || 0);
+      console.log('FAQs fetched from Supabase:', data?.length || 0, activeOnly ? '(active only)' : '(all)');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch FAQs';
       setError(errorMessage);
       console.error('Error fetching FAQs:', err);
-      toast({
-        title: "Error",
-        description: "Failed to load FAQs",
-        variant: "destructive",
-      });
     } finally {
       setLoading(false);
     }
@@ -65,7 +59,6 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
 
       if (error) throw error;
 
-      await fetchFAQs();
       toast({
         title: "Success",
         description: "FAQ created successfully",
@@ -91,7 +84,6 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
 
       if (error) throw error;
 
-      await fetchFAQs();
       toast({
         title: "Success",
         description: "FAQ updated successfully",
@@ -116,7 +108,6 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
 
       if (error) throw error;
 
-      await fetchFAQs();
       toast({
         title: "Success",
         description: "FAQ deleted successfully",
@@ -137,7 +128,7 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
 
     // Set up real-time subscription
     const channel = supabase
-      .channel('faqs-changes')
+      .channel('faqs-realtime')
       .on(
         'postgres_changes',
         {
@@ -145,9 +136,9 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
           schema: 'public',
           table: 'faqs'
         },
-        () => {
-          console.log('FAQs table changed, refetching...');
-          fetchFAQs();
+        (payload) => {
+          console.log('FAQs table changed:', payload);
+          fetchReviews();
         }
       )
       .subscribe();

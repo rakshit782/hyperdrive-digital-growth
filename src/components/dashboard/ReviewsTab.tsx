@@ -64,28 +64,15 @@ const ReviewsTab = () => {
         // Update existing review
         const { id, created_at, updated_at, ...updateData } = reviewData;
         await updateReview(id, updateData);
-        toast({
-          title: "Success",
-          description: "Review updated successfully",
-        });
       } else {
         // Create new review
         const { id, created_at, updated_at, ...createData } = reviewData;
         await createReview(createData);
-        toast({
-          title: "Success", 
-          description: "Review created successfully",
-        });
       }
       setIsDialogOpen(false);
       setEditingReview(null);
     } catch (error) {
       console.error('Error saving review:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save review. Please try again.",
-        variant: "destructive",
-      });
     } finally {
       setIsSubmitting(false);
     }

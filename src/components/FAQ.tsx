@@ -9,6 +9,8 @@ const FAQ = () => {
   const { faqs, loading, error } = useSupabaseFAQs(true); // Only fetch active FAQs for homepage
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
+  console.log('FAQ - Active FAQs loaded:', faqs.length);
+
   const toggleItem = (id: string) => {
     setOpenItems(prev => ({
       ...prev,
@@ -47,6 +49,7 @@ const FAQ = () => {
   }
 
   if (faqs.length === 0) {
+    console.log('No active FAQs to display');
     return null; // Don't show FAQ section if no active FAQs
   }
 

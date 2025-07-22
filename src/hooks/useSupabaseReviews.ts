@@ -31,7 +31,6 @@ export const useSupabaseReviews = () => {
       const { data, error } = await supabase
         .from('reviews')
         .select('*')
-        .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
       if (error) throw error;
@@ -42,11 +41,6 @@ export const useSupabaseReviews = () => {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch reviews';
       setError(errorMessage);
       console.error('Error fetching reviews:', err);
-      toast({
-        title: "Error",
-        description: "Failed to load reviews",
-        variant: "destructive",
-      });
     } finally {
       setLoading(false);
     }
@@ -62,11 +56,11 @@ export const useSupabaseReviews = () => {
 
       if (error) throw error;
 
-      await fetchReviews();
       toast({
         title: "Success",
         description: "Review created successfully",
       });
+      
       return data;
     } catch (err) {
       console.error('Error creating review:', err);
@@ -88,7 +82,6 @@ export const useSupabaseReviews = () => {
 
       if (error) throw error;
 
-      await fetchReviews();
       toast({
         title: "Success",
         description: "Review updated successfully",
@@ -113,7 +106,6 @@ export const useSupabaseReviews = () => {
 
       if (error) throw error;
 
-      await fetchReviews();
       toast({
         title: "Success",
         description: "Review deleted successfully",
@@ -134,7 +126,7 @@ export const useSupabaseReviews = () => {
 
     // Set up real-time subscription
     const channel = supabase
-      .channel('reviews-changes')
+      .channel('reviews-realtime')
       .on(
         'postgres_changes',
         {
@@ -142,8 +134,8 @@ export const useSupabaseReviews = () => {
           schema: 'public',
           table: 'reviews'
         },
-        () => {
-          console.log('Reviews table changed, refetching...');
+        (payload) => {
+          console.log('Reviews table changed:', payload);
           fetchReviews();
         }
       )

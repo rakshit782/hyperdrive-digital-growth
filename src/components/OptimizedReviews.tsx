@@ -10,6 +10,8 @@ const OptimizedReviews = memo(() => {
   // Filter only active reviews
   const activeReviews = reviews.filter(review => review.is_active);
 
+  console.log('OptimizedReviews - Total reviews:', reviews.length, 'Active reviews:', activeReviews.length);
+
   if (loading) {
     return (
       <section className="py-20 bg-slate-50 dark:bg-slate-800">
@@ -41,6 +43,7 @@ const OptimizedReviews = memo(() => {
   }
 
   if (activeReviews.length === 0) {
+    console.log('No active reviews to display');
     return null;
   }
 

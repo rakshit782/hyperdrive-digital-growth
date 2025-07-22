@@ -12,7 +12,7 @@ import { useSupabaseFAQs, FAQ } from '@/hooks/useSupabaseFAQs';
 
 const FAQManagementTab = () => {
   const { toast } = useToast();
-  const { faqs, loading, error, createFAQ, updateFAQ, deleteFAQ } = useSupabaseFAQs(false); // Fetch all FAQs for management
+  const { faqs, loading, error, createFAQ, updateFAQ, deleteFAQ } = useSupabaseFAQs(false);
   const [editingFAQ, setEditingFAQ] = useState<FAQ | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newFAQ, setNewFAQ] = useState({ question: '', answer: '', category: '', is_active: true, sort_order: 0 });
