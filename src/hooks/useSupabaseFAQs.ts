@@ -59,6 +59,7 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
 
       if (error) throw error;
 
+      await fetchFAQs(); // Refetch to update the list
       toast({
         title: "Success",
         description: "FAQ created successfully",
@@ -84,6 +85,7 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
 
       if (error) throw error;
 
+      await fetchFAQs(); // Refetch to update the list
       toast({
         title: "Success",
         description: "FAQ updated successfully",
@@ -108,6 +110,7 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
 
       if (error) throw error;
 
+      await fetchFAQs(); // Refetch to update the list
       toast({
         title: "Success",
         description: "FAQ deleted successfully",
@@ -128,7 +131,7 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
 
     // Set up real-time subscription
     const channel = supabase
-      .channel('faqs-realtime')
+      .channel(`faqs-realtime-${activeOnly ? 'active' : 'all'}`)
       .on(
         'postgres_changes',
         {
@@ -138,7 +141,7 @@ export const useSupabaseFAQs = (activeOnly: boolean = false) => {
         },
         (payload) => {
           console.log('FAQs table changed:', payload);
-          fetchReviews();
+          fetchFAQs(); // Fixed: was fetchReviews(), now fetchFAQs()
         }
       )
       .subscribe();
