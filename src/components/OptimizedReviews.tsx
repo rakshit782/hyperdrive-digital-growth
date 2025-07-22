@@ -7,6 +7,9 @@ import { useSupabaseReviews } from '@/hooks/useSupabaseReviews';
 const OptimizedReviews = memo(() => {
   const { reviews, loading, error } = useSupabaseReviews();
 
+  // Filter only active reviews
+  const activeReviews = reviews.filter(review => review.is_active);
+
   if (loading) {
     return (
       <section className="py-20 bg-slate-50 dark:bg-slate-800">
@@ -37,6 +40,10 @@ const OptimizedReviews = memo(() => {
     );
   }
 
+  if (activeReviews.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-20 bg-slate-50 dark:bg-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,7 +59,7 @@ const OptimizedReviews = memo(() => {
 
         {/* Reviews grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {reviews.slice(0, 6).map((review, index) => (
+          {activeReviews.slice(0, 6).map((review, index) => (
             <Card 
               key={review.id} 
               className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-md animate-fade-in bg-white dark:bg-slate-700"

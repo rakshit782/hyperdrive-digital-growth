@@ -47,15 +47,7 @@ const FAQ = () => {
   }
 
   if (faqs.length === 0) {
-    return (
-      <section className="py-16 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <p className="text-slate-600">No FAQs available at the moment.</p>
-          </div>
-        </div>
-      </section>
-    );
+    return null; // Don't show FAQ section if no active FAQs
   }
 
   return (
