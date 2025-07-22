@@ -27,8 +27,17 @@ const ReviewsTab = () => {
     if (window.confirm('Are you sure you want to delete this review?')) {
       try {
         await deleteReview(id);
+        toast({
+          title: "Success",
+          description: "Review deleted successfully",
+        });
       } catch (error) {
         console.error('Error deleting review:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete review",
+          variant: "destructive",
+        });
       }
     }
   };
@@ -51,9 +60,10 @@ const ReviewsTab = () => {
   const handleSave = async (reviewData: SupabaseReview) => {
     setIsSubmitting(true);
     try {
-      if (reviewData.id && !reviewData.id.startsWith('temp-')) {
+      if (reviewData.id && reviewData.created_at) {
         // Update existing
-        await updateReview(reviewData.id, reviewData);
+        const { id, created_at, updated_at, ...updateData } = reviewData;
+        await updateReview(id, updateData);
       } else {
         // Create new
         const { id, created_at, updated_at, ...createData } = reviewData;
@@ -71,8 +81,8 @@ const ReviewsTab = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="w-8 h-8 animate-spin" />
-        <span className="ml-2">Loading reviews...</span>
+        <Loader2 className="w-8 h-8 animate-spin mr-2" />
+        <span>Loading reviews...</span>
       </div>
     );
   }
@@ -101,6 +111,22 @@ const ReviewsTab = () => {
           Add Review
         </Button>
       </div>
+
+      {reviews.length === 0 && (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-8">
+            <CheckCircle className="w-12 h-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
+            <p className="text-gray-500 text-center mb-4">
+              Start by adding your first customer review to build trust with visitors.
+            </p>
+            <Button onClick={handleAdd}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Your First Review
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {reviews.map((review) => (
@@ -137,7 +163,7 @@ const ReviewsTab = () => {
                   </span>
                 ))}
               </div>
-              <p className="text-sm mb-2">{review.review}</p>
+              <p className="text-sm mb-2 line-clamp-3">{review.review}</p>
               {review.service_type && (
                 <p className="text-xs text-gray-500">Service: {review.service_type}</p>
               )}
@@ -156,10 +182,10 @@ const ReviewsTab = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
-              {editingReview?.id && !editingReview.id.startsWith('temp-') ? 'Edit Review' : 'Add New Review'}
+              {editingReview?.created_at ? 'Edit Review' : 'Add New Review'}
             </DialogTitle>
             <DialogDescription>
-              {editingReview?.id && !editingReview.id.startsWith('temp-') ? 'Make changes to the review here.' : 'Add a new customer review.'}
+              {editingReview?.created_at ? 'Make changes to the review here.' : 'Add a new customer review.'}
             </DialogDescription>
           </DialogHeader>
           {editingReview && (
