@@ -1,11 +1,11 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2, Plus, Edit, Save, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { useSupabaseReviews, type SupabaseReview } from "@/hooks/useSupabaseReviews";
@@ -19,7 +19,7 @@ const ReviewsTab = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleEdit = (review: SupabaseReview) => {
-    setEditingReview(review);
+    setEditingReview({ ...review });
     setIsDialogOpen(true);
   };
 
@@ -27,27 +27,18 @@ const ReviewsTab = () => {
     if (window.confirm('Are you sure you want to delete this review?')) {
       try {
         await deleteReview(id);
-        toast({
-          title: "Success",
-          description: "Review deleted successfully",
-        });
       } catch (error) {
         console.error('Error deleting review:', error);
-        toast({
-          title: "Error",
-          description: "Failed to delete review",
-          variant: "destructive",
-        });
       }
     }
   };
 
   const handleAdd = () => {
-    const newReview: Omit<SupabaseReview, 'id' | 'created_at' | 'updated_at'> = {
-      name: "New Customer",
-      company: "Company Name",
+    const newReview: Partial<SupabaseReview> = {
+      name: "",
+      company: "",
       rating: 5,
-      review: "Great service!",
+      review: "",
       avatar: "",
       service_type: "",
       sort_order: reviews.length,
@@ -58,21 +49,39 @@ const ReviewsTab = () => {
   };
 
   const handleSave = async (reviewData: SupabaseReview) => {
+    if (!reviewData.name.trim() || !reviewData.company.trim() || !reviewData.review.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in name, company, and review fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       if (reviewData.id && reviewData.created_at) {
-        // Update existing
+        // Update existing review
         const { id, created_at, updated_at, ...updateData } = reviewData;
         await updateReview(id, updateData);
       } else {
-        // Create new
+        // Create new review
         const { id, created_at, updated_at, ...createData } = reviewData;
         await createReview(createData);
       }
       setIsDialogOpen(false);
       setEditingReview(null);
+      toast({
+        title: "Success",
+        description: reviewData.id ? "Review updated successfully" : "Review created successfully",
+      });
     } catch (error) {
       console.error('Error saving review:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save review. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -103,7 +112,7 @@ const ReviewsTab = () => {
           <CheckCircle className="w-6 h-6 text-green-600" />
           <div>
             <h2 className="text-2xl font-semibold text-gray-900">Manage Reviews</h2>
-            <p className="text-gray-600">Real-time customizable reviews for homepage ({reviews.length} active)</p>
+            <p className="text-gray-600">Real-time customizable reviews for homepage ({reviews.filter(r => r.is_active).length} active of {reviews.length} total)</p>
           </div>
         </div>
         <Button onClick={handleAdd}>
@@ -192,7 +201,10 @@ const ReviewsTab = () => {
             <ReviewEditForm 
               review={editingReview} 
               onSave={handleSave}
-              onCancel={() => setIsDialogOpen(false)}
+              onCancel={() => {
+                setIsDialogOpen(false);
+                setEditingReview(null);
+              }}
               isSubmitting={isSubmitting}
             />
           )}
@@ -210,7 +222,7 @@ interface ReviewEditFormProps {
 }
 
 const ReviewEditForm = ({ review, onSave, onCancel, isSubmitting }: ReviewEditFormProps) => {
-  const [formData, setFormData] = useState<SupabaseReview>(review);
+  const [formData, setFormData] = useState<SupabaseReview>({ ...review });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -220,7 +232,7 @@ const ReviewEditForm = ({ review, onSave, onCancel, isSubmitting }: ReviewEditFo
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="name">Customer Name</Label>
+        <Label htmlFor="name">Customer Name *</Label>
         <Input
           id="name"
           value={formData.name}
@@ -230,7 +242,7 @@ const ReviewEditForm = ({ review, onSave, onCancel, isSubmitting }: ReviewEditFo
       </div>
       
       <div>
-        <Label htmlFor="company">Company</Label>
+        <Label htmlFor="company">Company *</Label>
         <Input
           id="company"
           value={formData.company}
@@ -250,7 +262,7 @@ const ReviewEditForm = ({ review, onSave, onCancel, isSubmitting }: ReviewEditFo
       </div>
       
       <div>
-        <Label htmlFor="rating">Rating</Label>
+        <Label htmlFor="rating">Rating *</Label>
         <Select 
           value={formData.rating.toString()} 
           onValueChange={(value) => setFormData({...formData, rating: parseInt(value)})}
@@ -269,7 +281,7 @@ const ReviewEditForm = ({ review, onSave, onCancel, isSubmitting }: ReviewEditFo
       </div>
       
       <div>
-        <Label htmlFor="review">Review Text</Label>
+        <Label htmlFor="review">Review Text *</Label>
         <Textarea
           id="review"
           value={formData.review}

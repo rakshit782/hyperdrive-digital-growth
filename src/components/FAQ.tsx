@@ -6,7 +6,7 @@ import { ChevronDown, HelpCircle, MessageCircle, Sparkles } from "lucide-react";
 import { useSupabaseFAQs } from "@/hooks/useSupabaseFAQs";
 
 const FAQ = () => {
-  const { faqs, loading, error } = useSupabaseFAQs();
+  const { faqs, loading, error } = useSupabaseFAQs(true); // Only fetch active FAQs for homepage
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
   const toggleItem = (id: string) => {
@@ -40,6 +40,18 @@ const FAQ = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-red-600">Failed to load FAQs: {error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (faqs.length === 0) {
+    return (
+      <section className="py-16 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-slate-600">No FAQs available at the moment.</p>
           </div>
         </div>
       </section>

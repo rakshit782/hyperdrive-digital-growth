@@ -12,7 +12,7 @@ import { useSupabaseFAQs, FAQ } from '@/hooks/useSupabaseFAQs';
 
 const FAQManagementTab = () => {
   const { toast } = useToast();
-  const { faqs, loading, error, createFAQ, updateFAQ, deleteFAQ } = useSupabaseFAQs();
+  const { faqs, loading, error, createFAQ, updateFAQ, deleteFAQ } = useSupabaseFAQs(false); // Fetch all FAQs for management
   const [editingFAQ, setEditingFAQ] = useState<FAQ | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newFAQ, setNewFAQ] = useState({ question: '', answer: '', category: '', is_active: true, sort_order: 0 });
@@ -114,7 +114,7 @@ const FAQManagementTab = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-semibold text-gray-900">FAQ Management</h2>
-          <p className="text-gray-600">Manage frequently asked questions displayed on your homepage ({faqs.length} total)</p>
+          <p className="text-gray-600">Manage frequently asked questions displayed on your homepage ({faqs.filter(f => f.is_active).length} active of {faqs.length} total)</p>
         </div>
         <Button onClick={() => setIsAddingNew(true)} disabled={isAddingNew}>
           <Plus className="w-4 h-4 mr-2" />

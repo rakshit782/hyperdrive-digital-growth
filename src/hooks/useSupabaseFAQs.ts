@@ -14,7 +14,7 @@ export interface FAQ {
   updated_at: string;
 }
 
-export const useSupabaseFAQs = () => {
+export const useSupabaseFAQs = (activeOnly: boolean = false) => {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,11 +25,17 @@ export const useSupabaseFAQs = () => {
       setLoading(true);
       setError(null);
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('faqs')
         .select('*')
-        .eq('is_active', true)
         .order('sort_order', { ascending: true });
+
+      // Only filter by active status if activeOnly is true
+      if (activeOnly) {
+        query = query.eq('is_active', true);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -149,7 +155,7 @@ export const useSupabaseFAQs = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [activeOnly]);
 
   return {
     faqs,
