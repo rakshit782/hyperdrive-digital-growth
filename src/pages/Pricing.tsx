@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Pricing = () => {
-  const { pricingPlans, loading, error } = useSupabasePricingPlans();
+  const { plans, loading, error } = useSupabasePricingPlans();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   if (loading) {
@@ -42,7 +41,7 @@ const Pricing = () => {
     );
   }
 
-  const activePlans = pricingPlans.filter(plan => plan.is_active);
+  const activePlans = plans.filter(plan => plan.is_active);
 
   if (activePlans.length === 0) {
     return (

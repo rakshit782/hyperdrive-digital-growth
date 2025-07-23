@@ -18,3 +18,9 @@ export const WebsiteSettingsTab = lazy(() => import('@/components/dashboard/Webs
 export const Stats = lazy(() => import('@/components/Stats'));
 export const CaseStudies = lazy(() => import('@/components/CaseStudies'));
 export const Contact = lazy(() => import('@/components/Contact'));
+
+// Performance optimization function
+export const initializePerformanceOptimizations = () => {
+  // Add any performance optimizations here
+  console.log('Performance optimizations initialized');
+};

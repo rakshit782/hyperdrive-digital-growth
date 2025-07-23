@@ -25,7 +25,7 @@ const ServicePageLayout = ({
         <Header />
         <main>
           {children}
-          <ServiceStats serviceType={serviceType} />
+          <ServiceStats />
         </main>
         <Footer />
       </div>

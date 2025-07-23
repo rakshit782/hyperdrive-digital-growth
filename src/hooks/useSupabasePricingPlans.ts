@@ -7,6 +7,11 @@ interface PricingPlan {
   price: number;
   features: string[];
   popular?: boolean;
+  is_popular?: boolean;
+  is_active?: boolean;
+  sort_order: number;
+  description?: string;
+  billing_period?: string;
 }
 
 export const useSupabasePricingPlans = () => {
@@ -15,6 +20,11 @@ export const useSupabasePricingPlans = () => {
       id: '1',
       name: 'Starter',
       price: 99,
+      sort_order: 1,
+      is_active: true,
+      is_popular: false,
+      description: 'Perfect for small businesses getting started',
+      billing_period: 'month',
       features: [
         'Basic SEO Optimization',
         'Social Media Management',
@@ -26,7 +36,11 @@ export const useSupabasePricingPlans = () => {
       id: '2',
       name: 'Professional',
       price: 299,
-      popular: true,
+      sort_order: 2,
+      is_active: true,
+      is_popular: true,
+      description: 'Best for growing businesses',
+      billing_period: 'month',
       features: [
         'Advanced SEO & Content',
         'Paid Advertising Management',
@@ -39,6 +53,11 @@ export const useSupabasePricingPlans = () => {
       id: '3',
       name: 'Enterprise',
       price: 599,
+      sort_order: 3,
+      is_active: true,
+      is_popular: false,
+      description: 'For large enterprises needing full support',
+      billing_period: 'month',
       features: [
         'Full Digital Marketing Suite',
         'Dedicated Account Manager',
