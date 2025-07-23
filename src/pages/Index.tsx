@@ -1,76 +1,21 @@
 
-import React, { Suspense } from 'react';
-import OptimizedHero from '@/components/OptimizedHero';
-import OptimizedServices from '@/components/OptimizedServices';
-import OptimizedReviews from '@/components/OptimizedReviews';
-import CTA from '@/components/CTA';
-import FAQ from '@/components/FAQ';
-import ClienteleCarousel from '@/components/ClienteleCarousel';
-import ErrorBoundary from '@/components/ErrorBoundary';
-import SEOHead from '@/components/SEOHead';
-
-// Loading fallback component
-const LoadingFallback = ({ height = 'h-64' }: { height?: string }) => (
-  <div className={`${height} bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg flex items-center justify-center`}>
-    <div className="text-slate-500 dark:text-slate-400">Loading...</div>
-  </div>
-);
+import Hero from "@/components/Hero";
+import Services from "@/components/Services";
+import Stats from "@/components/Stats";
+import CaseStudies from "@/components/CaseStudies";
+import Contact from "@/components/Contact";
+import CTA from "@/components/CTA";
 
 const Index = () => {
   return (
-    <>
-      <SEOHead 
-        title="Expert Marketing Agency - Scale Your Business with Proven Strategies"
-        description="Drive explosive growth with our proven Amazon, Walmart, Meta, and Google advertising strategies. Get measurable results from day one with our expert marketing services."
-        keywords="marketing agency, amazon advertising, walmart advertising, meta advertising, google ads, ppc management, roi optimization"
-      />
-      
-      <div className="min-h-screen">
-        <ErrorBoundary>
-          {/* Hero Section */}
-          <Suspense fallback={<LoadingFallback height="h-screen" />}>
-            <OptimizedHero />
-          </Suspense>
-
-          {/* Clientele Section (formerly Partners/Logos) - merged background with Services */}
-          <div className="bg-slate-50 dark:bg-slate-800">
-            <ErrorBoundary>
-              <Suspense fallback={<LoadingFallback height="h-32" />}>
-                <ClienteleCarousel />
-              </Suspense>
-            </ErrorBoundary>
-
-            {/* Services Section - merged background */}
-            <ErrorBoundary>
-              <Suspense fallback={<LoadingFallback height="h-96" />}>
-                <OptimizedServices />
-              </Suspense>
-            </ErrorBoundary>
-          </div>
-
-          {/* Reviews Section */}
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingFallback height="h-96" />}>
-              <OptimizedReviews />
-            </Suspense>
-          </ErrorBoundary>
-
-          {/* CTA Section */}
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingFallback />}>
-              <CTA />
-            </Suspense>
-          </ErrorBoundary>
-
-          {/* FAQ Section - Connected to Dashboard */}
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingFallback />}>
-              <FAQ />
-            </Suspense>
-          </ErrorBoundary>
-        </ErrorBoundary>
-      </div>
-    </>
+    <div className="min-h-screen">
+      <Hero />
+      <Services />
+      <Stats />
+      <CaseStudies />
+      <CTA />
+      <Contact />
+    </div>
   );
 };
 
