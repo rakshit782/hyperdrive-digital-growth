@@ -8,7 +8,6 @@ import HeroSection from '@/components/UnifiedServicePage/HeroSection';
 import FeaturesSection from '@/components/UnifiedServicePage/FeaturesSection';
 import StatsSection from '@/components/UnifiedServicePage/StatsSection';
 import CaseStudiesSection from '@/components/UnifiedServicePage/CaseStudiesSection';
-import ReviewsSection from '@/components/UnifiedServicePage/ReviewsSection';
 import CTASection from '@/components/UnifiedServicePage/CTASection';
 import { useServiceData, ServiceCaseStudy } from '@/hooks/useServiceData';
 
@@ -66,7 +65,7 @@ const UnifiedServicePage = ({
   secondaryColor,
   features
 }: UnifiedServicePageProps) => {
-  const { caseStudies, stats, reviews } = useServiceData(serviceType);
+  const { caseStudies, stats } = useServiceData(serviceType);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<ServiceCaseStudy | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -121,11 +120,6 @@ const UnifiedServicePage = ({
             primaryColor={primaryColor}
             secondaryColor={secondaryColor}
             onCaseStudyClick={handleCaseStudyClick}
-          />
-
-          <ReviewsSection
-            title={title}
-            reviews={reviews}
           />
 
           <CTASection
