@@ -3,7 +3,8 @@ import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import SEOHead from './SEOHead';
-import ServiceStats from './ServiceStats';
+import StatsSection from './UnifiedServicePage/StatsSection';
+import { useSupabaseStats } from '@/hooks/useSupabaseStats';
 
 interface ServicePageLayoutProps {
   children: React.ReactNode;
@@ -18,6 +19,8 @@ const ServicePageLayout = ({
   seoDescription, 
   serviceType 
 }: ServicePageLayoutProps) => {
+  const { stats, loading } = useSupabaseStats();
+
   return (
     <>
       <SEOHead title={seoTitle} description={seoDescription} />
@@ -25,7 +28,19 @@ const ServicePageLayout = ({
         <Header />
         <main>
           {children}
-          <ServiceStats />
+          {!loading && stats.length > 0 && (
+            <StatsSection 
+              stats={stats.map(stat => ({
+                id: stat.id,
+                stat_value: stat.stat_value,
+                stat_label: stat.stat_label,
+                stat_description: stat.description || '',
+                icon_name: stat.icon
+              }))}
+              primaryColor="blue"
+              secondaryColor="indigo"
+            />
+          )}
         </main>
         <Footer />
       </div>
