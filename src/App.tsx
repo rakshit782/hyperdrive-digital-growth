@@ -1,75 +1,75 @@
+import { Suspense, lazy } from "react";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 
-import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster } from "@/components/ui/toaster"
-import { ErrorBoundary } from 'react-error-boundary'
-import ErrorFallback from '@/components/ErrorFallback'
-import { TooltipProvider } from "@/components/ui/tooltip"
-import PerformanceOptimizer from '@/components/PerformanceOptimizer'
-import ModernLayout from '@/layouts/ModernLayout'
-import PricingPage from '@/pages/PricingPage'
-import AboutPage from '@/pages/AboutPage'
-import ContactPage from '@/pages/ContactPage'
-import CaseStudiesPage from '@/pages/CaseStudiesPage'
-import FreeAuditPage from '@/pages/FreeAuditPage'
-import ServicesPage from '@/pages/ServicesPage'
-import AmazonAdvertisingPage from '@/pages/AmazonAdvertisingPage'
-import WalmartAdvertisingPage from '@/pages/WalmartAdvertisingPage'
-import GoogleAdvertisingPage from '@/pages/GoogleAdvertisingPage'
-import MetaAdvertisingPage from '@/pages/MetaAdvertisingPage'
-import WebsiteDevelopmentPage from '@/pages/WebsiteDevelopmentPage'
-import AccountManagementPage from '@/pages/AccountManagementPage'
-import ShopifyDevelopmentPage from '@/pages/ShopifyDevelopmentPage'
-import ShopifyIntegrationPage from '@/pages/ShopifyIntegrationPage'
-import PrivacyPolicy from '@/pages/PrivacyPolicy'
-import TermsOfService from '@/pages/TermsOfService'
-import TermsConditions from '@/pages/TermsConditions'
-import Dashboard from '@/pages/Dashboard'
-import NavigationOptimizer from "@/components/NavigationOptimizer";
+// Lazy load components
+const Index = lazy(() => import("./pages/Index"));
+const About = lazy(() => import("./pages/About"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const CaseStudies = lazy(() => import("./pages/CaseStudies"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Blog = lazy(() => import("./pages/Blog"));
+const Contact = lazy(() => import("./pages/Contact"));
+const FreeAudit = lazy(() => import("./pages/FreeAudit"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const AuthPage = lazy(() => import("./pages/AuthPage"));
 
-const queryClient = new QueryClient()
+// Lazy load service pages
+const ServiceSeo = lazy(() => import("./pages/services/Seo"));
+const ServicePpc = lazy(() => import("./pages/services/Ppc"));
+const ServiceWebDesign = lazy(() => import("./pages/services/WebDesign"));
+const ServiceContent = lazy(() => import("./pages/services/Content"));
+const ServiceSocialMedia = lazy(() => import("./pages/services/SocialMedia"));
+const ServiceEmailMarketing = lazy(() => import("./pages/services/EmailMarketing"));
 
-function App() {
+const queryClient = new QueryClient();
+
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <BrowserRouter>
-          <NavigationOptimizer />
-          <ErrorBoundary
-            FallbackComponent={ErrorFallback}
-            onError={(error, info) => {
-              console.error('ErrorBoundary caught an error:', error, info);
-            }}
-          >
-            <PerformanceOptimizer />
-            <Routes>
-              <Route path="/" element={<ModernLayout />} />
-              <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/case-studies" element={<CaseStudiesPage />} />
-              <Route path="/free-audit" element={<FreeAuditPage />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/amazon-advertising" element={<AmazonAdvertisingPage />} />
-              <Route path="/walmart-advertising" element={<WalmartAdvertisingPage />} />
-              <Route path="/google-advertising" element={<GoogleAdvertisingPage />} />
-              <Route path="/meta-advertising" element={<MetaAdvertisingPage />} />
-              <Route path="/website-development" element={<WebsiteDevelopmentPage />} />
-              <Route path="/account-management" element={<AccountManagementPage />} />
-              <Route path="/shopify-development" element={<ShopifyDevelopmentPage />} />
-              <Route path="/shopify-integration" element={<ShopifyIntegrationPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/terms-conditions" element={<TermsConditions />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Routes>
-          </ErrorBoundary>
-        </BrowserRouter>
+        <ErrorBoundary>
+          <AuthProvider>
+            <BrowserRouter>
+              <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                  </div>
+                }>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/services" element={<ServicesPage />} />
+                    <Route path="/case-studies" element={<CaseStudies />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/free-audit" element={<FreeAudit />} />
+                    <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    
+                    {/* Service routes */}
+                    <Route path="/services/seo" element={<ServiceSeo />} />
+                    <Route path="/services/ppc" element={<ServicePpc />} />
+                    <Route path="/services/web-design" element={<ServiceWebDesign />} />
+                    <Route path="/services/content" element={<ServiceContent />} />
+                    <Route path="/services/social-media" element={<ServiceSocialMedia />} />
+                    <Route path="/services/email-marketing" element={<ServiceEmailMarketing />} />
+                  </Routes>
+                </Suspense>
+                <Toaster />
+              </div>
+            </BrowserRouter>
+          </AuthProvider>
+        </ErrorBoundary>
       </TooltipProvider>
     </QueryClientProvider>
   );
-}
+};
 
 export default App;
