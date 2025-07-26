@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,14 +18,6 @@ const Contact = lazy(() => import("./pages/Contact"));
 const FreeAudit = lazy(() => import("./pages/FreeAudit"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
-
-// Lazy load service pages
-const ServiceSeo = lazy(() => import("./pages/services/Seo"));
-const ServicePpc = lazy(() => import("./pages/services/Ppc"));
-const ServiceWebDesign = lazy(() => import("./pages/services/WebDesign"));
-const ServiceContent = lazy(() => import("./pages/services/Content"));
-const ServiceSocialMedia = lazy(() => import("./pages/services/SocialMedia"));
-const ServiceEmailMarketing = lazy(() => import("./pages/services/EmailMarketing"));
 
 const queryClient = new QueryClient();
 
@@ -52,14 +45,6 @@ const App = () => {
                     <Route path="/free-audit" element={<FreeAudit />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    
-                    {/* Service routes */}
-                    <Route path="/services/seo" element={<ServiceSeo />} />
-                    <Route path="/services/ppc" element={<ServicePpc />} />
-                    <Route path="/services/web-design" element={<ServiceWebDesign />} />
-                    <Route path="/services/content" element={<ServiceContent />} />
-                    <Route path="/services/social-media" element={<ServiceSocialMedia />} />
-                    <Route path="/services/email-marketing" element={<ServiceEmailMarketing />} />
                   </Routes>
                 </Suspense>
                 <Toaster />
