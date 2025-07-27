@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Star, ChevronDown } from "lucide-react";
+import { Menu, X, Star, ChevronDown, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +20,7 @@ interface LogoSettings {
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
   const [logoSettings, setLogoSettings] = useState<LogoSettings>({
     logoUrl: "/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png",
     logoSize: "h-12",
@@ -164,6 +166,25 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-6">
+          {/* Dashboard Button for authenticated users */}
+          {user && (
+            <Link to="/dashboard" className="hidden md:block">
+              <Button variant="outline" className="font-semibold font-body px-4 py-2 rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
+                <Settings className="w-4 h-4 mr-2" aria-hidden="true" />
+                Dashboard
+              </Button>
+            </Link>
+          )}
+
+          {/* Auth Button */}
+          {!user && (
+            <Link to="/auth" className="hidden md:block">
+              <Button variant="outline" className="font-semibold font-body px-4 py-2 rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
+                Sign In
+              </Button>
+            </Link>
+          )}
+
           {/* Free Audit Button */}
           <Link to="/free-audit" className="hidden md:block">
             <Button className="bg-primary hover:bg-primary/90 text-white font-semibold font-body px-6 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
@@ -215,6 +236,25 @@ const Header = () => {
             </div>
             
             <div className="border-t border-gray-100 pt-4 mt-4">
+              {/* Dashboard Button for authenticated users in mobile */}
+              {user && (
+                <Link to="/dashboard" className="block mb-3">
+                  <Button variant="outline" className="w-full font-semibold font-body py-4 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
+                    <Settings className="w-4 h-4 mr-2" aria-hidden="true" />
+                    Dashboard
+                  </Button>
+                </Link>
+              )}
+
+              {/* Auth Button for mobile */}
+              {!user && (
+                <Link to="/auth" className="block mb-3">
+                  <Button variant="outline" className="w-full font-semibold font-body py-4 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
+                    Sign In
+                  </Button>
+                </Link>
+              )}
+
               <Link to="/free-audit">
                 <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold font-body py-4 rounded-xl shadow-lg">
                   <Star className="w-4 h-4 mr-2" aria-hidden="true" />

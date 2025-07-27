@@ -1,4 +1,5 @@
 
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +19,16 @@ const Contact = lazy(() => import("./pages/Contact"));
 const FreeAudit = lazy(() => import("./pages/FreeAudit"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+
+// Lazy load existing service pages
+const AmazonAdvertising = lazy(() => import("./pages/AmazonAdvertising"));
+const GoogleAdvertising = lazy(() => import("./pages/GoogleAdvertising"));
+const MetaAdvertising = lazy(() => import("./pages/MetaAdvertising"));
+const WalmartAdvertising = lazy(() => import("./pages/WalmartAdvertising"));
+const WebsiteDevelopment = lazy(() => import("./pages/WebsiteDevelopment"));
+const ShopifyDevelopment = lazy(() => import("./pages/ShopifyDevelopment"));
+const ShopifyIntegration = lazy(() => import("./pages/ShopifyIntegration"));
+const AccountManagement = lazy(() => import("./pages/AccountManagement"));
 
 const queryClient = new QueryClient();
 
@@ -45,6 +56,16 @@ const App = () => {
                     <Route path="/free-audit" element={<FreeAudit />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    
+                    {/* Service routes */}
+                    <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
+                    <Route path="/google-advertising" element={<GoogleAdvertising />} />
+                    <Route path="/meta-advertising" element={<MetaAdvertising />} />
+                    <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
+                    <Route path="/website-development" element={<WebsiteDevelopment />} />
+                    <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+                    <Route path="/shopify-integration" element={<ShopifyIntegration />} />
+                    <Route path="/account-management" element={<AccountManagement />} />
                   </Routes>
                 </Suspense>
                 <Toaster />
@@ -58,3 +79,4 @@ const App = () => {
 };
 
 export default App;
+
