@@ -3,7 +3,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 // Direct imports instead of lazy loading
@@ -36,36 +35,34 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <ErrorBoundary>
-          <AuthProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/services" element={<ServicesPage />} />
-                <Route path="/case-studies" element={<CaseStudies />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/free-audit" element={<FreeAudit />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                
-                {/* Service routes */}
-                <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
-                <Route path="/google-advertising" element={<GoogleAdvertising />} />
-                <Route path="/meta-advertising" element={<MetaAdvertising />} />
-                <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
-                <Route path="/website-development" element={<WebsiteDevelopment />} />
-                <Route path="/shopify-development" element={<ShopifyDevelopment />} />
-                <Route path="/shopify-integration" element={<ShopifyIntegration />} />
-                <Route path="/account-management" element={<AccountManagement />} />
-                
-                {/* 404 Route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <Toaster />
-            </BrowserRouter>
-          </AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/case-studies" element={<CaseStudies />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/free-audit" element={<FreeAudit />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              
+              {/* Service routes */}
+              <Route path="/amazon-advertising" element={<AmazonAdvertising />} />
+              <Route path="/google-advertising" element={<GoogleAdvertising />} />
+              <Route path="/meta-advertising" element={<MetaAdvertising />} />
+              <Route path="/walmart-advertising" element={<WalmartAdvertising />} />
+              <Route path="/website-development" element={<WebsiteDevelopment />} />
+              <Route path="/shopify-development" element={<ShopifyDevelopment />} />
+              <Route path="/shopify-integration" element={<ShopifyIntegration />} />
+              <Route path="/account-management" element={<AccountManagement />} />
+              
+              {/* 404 Route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Toaster />
+          </BrowserRouter>
         </ErrorBoundary>
       </TooltipProvider>
     </QueryClientProvider>
