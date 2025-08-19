@@ -9,10 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
+import ServicePageContentManager from './ServicePageContentManager';
 
 interface ServicePageData {
   service_type: string;
@@ -42,6 +43,7 @@ const ServicePageManagement = () => {
   const [serviceCards, setServiceCards] = useState<ServiceCard[]>([]);
   const [editingPage, setEditingPage] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<string | null>(null);
+  const [selectedServiceForContent, setSelectedServiceForContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Form states
@@ -69,9 +71,9 @@ const ServicePageManagement = () => {
   });
 
   const serviceTypes = [
-    'meta-advertising',
     'amazon-advertising',
     'google-advertising',
+    'meta-advertising',
     'walmart-advertising',
     'account-management',
     'website-development',
@@ -256,6 +258,15 @@ const ServicePageManagement = () => {
     return <div className="flex items-center justify-center p-8">Loading...</div>;
   }
 
+  if (selectedServiceForContent) {
+    return (
+      <ServicePageContentManager
+        serviceType={selectedServiceForContent}
+        onClose={() => setSelectedServiceForContent(null)}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -282,14 +293,24 @@ const ServicePageManagement = () => {
                     <CardTitle className="capitalize">
                       {serviceType.replace('-', ' ')} Page
                     </CardTitle>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditPage(serviceType)}
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedServiceForContent(serviceType)}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Manage Content
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditPage(serviceType)}
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Page
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4 text-sm">
@@ -402,6 +423,15 @@ const ServicePageManagement = () => {
                 />
               </div>
               <div>
+                <Label htmlFor="hero_image">Hero Image URL</Label>
+                <Input 
+                  id="hero_image" 
+                  value={pageFormData.hero_image}
+                  onChange={(e) => setPageFormData(prev => ({ ...prev, hero_image: e.target.value }))}
+                  placeholder="Enter hero image URL" 
+                />
+              </div>
+              <div>
                 <Label htmlFor="meta_title">Meta Title</Label>
                 <Input 
                   id="meta_title" 
@@ -502,6 +532,15 @@ const ServicePageManagement = () => {
                   value={cardFormData.gradient}
                   onChange={(e) => setCardFormData(prev => ({ ...prev, gradient: e.target.value }))}
                   placeholder="Enter gradient CSS class" 
+                />
+              </div>
+              <div>
+                <Label htmlFor="features">Features (comma separated)</Label>
+                <Input 
+                  id="features" 
+                  value={cardFormData.features.join(', ')}
+                  onChange={(e) => setCardFormData(prev => ({ ...prev, features: e.target.value.split(',').map(f => f.trim()) }))}
+                  placeholder="Enter features separated by commas" 
                 />
               </div>
               <div>

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +13,8 @@ import {
   Users,
   Image,
   Phone,
-  LogOut
+  LogOut,
+  Layout
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +30,7 @@ import LeadsTab from "@/components/dashboard/LeadsTab";
 import MediaTab from "@/components/dashboard/MediaTab";
 import ContactTab from "@/components/dashboard/ContactTab";
 import WebsiteSettingsTab from "@/components/dashboard/WebsiteSettingsTab";
+import ServicePageManagement from "@/components/dashboard/ServicePageManagement";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("stats");
@@ -45,6 +48,7 @@ const Dashboard = () => {
     { id: "stats", label: "Stats", icon: BarChart3, roles: ['admin', 'editor'] },
     { id: "case-studies", label: "Case Studies", icon: FileText, roles: ['admin', 'editor'] },
     { id: "blog", label: "Blog", icon: FileText, roles: ['admin', 'editor'] },
+    { id: "service-pages", label: "Service Pages", icon: Layout, roles: ['admin', 'editor'] },
     { id: "pricing", label: "Pricing", icon: Database, roles: ['admin'] },
     { id: "seo", label: "SEO", icon: Globe, roles: ['admin'] },
     { id: "integrations", label: "Integrations", icon: Settings, roles: ['admin'] },
@@ -110,6 +114,7 @@ const Dashboard = () => {
               {activeTab === "stats" && <StatsTab />}
               {activeTab === "case-studies" && <CaseStudiesTab />}
               {activeTab === "blog" && <BlogTab />}
+              {activeTab === "service-pages" && <ServicePageManagement />}
               {activeTab === "pricing" && <PricingTab />}
               {activeTab === "seo" && <SEOTab />}
               {activeTab === "integrations" && <IntegrationsTab />}

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
@@ -10,29 +10,31 @@ import StatsSection from '@/components/UnifiedServicePage/StatsSection';
 import CaseStudiesSection from '@/components/UnifiedServicePage/CaseStudiesSection';
 import CTASection from '@/components/UnifiedServicePage/CTASection';
 import { useServiceData, ServiceCaseStudy } from '@/hooks/useServiceData';
+import { supabase } from '@/integrations/supabase/client';
+import * as LucideIcons from 'lucide-react';
 
 interface UnifiedServicePageProps {
   serviceType: string;
-  title: string;
-  subtitle: string;
-  heroDescription: string;
-  primaryButtonText: string;
-  secondaryButtonText: string;
-  primaryButtonUrl: string;
-  secondaryButtonUrl: string;
-  ctaTitle: string;
-  ctaDescription: string;
-  ctaButtonText: string;
-  ctaButtonUrl: string;
-  seoTitle: string;
-  seoDescription: string;
-  heroImage: string;
-  heroImageAlt: string;
-  badgeText: string;
-  badgeIcon: string;
-  gradientClass: string;
-  primaryColor: string;
-  secondaryColor: string;
+  defaultTitle?: string;
+  defaultSubtitle?: string;
+  defaultHeroDescription?: string;
+  defaultPrimaryButtonText?: string;
+  defaultSecondaryButtonText?: string;
+  defaultPrimaryButtonUrl?: string;
+  defaultSecondaryButtonUrl?: string;
+  defaultCtaTitle?: string;
+  defaultCtaDescription?: string;
+  defaultCtaButtonText?: string;
+  defaultCtaButtonUrl?: string;
+  defaultSeoTitle?: string;
+  defaultSeoDescription?: string;
+  defaultHeroImage?: string;
+  defaultHeroImageAlt?: string;
+  defaultBadgeText?: string;
+  defaultBadgeIcon?: string;
+  defaultGradientClass?: string;
+  defaultPrimaryColor?: string;
+  defaultSecondaryColor?: string;
   features: Array<{
     icon: any;
     title: string;
@@ -41,33 +43,90 @@ interface UnifiedServicePageProps {
   }>;
 }
 
+interface ServicePageData {
+  service_type: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  hero_image: string;
+  meta_title: string;
+  meta_description: string;
+  is_active: boolean;
+}
+
+interface ServiceCard {
+  id: string;
+  service_type: string;
+  title: string;
+  description: string;
+  icon: string;
+  gradient: string;
+  features: string[];
+  sort_order: number;
+  is_active: boolean;
+}
+
 const UnifiedServicePage = ({
   serviceType,
-  title,
-  subtitle,
-  heroDescription,
-  primaryButtonText,
-  secondaryButtonText,
-  primaryButtonUrl,
-  secondaryButtonUrl,
-  ctaTitle,
-  ctaDescription,
-  ctaButtonText,
-  ctaButtonUrl,
-  seoTitle,
-  seoDescription,
-  heroImage,
-  heroImageAlt,
-  badgeText,
-  badgeIcon,
-  gradientClass,
-  primaryColor,
-  secondaryColor,
+  defaultTitle = 'Service Page',
+  defaultSubtitle = 'Professional Services',
+  defaultHeroDescription = 'Professional service description',
+  defaultPrimaryButtonText = 'Get Started',
+  defaultSecondaryButtonText = 'Learn More',
+  defaultPrimaryButtonUrl = '/contact',
+  defaultSecondaryButtonUrl = '/case-studies',
+  defaultCtaTitle = 'Ready to Get Started?',
+  defaultCtaDescription = 'Contact us today to learn more about our services.',
+  defaultCtaButtonText = 'Get Started',
+  defaultCtaButtonUrl = '/contact',
+  defaultSeoTitle = 'Professional Services',
+  defaultSeoDescription = 'Professional service description for SEO',
+  defaultHeroImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&h=400&fit=crop&crop=center',
+  defaultHeroImageAlt = 'Service Image',
+  defaultBadgeText = 'Professional Service',
+  defaultBadgeIcon = '🚀',
+  defaultGradientClass = 'bg-gradient-to-br from-blue-50 via-indigo-50/30 to-purple-50/20',
+  defaultPrimaryColor = 'blue',
+  defaultSecondaryColor = 'indigo',
   features
 }: UnifiedServicePageProps) => {
   const { caseStudies, stats } = useServiceData(serviceType);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<ServiceCaseStudy | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [pageData, setPageData] = useState<ServicePageData | null>(null);
+  const [serviceCards, setServiceCards] = useState<ServiceCard[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPageData = async () => {
+      try {
+        // Fetch page data
+        const { data: pageDataRes } = await supabase
+          .from('service_pages')
+          .select('*')
+          .eq('service_type', serviceType)
+          .eq('is_active', true)
+          .single();
+
+        // Fetch service cards
+        const { data: cardsRes } = await supabase
+          .from('service_cards')
+          .select('*')
+          .eq('service_type', serviceType)
+          .eq('is_active', true)
+          .order('sort_order');
+
+        setPageData(pageDataRes);
+        setServiceCards(cardsRes || []);
+      } catch (error) {
+        console.error('Error fetching page data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPageData();
+  }, [serviceType]);
 
   const handleCaseStudyClick = (caseStudy: ServiceCaseStudy) => {
     setSelectedCaseStudy(caseStudy);
@@ -79,10 +138,45 @@ const UnifiedServicePage = ({
     setSelectedCaseStudy(null);
   };
 
+  // Convert service cards to features format
+  const dynamicFeatures = serviceCards.map(card => {
+    // Get icon component from Lucide Icons
+    const IconComponent = (LucideIcons as any)[card.icon] || LucideIcons.Star;
+    
+    return {
+      title: card.title,
+      description: card.description,
+      icon: IconComponent,
+      gradient: card.gradient || 'bg-gradient-to-r from-blue-500 to-indigo-500'
+    };
+  });
+
+  // Use dynamic features if available, otherwise fall back to default features
+  const finalFeatures = dynamicFeatures.length > 0 ? dynamicFeatures : features;
+
+  // Use page data if available, otherwise use defaults
+  const title = pageData?.title || defaultTitle;
+  const subtitle = pageData?.subtitle || defaultSubtitle;
+  const heroDescription = pageData?.description || defaultHeroDescription;
+  const seoTitle = pageData?.meta_title || defaultSeoTitle;
+  const seoDescription = pageData?.meta_description || defaultSeoDescription;
+  const heroImage = pageData?.hero_image || defaultHeroImage;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <SEOHead title={seoTitle} description={seoDescription} />
-      <div className={`min-h-screen ${gradientClass}`}>
+      <div className={defaultGradientClass}>
         <Header />
         
         <div className="space-y-12">
@@ -90,43 +184,43 @@ const UnifiedServicePage = ({
             title={title}
             subtitle={subtitle}
             heroDescription={heroDescription}
-            primaryButtonText={primaryButtonText}
-            secondaryButtonText={secondaryButtonText}
-            primaryButtonUrl={primaryButtonUrl}
-            secondaryButtonUrl={secondaryButtonUrl}
+            primaryButtonText={defaultPrimaryButtonText}
+            secondaryButtonText={defaultSecondaryButtonText}
+            primaryButtonUrl={defaultPrimaryButtonUrl}
+            secondaryButtonUrl={defaultSecondaryButtonUrl}
             heroImage={heroImage}
-            heroImageAlt={heroImageAlt}
-            badgeText={badgeText}
-            badgeIcon={badgeIcon}
-            primaryColor={primaryColor}
-            secondaryColor={secondaryColor}
+            heroImageAlt={defaultHeroImageAlt}
+            badgeText={defaultBadgeText}
+            badgeIcon={defaultBadgeIcon}
+            primaryColor={defaultPrimaryColor}
+            secondaryColor={defaultSecondaryColor}
           />
 
           <FeaturesSection
             title={title}
-            features={features}
+            features={finalFeatures}
           />
 
           <StatsSection
             stats={stats}
-            primaryColor={primaryColor}
-            secondaryColor={secondaryColor}
+            primaryColor={defaultPrimaryColor}
+            secondaryColor={defaultSecondaryColor}
           />
 
           <CaseStudiesSection
             title={title}
             caseStudies={caseStudies}
             serviceType={serviceType}
-            primaryColor={primaryColor}
-            secondaryColor={secondaryColor}
+            primaryColor={defaultPrimaryColor}
+            secondaryColor={defaultSecondaryColor}
             onCaseStudyClick={handleCaseStudyClick}
           />
 
           <CTASection
-            ctaTitle={ctaTitle}
-            ctaDescription={ctaDescription}
-            ctaButtonText={ctaButtonText}
-            ctaButtonUrl={ctaButtonUrl}
+            ctaTitle={defaultCtaTitle}
+            ctaDescription={defaultCtaDescription}
+            ctaButtonText={defaultCtaButtonText}
+            ctaButtonUrl={defaultCtaButtonUrl}
           />
         </div>
       </div>
