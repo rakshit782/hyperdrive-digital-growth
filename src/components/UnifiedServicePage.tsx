@@ -41,6 +41,27 @@ interface UnifiedServicePageProps {
     description: string;
     gradient: string;
   }>;
+  // Accept all the props that service pages pass
+  title?: string;
+  subtitle?: string;
+  heroDescription?: string;
+  primaryButtonText?: string;
+  secondaryButtonText?: string;
+  primaryButtonUrl?: string;
+  secondaryButtonUrl?: string;
+  ctaTitle?: string;
+  ctaDescription?: string;
+  ctaButtonText?: string;
+  ctaButtonUrl?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  heroImage?: string;
+  heroImageAlt?: string;
+  badgeText?: string;
+  badgeIcon?: string;
+  gradientClass?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
 }
 
 interface ServicePageData {
@@ -88,7 +109,28 @@ const UnifiedServicePage = ({
   defaultGradientClass = 'bg-gradient-to-br from-blue-50 via-indigo-50/30 to-purple-50/20',
   defaultPrimaryColor = 'blue',
   defaultSecondaryColor = 'indigo',
-  features
+  features,
+  // Accept props passed by service pages
+  title: propTitle,
+  subtitle: propSubtitle,
+  heroDescription: propHeroDescription,
+  primaryButtonText: propPrimaryButtonText,
+  secondaryButtonText: propSecondaryButtonText,
+  primaryButtonUrl: propPrimaryButtonUrl,
+  secondaryButtonUrl: propSecondaryButtonUrl,
+  ctaTitle: propCtaTitle,
+  ctaDescription: propCtaDescription,
+  ctaButtonText: propCtaButtonText,
+  ctaButtonUrl: propCtaButtonUrl,
+  seoTitle: propSeoTitle,
+  seoDescription: propSeoDescription,
+  heroImage: propHeroImage,
+  heroImageAlt: propHeroImageAlt,
+  badgeText: propBadgeText,
+  badgeIcon: propBadgeIcon,
+  gradientClass: propGradientClass,
+  primaryColor: propPrimaryColor,
+  secondaryColor: propSecondaryColor,
 }: UnifiedServicePageProps) => {
   const { caseStudies, stats } = useServiceData(serviceType);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<ServiceCaseStudy | null>(null);
@@ -108,7 +150,7 @@ const UnifiedServicePage = ({
           .eq('is_active', true)
           .single();
 
-        // Fetch service cards
+        // Fetch service cards with proper type conversion
         const { data: cardsRes } = await supabase
           .from('service_cards')
           .select('*')
@@ -117,7 +159,14 @@ const UnifiedServicePage = ({
           .order('sort_order');
 
         setPageData(pageDataRes);
-        setServiceCards(cardsRes || []);
+        
+        // Convert the features from Json to string[] if needed
+        const convertedCards = cardsRes?.map(card => ({
+          ...card,
+          features: Array.isArray(card.features) ? card.features : []
+        })) || [];
+        
+        setServiceCards(convertedCards);
       } catch (error) {
         console.error('Error fetching page data:', error);
       } finally {
@@ -154,13 +203,13 @@ const UnifiedServicePage = ({
   // Use dynamic features if available, otherwise fall back to default features
   const finalFeatures = dynamicFeatures.length > 0 ? dynamicFeatures : features;
 
-  // Use page data if available, otherwise use defaults
-  const title = pageData?.title || defaultTitle;
-  const subtitle = pageData?.subtitle || defaultSubtitle;
-  const heroDescription = pageData?.description || defaultHeroDescription;
-  const seoTitle = pageData?.meta_title || defaultSeoTitle;
-  const seoDescription = pageData?.meta_description || defaultSeoDescription;
-  const heroImage = pageData?.hero_image || defaultHeroImage;
+  // Use page data if available, otherwise use props, then defaults
+  const title = pageData?.title || propTitle || defaultTitle;
+  const subtitle = pageData?.subtitle || propSubtitle || defaultSubtitle;
+  const heroDescription = pageData?.description || propHeroDescription || defaultHeroDescription;
+  const seoTitle = pageData?.meta_title || propSeoTitle || defaultSeoTitle;
+  const seoDescription = pageData?.meta_description || propSeoDescription || defaultSeoDescription;
+  const heroImage = pageData?.hero_image || propHeroImage || defaultHeroImage;
 
   if (loading) {
     return (
@@ -176,7 +225,7 @@ const UnifiedServicePage = ({
   return (
     <>
       <SEOHead title={seoTitle} description={seoDescription} />
-      <div className={defaultGradientClass}>
+      <div className={propGradientClass || defaultGradientClass}>
         <Header />
         
         <div className="space-y-12">
@@ -184,16 +233,16 @@ const UnifiedServicePage = ({
             title={title}
             subtitle={subtitle}
             heroDescription={heroDescription}
-            primaryButtonText={defaultPrimaryButtonText}
-            secondaryButtonText={defaultSecondaryButtonText}
-            primaryButtonUrl={defaultPrimaryButtonUrl}
-            secondaryButtonUrl={defaultSecondaryButtonUrl}
+            primaryButtonText={propPrimaryButtonText || defaultPrimaryButtonText}
+            secondaryButtonText={propSecondaryButtonText || defaultSecondaryButtonText}
+            primaryButtonUrl={propPrimaryButtonUrl || defaultPrimaryButtonUrl}
+            secondaryButtonUrl={propSecondaryButtonUrl || defaultSecondaryButtonUrl}
             heroImage={heroImage}
-            heroImageAlt={defaultHeroImageAlt}
-            badgeText={defaultBadgeText}
-            badgeIcon={defaultBadgeIcon}
-            primaryColor={defaultPrimaryColor}
-            secondaryColor={defaultSecondaryColor}
+            heroImageAlt={propHeroImageAlt || defaultHeroImageAlt}
+            badgeText={propBadgeText || defaultBadgeText}
+            badgeIcon={propBadgeIcon || defaultBadgeIcon}
+            primaryColor={propPrimaryColor || defaultPrimaryColor}
+            secondaryColor={propSecondaryColor || defaultSecondaryColor}
           />
 
           <FeaturesSection
@@ -203,24 +252,24 @@ const UnifiedServicePage = ({
 
           <StatsSection
             stats={stats}
-            primaryColor={defaultPrimaryColor}
-            secondaryColor={defaultSecondaryColor}
+            primaryColor={propPrimaryColor || defaultPrimaryColor}
+            secondaryColor={propSecondaryColor || defaultSecondaryColor}
           />
 
           <CaseStudiesSection
             title={title}
             caseStudies={caseStudies}
             serviceType={serviceType}
-            primaryColor={defaultPrimaryColor}
-            secondaryColor={defaultSecondaryColor}
+            primaryColor={propPrimaryColor || defaultPrimaryColor}
+            secondaryColor={propSecondaryColor || defaultSecondaryColor}
             onCaseStudyClick={handleCaseStudyClick}
           />
 
           <CTASection
-            ctaTitle={defaultCtaTitle}
-            ctaDescription={defaultCtaDescription}
-            ctaButtonText={defaultCtaButtonText}
-            ctaButtonUrl={defaultCtaButtonUrl}
+            ctaTitle={propCtaTitle || defaultCtaTitle}
+            ctaDescription={propCtaDescription || defaultCtaDescription}
+            ctaButtonText={propCtaButtonText || defaultCtaButtonText}
+            ctaButtonUrl={propCtaButtonUrl || defaultCtaButtonUrl}
           />
         </div>
       </div>
