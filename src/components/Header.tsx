@@ -49,21 +49,19 @@ const Header = () => {
             </Link>
             
             {/* Services Dropdown */}
-            <div className="relative group">
+            <div 
+              className="relative group"
+              onMouseEnter={() => setIsServicesOpen(true)}
+              onMouseLeave={() => setIsServicesOpen(false)}
+            >
               <button 
-                className="flex items-center text-gray-700 hover:text-blue-600 transition-colors"
-                onMouseEnter={() => setIsServicesOpen(true)}
-                onMouseLeave={() => setIsServicesOpen(false)}
+                className="flex items-center text-gray-700 hover:text-blue-600 transition-colors py-2"
               >
                 Services <ChevronDown className="ml-1 h-4 w-4" />
               </button>
               
               {isServicesOpen && (
-                <div 
-                  className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
-                  onMouseEnter={() => setIsServicesOpen(true)}
-                  onMouseLeave={() => setIsServicesOpen(false)}
-                >
+                <div className="absolute top-full left-0 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                   <Link 
                     to="/services" 
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-semibold border-b border-gray-100"
