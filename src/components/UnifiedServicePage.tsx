@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -136,7 +137,6 @@ const UnifiedServicePage = ({
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [pageData, setPageData] = useState<ServicePageData | null>(null);
   const [serviceCards, setServiceCards] = useState<ServiceCard[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPageData = async () => {
@@ -177,8 +177,6 @@ const UnifiedServicePage = ({
         setServiceCards(convertedCards);
       } catch (error) {
         console.error('Error fetching page data:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -218,17 +216,6 @@ const UnifiedServicePage = ({
   const seoTitle = pageData?.meta_title || propSeoTitle || defaultSeoTitle;
   const seoDescription = pageData?.meta_description || propSeoDescription || defaultSeoDescription;
   const heroImage = pageData?.hero_image || propHeroImage || defaultHeroImage;
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
