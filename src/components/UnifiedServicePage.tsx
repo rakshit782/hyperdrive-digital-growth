@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -160,10 +159,19 @@ const UnifiedServicePage = ({
 
         setPageData(pageDataRes);
         
-        // Convert the features from Json to string[] if needed
-        const convertedCards = cardsRes?.map(card => ({
-          ...card,
-          features: Array.isArray(card.features) ? card.features : []
+        // Convert the features from Json to string[] properly
+        const convertedCards: ServiceCard[] = cardsRes?.map(card => ({
+          id: card.id,
+          service_type: card.service_type,
+          title: card.title,
+          description: card.description,
+          icon: card.icon || '',
+          gradient: card.gradient || '',
+          features: Array.isArray(card.features) ? 
+            (card.features as any[]).map(f => String(f)) : 
+            [],
+          sort_order: card.sort_order || 0,
+          is_active: card.is_active || true
         })) || [];
         
         setServiceCards(convertedCards);
