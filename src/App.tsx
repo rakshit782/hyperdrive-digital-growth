@@ -12,7 +12,6 @@ const About = lazy(() => import("./pages/About"));
 const Services = lazy(() => import("./pages/ServicesPage"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const Pricing = lazy(() => import("./pages/Pricing"));
-const Contact = lazy(() => import("./pages/Contact"));
 const FreeAudit = lazy(() => import("./pages/FreeAudit"));
 const Blog = lazy(() => import("./pages/Blog"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -168,14 +167,6 @@ function App() {
               element={
                 <Suspense fallback={<div>Loading...</div>}>
                   <Pricing />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Contact />
                 </Suspense>
               }
             />

@@ -1,4 +1,8 @@
+
 import { useState } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Star } from "lucide-react";
@@ -12,32 +16,48 @@ const Pricing = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Skeleton className="h-12 w-64 mx-auto mb-4" />
-            <Skeleton className="h-6 w-96 mx-auto" />
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-96 w-full" />
-            ))}
+      <>
+        <SEOHead 
+          title="Pricing Plans - Choose Your Growth Plan"
+          description="Simple, transparent pricing for digital marketing services. Choose the perfect plan for your business growth."
+        />
+        <Header />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <Skeleton className="h-12 w-64 mx-auto mb-4" />
+              <Skeleton className="h-6 w-96 mx-auto" />
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-96 w-full" />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+        <Footer />
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-red-600 mb-4">Error Loading Pricing</h2>
-            <p className="text-slate-600">{error}</p>
+      <>
+        <SEOHead 
+          title="Pricing Plans - Choose Your Growth Plan"
+          description="Simple, transparent pricing for digital marketing services. Choose the perfect plan for your business growth."
+        />
+        <Header />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-red-600 mb-4">Error Loading Pricing</h2>
+              <p className="text-slate-600">{error}</p>
+            </div>
           </div>
         </div>
-      </div>
+        <Footer />
+      </>
     );
   }
 
@@ -45,132 +65,148 @@ const Pricing = () => {
 
   if (activePlans.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Pricing Plans</h2>
-            <p className="text-slate-600">No pricing plans available at the moment.</p>
+      <>
+        <SEOHead 
+          title="Pricing Plans - Choose Your Growth Plan"
+          description="Simple, transparent pricing for digital marketing services. Choose the perfect plan for your business growth."
+        />
+        <Header />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">Pricing Plans</h2>
+              <p className="text-slate-600">No pricing plans available at the moment.</p>
+            </div>
           </div>
         </div>
-      </div>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Header */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-              Simple, Transparent Pricing
-            </h1>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
-              Choose the perfect plan for your business. All plans include our core features with varying levels of support and customization.
-            </p>
-            
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center space-x-4 mb-12">
-              <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-blue-600' : 'text-slate-500'}`}>
-                Monthly
-              </span>
-              <button
-                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-                className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-              <span className={`text-sm font-medium ${billingCycle === 'yearly' ? 'text-blue-600' : 'text-slate-500'}`}>
-                Yearly
-                <Badge variant="secondary" className="ml-2">Save 20%</Badge>
-              </span>
-            </div>
-          </div>
-
-          {/* Pricing Cards */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {activePlans
-              .sort((a, b) => a.sort_order - b.sort_order)
-              .map((plan) => (
-                <Card 
-                  key={plan.id} 
-                  className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
-                    plan.is_popular 
-                      ? 'border-2 border-blue-500 shadow-xl bg-white' 
-                      : 'border border-slate-200 bg-white/80 backdrop-blur-sm'
-                  }`}
-                >
-                  {plan.is_popular && (
-                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 text-sm font-semibold">
-                      <Star className="w-4 h-4 inline mr-1" />
-                      Most Popular
-                    </div>
-                  )}
-                  
-                  <CardHeader className={`text-center ${plan.is_popular ? 'pt-12' : 'pt-8'}`}>
-                    <CardTitle className="text-2xl font-bold text-slate-900">
-                      {plan.name}
-                    </CardTitle>
-                    <CardDescription className="text-slate-600 mt-2">
-                      {plan.description}
-                    </CardDescription>
-                    <div className="mt-6">
-                      <span className="text-5xl font-bold text-slate-900">
-                        ${billingCycle === 'yearly' && plan.price ? (plan.price * 12 * 0.8).toFixed(0) : plan.price || 'Custom'}
-                      </span>
-                      {plan.price && (
-                        <span className="text-slate-500 text-lg">
-                          /{billingCycle === 'yearly' ? 'year' : plan.billing_period}
-                        </span>
-                      )}
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-6">
-                    <ul className="space-y-4">
-                      {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-start space-x-3">
-                          <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-slate-700">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    <Button 
-                      className={`w-full py-3 text-lg font-semibold transition-all duration-300 ${
-                        plan.is_popular
-                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
-                          : 'bg-slate-900 hover:bg-slate-800 text-white'
-                      }`}
-                    >
-                      Get Started
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
-
-          {/* Bottom CTA */}
-          <div className="text-center mt-16">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50 max-w-2xl mx-auto">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">
-                Need a Custom Solution?
-              </h3>
-              <p className="text-slate-600 mb-6">
-                Contact us for enterprise pricing and custom solutions tailored to your specific needs.
+    <>
+      <SEOHead 
+        title="Pricing Plans - Choose Your Growth Plan"
+        description="Simple, transparent pricing for digital marketing services. Choose the perfect plan for your business growth."
+      />
+      <Header />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        {/* Header */}
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
+                Simple, Transparent Pricing
+              </h1>
+              <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
+                Choose the perfect plan for your business. All plans include our core features with varying levels of support and customization.
               </p>
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-                Contact Sales
-              </Button>
+              
+              {/* Billing Toggle */}
+              <div className="flex items-center justify-center space-x-4 mb-12">
+                <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-blue-600' : 'text-slate-500'}`}>
+                  Monthly
+                </span>
+                <button
+                  onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
+                  className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm font-medium ${billingCycle === 'yearly' ? 'text-blue-600' : 'text-slate-500'}`}>
+                  Yearly
+                  <Badge variant="secondary" className="ml-2">Save 20%</Badge>
+                </span>
+              </div>
+            </div>
+
+            {/* Pricing Cards */}
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {activePlans
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map((plan) => (
+                  <Card 
+                    key={plan.id} 
+                    className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
+                      plan.is_popular 
+                        ? 'border-2 border-blue-500 shadow-xl bg-white' 
+                        : 'border border-slate-200 bg-white/80 backdrop-blur-sm'
+                    }`}
+                  >
+                    {plan.is_popular && (
+                      <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 text-sm font-semibold">
+                        <Star className="w-4 h-4 inline mr-1" />
+                        Most Popular
+                      </div>
+                    )}
+                    
+                    <CardHeader className={`text-center ${plan.is_popular ? 'pt-12' : 'pt-8'}`}>
+                      <CardTitle className="text-2xl font-bold text-slate-900">
+                        {plan.name}
+                      </CardTitle>
+                      <CardDescription className="text-slate-600 mt-2">
+                        {plan.description}
+                      </CardDescription>
+                      <div className="mt-6">
+                        <span className="text-5xl font-bold text-slate-900">
+                          ${billingCycle === 'yearly' && plan.price ? (plan.price * 12 * 0.8).toFixed(0) : plan.price || 'Custom'}
+                        </span>
+                        {plan.price && (
+                          <span className="text-slate-500 text-lg">
+                            /{billingCycle === 'yearly' ? 'year' : plan.billing_period}
+                          </span>
+                        )}
+                      </div>
+                    </CardHeader>
+                    
+                    <CardContent className="space-y-6">
+                      <ul className="space-y-4">
+                        {plan.features.map((feature, index) => (
+                          <li key={index} className="flex items-start space-x-3">
+                            <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                            <span className="text-slate-700">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      
+                      <Button 
+                        className={`w-full py-3 text-lg font-semibold transition-all duration-300 ${
+                          plan.is_popular
+                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
+                            : 'bg-slate-900 hover:bg-slate-800 text-white'
+                        }`}
+                      >
+                        Get Started
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="text-center mt-16">
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50 max-w-2xl mx-auto">
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                  Need a Custom Solution?
+                </h3>
+                <p className="text-slate-600 mb-6">
+                  Contact us for enterprise pricing and custom solutions tailored to your specific needs.
+                </p>
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                  Contact Sales
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+      <Footer />
+    </>
   );
 };
 
