@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -493,17 +492,6 @@ const CaseStudies = () => {
                   className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden hover:shadow-3xl transition-all duration-300 hover:-translate-y-2 cursor-pointer group"
                   onClick={() => handleCaseStudyClick(study)}
                 >
-                  {study.imageUrl && (
-                    <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-500 relative overflow-hidden">
-                      <img 
-                        src={study.imageUrl} 
-                        alt={study.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                    </div>
-                  )}
-                  
                   <div className="p-8">
                     <div className="flex items-center gap-3 mb-4">
                       <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
