@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 const AutoDemoSeeder = () => {
   const [hasSeeded, setHasSeeded] = useState(false);
@@ -48,7 +49,9 @@ const AutoDemoSeeder = () => {
             continue;
           }
 
-          const userExists = existingUsersData?.users?.some(user => user.email === userData.email) || false;
+          // Explicitly type users to avoid TS inferring 'never' for the callback param
+          const users: SupabaseUser[] = existingUsersData?.users ?? [];
+          const userExists = users.some((user) => (user.email ?? '').toLowerCase() === userData.email.toLowerCase());
           
           if (userExists) {
             console.log(`User ${userData.email} already exists, skipping...`);
