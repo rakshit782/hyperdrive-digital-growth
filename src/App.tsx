@@ -14,7 +14,7 @@ const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const FreeAudit = lazy(() => import("./pages/FreeAudit"));
 const Blog = lazy(() => import("./pages/Blog"));
-const Auth = lazy(() => import("./pages/Auth"));
+const AuthPage = lazy(() => import("./pages/AuthPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 // Service pages
@@ -190,7 +190,7 @@ function App() {
               path="/auth"
               element={
                 <Suspense fallback={<div>Loading...</div>}>
-                  <Auth />
+                  <AuthPage />
                 </Suspense>
               }
             />
