@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { 
   Settings, 
   BarChart3, 
@@ -14,7 +14,8 @@ import {
   Image,
   Phone,
   LogOut,
-  Layout
+  Layout,
+  Star
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -45,18 +46,18 @@ const Dashboard = () => {
   };
 
   const tabs = [
-    { id: "stats", label: "Stats", icon: BarChart3, roles: ['admin', 'editor'] },
-    { id: "case-studies", label: "Case Studies", icon: FileText, roles: ['admin', 'editor'] },
-    { id: "blog", label: "Blog", icon: FileText, roles: ['admin', 'editor'] },
-    { id: "service-pages", label: "Service Pages", icon: Layout, roles: ['admin', 'editor'] },
-    { id: "pricing", label: "Pricing", icon: Database, roles: ['admin'] },
-    { id: "seo", label: "SEO", icon: Globe, roles: ['admin'] },
-    { id: "integrations", label: "Integrations", icon: Settings, roles: ['admin'] },
-    { id: "email", label: "Email", icon: Mail, roles: ['admin'] },
-    { id: "leads", label: "Leads", icon: Users, roles: ['admin', 'editor'] },
-    { id: "media", label: "Media", icon: Image, roles: ['admin'] },
-    { id: "contact", label: "Contact", icon: Phone, roles: ['admin'] },
-    { id: "website", label: "Website", icon: Settings, roles: ['admin'] },
+    { id: "stats", label: "Analytics", icon: BarChart3, roles: ['admin', 'editor'], color: "text-blue-600" },
+    { id: "case-studies", label: "Case Studies", icon: FileText, roles: ['admin', 'editor'], color: "text-green-600" },
+    { id: "blog", label: "Blog", icon: FileText, roles: ['admin', 'editor'], color: "text-purple-600" },
+    { id: "service-pages", label: "Services", icon: Layout, roles: ['admin', 'editor'], color: "text-indigo-600" },
+    { id: "pricing", label: "Pricing", icon: Database, roles: ['admin'], color: "text-emerald-600" },
+    { id: "seo", label: "SEO", icon: Globe, roles: ['admin'], color: "text-cyan-600" },
+    { id: "integrations", label: "Integrations", icon: Settings, roles: ['admin'], color: "text-orange-600" },
+    { id: "email", label: "Email", icon: Mail, roles: ['admin'], color: "text-red-600" },
+    { id: "leads", label: "Leads", icon: Users, roles: ['admin', 'editor'], color: "text-pink-600" },
+    { id: "media", label: "Media", icon: Image, roles: ['admin'], color: "text-yellow-600" },
+    { id: "contact", label: "Contact", icon: Phone, roles: ['admin'], color: "text-teal-600" },
+    { id: "website", label: "Settings", icon: Settings, roles: ['admin'], color: "text-gray-600" },
   ];
 
   // Filter tabs based on user role
@@ -66,63 +67,96 @@ const Dashboard = () => {
 
   return (
     <AuthGuard requiredRole={['admin', 'editor']}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <div className="flex">
-          {/* Sidebar */}
-          <div className="w-64 bg-white shadow-lg">
-            <div className="p-6">
-              <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-              <div className="mt-2 text-sm text-gray-500">
-                Welcome, {user?.email}
-                <br />
-                Role: {userRole}
+          {/* Modern Sidebar */}
+          <div className="w-72 bg-white/95 backdrop-blur-sm shadow-xl border-r border-gray-200/50">
+            {/* Header */}
+            <div className="p-8 border-b border-gray-200/50">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <Star className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Dashboard
+                  </h1>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-gray-900">Welcome back!</p>
+                <p className="text-xs text-gray-600">{user?.email}</p>
+                <Badge variant="outline" className="text-xs bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 border-blue-200">
+                  {userRole}
+                </Badge>
               </div>
             </div>
-            <nav className="mt-6">
+
+            {/* Navigation */}
+            <nav className="p-4 space-y-2">
               {availableTabs.map((tab) => {
                 const IconComponent = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-6 py-3 text-left hover:bg-gray-50 transition-colors ${
+                    className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 group ${
                       activeTab === tab.id
-                        ? "bg-blue-50 border-r-2 border-blue-500 text-blue-700"
-                        : "text-gray-700"
+                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105"
+                        : "text-gray-700 hover:bg-gray-50 hover:scale-105"
                     }`}
                   >
-                    <IconComponent className="w-5 h-5 mr-3" />
-                    {tab.label}
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${
+                      activeTab === tab.id 
+                        ? "bg-white/20" 
+                        : "bg-gray-100 group-hover:bg-gray-200"
+                    }`}>
+                      <IconComponent className={`w-5 h-5 ${
+                        activeTab === tab.id ? "text-white" : tab.color
+                      }`} />
+                    </div>
+                    <span className="font-medium">{tab.label}</span>
                   </button>
                 );
               })}
               
               {/* Sign Out Button */}
-              <button
-                onClick={handleSignOut}
-                className="w-full flex items-center px-6 py-3 text-left hover:bg-gray-50 transition-colors text-red-600 mt-4 border-t"
-              >
-                <LogOut className="w-5 h-5 mr-3" />
-                Sign Out
-              </button>
+              <div className="pt-4 mt-4 border-t border-gray-200/50">
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 text-red-600 hover:bg-red-50 hover:scale-105 group"
+                >
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3 bg-red-100 group-hover:bg-red-200">
+                    <LogOut className="w-5 h-5 text-red-600" />
+                  </div>
+                  <span className="font-medium">Sign Out</span>
+                </button>
+              </div>
             </nav>
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 p-8">
-            <div className="max-w-7xl mx-auto">
-              {activeTab === "stats" && <StatsTab />}
-              {activeTab === "case-studies" && <CaseStudiesTab />}
-              {activeTab === "blog" && <BlogTab />}
-              {activeTab === "service-pages" && <ServicePageManagement />}
-              {activeTab === "pricing" && <PricingTab />}
-              {activeTab === "seo" && <SEOTab />}
-              {activeTab === "integrations" && <IntegrationsTab />}
-              {activeTab === "email" && <EmailTab />}
-              {activeTab === "leads" && <LeadsTab />}
-              {activeTab === "media" && <MediaTab />}
-              {activeTab === "contact" && <ContactTab />}
-              {activeTab === "website" && <WebsiteSettingsTab />}
+          <div className="flex-1 overflow-auto">
+            <div className="p-8">
+              <div className="max-w-7xl mx-auto">
+                {/* Content Cards with modern styling */}
+                <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden">
+                  <div className="p-8">
+                    {activeTab === "stats" && <StatsTab />}
+                    {activeTab === "case-studies" && <CaseStudiesTab />}
+                    {activeTab === "blog" && <BlogTab />}
+                    {activeTab === "service-pages" && <ServicePageManagement />}
+                    {activeTab === "pricing" && <PricingTab />}
+                    {activeTab === "seo" && <SEOTab />}
+                    {activeTab === "integrations" && <IntegrationsTab />}
+                    {activeTab === "email" && <EmailTab />}
+                    {activeTab === "leads" && <LeadsTab />}
+                    {activeTab === "media" && <MediaTab />}
+                    {activeTab === "contact" && <ContactTab />}
+                    {activeTab === "website" && <WebsiteSettingsTab />}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

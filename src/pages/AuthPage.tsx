@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { Eye, EyeOff, Shield } from 'lucide-react';
+import { Eye, EyeOff, Shield, Star } from 'lucide-react';
 import AutoDemoSeeder from '@/components/AutoDemoSeeder';
 
 const AuthPage = () => {
@@ -110,158 +110,205 @@ const AuthPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-blue-600 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <AutoDemoSeeder />
       
-      <div className="w-full max-w-md">
-        <Card>
-          <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-              <Shield className="w-6 h-6 text-blue-600" />
-            </div>
-            <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
-            <CardDescription>
-              Sign in to your account or create a new one
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* Demo Credentials Info */}
-            <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <h4 className="font-semibold text-blue-800 text-sm mb-2">Default Login Credentials:</h4>
-              <div className="text-xs space-y-1 text-blue-700">
-                <div><strong>Admin:</strong> admin@demo.com / Demo123456!</div>
-                <div><strong>Editor:</strong> editor@demo.com / Demo123456!</div>
-                <div><strong>User:</strong> user@demo.com / Demo123456!</div>
+      {/* Header with brand */}
+      <div className="absolute top-0 left-0 right-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center space-x-2">
+            <Star className="w-8 h-8 text-blue-600" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Digital Growth
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="min-h-screen flex items-center justify-center px-4 pt-24 pb-12">
+        <div className="w-full max-w-md">
+          <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
+            <CardHeader className="text-center space-y-4 pb-8">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <Shield className="w-8 h-8 text-white" />
               </div>
-              <p className="text-xs text-blue-600 mt-2">Demo users are created automatically on first visit.</p>
-            </div>
-
-            <Tabs defaultValue="signin" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
-                    <Input
-                      id="signin-email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder="admin@demo.com"
-                      required
-                    />
+              <div className="space-y-2">
+                <CardTitle className="text-3xl font-bold text-gray-900">Welcome Back</CardTitle>
+                <CardDescription className="text-base text-gray-600">
+                  Sign in to your account or create a new one
+                </CardDescription>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="px-8 pb-8">
+              {/* Demo Credentials Info */}
+              <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200/50">
+                <h4 className="font-semibold text-blue-800 text-sm mb-3 flex items-center">
+                  <Shield className="w-4 h-4 mr-2" />
+                  Demo Login Credentials
+                </h4>
+                <div className="text-xs space-y-2 text-blue-700">
+                  <div className="flex justify-between">
+                    <strong>Admin:</strong> 
+                    <span className="font-mono bg-white/70 px-2 py-1 rounded text-xs">admin@demo.com</span>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
-                    <div className="relative">
+                  <div className="flex justify-between">
+                    <strong>Editor:</strong> 
+                    <span className="font-mono bg-white/70 px-2 py-1 rounded text-xs">editor@demo.com</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <strong>User:</strong> 
+                    <span className="font-mono bg-white/70 px-2 py-1 rounded text-xs">user@demo.com</span>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-blue-200/50">
+                    <span className="text-xs"><strong>Password:</strong> Demo123456!</span>
+                  </div>
+                </div>
+                <p className="text-xs text-blue-600 mt-3 opacity-90">Demo users are created automatically on first visit.</p>
+              </div>
+
+              <Tabs defaultValue="signin" className="space-y-6">
+                <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+                  <TabsTrigger value="signin" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Sign In</TabsTrigger>
+                  <TabsTrigger value="signup" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Sign Up</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="signin">
+                  <form onSubmit={handleSignIn} className="space-y-5">
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-email" className="text-sm font-medium text-gray-700">Email</Label>
                       <Input
-                        id="signin-password"
-                        type={showPassword ? "text" : "password"}
-                        value={formData.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
-                        placeholder="Demo123456!"
+                        id="signin-email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        placeholder="admin@demo.com"
+                        className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                         required
                       />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </Button>
                     </div>
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Signing In..." : "Sign In"}
-                  </Button>
-                </form>
-              </TabsContent>
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-password" className="text-sm font-medium text-gray-700">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="signin-password"
+                          type={showPassword ? "text" : "password"}
+                          value={formData.password}
+                          onChange={(e) => handleInputChange('password', e.target.value)}
+                          placeholder="Demo123456!"
+                          className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500 pr-10"
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="w-4 h-4 text-gray-400" />
+                          ) : (
+                            <Eye className="w-4 h-4 text-gray-400" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Signing In..." : "Sign In"}
+                    </Button>
+                  </form>
+                </TabsContent>
 
-              <TabsContent value="signup">
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Full Name</Label>
-                    <Input
-                      id="signup-name"
-                      value={formData.fullName}
-                      onChange={(e) => handleInputChange('fullName', e.target.value)}
-                      placeholder="Your full name"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder="you@example.com"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <div className="relative">
+                <TabsContent value="signup">
+                  <form onSubmit={handleSignUp} className="space-y-5">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-name" className="text-sm font-medium text-gray-700">Full Name</Label>
                       <Input
-                        id="signup-password"
-                        type={showPassword ? "text" : "password"}
-                        value={formData.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
-                        placeholder="At least 8 characters"
+                        id="signup-name"
+                        value={formData.fullName}
+                        onChange={(e) => handleInputChange('fullName', e.target.value)}
+                        placeholder="Your full name"
+                        className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                         required
                       />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </Button>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                      placeholder="Confirm your password"
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Creating Account..." : "Sign Up"}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email" className="text-sm font-medium text-gray-700">Email</Label>
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        placeholder="you@example.com"
+                        className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password" className="text-sm font-medium text-gray-700">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="signup-password"
+                          type={showPassword ? "text" : "password"}
+                          value={formData.password}
+                          onChange={(e) => handleInputChange('password', e.target.value)}
+                          placeholder="At least 8 characters"
+                          className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500 pr-10"
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="w-4 h-4 text-gray-400" />
+                          ) : (
+                            <Eye className="w-4 h-4 text-gray-400" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-password" className="text-sm font-medium text-gray-700">Confirm Password</Label>
+                      <Input
+                        id="confirm-password"
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                        placeholder="Confirm your password"
+                        className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Creating Account..." : "Sign Up"}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
