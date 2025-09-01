@@ -41,8 +41,14 @@ const AutoDemoSeeder = () => {
         
         for (const userData of demoUsers) {
           // Check if user already exists first
-          const { data: existingUsers } = await supabase.auth.admin.listUsers();
-          const userExists = existingUsers?.users.some(user => user.email === userData.email);
+          const { data: existingUsersData, error: listError } = await supabase.auth.admin.listUsers();
+          
+          if (listError) {
+            console.log('Error checking existing users:', listError.message);
+            continue;
+          }
+
+          const userExists = existingUsersData?.users?.some(user => user.email === userData.email) || false;
           
           if (userExists) {
             console.log(`User ${userData.email} already exists, skipping...`);
