@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -91,11 +90,26 @@ export const useAuth = () => {
       });
 
       if (error) {
-        toast({
-          title: "Authentication Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Handle specific error cases
+        if (error.message.includes('Email not confirmed')) {
+          toast({
+            title: "Email Not Confirmed",
+            description: "Please check your email and click the confirmation link, or contact support for demo accounts.",
+            variant: "destructive",
+          });
+        } else if (error.message.includes('Invalid login credentials')) {
+          toast({
+            title: "Invalid Credentials",
+            description: "Please check your email and password and try again.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Authentication Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
         return { success: false, error: error.message };
       }
 
@@ -110,6 +124,11 @@ export const useAuth = () => {
       return { success: true, user: data.user };
     } catch (error) {
       console.error('Sign in error:', error);
+      toast({
+        title: "Connection Error",
+        description: "Unable to connect to authentication service. Please try again.",
+        variant: "destructive",
+      });
       return { success: false, error: 'An unexpected error occurred' };
     }
   };
@@ -130,24 +149,36 @@ export const useAuth = () => {
       });
 
       if (error) {
-        toast({
-          title: "Registration Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error.message.includes('User already registered')) {
+          toast({
+            title: "Account Exists",
+            description: "An account with this email already exists. Please sign in instead.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Registration Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
         return { success: false, error: error.message };
       }
 
       // Create default user role
       if (data.user) {
-        await supabase
-          .from('user_roles')
-          .insert([
-            {
-              user_id: data.user.id,
-              role: 'user',
-            },
-          ]);
+        try {
+          await supabase
+            .from('user_roles')
+            .insert([
+              {
+                user_id: data.user.id,
+                role: 'user',
+              },
+            ]);
+        } catch (roleError) {
+          console.error('Failed to create user role:', roleError);
+        }
       }
 
       // Log security event
@@ -161,6 +192,11 @@ export const useAuth = () => {
       return { success: true, user: data.user };
     } catch (error) {
       console.error('Sign up error:', error);
+      toast({
+        title: "Registration Error",
+        description: "An unexpected error occurred during registration.",
+        variant: "destructive",
+      });
       return { success: false, error: 'An unexpected error occurred' };
     }
   };

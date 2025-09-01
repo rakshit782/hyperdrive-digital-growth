@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { Eye, EyeOff, Shield, Star } from 'lucide-react';
+import { Eye, EyeOff, Shield, Star, AlertCircle } from 'lucide-react';
 import AutoDemoSeeder from '@/components/AutoDemoSeeder';
 
 const AuthPage = () => {
@@ -110,14 +110,14 @@ const AuthPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-2 border-blue-600 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <AutoDemoSeeder />
       
       {/* Header with brand */}
@@ -141,7 +141,7 @@ const AuthPage = () => {
                 <Shield className="w-8 h-8 text-white" />
               </div>
               <div className="space-y-2">
-                <CardTitle className="text-3xl font-bold text-gray-900">Welcome Back</CardTitle>
+                <CardTitle className="text-3xl font-bold text-gray-900">Welcome</CardTitle>
                 <CardDescription className="text-base text-gray-600">
                   Sign in to your account or create a new one
                 </CardDescription>
@@ -156,23 +156,33 @@ const AuthPage = () => {
                   Demo Login Credentials
                 </h4>
                 <div className="text-xs space-y-2 text-blue-700">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <strong>Admin:</strong> 
-                    <span className="font-mono bg-white/70 px-2 py-1 rounded text-xs">admin@demo.com</span>
+                    <code className="bg-white/70 px-2 py-1 rounded text-xs">admin@demo.com</code>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <strong>Editor:</strong> 
-                    <span className="font-mono bg-white/70 px-2 py-1 rounded text-xs">editor@demo.com</span>
+                    <code className="bg-white/70 px-2 py-1 rounded text-xs">editor@demo.com</code>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <strong>User:</strong> 
-                    <span className="font-mono bg-white/70 px-2 py-1 rounded text-xs">user@demo.com</span>
+                    <code className="bg-white/70 px-2 py-1 rounded text-xs">user@demo.com</code>
                   </div>
                   <div className="mt-2 pt-2 border-t border-blue-200/50">
                     <span className="text-xs"><strong>Password:</strong> Demo123456!</span>
                   </div>
                 </div>
-                <p className="text-xs text-blue-600 mt-3 opacity-90">Demo users are created automatically on first visit.</p>
+                
+                {/* Email confirmation warning */}
+                <div className="mt-3 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-start space-x-2">
+                    <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5" />
+                    <div className="text-xs text-amber-800">
+                      <strong>Note:</strong> Demo accounts may require email confirmation. 
+                      If you get an "Email not confirmed" error, please check your email or contact support.
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <Tabs defaultValue="signin" className="space-y-6">
