@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,12 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { Eye, EyeOff, Shield } from 'lucide-react';
-import DemoUserSeeder from '@/components/DemoUserSeeder';
+import AutoDemoSeeder from '@/components/AutoDemoSeeder';
 
 const AuthPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showDemoSeeder, setShowDemoSeeder] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -118,9 +118,10 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-      <div className="w-full max-w-4xl flex gap-8">
-        {/* Main Auth Card */}
-        <Card className="flex-1 max-w-md">
+      <AutoDemoSeeder />
+      
+      <div className="w-full max-w-md">
+        <Card>
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
               <Shield className="w-6 h-6 text-blue-600" />
@@ -133,20 +134,13 @@ const AuthPage = () => {
           <CardContent>
             {/* Demo Credentials Info */}
             <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <h4 className="font-semibold text-blue-800 text-sm mb-2">Demo Credentials:</h4>
+              <h4 className="font-semibold text-blue-800 text-sm mb-2">Default Login Credentials:</h4>
               <div className="text-xs space-y-1 text-blue-700">
-                <div>Admin: admin@demo.com / Demo123456!</div>
-                <div>Editor: editor@demo.com / Demo123456!</div>
-                <div>User: user@demo.com / Demo123456!</div>
+                <div><strong>Admin:</strong> admin@demo.com / Demo123456!</div>
+                <div><strong>Editor:</strong> editor@demo.com / Demo123456!</div>
+                <div><strong>User:</strong> user@demo.com / Demo123456!</div>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-2 text-xs"
-                onClick={() => setShowDemoSeeder(!showDemoSeeder)}
-              >
-                {showDemoSeeder ? 'Hide' : 'Create'} Demo Users
-              </Button>
+              <p className="text-xs text-blue-600 mt-2">Demo users are created automatically on first visit.</p>
             </div>
 
             <Tabs defaultValue="signin" className="space-y-4">
@@ -164,7 +158,7 @@ const AuthPage = () => {
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder="you@example.com"
+                      placeholder="admin@demo.com"
                       required
                     />
                   </div>
@@ -176,7 +170,7 @@ const AuthPage = () => {
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
                         onChange={(e) => handleInputChange('password', e.target.value)}
-                        placeholder="Enter your password"
+                        placeholder="Demo123456!"
                         required
                       />
                       <Button
@@ -268,13 +262,6 @@ const AuthPage = () => {
             </Tabs>
           </CardContent>
         </Card>
-
-        {/* Demo User Seeder Card */}
-        {showDemoSeeder && (
-          <div className="flex-1">
-            <DemoUserSeeder />
-          </div>
-        )}
       </div>
     </div>
   );
