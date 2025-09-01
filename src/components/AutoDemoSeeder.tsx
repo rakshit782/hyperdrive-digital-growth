@@ -39,26 +39,33 @@ const AutoDemoSeeder = () => {
       
       try {
         let successCount = 0;
+        let existingCount = 0;
         
         for (const userData of demoUsers) {
-          // Check if user already exists first
-          const { data: existingUsersData, error: listError } = await supabase.auth.admin.listUsers();
-          
-          if (listError) {
-            console.log('Error checking existing users:', listError.message);
+          // Check if user already exists by trying to sign in
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email: userData.email,
+            password: userData.password,
+          });
+
+          if (signInData.user) {
+            // User exists and can sign in
+            console.log(`Demo user ${userData.email} already exists and is confirmed`);
+            existingCount++;
+            
+            // Sign out immediately after checking
+            await supabase.auth.signOut();
             continue;
           }
 
-          // Explicitly type users to avoid TS inferring 'never' for the callback param
-          const users: SupabaseUser[] = existingUsersData?.users ?? [];
-          const userExists = users.some((user) => (user.email ?? '').toLowerCase() === userData.email.toLowerCase());
-          
-          if (userExists) {
-            console.log(`User ${userData.email} already exists, skipping...`);
-            successCount++;
+          // If sign in failed due to email not confirmed, the user exists but needs confirmation
+          if (signInError && signInError.message.includes('Email not confirmed')) {
+            console.log(`Demo user ${userData.email} exists but email not confirmed`);
+            existingCount++;
             continue;
           }
 
+          // User doesn't exist, create new one
           const redirectUrl = `${window.location.origin}/`;
           
           const { data, error } = await supabase.auth.signUp({
@@ -73,8 +80,6 @@ const AutoDemoSeeder = () => {
           });
 
           if (!error && data.user) {
-            // For demo purposes, we'll try to confirm the email automatically
-            // Note: This would normally require admin privileges
             try {
               // Create user role
               await supabase
@@ -91,22 +96,26 @@ const AutoDemoSeeder = () => {
               successCount++;
             }
           } else if (error) {
-            console.log(`Failed to create demo user ${userData.email}:`, error.message);
+            if (error.message.includes('User already registered')) {
+              console.log(`Demo user ${userData.email} already exists`);
+              existingCount++;
+            } else {
+              console.log(`Failed to create demo user ${userData.email}:`, error.message);
+            }
           }
         }
 
-        if (successCount > 0) {
-          localStorage.setItem('demo_users_seeded', 'true');
-          setHasSeeded(true);
-          
+        localStorage.setItem('demo_users_seeded', 'true');
+        setHasSeeded(true);
+        
+        if (successCount > 0 || existingCount > 0) {
           toast({
             title: "Demo Users Ready",
-            description: `Demo users are available. Note: You may need to check your email for confirmation links, or contact admin to confirm accounts.`,
+            description: `Demo accounts are available. Note: Email confirmation may be required for new accounts. Check your Supabase settings to disable email confirmation for faster testing.`,
           });
         }
       } catch (error) {
         console.log('Demo user seeding completed with some issues:', error);
-        // Still mark as seeded to prevent repeated attempts
         localStorage.setItem('demo_users_seeded', 'true');
         setHasSeeded(true);
       }

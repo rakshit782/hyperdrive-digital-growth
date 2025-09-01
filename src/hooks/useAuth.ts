@@ -94,13 +94,13 @@ export const useAuth = () => {
         if (error.message.includes('Email not confirmed')) {
           toast({
             title: "Email Not Confirmed",
-            description: "Please check your email and click the confirmation link, or contact support for demo accounts.",
+            description: "Demo accounts may require email confirmation. To test immediately, disable email confirmation in Supabase Auth settings, or check your email for the confirmation link.",
             variant: "destructive",
           });
         } else if (error.message.includes('Invalid login credentials')) {
           toast({
             title: "Invalid Credentials",
-            description: "Please check your email and password and try again.",
+            description: "Please check your email and password. For demo accounts, use the credentials shown on the login page.",
             variant: "destructive",
           });
         } else {
