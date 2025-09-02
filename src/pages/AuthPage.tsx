@@ -26,7 +26,7 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Redirect authenticated users
+  // Redirect authenticated users to dashboard
   useEffect(() => {
     if (user && !loading) {
       const from = (location.state as any)?.from?.pathname || '/dashboard';
@@ -55,9 +55,10 @@ const AuthPage = () => {
     try {
       const result = await signIn(formData.email, formData.password);
       
-      if (!result.success) {
-        // Error already handled in useAuth hook
-        return;
+      if (result.success) {
+        // Redirect will be handled by the useEffect above when user state changes
+        const redirectTo = (location.state as any)?.from?.pathname || '/dashboard';
+        navigate(redirectTo, { replace: true });
       }
     } finally {
       setIsLoading(false);
@@ -99,9 +100,13 @@ const AuthPage = () => {
     try {
       const result = await signUp(formData.email, formData.password, formData.fullName);
       
-      if (!result.success) {
-        // Error already handled in useAuth hook
-        return;
+      if (result.success) {
+        // For demo users that get auto-confirmed, redirect to dashboard
+        // For regular users, they'll need to confirm email first
+        if (result.user) {
+          const redirectTo = (location.state as any)?.from?.pathname || '/dashboard';
+          navigate(redirectTo, { replace: true });
+        }
       }
     } finally {
       setIsLoading(false);

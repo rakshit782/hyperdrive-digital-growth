@@ -169,7 +169,7 @@ export const useAuth = () => {
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/dashboard`;
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -226,7 +226,7 @@ export const useAuth = () => {
 
       toast({
         title: "Registration Successful",
-        description: "Please check your email to verify your account.",
+        description: isDemoEmail(email) ? "Welcome! You can now access the dashboard." : "Please check your email to verify your account.",
       });
 
       return { success: true, user: data.user };
