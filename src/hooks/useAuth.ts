@@ -60,6 +60,26 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Helper to detect demo emails we allow auto-confirm for
+  const isDemoEmail = (email: string) => /^(admin|editor|user)@demo\.com$/i.test(email.trim());
+
+  // Call edge function to confirm a demo user email
+  const confirmDemoUserEmail = async (email: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('confirm-demo-user', {
+        body: { email },
+      });
+      if (error) {
+        console.error('confirm-demo-user error:', error);
+        return false;
+      }
+      return Boolean(data?.success);
+    } catch (err) {
+      console.error('confirm-demo-user exception:', err);
+      return false;
+    }
+  };
+
   const fetchUserRole = async (userId: string) => {
     try {
       const { data, error } = await supabase
@@ -90,6 +110,20 @@ export const useAuth = () => {
       });
 
       if (error) {
+        // Try auto-confirm + retry for demo emails if not confirmed
+        if (error.message.includes('Email not confirmed') && isDemoEmail(email)) {
+          console.log('Email not confirmed for demo user. Attempting auto-confirm...');
+          const confirmed = await confirmDemoUserEmail(email);
+          if (confirmed) {
+            const retry = await supabase.auth.signInWithPassword({ email, password });
+            if (!retry.error) {
+              await logSecurityEvent('user_login', { email, autoConfirmed: true });
+              toast({ title: "Welcome back!", description: "You have successfully signed in." });
+              return { success: true, user: retry.data.user };
+            }
+          }
+        }
+
         // Handle specific error cases
         if (error.message.includes('Email not confirmed')) {
           toast({
@@ -178,6 +212,12 @@ export const useAuth = () => {
             ]);
         } catch (roleError) {
           console.error('Failed to create user role:', roleError);
+        }
+
+        // Auto-confirm demo emails to remove confirmation step for testing
+        if (isDemoEmail(email)) {
+          const confirmed = await confirmDemoUserEmail(email);
+          console.log('Auto-confirm after sign up (demo):', confirmed);
         }
       }
 
