@@ -1,42 +1,29 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
+  Package, 
+  ShoppingCart, 
+  Users, 
   Settings, 
   BarChart3, 
-  FileText, 
-  Database,
-  Globe,
-  Mail,
-  Users,
-  Image,
-  Phone,
+  Zap,
   LogOut,
-  Layout,
-  Star
+  Store,
+  TrendingUp,
+  Activity
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
 import AuthGuard from "@/components/AuthGuard";
-import StatsTab from "@/components/dashboard/StatsTab";
-import CaseStudiesTab from "@/components/dashboard/CaseStudiesTab";
-import BlogTab from "@/components/dashboard/BlogTab";
-import PricingTab from "@/components/dashboard/PricingTab";
-import SEOTab from "@/components/dashboard/SEOTab";
-import IntegrationsTab from "@/components/dashboard/IntegrationsTab";
-import EmailTab from "@/components/dashboard/EmailTab";
-import LeadsTab from "@/components/dashboard/LeadsTab";
-import MediaTab from "@/components/dashboard/MediaTab";
-import ContactTab from "@/components/dashboard/ContactTab";
-import WebsiteSettingsTab from "@/components/dashboard/WebsiteSettingsTab";
-import ServicePageManagement from "@/components/dashboard/ServicePageManagement";
+import InventoryTab from "@/components/dashboard/InventoryTab";
+import OrdersTab from "@/components/dashboard/OrdersTab";
+import CustomersTab from "@/components/dashboard/CustomersTab";
+import PlatformIntegrationsTab from "@/components/dashboard/PlatformIntegrationsTab";
+import DashboardOverview from "@/components/dashboard/DashboardOverview";
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState("stats");
+  const [activeTab, setActiveTab] = useState("overview");
   const { user, signOut, userRole } = useAuth();
-  const { toast } = useToast();
 
   const handleSignOut = async () => {
     const result = await signOut();
@@ -46,18 +33,46 @@ const Dashboard = () => {
   };
 
   const tabs = [
-    { id: "stats", label: "Analytics", icon: BarChart3, roles: ['admin', 'editor'], color: "text-blue-600" },
-    { id: "case-studies", label: "Case Studies", icon: FileText, roles: ['admin', 'editor'], color: "text-green-600" },
-    { id: "blog", label: "Blog", icon: FileText, roles: ['admin', 'editor'], color: "text-purple-600" },
-    { id: "service-pages", label: "Services", icon: Layout, roles: ['admin', 'editor'], color: "text-indigo-600" },
-    { id: "pricing", label: "Pricing", icon: Database, roles: ['admin'], color: "text-emerald-600" },
-    { id: "seo", label: "SEO", icon: Globe, roles: ['admin'], color: "text-cyan-600" },
-    { id: "integrations", label: "Integrations", icon: Settings, roles: ['admin'], color: "text-orange-600" },
-    { id: "email", label: "Email", icon: Mail, roles: ['admin'], color: "text-red-600" },
-    { id: "leads", label: "Leads", icon: Users, roles: ['admin', 'editor'], color: "text-pink-600" },
-    { id: "media", label: "Media", icon: Image, roles: ['admin'], color: "text-yellow-600" },
-    { id: "contact", label: "Contact", icon: Phone, roles: ['admin'], color: "text-teal-600" },
-    { id: "website", label: "Settings", icon: Settings, roles: ['admin'], color: "text-gray-600" },
+    { 
+      id: "overview", 
+      label: "Overview", 
+      icon: BarChart3, 
+      roles: ['admin', 'editor'], 
+      color: "text-blue-600",
+      description: "Dashboard analytics and insights"
+    },
+    { 
+      id: "inventory", 
+      label: "Inventory", 
+      icon: Package, 
+      roles: ['admin', 'editor'], 
+      color: "text-green-600",
+      description: "Manage products and stock levels"
+    },
+    { 
+      id: "orders", 
+      label: "Orders", 
+      icon: ShoppingCart, 
+      roles: ['admin', 'editor'], 
+      color: "text-orange-600",
+      description: "View and manage orders"
+    },
+    { 
+      id: "customers", 
+      label: "Customers", 
+      icon: Users, 
+      roles: ['admin', 'editor'], 
+      color: "text-purple-600",
+      description: "Customer management and insights"
+    },
+    { 
+      id: "integrations", 
+      label: "Platforms", 
+      icon: Zap, 
+      roles: ['admin'], 
+      color: "text-cyan-600",
+      description: "Amazon, Walmart, eBay & Etsy integrations"
+    },
   ];
 
   // Filter tabs based on user role
@@ -65,69 +80,104 @@ const Dashboard = () => {
     tab.roles.includes(userRole || 'user')
   );
 
+  const activeTabData = tabs.find(tab => tab.id === activeTab);
+
   return (
     <AuthGuard requiredRole={['admin', 'editor']}>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="min-h-screen bg-background">
         <div className="flex">
           {/* Modern Sidebar */}
-          <div className="w-72 bg-white/95 backdrop-blur-sm shadow-xl border-r border-gray-200/50">
+          <div className="w-80 bg-card border-r border-border shadow-lg">
             {/* Header */}
-            <div className="p-8 border-b border-gray-200/50">
+            <div className="p-6 border-b border-border">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Star className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg">
+                  <Store className="w-7 h-7 text-primary-foreground" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Dashboard
+                  <h1 className="text-2xl font-bold text-foreground">
+                    E-Commerce CMS
                   </h1>
+                  <p className="text-sm text-muted-foreground">Multi-platform management</p>
                 </div>
               </div>
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-900">Welcome back!</p>
-                <p className="text-xs text-gray-600">{user?.email}</p>
-                <Badge variant="outline" className="text-xs bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 border-blue-200">
-                  {userRole}
-                </Badge>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-foreground">Welcome back!</p>
+                  <Badge variant="secondary" className="text-xs">
+                    {userRole}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
             </div>
 
             {/* Navigation */}
             <nav className="p-4 space-y-2">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-3">
+                Main Menu
+              </div>
               {availableTabs.map((tab) => {
                 const IconComponent = tab.icon;
+                const isActive = activeTab === tab.id;
+                
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 group ${
-                      activeTab === tab.id
-                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105"
-                        : "text-gray-700 hover:bg-gray-50 hover:scale-105"
+                    className={`w-full flex items-start px-4 py-4 text-left rounded-xl transition-all duration-200 group ${
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                        : "text-foreground hover:bg-accent hover:text-accent-foreground"
                     }`}
                   >
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${
-                      activeTab === tab.id 
-                        ? "bg-white/20" 
-                        : "bg-gray-100 group-hover:bg-gray-200"
+                    <div className={`w-11 h-11 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 ${
+                      isActive 
+                        ? "bg-primary-foreground/20" 
+                        : "bg-accent"
                     }`}>
                       <IconComponent className={`w-5 h-5 ${
-                        activeTab === tab.id ? "text-white" : tab.color
+                        isActive ? "text-primary-foreground" : tab.color
                       }`} />
                     </div>
-                    <span className="font-medium">{tab.label}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm">{tab.label}</div>
+                      <div className={`text-xs mt-1 ${
+                        isActive ? "text-primary-foreground/80" : "text-muted-foreground"
+                      }`}>
+                        {tab.description}
+                      </div>
+                    </div>
                   </button>
                 );
               })}
               
+              {/* Platform Status */}
+              <div className="mt-8 px-3">
+                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                  Platform Status
+                </div>
+                <div className="space-y-2">
+                  {['Amazon', 'Walmart', 'eBay', 'Etsy'].map((platform) => (
+                    <div key={platform} className="flex items-center justify-between py-2 px-3 rounded-lg bg-accent/50">
+                      <span className="text-sm text-foreground">{platform}</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                        <span className="text-xs text-muted-foreground">Inactive</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
               {/* Sign Out Button */}
-              <div className="pt-4 mt-4 border-t border-gray-200/50">
+              <div className="pt-6 mt-6 border-t border-border">
                 <button
                   onClick={handleSignOut}
-                  className="w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 text-red-600 hover:bg-red-50 hover:scale-105 group"
+                  className="w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 text-destructive hover:bg-destructive/10 group"
                 >
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3 bg-red-100 group-hover:bg-red-200">
-                    <LogOut className="w-5 h-5 text-red-600" />
+                  <div className="w-11 h-11 rounded-lg flex items-center justify-center mr-4 bg-destructive/10 group-hover:bg-destructive/20">
+                    <LogOut className="w-5 h-5 text-destructive" />
                   </div>
                   <span className="font-medium">Sign Out</span>
                 </button>
@@ -137,25 +187,39 @@ const Dashboard = () => {
 
           {/* Main Content */}
           <div className="flex-1 overflow-auto">
-            <div className="p-8">
-              <div className="max-w-7xl mx-auto">
-                {/* Content Cards with modern styling */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden">
-                  <div className="p-8">
-                    {activeTab === "stats" && <StatsTab />}
-                    {activeTab === "case-studies" && <CaseStudiesTab />}
-                    {activeTab === "blog" && <BlogTab />}
-                    {activeTab === "service-pages" && <ServicePageManagement />}
-                    {activeTab === "pricing" && <PricingTab />}
-                    {activeTab === "seo" && <SEOTab />}
-                    {activeTab === "integrations" && <IntegrationsTab />}
-                    {activeTab === "email" && <EmailTab />}
-                    {activeTab === "leads" && <LeadsTab />}
-                    {activeTab === "media" && <MediaTab />}
-                    {activeTab === "contact" && <ContactTab />}
-                    {activeTab === "website" && <WebsiteSettingsTab />}
+            {/* Header */}
+            <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+              <div className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground flex items-center">
+                      {activeTabData && <activeTabData.icon className="w-6 h-6 mr-3" />}
+                      {activeTabData?.label}
+                    </h2>
+                    <p className="text-muted-foreground mt-1">{activeTabData?.description}</p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <Activity className="w-4 h-4" />
+                      <span>Live sync enabled</span>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Export Data
+                    </Button>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="p-6">
+              <div className="max-w-full">
+                {activeTab === "overview" && <DashboardOverview />}
+                {activeTab === "inventory" && <InventoryTab />}
+                {activeTab === "orders" && <OrdersTab />}
+                {activeTab === "customers" && <CustomersTab />}
+                {activeTab === "integrations" && <PlatformIntegrationsTab />}
               </div>
             </div>
           </div>

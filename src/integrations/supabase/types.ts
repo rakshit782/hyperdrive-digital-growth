@@ -407,6 +407,69 @@ export type Database = {
         }
         Relationships: []
       }
+      customers: {
+        Row: {
+          average_order_value: number | null
+          created_at: string
+          customer_since: string | null
+          default_billing_address: Json | null
+          default_shipping_address: Json | null
+          email: string | null
+          external_customer_id: string | null
+          id: string
+          last_order_date: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          platform: string
+          status: string | null
+          tags: string[] | null
+          total_orders: number | null
+          total_spent: number | null
+          updated_at: string
+        }
+        Insert: {
+          average_order_value?: number | null
+          created_at?: string
+          customer_since?: string | null
+          default_billing_address?: Json | null
+          default_shipping_address?: Json | null
+          email?: string | null
+          external_customer_id?: string | null
+          id?: string
+          last_order_date?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          platform: string
+          status?: string | null
+          tags?: string[] | null
+          total_orders?: number | null
+          total_spent?: number | null
+          updated_at?: string
+        }
+        Update: {
+          average_order_value?: number | null
+          created_at?: string
+          customer_since?: string | null
+          default_billing_address?: Json | null
+          default_shipping_address?: Json | null
+          email?: string | null
+          external_customer_id?: string | null
+          id?: string
+          last_order_date?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          platform?: string
+          status?: string | null
+          tags?: string[] | null
+          total_orders?: number | null
+          total_spent?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_settings: {
         Row: {
           created_at: string
@@ -764,6 +827,145 @@ export type Database = {
         }
         Relationships: []
       }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          platform_listing_id: string | null
+          product_id: string | null
+          product_title: string
+          quantity: number
+          sku: string
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          platform_listing_id?: string | null
+          product_id?: string | null
+          product_title: string
+          quantity: number
+          sku: string
+          total_price: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          platform_listing_id?: string | null
+          product_id?: string | null
+          product_title?: string
+          quantity?: number
+          sku?: string
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_platform_listing_id_fkey"
+            columns: ["platform_listing_id"]
+            isOneToOne: false
+            referencedRelation: "platform_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          billing_address: Json | null
+          created_at: string
+          currency: string | null
+          customer_email: string | null
+          customer_id: string | null
+          customer_name: string | null
+          discount_amount: number | null
+          external_order_id: string
+          fulfillment_status: string | null
+          id: string
+          notes: string | null
+          order_date: string
+          order_number: string
+          payment_status: string | null
+          platform: string
+          shipped_date: string | null
+          shipping_address: Json | null
+          shipping_amount: number | null
+          status: string | null
+          tax_amount: number | null
+          total_amount: number
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          billing_address?: Json | null
+          created_at?: string
+          currency?: string | null
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          discount_amount?: number | null
+          external_order_id: string
+          fulfillment_status?: string | null
+          id?: string
+          notes?: string | null
+          order_date: string
+          order_number: string
+          payment_status?: string | null
+          platform: string
+          shipped_date?: string | null
+          shipping_address?: Json | null
+          shipping_amount?: number | null
+          status?: string | null
+          tax_amount?: number | null
+          total_amount: number
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          billing_address?: Json | null
+          created_at?: string
+          currency?: string | null
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          discount_amount?: number | null
+          external_order_id?: string
+          fulfillment_status?: string | null
+          id?: string
+          notes?: string | null
+          order_date?: string
+          order_number?: string
+          payment_status?: string | null
+          platform?: string
+          shipped_date?: string | null
+          shipping_address?: Json | null
+          shipping_amount?: number | null
+          status?: string | null
+          tax_amount?: number | null
+          total_amount?: number
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       partner_images: {
         Row: {
           created_at: string
@@ -793,6 +995,104 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      platform_integrations: {
+        Row: {
+          api_credentials: Json | null
+          created_at: string
+          id: string
+          is_active: boolean
+          last_sync_at: string | null
+          platform: string
+          sync_errors: Json | null
+          sync_settings: Json | null
+          sync_status: string | null
+          updated_at: string
+          webhook_url: string | null
+        }
+        Insert: {
+          api_credentials?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          platform: string
+          sync_errors?: Json | null
+          sync_settings?: Json | null
+          sync_status?: string | null
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Update: {
+          api_credentials?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          platform?: string
+          sync_errors?: Json | null
+          sync_settings?: Json | null
+          sync_status?: string | null
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
+      platform_listings: {
+        Row: {
+          created_at: string
+          external_id: string
+          external_sku: string | null
+          id: string
+          last_synced_at: string | null
+          platform: string
+          platform_price: number | null
+          platform_stock: number | null
+          platform_title: string | null
+          product_id: string
+          status: string | null
+          sync_errors: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          external_id: string
+          external_sku?: string | null
+          id?: string
+          last_synced_at?: string | null
+          platform: string
+          platform_price?: number | null
+          platform_stock?: number | null
+          platform_title?: string | null
+          product_id: string
+          status?: string | null
+          sync_errors?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          external_id?: string
+          external_sku?: string | null
+          id?: string
+          last_synced_at?: string | null
+          platform?: string
+          platform_price?: number | null
+          platform_stock?: number | null
+          platform_title?: string | null
+          product_id?: string
+          status?: string | null
+          sync_errors?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_listings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       policy_pages: {
         Row: {
@@ -866,6 +1166,66 @@ export type Database = {
           price?: number | null
           sort_order?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          brand: string | null
+          category: string | null
+          cost: number | null
+          created_at: string
+          description: string | null
+          dimensions: Json | null
+          id: string
+          images: Json | null
+          min_stock_level: number | null
+          price: number | null
+          sku: string
+          status: string | null
+          stock_quantity: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          weight: number | null
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          cost?: number | null
+          created_at?: string
+          description?: string | null
+          dimensions?: Json | null
+          id?: string
+          images?: Json | null
+          min_stock_level?: number | null
+          price?: number | null
+          sku: string
+          status?: string | null
+          stock_quantity?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          weight?: number | null
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          cost?: number | null
+          created_at?: string
+          description?: string | null
+          dimensions?: Json | null
+          id?: string
+          images?: Json | null
+          min_stock_level?: number | null
+          price?: number | null
+          sku?: string
+          status?: string | null
+          stock_quantity?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          weight?: number | null
         }
         Relationships: []
       }
