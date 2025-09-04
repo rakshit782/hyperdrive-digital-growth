@@ -22,11 +22,13 @@ import {
   Star,
   TrendingUp,
   DollarSign,
-  ShoppingBag
+  ShoppingBag,
+  FileDown
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { CustomerDetailModal } from "./CustomerDetailModal";
 
 interface Customer {
   id: string;
@@ -48,6 +50,8 @@ const CustomersTab = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -74,6 +78,39 @@ const CustomersTab = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewCustomer = (customerId: string) => {
+    setSelectedCustomerId(customerId);
+    setIsCustomerModalOpen(true);
+  };
+
+  const exportCustomers = () => {
+    const csvContent = [
+      ['Name', 'Email', 'Platform', 'Total Orders', 'Total Spent', 'Avg Order Value', 'Status'],
+      ...customers.map(c => [
+        c.name,
+        c.email || 'N/A',
+        c.platform,
+        c.total_orders,
+        c.total_spent,
+        c.average_order_value,
+        c.status
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `customers-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Success", 
+      description: "Customers exported successfully"
+    });
   };
 
   const getStatusBadge = (status: string) => {
@@ -201,6 +238,10 @@ const CustomersTab = () => {
                 View and manage customers across all platforms
               </CardDescription>
             </div>
+            <Button onClick={exportCustomers} variant="outline">
+              <FileDown className="w-4 h-4 mr-2" />
+              Export
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -344,11 +385,19 @@ const CustomersTab = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleViewCustomer(customer.id)}
+                            >
                               <Eye className="w-4 h-4" />
                             </Button>
                             {customer.email && (
-                              <Button variant="ghost" size="sm">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => window.open(`mailto:${customer.email}`)}
+                              >
                                 <Mail className="w-4 h-4" />
                               </Button>
                             )}
@@ -363,6 +412,12 @@ const CustomersTab = () => {
           </div>
         </CardContent>
       </Card>
+
+      <CustomerDetailModal
+        isOpen={isCustomerModalOpen}
+        onClose={() => setIsCustomerModalOpen(false)}
+        customerId={selectedCustomerId}
+      />
     </div>
   );
 };

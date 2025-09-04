@@ -20,11 +20,13 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  DollarSign
+  DollarSign,
+  FileDown
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { OrderDetailModal } from "./OrderDetailModal";
 
 interface Order {
   id: string;
@@ -48,6 +50,8 @@ const OrdersTab = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -74,6 +78,38 @@ const OrdersTab = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewOrder = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setIsOrderModalOpen(true);
+  };
+
+  const exportOrders = () => {
+    const csvContent = [
+      ['Order Number', 'Platform', 'Customer', 'Amount', 'Status', 'Date'],
+      ...orders.map(o => [
+        o.order_number,
+        o.platform,
+        o.customer_name || 'N/A',
+        `${o.total_amount} ${o.currency}`,
+        o.status,
+        format(new Date(o.order_date), 'yyyy-MM-dd')
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Success", 
+      description: "Orders exported successfully"
+    });
   };
 
   const getStatusBadge = (status: string) => {
@@ -220,6 +256,10 @@ const OrdersTab = () => {
                 Track and manage orders from all platforms
               </CardDescription>
             </div>
+            <Button onClick={exportOrders} variant="outline">
+              <FileDown className="w-4 h-4 mr-2" />
+              Export
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -311,7 +351,11 @@ const OrdersTab = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleViewOrder(order.id)}
+                          >
                             <Eye className="w-4 h-4" />
                           </Button>
                           {order.tracking_number && (
@@ -329,6 +373,12 @@ const OrdersTab = () => {
           </div>
         </CardContent>
       </Card>
+
+      <OrderDetailModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        orderId={selectedOrderId}
+      />
     </div>
   );
 };

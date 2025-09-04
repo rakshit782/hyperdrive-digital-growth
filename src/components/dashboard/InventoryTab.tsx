@@ -19,10 +19,13 @@ import {
   Package,
   Edit,
   Trash2,
-  ExternalLink
+  ExternalLink,
+  FileDown
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ProductFormModal } from "./ProductFormModal";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 
 interface Product {
   id: string;
@@ -44,6 +47,11 @@ const InventoryTab = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -70,6 +78,83 @@ const InventoryTab = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddProduct = () => {
+    setEditingProduct(null);
+    setIsProductModalOpen(true);
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setIsProductModalOpen(true);
+  };
+
+  const handleDeleteProduct = (product: Product) => {
+    setProductToDelete(product);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+
+    setDeleteLoading(true);
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productToDelete.id);
+
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      });
+      
+      fetchProducts();
+      setIsDeleteDialogOpen(false);
+      setProductToDelete(null);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const exportProducts = () => {
+    const csvContent = [
+      ['SKU', 'Title', 'Category', 'Brand', 'Price', 'Cost', 'Stock', 'Min Stock', 'Status'],
+      ...products.map(p => [
+        p.sku,
+        p.title,
+        p.category || '',
+        p.brand || '',
+        p.price || '',
+        p.cost || '',
+        p.stock_quantity,
+        p.min_stock_level,
+        p.status
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `products-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Success", 
+      description: "Products exported successfully"
+    });
   };
 
   const getStockStatus = (product: Product) => {
@@ -176,10 +261,16 @@ const InventoryTab = () => {
                 Manage your products across all platforms
               </CardDescription>
             </div>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Product
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={exportProducts} variant="outline">
+                <FileDown className="w-4 h-4 mr-2" />
+                Export
+              </Button>
+              <Button onClick={handleAddProduct}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Product
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -241,7 +332,7 @@ const InventoryTab = () => {
                         <Package className="w-12 h-12 text-muted-foreground mb-4" />
                         <p className="text-lg font-medium text-muted-foreground">No products found</p>
                         <p className="text-sm text-muted-foreground">Get started by adding your first product</p>
-                        <Button className="mt-4">
+                        <Button className="mt-4" onClick={handleAddProduct}>
                           <Plus className="w-4 h-4 mr-2" />
                           Add Product
                         </Button>
@@ -301,13 +392,22 @@ const InventoryTab = () => {
                         <TableCell>{getStatusBadge(product.status)}</TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleEditProduct(product)}
+                            >
                               <Edit className="w-4 h-4" />
                             </Button>
                             <Button variant="ghost" size="sm">
                               <ExternalLink className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-600 hover:text-red-700"
+                              onClick={() => handleDeleteProduct(product)}
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -321,6 +421,22 @@ const InventoryTab = () => {
           </div>
         </CardContent>
       </Card>
+
+      <ProductFormModal
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
+        product={editingProduct}
+        onSuccess={fetchProducts}
+      />
+
+      <DeleteConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Product"
+        description={`Are you sure you want to delete "${productToDelete?.title}"? This action cannot be undone.`}
+        loading={deleteLoading}
+      />
     </div>
   );
 };
