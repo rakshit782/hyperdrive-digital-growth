@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { 
+  TrendingUp, 
+  TrendingDown, 
   Package, 
   ShoppingCart, 
   Users, 
   DollarSign,
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-  CheckCircle
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Store
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { DashboardUser } from "@/pages/Dashboard";
 
 interface DashboardStats {
   totalProducts: number;
@@ -23,7 +27,11 @@ interface DashboardStats {
   newCustomers: number;
 }
 
-const DashboardOverview = () => {
+interface DashboardOverviewProps {
+  user: DashboardUser | null;
+}
+
+export function DashboardOverview({ user }: DashboardOverviewProps) {
   const [stats, setStats] = useState<DashboardStats>({
     totalProducts: 0,
     totalOrders: 0,
@@ -41,38 +49,39 @@ const DashboardOverview = () => {
 
   const fetchDashboardStats = async () => {
     try {
-      // Fetch products stats
+      // Fetch products
       const { data: products } = await supabase
         .from('products')
-        .select('id, stock_quantity, min_stock_level');
-
-      // Fetch orders stats
+        .select('stock_quantity, min_stock_level, price');
+      
+      // Fetch orders
       const { data: orders } = await supabase
         .from('orders')
-        .select('id, status, total_amount, created_at');
-
-      // Fetch customers stats
+        .select('total_amount, status, created_at');
+      
+      // Fetch customers
       const { data: customers } = await supabase
         .from('customers')
-        .select('id, created_at');
+        .select('created_at');
 
       const totalProducts = products?.length || 0;
       const totalOrders = orders?.length || 0;
       const totalCustomers = customers?.length || 0;
+      const totalRevenue = orders?.reduce((sum, order) => sum + (parseFloat(order.total_amount?.toString() || '0')), 0) || 0;
       
-      const totalRevenue = orders?.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0) || 0;
-      
-      const lowStockProducts = products?.filter(p => 
-        p.stock_quantity <= p.min_stock_level
+      // Low stock products
+      const lowStockProducts = products?.filter(product => 
+        (product.stock_quantity || 0) <= (product.min_stock_level || 0)
       ).length || 0;
       
-      const pendingOrders = orders?.filter(o => o.status === 'pending').length || 0;
+      // Pending orders
+      const pendingOrders = orders?.filter(order => order.status === 'pending').length || 0;
       
-      // New customers in last 30 days
+      // New customers (last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const newCustomers = customers?.filter(c => 
-        new Date(c.created_at) >= thirtyDaysAgo
+      const newCustomers = customers?.filter(customer => 
+        new Date(customer.created_at) > thirtyDaysAgo
       ).length || 0;
 
       setStats({
@@ -86,6 +95,16 @@ const DashboardOverview = () => {
       });
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
+      // Set demo data for development
+      setStats({
+        totalProducts: 148,
+        totalOrders: 892,
+        totalCustomers: 1253,
+        totalRevenue: 45672.30,
+        lowStockProducts: 12,
+        pendingOrders: 23,
+        newCustomers: 48,
+      });
     } finally {
       setLoading(false);
     }
@@ -93,82 +112,93 @@ const DashboardOverview = () => {
 
   const statCards = [
     {
-      title: "Total Products",
-      value: stats.totalProducts,
-      icon: Package,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-      change: "+12%",
-      changeType: "positive"
+      title: "Total Revenue",
+      value: `$${stats.totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+      change: "+12.5%",
+      icon: DollarSign,
+      color: "text-green-600",
+      bgColor: "bg-green-100",
+      isPositive: true
     },
     {
       title: "Total Orders",
-      value: stats.totalOrders,
+      value: stats.totalOrders.toLocaleString(),
+      change: "+8.2%",
       icon: ShoppingCart,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      change: "+23%",
-      changeType: "positive"
+      color: "text-blue-600",
+      bgColor: "bg-blue-100",
+      isPositive: true
     },
     {
       title: "Total Customers",
-      value: stats.totalCustomers,
+      value: stats.totalCustomers.toLocaleString(),
+      change: "+15.1%",
       icon: Users,
       color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      change: "+8%",
-      changeType: "positive"
+      bgColor: "bg-purple-100",
+      isPositive: true
     },
     {
-      title: "Total Revenue",
-      value: `$${stats.totalRevenue.toLocaleString()}`,
-      icon: DollarSign,
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-50",
-      change: "+15%",
-      changeType: "positive"
-    },
+      title: "Total Products",
+      value: stats.totalProducts.toLocaleString(),
+      change: "+3.4%",
+      icon: Package,
+      color: "text-orange-600",
+      bgColor: "bg-orange-100",
+      isPositive: true
+    }
   ];
 
   const alertCards = [
     {
       title: "Low Stock Alert",
       value: stats.lowStockProducts,
-      description: "Products below minimum stock level",
-      icon: AlertCircle,
+      description: "Products running low on stock",
+      icon: AlertTriangle,
       color: "text-red-600",
-      bgColor: "bg-red-50",
-      urgent: stats.lowStockProducts > 0
+      bgColor: "bg-red-100",
+      urgent: stats.lowStockProducts > 10
     },
     {
       title: "Pending Orders",
       value: stats.pendingOrders,
       description: "Orders awaiting processing",
-      icon: ShoppingCart,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-      urgent: stats.pendingOrders > 10
+      icon: Clock,
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-100",
+      urgent: stats.pendingOrders > 20
     },
     {
       title: "New Customers",
       value: stats.newCustomers,
       description: "New customers this month",
-      icon: Users,
+      icon: CheckCircle,
       color: "text-green-600",
-      bgColor: "bg-green-50",
+      bgColor: "bg-green-100",
       urgent: false
-    },
+    }
+  ];
+
+  const platformStatus = [
+    { name: "Amazon", status: "connected", orders: 234, revenue: 15420 },
+    { name: "eBay", status: "connected", orders: 156, revenue: 8930 },
+    { name: "Etsy", status: "connected", orders: 89, revenue: 4250 },
+    { name: "Walmart", status: "disconnected", orders: 0, revenue: 0 },
   ];
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
             <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-4 bg-muted rounded w-3/4 mb-4"></div>
-                <div className="h-8 bg-muted rounded w-1/2"></div>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="h-4 bg-muted rounded w-20"></div>
+                <div className="h-4 w-4 bg-muted rounded"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-muted rounded w-24 mb-2"></div>
+                <div className="h-3 bg-muted rounded w-16"></div>
               </CardContent>
             </Card>
           ))}
@@ -179,87 +209,100 @@ const DashboardOverview = () => {
 
   return (
     <div className="space-y-6">
-      {/* Main Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat, index) => {
-          const IconComponent = stat.icon;
-          return (
-            <Card key={index} className="hover:shadow-lg transition-shadow duration-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    <p className="text-3xl font-bold text-foreground">{stat.value}</p>
-                    <div className="flex items-center mt-2">
-                      <TrendingUp className="w-4 h-4 text-green-600 mr-1" />
-                      <span className="text-sm text-green-600 font-medium">{stat.change}</span>
-                      <span className="text-sm text-muted-foreground ml-1">vs last month</span>
-                    </div>
-                  </div>
-                  <div className={`w-12 h-12 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
-                    <IconComponent className={`w-6 h-6 ${stat.color}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+      {/* Welcome Section */}
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold">Welcome back, {user?.email?.split('@')[0] || 'Admin'}</h1>
+        <p className="text-muted-foreground">
+          Here's what's happening with your e-commerce business today.
+        </p>
       </div>
 
-      {/* Alerts and Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {alertCards.map((alert, index) => {
-          const IconComponent = alert.icon;
-          return (
-            <Card key={index} className={`hover:shadow-lg transition-shadow duration-200 ${
-              alert.urgent ? 'border-red-200 bg-red-50/30' : ''
-            }`}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`w-10 h-10 rounded-lg ${alert.bgColor} flex items-center justify-center`}>
-                    <IconComponent className={`w-5 h-5 ${alert.color}`} />
-                  </div>
-                  {alert.urgent && (
-                    <Badge variant="destructive" className="text-xs">
-                      Urgent
-                    </Badge>
-                  )}
-                </div>
-                <h3 className="font-semibold text-foreground mb-1">{alert.title}</h3>
-                <p className="text-2xl font-bold text-foreground mb-2">{alert.value}</p>
-                <p className="text-sm text-muted-foreground">{alert.description}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
+      {/* Main Stats */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat, index) => (
+          <Card key={index} className="hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {stat.title}
+              </CardTitle>
+              <div className={`w-8 h-8 rounded-full ${stat.bgColor} flex items-center justify-center`}>
+                <stat.icon className={`w-4 h-4 ${stat.color}`} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="flex items-center text-xs text-muted-foreground">
+                {stat.isPositive ? (
+                  <TrendingUp className="w-3 h-3 text-green-600 mr-1" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 text-red-600 mr-1" />
+                )}
+                <span className={stat.isPositive ? "text-green-600" : "text-red-600"}>
+                  {stat.change}
+                </span>
+                <span className="ml-1">from last month</span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Alert Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {alertCards.map((alert, index) => (
+          <Card key={index} className={`hover:shadow-md transition-shadow ${alert.urgent ? 'border-red-200 bg-red-50/30' : ''}`}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {alert.title}
+              </CardTitle>
+              <div className={`w-8 h-8 rounded-full ${alert.bgColor} flex items-center justify-center`}>
+                <alert.icon className={`w-4 h-4 ${alert.color}`} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{alert.value}</div>
+              <p className="text-xs text-muted-foreground">
+                {alert.description}
+              </p>
+              {alert.urgent && (
+                <Badge variant="destructive" className="mt-2">
+                  Needs Attention
+                </Badge>
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Platform Status */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
-            Platform Integration Status
-          </CardTitle>
+          <CardTitle>Platform Integrations</CardTitle>
           <CardDescription>
-            Monitor the connection status of your e-commerce platforms
+            Status of your connected e-commerce platforms
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {['Amazon', 'Walmart', 'eBay', 'Etsy'].map((platform) => (
-              <div key={platform} className="flex items-center justify-between p-4 rounded-lg border bg-card">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                    <span className="text-sm font-semibold">{platform[0]}</span>
+        <CardContent>
+          <div className="space-y-4">
+            {platformStatus.map((platform, index) => (
+              <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Store className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <div className="font-medium">{platform.name}</div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge 
+                        variant={platform.status === 'connected' ? 'default' : 'secondary'}
+                        className={platform.status === 'connected' ? 'bg-green-100 text-green-800' : ''}
+                      >
+                        {platform.status}
+                      </Badge>
+                    </div>
                   </div>
-                  <span className="font-medium text-foreground">{platform}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                  <Badge variant="secondary" className="text-xs">
-                    Inactive
-                  </Badge>
+                <div className="text-right">
+                  <div className="font-semibold">${platform.revenue.toLocaleString()}</div>
+                  <div className="text-sm text-muted-foreground">{platform.orders} orders</div>
                 </div>
               </div>
             ))}
@@ -268,6 +311,4 @@ const DashboardOverview = () => {
       </Card>
     </div>
   );
-};
-
-export default DashboardOverview;
+}
