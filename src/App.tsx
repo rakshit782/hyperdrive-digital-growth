@@ -1,5 +1,4 @@
 
-import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,34 +6,34 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 
-// Lazy load components for better performance
-const About = lazy(() => import("./pages/About"));
-const Services = lazy(() => import("./pages/ServicesPage"));
-const CaseStudies = lazy(() => import("./pages/CaseStudies"));
-const Pricing = lazy(() => import("./pages/Pricing"));
-const FreeAudit = lazy(() => import("./pages/FreeAudit"));
-const Blog = lazy(() => import("./pages/Blog"));
-const AuthPage = lazy(() => import("./pages/AuthPage"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
+// Direct imports for instant loading - no lazy loading
+import About from "./pages/About";
+import Services from "./pages/ServicesPage";
+import CaseStudies from "./pages/CaseStudies";
+import Pricing from "./pages/Pricing";
+import FreeAudit from "./pages/FreeAudit";
+import Blog from "./pages/Blog";
+import AuthPage from "./pages/AuthPage";
+import Dashboard from "./pages/Dashboard";
 
 // Service pages
-const AmazonAdvertising = lazy(() => import("./pages/AmazonAdvertising"));
-const GoogleAdvertising = lazy(() => import("./pages/GoogleAdvertising"));
-const MetaAdvertising = lazy(() => import("./pages/MetaAdvertising"));
-const WalmartAdvertising = lazy(() => import("./pages/WalmartAdvertising"));
-const AccountManagement = lazy(() => import("./pages/AccountManagement"));
-const WebsiteDevelopment = lazy(() => import("./pages/WebsiteDevelopment"));
-const ShopifyDevelopment = lazy(() => import("./pages/ShopifyDevelopment"));
-const ShopifyIntegration = lazy(() => import("./pages/ShopifyIntegration"));
+import AmazonAdvertising from "./pages/AmazonAdvertising";
+import GoogleAdvertising from "./pages/GoogleAdvertising";
+import MetaAdvertising from "./pages/MetaAdvertising";
+import WalmartAdvertising from "./pages/WalmartAdvertising";
+import AccountManagement from "./pages/AccountManagement";
+import WebsiteDevelopment from "./pages/WebsiteDevelopment";
+import ShopifyDevelopment from "./pages/ShopifyDevelopment";
+import ShopifyIntegration from "./pages/ShopifyIntegration";
 
 // Case study pages
-const AmazonCaseStudies = lazy(() => import("./pages/AmazonCaseStudies"));
-const MetaCaseStudies = lazy(() => import("./pages/MetaCaseStudies"));
-const WalmartCaseStudies = lazy(() => import("./pages/WalmartCaseStudies"));
+import AmazonCaseStudies from "./pages/AmazonCaseStudies";
+import MetaCaseStudies from "./pages/MetaCaseStudies";
+import WalmartCaseStudies from "./pages/WalmartCaseStudies";
 
 // Policy pages
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -47,177 +46,31 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route
-              path="/about"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <About />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/services"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Services />
-                </Suspense>
-              }
-            />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
             
             {/* Service Detail Pages */}
-            <Route
-              path="/services/amazon-advertising"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <AmazonAdvertising />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/services/google-advertising"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <GoogleAdvertising />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/services/meta-advertising"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <MetaAdvertising />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/services/walmart-advertising"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <WalmartAdvertising />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/services/account-management"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <AccountManagement />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/services/website-development"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <WebsiteDevelopment />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/services/shopify-development"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <ShopifyDevelopment />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/services/shopify-integration"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <ShopifyIntegration />
-                </Suspense>
-              }
-            />
+            <Route path="/services/amazon-advertising" element={<AmazonAdvertising />} />
+            <Route path="/services/google-advertising" element={<GoogleAdvertising />} />
+            <Route path="/services/meta-advertising" element={<MetaAdvertising />} />
+            <Route path="/services/walmart-advertising" element={<WalmartAdvertising />} />
+            <Route path="/services/account-management" element={<AccountManagement />} />
+            <Route path="/services/website-development" element={<WebsiteDevelopment />} />
+            <Route path="/services/shopify-development" element={<ShopifyDevelopment />} />
+            <Route path="/services/shopify-integration" element={<ShopifyIntegration />} />
             
-            <Route
-              path="/case-studies"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <CaseStudies />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/amazon-case-studies"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <AmazonCaseStudies />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/meta-case-studies"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <MetaCaseStudies />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/walmart-case-studies"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <WalmartCaseStudies />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/pricing"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Pricing />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/free-audit"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <FreeAudit />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/blog"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Blog />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/auth"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <AuthPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Dashboard />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/privacy-policy"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <PrivacyPolicy />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/terms-of-service"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <TermsOfService />
-                </Suspense>
-              }
-            />
+            <Route path="/case-studies" element={<CaseStudies />} />
+            <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
+            <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
+            <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
+            
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/free-audit" element={<FreeAudit />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
