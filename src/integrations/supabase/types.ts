@@ -56,7 +56,7 @@ export type Database = {
           event_data: Json | null
           event_name: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           page_url: string | null
           referrer: string | null
           session_id: string | null
@@ -68,7 +68,7 @@ export type Database = {
           event_data?: Json | null
           event_name: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           page_url?: string | null
           referrer?: string | null
           session_id?: string | null
@@ -80,7 +80,7 @@ export type Database = {
           event_data?: Json | null
           event_name?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           page_url?: string | null
           referrer?: string | null
           session_id?: string | null
@@ -1304,7 +1304,7 @@ export type Database = {
           event_data: Json | null
           event_type: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           user_agent: string | null
           user_id: string | null
         }
@@ -1313,7 +1313,7 @@ export type Database = {
           event_data?: Json | null
           event_type: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_id?: string | null
         }
@@ -1322,7 +1322,7 @@ export type Database = {
           event_data?: Json | null
           event_type?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_id?: string | null
         }
@@ -1822,18 +1822,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      cleanup_old_lead_files: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      generate_lead_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_current_user_role: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      cleanup_old_lead_files: { Args: never; Returns: undefined }
+      generate_lead_number: { Args: never; Returns: string }
+      get_current_user_role: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
