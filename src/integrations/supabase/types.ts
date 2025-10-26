@@ -1825,6 +1825,11 @@ export type Database = {
       cleanup_old_lead_files: { Args: never; Returns: undefined }
       generate_lead_number: { Args: never; Returns: string }
       get_current_user_role: { Args: never; Returns: string }
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      validate_text_length: {
+        Args: { max_length?: number; min_length?: number; text_value: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
