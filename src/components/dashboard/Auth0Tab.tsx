@@ -24,10 +24,14 @@ const Auth0Tab = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedConfig = auth0ConfigManager.getConfig();
-    if (savedConfig) {
-      setConfig(savedConfig);
-    }
+    const initConfig = async () => {
+      await auth0ConfigManager.initialize();
+      const savedConfig = auth0ConfigManager.getConfig();
+      if (savedConfig) {
+        setConfig(savedConfig);
+      }
+    };
+    initConfig();
   }, []);
 
   const saveConfiguration = async () => {

@@ -8,12 +8,23 @@ interface Auth0ProviderWrapperProps {
 }
 
 const Auth0ProviderWrapper = ({ children }: Auth0ProviderWrapperProps) => {
-  const [auth0Config, setAuth0Config] = useState(auth0ConfigManager.getConfig());
+  const [auth0Config, setAuth0Config] = useState<ReturnType<typeof auth0ConfigManager.getConfig>>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const config = auth0ConfigManager.getConfig();
-    setAuth0Config(config);
+    const initConfig = async () => {
+      await auth0ConfigManager.initialize();
+      const config = auth0ConfigManager.getConfig();
+      setAuth0Config(config);
+      setLoading(false);
+    };
+    initConfig();
   }, []);
+
+  // Show loading while initializing
+  if (loading) {
+    return <>{children}</>;
+  }
 
   // If Auth0 is not configured or not active, render children without Auth0
   if (!auth0Config || !auth0Config.isActive || !auth0Config.domain || !auth0Config.clientId) {
