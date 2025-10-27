@@ -3,23 +3,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import AuthButton from "@/components/AuthButton";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const { user } = useAuth();
 
   const serviceItems = [
-    { name: "Amazon Advertising", href: "/services/amazon-advertising" },
-    { name: "Google Advertising", href: "/services/google-advertising" },
-    { name: "Meta Advertising", href: "/services/meta-advertising" },
-    { name: "Walmart Advertising", href: "/services/walmart-advertising" },
-    { name: "Account Management", href: "/services/account-management" },
     { name: "Website Development", href: "/services/website-development" },
-    { name: "Shopify Development", href: "/services/shopify-development" },
-    { name: "Shopify Integration", href: "/services/shopify-integration" },
   ];
 
   return (
@@ -107,19 +97,9 @@ const Header = () => {
             </Link>
           </nav>
 
-          {/* CTA Buttons & Auth */}
+          {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            {user && (
-              <Link to="/dashboard">
-                <Button variant="outline" size="sm">
-                  Dashboard
-                </Button>
-              </Link>
-            )}
-            <AuthButton />
-            <Link to="/free-audit">
-              <Button>Free Audit</Button>
-            </Link>
+            <Button>Get Started</Button>
           </div>
 
           {/* Mobile menu button */}
@@ -201,18 +181,8 @@ const Header = () => {
                 Contact
               </Link>
               
-              <div className="px-3 py-2 space-y-2">
-                {user && (
-                  <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="outline" size="sm" className="w-full">
-                      Dashboard
-                    </Button>
-                  </Link>
-                )}
-                <AuthButton />
-                <Link to="/free-audit" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full">Free Audit</Button>
-                </Link>
+              <div className="px-3 py-2">
+                <Button className="w-full">Get Started</Button>
               </div>
             </div>
           </div>

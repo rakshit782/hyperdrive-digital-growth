@@ -6,83 +6,69 @@ import SEOHead from "@/components/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Star } from "lucide-react";
-import { useSupabasePricingPlans } from "@/hooks/useSupabasePricingPlans";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+
+const staticPlans = [
+  {
+    id: '1',
+    name: 'Starter',
+    description: 'Perfect for small businesses getting started',
+    price: 499,
+    billing_period: 'month',
+    features: [
+      'Social media management',
+      'Basic analytics',
+      'Email support',
+      '2 campaigns per month',
+      'Brand strategy consultation'
+    ],
+    is_popular: false,
+    is_active: true,
+    sort_order: 1
+  },
+  {
+    id: '2',
+    name: 'Professional',
+    description: 'Ideal for growing businesses',
+    price: 999,
+    billing_period: 'month',
+    features: [
+      'Everything in Starter',
+      'Advanced analytics & reporting',
+      'Priority support',
+      '5 campaigns per month',
+      'A/B testing',
+      'Custom landing pages'
+    ],
+    is_popular: true,
+    is_active: true,
+    sort_order: 2
+  },
+  {
+    id: '3',
+    name: 'Enterprise',
+    description: 'For businesses that need it all',
+    price: null,
+    billing_period: 'custom',
+    features: [
+      'Everything in Professional',
+      'Dedicated account manager',
+      '24/7 phone support',
+      'Unlimited campaigns',
+      'Custom integrations',
+      'White-label reporting',
+      'Advanced automation'
+    ],
+    is_popular: false,
+    is_active: true,
+    sort_order: 3
+  }
+];
 
 const Pricing = () => {
-  const { plans, loading, error } = useSupabasePricingPlans();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
-  if (loading) {
-    return (
-      <>
-        <SEOHead 
-          title="Pricing Plans - Choose Your Growth Plan"
-          description="Simple, transparent pricing for digital marketing services. Choose the perfect plan for your business growth."
-        />
-        <Header />
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <Skeleton className="h-12 w-64 mx-auto mb-4" />
-              <Skeleton className="h-6 w-96 mx-auto" />
-            </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-96 w-full" />
-              ))}
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <>
-        <SEOHead 
-          title="Pricing Plans - Choose Your Growth Plan"
-          description="Simple, transparent pricing for digital marketing services. Choose the perfect plan for your business growth."
-        />
-        <Header />
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-red-600 mb-4">Error Loading Pricing</h2>
-              <p className="text-slate-600">{error}</p>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
-
-  const activePlans = plans.filter(plan => plan.is_active);
-
-  if (activePlans.length === 0) {
-    return (
-      <>
-        <SEOHead 
-          title="Pricing Plans - Choose Your Growth Plan"
-          description="Simple, transparent pricing for digital marketing services. Choose the perfect plan for your business growth."
-        />
-        <Header />
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Pricing Plans</h2>
-              <p className="text-slate-600">No pricing plans available at the moment.</p>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
+  const activePlans = staticPlans.filter(plan => plan.is_active);
 
   return (
     <>
