@@ -20,6 +20,13 @@ import AmazonCaseStudies from "./pages/AmazonCaseStudies";
 import MetaCaseStudies from "./pages/MetaCaseStudies";
 import WalmartCaseStudies from "./pages/WalmartCaseStudies";
 
+// Dashboard
+import Dashboard from "./pages/Dashboard";
+import DashboardAuth from "./pages/DashboardAuth";
+
+// Detailed service pages
+import DetailedServicePage from "./pages/DetailedServicePage";
+
 const queryClient = new QueryClient();
 
 function App() {
@@ -40,6 +47,9 @@ function App() {
             <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/dashboard/login" element={<DashboardAuth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/services/:serviceType" element={<DetailedServicePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

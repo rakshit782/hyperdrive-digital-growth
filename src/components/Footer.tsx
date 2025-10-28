@@ -98,34 +98,24 @@ const Footer = () => {
                   Pricing
                 </Link>
               </li>
-              <li>
-                <Link to="/contact" className="text-slate-300 hover:text-white transition-colors text-sm">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="/free-audit" className="text-slate-300 hover:text-white transition-colors text-sm">
-                  Free Audit
-                </Link>
-              </li>
             </ul>
           </div>
 
           {/* Contact */}
-          <div className="space-y-4">
+          <div id="footer-contact" className="space-y-4">
             <h3 className="text-lg font-semibold">Contact</h3>
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-slate-400" />
-                <span className="text-slate-300 text-sm">info@amzadscout.com</span>
+                <span className="text-slate-300 text-sm" id="footer-email">info@amzadscout.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-slate-400" />
-                <span className="text-slate-300 text-sm">+1 (555) 123-4567</span>
+                <span className="text-slate-300 text-sm" id="footer-phone">+1 (555) 123-4567</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4 text-slate-400" />
-                <span className="text-slate-300 text-sm">New York, NY 10001</span>
+                <span className="text-slate-300 text-sm" id="footer-address">New York, NY 10001</span>
               </div>
             </div>
           </div>

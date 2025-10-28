@@ -1,0 +1,292 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
+import { LogOut, Save } from 'lucide-react';
+
+interface FooterData {
+  email: string;
+  phone: string;
+  address: string;
+}
+
+interface AboutData {
+  heroTitle: string;
+  heroDescription: string;
+  missionText: string;
+  visionText: string;
+}
+
+interface PricingTier {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  features: string[];
+}
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const [footerData, setFooterData] = useState<FooterData>({
+    email: 'info@amzadscout.com',
+    phone: '+1 (555) 123-4567',
+    address: 'New York, NY 10001'
+  });
+
+  const [aboutData, setAboutData] = useState<AboutData>({
+    heroTitle: 'About Our Agency',
+    heroDescription: "We're a team of digital marketing experts passionate about helping businesses achieve extraordinary growth through strategic advertising and innovative solutions.",
+    missionText: 'To empower businesses with cutting-edge digital marketing strategies that drive measurable growth and sustainable success. We believe every business deserves access to expert-level advertising management and strategic guidance.',
+    visionText: 'To become the most trusted digital growth partner for businesses worldwide, known for delivering exceptional results, innovative strategies, and unparalleled client service in the digital marketing space.'
+  });
+
+  const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([
+    {
+      id: '1',
+      name: 'Starter',
+      price: '$999',
+      description: 'Perfect for small businesses getting started',
+      features: ['Single platform management', '24/7 support', 'Monthly reports', 'Basic optimization']
+    },
+    {
+      id: '2',
+      name: 'Professional',
+      price: '$2,499',
+      description: 'For growing businesses needing more reach',
+      features: ['Multi-platform management', 'Priority support', 'Weekly reports', 'Advanced optimization', 'Dedicated account manager']
+    },
+    {
+      id: '3',
+      name: 'Enterprise',
+      price: 'Custom',
+      description: 'For large organizations with complex needs',
+      features: ['Full-service management', 'White-glove support', 'Daily reports', 'Enterprise optimization', 'Dedicated team', 'Custom integrations']
+    }
+  ]);
+
+  useEffect(() => {
+    // Check authentication
+    const isAuth = localStorage.getItem('dashboard_auth');
+    if (isAuth !== 'true') {
+      navigate('/dashboard/login');
+      return;
+    }
+
+    // Load saved data
+    const savedFooter = localStorage.getItem('footer_data');
+    if (savedFooter) setFooterData(JSON.parse(savedFooter));
+
+    const savedAbout = localStorage.getItem('about_data');
+    if (savedAbout) setAboutData(JSON.parse(savedAbout));
+
+    const savedPricing = localStorage.getItem('pricing_data');
+    if (savedPricing) setPricingTiers(JSON.parse(savedPricing));
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('dashboard_auth');
+    toast.success('Logged out successfully');
+    navigate('/dashboard/login');
+  };
+
+  const saveFooterData = () => {
+    localStorage.setItem('footer_data', JSON.stringify(footerData));
+    
+    // Update footer in real-time
+    const emailEl = document.getElementById('footer-email');
+    const phoneEl = document.getElementById('footer-phone');
+    const addressEl = document.getElementById('footer-address');
+    
+    if (emailEl) emailEl.textContent = footerData.email;
+    if (phoneEl) phoneEl.textContent = footerData.phone;
+    if (addressEl) addressEl.textContent = footerData.address;
+    
+    toast.success('Footer updated successfully!');
+  };
+
+  const saveAboutData = () => {
+    localStorage.setItem('about_data', JSON.stringify(aboutData));
+    toast.success('About page updated successfully! Refresh the About page to see changes.');
+  };
+
+  const savePricingData = () => {
+    localStorage.setItem('pricing_data', JSON.stringify(pricingTiers));
+    toast.success('Pricing updated successfully! Refresh the Pricing page to see changes.');
+  };
+
+  const updatePricingTier = (id: string, field: keyof PricingTier, value: string | string[]) => {
+    setPricingTiers(pricingTiers.map(tier => 
+      tier.id === id ? { ...tier, [field]: value } : tier
+    ));
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+          <Button onClick={handleLogout} variant="outline">
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <Tabs defaultValue="footer" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="footer">Footer Settings</TabsTrigger>
+            <TabsTrigger value="about">About Page</TabsTrigger>
+            <TabsTrigger value="pricing">Pricing</TabsTrigger>
+          </TabsList>
+
+          {/* Footer Tab */}
+          <TabsContent value="footer">
+            <Card>
+              <CardHeader>
+                <CardTitle>Footer Contact Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    value={footerData.email}
+                    onChange={(e) => setFooterData({ ...footerData, email: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    value={footerData.phone}
+                    onChange={(e) => setFooterData({ ...footerData, phone: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    value={footerData.address}
+                    onChange={(e) => setFooterData({ ...footerData, address: e.target.value })}
+                  />
+                </div>
+                <Button onClick={saveFooterData} className="w-full">
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Footer Changes
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* About Tab */}
+          <TabsContent value="about">
+            <Card>
+              <CardHeader>
+                <CardTitle>About Page Content</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="heroTitle">Hero Title</Label>
+                  <Input
+                    id="heroTitle"
+                    value={aboutData.heroTitle}
+                    onChange={(e) => setAboutData({ ...aboutData, heroTitle: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="heroDescription">Hero Description</Label>
+                  <Textarea
+                    id="heroDescription"
+                    rows={3}
+                    value={aboutData.heroDescription}
+                    onChange={(e) => setAboutData({ ...aboutData, heroDescription: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="missionText">Mission Statement</Label>
+                  <Textarea
+                    id="missionText"
+                    rows={4}
+                    value={aboutData.missionText}
+                    onChange={(e) => setAboutData({ ...aboutData, missionText: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="visionText">Vision Statement</Label>
+                  <Textarea
+                    id="visionText"
+                    rows={4}
+                    value={aboutData.visionText}
+                    onChange={(e) => setAboutData({ ...aboutData, visionText: e.target.value })}
+                  />
+                </div>
+                <Button onClick={saveAboutData} className="w-full">
+                  <Save className="w-4 h-4 mr-2" />
+                  Save About Changes
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Pricing Tab */}
+          <TabsContent value="pricing">
+            <div className="space-y-6">
+              {pricingTiers.map((tier) => (
+                <Card key={tier.id}>
+                  <CardHeader>
+                    <CardTitle>Pricing Tier: {tier.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label>Plan Name</Label>
+                      <Input
+                        value={tier.name}
+                        onChange={(e) => updatePricingTier(tier.id, 'name', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Price</Label>
+                      <Input
+                        value={tier.price}
+                        onChange={(e) => updatePricingTier(tier.id, 'price', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Description</Label>
+                      <Input
+                        value={tier.description}
+                        onChange={(e) => updatePricingTier(tier.id, 'description', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Features (one per line)</Label>
+                      <Textarea
+                        rows={5}
+                        value={tier.features.join('\n')}
+                        onChange={(e) => updatePricingTier(tier.id, 'features', e.target.value.split('\n'))}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              <Button onClick={savePricingData} className="w-full" size="lg">
+                <Save className="w-4 h-4 mr-2" />
+                Save All Pricing Changes
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
