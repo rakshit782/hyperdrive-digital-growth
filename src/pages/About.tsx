@@ -1,4 +1,4 @@
-
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -7,6 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight } from "lucide-react";
 
 const About = () => {
+  const [aboutData, setAboutData] = useState({
+    heroTitle: 'About Our Agency',
+    heroDescription: "We're a team of digital marketing experts passionate about helping businesses achieve extraordinary growth through strategic advertising and innovative solutions.",
+    missionText: 'To empower businesses with cutting-edge digital marketing strategies that drive measurable growth and sustainable success. We believe every business deserves access to expert-level advertising management and strategic guidance.',
+    visionText: 'To become the most trusted digital growth partner for businesses worldwide, known for delivering exceptional results, innovative strategies, and unparalleled client service in the digital marketing space.'
+  });
+
+  useEffect(() => {
+    const savedAbout = localStorage.getItem('about_data');
+    if (savedAbout) {
+      setAboutData(JSON.parse(savedAbout));
+    }
+  }, []);
   const values = [
     {
       icon: Shield,
@@ -71,10 +84,10 @@ const About = () => {
         <section className="py-24 md:py-32">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-              About Our Agency
+              {aboutData.heroTitle}
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 leading-relaxed">
-              We're a team of digital marketing experts passionate about helping businesses achieve extraordinary growth through strategic advertising and innovative solutions.
+              {aboutData.heroDescription}
             </p>
           </div>
         </section>
@@ -92,7 +105,7 @@ const About = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-slate-700 leading-relaxed text-lg">
-                    To empower businesses with cutting-edge digital marketing strategies that drive measurable growth and sustainable success. We believe every business deserves access to expert-level advertising management and strategic guidance.
+                    {aboutData.missionText}
                   </p>
                 </CardContent>
               </Card>
@@ -106,7 +119,7 @@ const About = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-slate-700 leading-relaxed text-lg">
-                    To become the most trusted digital growth partner for businesses worldwide, known for delivering exceptional results, innovative strategies, and unparalleled client service in the digital marketing space.
+                    {aboutData.visionText}
                   </p>
                 </CardContent>
               </Card>

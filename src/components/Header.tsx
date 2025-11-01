@@ -9,6 +9,10 @@ const Header = () => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
 
   const serviceItems = [
+    { name: "Amazon Ads Management", href: "/services/amazon-ads" },
+    { name: "Meta Ads Management", href: "/services/meta-ads" },
+    { name: "Google Ads Management", href: "/services/google-ads" },
+    { name: "Walmart Ads Management", href: "/services/walmart-ads" },
     { name: "Website Development", href: "/services/website-development" },
   ];
 
@@ -89,12 +93,6 @@ const Header = () => {
             >
               Blog
             </Link>
-            <Link 
-              to="/contact" 
-              className="text-gray-700 hover:text-blue-600 transition-colors"
-            >
-              Contact
-            </Link>
           </nav>
 
           {/* CTA Button */}
@@ -172,13 +170,6 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Blog
-              </Link>
-              <Link 
-                to="/contact" 
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact
               </Link>
               
               <div className="px-3 py-2">

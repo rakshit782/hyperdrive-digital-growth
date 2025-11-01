@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -8,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const staticPlans = [
+const defaultPlans = [
   {
     id: '1',
     name: 'Starter',
@@ -67,8 +66,29 @@ const staticPlans = [
 
 const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [pricingTiers, setPricingTiers] = useState(defaultPlans);
 
-  const activePlans = staticPlans.filter(plan => plan.is_active);
+  useEffect(() => {
+    const savedPricing = localStorage.getItem('pricing_data');
+    if (savedPricing) {
+      const dashboardTiers = JSON.parse(savedPricing);
+      // Convert dashboard format to pricing page format
+      const convertedTiers = dashboardTiers.map((tier: any, index: number) => ({
+        id: tier.id,
+        name: tier.name,
+        description: tier.description,
+        price: tier.price === 'Custom' ? null : parseInt(tier.price.replace(/[$,]/g, '')),
+        billing_period: tier.price === 'Custom' ? 'custom' : 'month',
+        features: tier.features,
+        is_popular: index === 1,
+        is_active: true,
+        sort_order: index + 1
+      }));
+      setPricingTiers(convertedTiers);
+    }
+  }, []);
+
+  const activePlans = pricingTiers.filter(plan => plan.is_active);
 
   return (
     <>

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -5,9 +6,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, User, ArrowRight, TrendingUp, Target, BarChart3 } from "lucide-react";
+import { fetchRSSFeeds } from "@/utils/rssFeedParser";
+
+interface BlogPostDisplay {
+  id: string | number;
+  title: string;
+  excerpt: string;
+  category: string;
+  author: string;
+  publishDate: string;
+  readTime: string;
+  image: string;
+  featured?: boolean;
+  link?: string;
+}
 
 const Blog = () => {
-  const blogPosts = [
+  const [blogPosts, setBlogPosts] = useState<BlogPostDisplay[]>([
     {
       id: 1,
       title: "10 Amazon PPC Strategies That Actually Work in 2024",
@@ -69,7 +84,43 @@ const Blog = () => {
       readTime: "11 min read",
       image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=300&fit=crop"
     }
-  ];
+  ]);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadRSSFeeds = async () => {
+      try {
+        const feeds = await fetchRSSFeeds();
+        if (feeds && feeds.length > 0) {
+          // Convert RSS feeds to display format
+          const convertedPosts: BlogPostDisplay[] = feeds.map((feed, index) => ({
+            id: feed.id,
+            title: feed.title,
+            excerpt: feed.description,
+            category: feed.categories?.[0] || 'Digital Marketing',
+            author: feed.author || 'Industry Expert',
+            publishDate: new Date(feed.pubDate).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            }),
+            readTime: Math.ceil(feed.description.split(' ').length / 200) + ' min read',
+            image: feed.image || `https://images.unsplash.com/photo-${1556742049 + index}?w=600&h=300&fit=crop`,
+            featured: index === 0,
+            link: feed.link
+          }));
+          setBlogPosts(convertedPosts);
+        }
+      } catch (error) {
+        console.error('Failed to load RSS feeds:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadRSSFeeds();
+  }, []);
 
   const categories = ["All", "Amazon Advertising", "Digital Marketing", "E-commerce", "PPC Management", "Growth Strategy", "Technology"];
 
@@ -151,7 +202,10 @@ const Blog = () => {
                           {featuredPost.readTime}
                         </div>
                       </div>
-                      <Button className="group">
+                      <Button 
+                        className="group"
+                        onClick={() => featuredPost.link && window.open(featuredPost.link, '_blank')}
+                      >
                         Read More
                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
@@ -194,7 +248,12 @@ const Blog = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-slate-500">{post.publishDate}</span>
-                      <Button variant="outline" size="sm" className="group">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="group"
+                        onClick={() => post.link && window.open(post.link, '_blank')}
+                      >
                         Read More
                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
