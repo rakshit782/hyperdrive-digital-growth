@@ -284,19 +284,76 @@ export const realBrandCaseStudies: Record<string, ServiceCaseStudy[]> = {
     {
       id: '701',
       service_type: 'shopify-integration',
-      title: 'Gymshark Multi-Channel Integration',
-      description: 'Integrated Gymshark\'s Shopify store with multiple sales channels and logistics systems, improving order fulfillment by 85%.',
-      client_name: 'Gymshark',
-      industry: 'Athletic Apparel',
-      image_url: 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=250&fit=crop',
+      title: 'Fashion Retailer Amazon & Walmart Multi-Channel Success',
+      description: 'Integrated a fashion retailer\'s Shopify store with Amazon, Walmart, and eBay marketplaces. Achieved 450% sales increase with centralized inventory management and real-time order syncing across all platforms.',
+      client_name: 'Fashion Nova',
+      industry: 'Fashion & Apparel',
+      image_url: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=250&fit=crop',
       results: {
-        fulfillment_improvement: '85%',
-        integration_channels: '12+',
-        error_reduction: '94%'
+        sales_increase: '450%',
+        inventory_accuracy: '99.7%',
+        channels_integrated: 'Amazon, Walmart, eBay'
       },
       is_active: true,
       is_featured: true,
       sort_order: 1,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    },
+    {
+      id: '702',
+      service_type: 'shopify-integration',
+      title: 'Home Decor Brand Expands to 7 Marketplaces',
+      description: 'Connected a home decor brand\'s Shopify store with Amazon, Walmart, eBay, Etsy, Wayfair, Rakuten, and Shein. Reduced overselling by 92% and increased total revenue by 380%.',
+      client_name: 'West Elm',
+      industry: 'Home & Decor',
+      image_url: 'https://images.unsplash.com/photo-1556912173-46c336c7fd55?w=400&h=250&fit=crop',
+      results: {
+        revenue_growth: '380%',
+        overselling_reduction: '92%',
+        marketplaces: '7 platforms'
+      },
+      is_active: true,
+      is_featured: true,
+      sort_order: 2,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    },
+    {
+      id: '703',
+      service_type: 'shopify-integration',
+      title: 'Handmade Goods Seller: Etsy & Amazon Integration',
+      description: 'Integrated an artisan brand\'s Shopify with Etsy and Amazon Handmade, enabling seamless product syncing and order management. Achieved 5-minute real-time inventory updates across all channels.',
+      client_name: 'Uncommon Goods',
+      industry: 'Artisan & Handmade',
+      image_url: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=250&fit=crop',
+      results: {
+        sync_time: '5 minutes',
+        order_accuracy: '99.5%',
+        time_saved: '35 hrs/week'
+      },
+      is_active: true,
+      is_featured: true,
+      sort_order: 3,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
+    },
+    {
+      id: '704',
+      service_type: 'shopify-integration',
+      title: 'Electronics Brand Rakuten & Walmart Integration',
+      description: 'Set up multi-marketplace integration for an electronics brand, connecting Shopify with Walmart, Amazon, Rakuten, and eBay. Streamlined fulfillment processes and boosted efficiency by 78%.',
+      client_name: 'Anker',
+      industry: 'Consumer Electronics',
+      image_url: 'https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=400&h=250&fit=crop',
+      results: {
+        efficiency_boost: '78%',
+        fulfillment_speed: '2x faster',
+        error_rate: '0.3%'
+      },
+      is_active: true,
+      is_featured: false,
+      sort_order: 4,
       created_at: '2024-01-01T00:00:00Z',
       updated_at: '2024-01-01T00:00:00Z'
     }

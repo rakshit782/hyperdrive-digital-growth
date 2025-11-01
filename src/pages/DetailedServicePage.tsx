@@ -163,26 +163,32 @@ const serviceConfigs: Record<string, {
     gradient: 'from-green-600 to-teal-500'
   },
   'shopify-integration': {
-    title: 'Shopify Integration Services',
-    subtitle: 'Connect Your Shopify Store with Essential Tools',
-    description: 'Seamlessly integrate your Shopify store with essential tools and platforms. We handle complex integrations to streamline your operations, improve efficiency, and enhance customer experience.',
+    title: 'Shopify Multi-Marketplace Integration Services',
+    subtitle: 'Sell Everywhere - Amazon, Walmart, eBay, Etsy & More',
+    description: 'Expand your reach and multiply your sales by integrating your Shopify store with major marketplaces. We seamlessly connect Shopify with Amazon, Walmart, eBay, Etsy, Shein, Wayfair, and Rakuten, enabling centralized inventory management, automated order syncing, and multi-channel selling from one powerful dashboard.',
     features: [
-      'ERP and inventory management integration',
-      'Payment gateway integration',
-      'Shipping and fulfillment system connection',
-      'CRM and email marketing platform integration',
-      'Accounting software synchronization',
-      'Multi-channel selling integration',
-      'Custom API development and webhooks',
-      'Third-party app integration and setup'
+      'Amazon Marketplace integration with real-time inventory sync',
+      'Walmart Marketplace connection and order fulfillment',
+      'eBay multi-listing integration with automated pricing',
+      'Etsy product catalog synchronization and management',
+      'Shein wholesale and dropshipping integration',
+      'Wayfair supplier portal integration and order processing',
+      'Rakuten marketplace setup and product feed optimization',
+      'Centralized inventory management across all channels',
+      'Automated order routing and fulfillment coordination',
+      'Multi-channel pricing strategy and dynamic repricing',
+      'Unified reporting and analytics dashboard',
+      'Product catalog mapping and attribute synchronization'
     ],
     benefits: [
-      '99.9% integration success rate',
-      '15min average data synchronization',
-      '99.8% API uptime and reliability',
-      '94% reduction in integration errors',
-      'Dedicated integration specialist',
-      'Ongoing monitoring and support'
+      '450% average sales increase from multi-channel selling',
+      '99.7% inventory accuracy across all platforms',
+      'Real-time sync within 5 minutes',
+      '78% reduction in overselling and stockouts',
+      '92% faster order processing time',
+      'Single dashboard for all marketplace operations',
+      'Dedicated marketplace integration specialist',
+      '24/7 monitoring and instant error alerts'
     ],
     gradient: 'from-cyan-500 to-blue-500'
   },

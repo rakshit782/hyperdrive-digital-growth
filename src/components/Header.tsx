@@ -23,11 +23,14 @@ const Header = () => {
   }, []);
 
   const serviceItems = [
-    { name: "Amazon Ads Management", href: "/services/amazon-ads" },
-    { name: "Meta Ads Management", href: "/services/meta-ads" },
-    { name: "Google Ads Management", href: "/services/google-ads" },
-    { name: "Walmart Ads Management", href: "/services/walmart-ads" },
+    { name: "Amazon Ads Management", href: "/services/amazon-advertising" },
+    { name: "Meta Ads Management", href: "/services/meta-advertising" },
+    { name: "Google Ads Management", href: "/services/google-advertising" },
+    { name: "Walmart Ads Management", href: "/services/walmart-advertising" },
+    { name: "Shopify Multi-Marketplace Integration", href: "/services/shopify-integration" },
+    { name: "Shopify Store Development", href: "/services/shopify-development" },
     { name: "Website Development", href: "/services/website-development" },
+    { name: "Account Management", href: "/services/account-management" },
   ];
 
   return (
