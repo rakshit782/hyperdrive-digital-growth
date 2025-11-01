@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -7,6 +7,20 @@ import { Link } from "react-router-dom";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [logoData, setLogoData] = useState({ text: 'Digital Growth', imageUrl: '' });
+
+  useEffect(() => {
+    const loadLogo = () => {
+      const savedLogo = localStorage.getItem('logo_data');
+      if (savedLogo) {
+        setLogoData(JSON.parse(savedLogo));
+      }
+    };
+
+    loadLogo();
+    window.addEventListener('logo-updated', loadLogo);
+    return () => window.removeEventListener('logo-updated', loadLogo);
+  }, []);
 
   const serviceItems = [
     { name: "Amazon Ads Management", href: "/services/amazon-ads" },
@@ -22,9 +36,13 @@ const Header = () => {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Digital Growth
-            </span>
+            {logoData.imageUrl ? (
+              <img src={logoData.imageUrl} alt={logoData.text} className="h-10 object-contain" />
+            ) : (
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {logoData.text}
+              </span>
+            )}
           </Link>
 
           {/* Desktop Navigation */}

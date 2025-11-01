@@ -22,6 +22,11 @@ interface AboutData {
   visionText: string;
 }
 
+interface LogoData {
+  text: string;
+  imageUrl: string;
+}
+
 interface PricingTier {
   id: string;
   name: string;
@@ -43,6 +48,11 @@ const Dashboard = () => {
     heroDescription: "We're a team of digital marketing experts passionate about helping businesses achieve extraordinary growth through strategic advertising and innovative solutions.",
     missionText: 'To empower businesses with cutting-edge digital marketing strategies that drive measurable growth and sustainable success. We believe every business deserves access to expert-level advertising management and strategic guidance.',
     visionText: 'To become the most trusted digital growth partner for businesses worldwide, known for delivering exceptional results, innovative strategies, and unparalleled client service in the digital marketing space.'
+  });
+
+  const [logoData, setLogoData] = useState<LogoData>({
+    text: 'Digital Growth',
+    imageUrl: ''
   });
 
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([
@@ -86,6 +96,9 @@ const Dashboard = () => {
 
     const savedPricing = localStorage.getItem('pricing_data');
     if (savedPricing) setPricingTiers(JSON.parse(savedPricing));
+
+    const savedLogo = localStorage.getItem('logo_data');
+    if (savedLogo) setLogoData(JSON.parse(savedLogo));
   }, [navigate]);
 
   const handleLogout = () => {
@@ -114,6 +127,12 @@ const Dashboard = () => {
     toast.success('About page updated successfully! Refresh the About page to see changes.');
   };
 
+  const saveLogoData = () => {
+    localStorage.setItem('logo_data', JSON.stringify(logoData));
+    window.dispatchEvent(new Event('logo-updated'));
+    toast.success('Logo updated successfully!');
+  };
+
   const savePricingData = () => {
     localStorage.setItem('pricing_data', JSON.stringify(pricingTiers));
     toast.success('Pricing updated successfully! Refresh the Pricing page to see changes.');
@@ -140,12 +159,65 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <Tabs defaultValue="footer" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="footer">Footer Settings</TabsTrigger>
-            <TabsTrigger value="about">About Page</TabsTrigger>
+        <Tabs defaultValue="logo" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="logo">Logo</TabsTrigger>
+            <TabsTrigger value="footer">Footer</TabsTrigger>
+            <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="pricing">Pricing</TabsTrigger>
           </TabsList>
+
+          {/* Logo Tab */}
+          <TabsContent value="logo">
+            <Card>
+              <CardHeader>
+                <CardTitle>Website Logo</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="logoText">Logo Text</Label>
+                  <Input
+                    id="logoText"
+                    value={logoData.text}
+                    onChange={(e) => setLogoData({ ...logoData, text: e.target.value })}
+                    placeholder="Enter your brand name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="logoImage">Logo Image URL (optional)</Label>
+                  <Input
+                    id="logoImage"
+                    value={logoData.imageUrl}
+                    onChange={(e) => setLogoData({ ...logoData, imageUrl: e.target.value })}
+                    placeholder="https://example.com/logo.png"
+                  />
+                  <p className="text-sm text-slate-500 mt-1">
+                    Leave empty to use text logo. Add image URL to display logo image.
+                  </p>
+                </div>
+                {logoData.imageUrl && (
+                  <div>
+                    <Label>Preview</Label>
+                    <div className="mt-2 p-4 bg-slate-100 rounded-lg">
+                      <img 
+                        src={logoData.imageUrl} 
+                        alt="Logo preview" 
+                        className="h-12 object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          toast.error('Invalid image URL');
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+                <Button onClick={saveLogoData} className="w-full">
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Logo Changes
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Footer Tab */}
           <TabsContent value="footer">
