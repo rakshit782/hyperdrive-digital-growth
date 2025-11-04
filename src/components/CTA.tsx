@@ -134,9 +134,8 @@ const CTA = () => {
             
             {ctaData.showSecondaryButton && (
               <Button 
-                variant="outline" 
                 size="lg" 
-                className="group border-2 border-cyan-400/50 bg-white/5 backdrop-blur-sm text-cyan-100 hover:bg-cyan-400/10 hover:border-cyan-400 px-10 py-6 text-xl font-semibold rounded-2xl transition-all duration-500 hover:scale-110 hover:-translate-y-2"
+                className="group border-2 border-cyan-400/50 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900 hover:border-white px-10 py-6 text-xl font-semibold rounded-2xl transition-all duration-500 hover:scale-110 hover:-translate-y-2 hover:shadow-xl"
                 onClick={() => window.location.href = ctaData.secondaryButtonLink}
               >
                 {ctaData.secondaryButtonText}
