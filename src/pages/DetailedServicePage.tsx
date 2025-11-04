@@ -440,8 +440,7 @@ const DetailedServicePage = () => {
                   </Button>
                   <Button 
                     size="lg"
-                    variant="outline"
-                    className="border-2 border-white text-white hover:bg-white/20 px-8 py-4 text-lg font-semibold"
+                    className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg font-semibold backdrop-blur-sm"
                   >
                     View Case Studies
                   </Button>
