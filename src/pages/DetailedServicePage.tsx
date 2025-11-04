@@ -440,7 +440,7 @@ const DetailedServicePage = () => {
                   </Button>
                   <Button 
                     size="lg"
-                    className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg font-semibold backdrop-blur-sm"
+                    className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg font-semibold backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
                   >
                     View Case Studies
                   </Button>
