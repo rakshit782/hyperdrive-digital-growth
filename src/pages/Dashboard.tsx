@@ -25,6 +25,7 @@ interface AboutData {
 interface LogoData {
   text: string;
   imageUrl: string;
+  faviconUrl: string;
 }
 
 interface PricingTier {
@@ -52,7 +53,8 @@ const Dashboard = () => {
 
   const [logoData, setLogoData] = useState<LogoData>({
     text: 'Digital Growth',
-    imageUrl: ''
+    imageUrl: '',
+    faviconUrl: ''
   });
 
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([
@@ -129,8 +131,22 @@ const Dashboard = () => {
 
   const saveLogoData = () => {
     localStorage.setItem('logo_data', JSON.stringify(logoData));
+    
+    // Update favicon dynamically
+    if (logoData.faviconUrl) {
+      const favicon = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (favicon) {
+        favicon.href = logoData.faviconUrl;
+      } else {
+        const newFavicon = document.createElement('link');
+        newFavicon.rel = 'icon';
+        newFavicon.href = logoData.faviconUrl;
+        document.head.appendChild(newFavicon);
+      }
+    }
+    
     window.dispatchEvent(new Event('logo-updated'));
-    toast.success('Logo updated successfully!');
+    toast.success('Logo and favicon updated successfully!');
   };
 
   const savePricingData = () => {
@@ -197,7 +213,7 @@ const Dashboard = () => {
                 </div>
                 {logoData.imageUrl && (
                   <div>
-                    <Label>Preview</Label>
+                    <Label>Logo Preview</Label>
                     <div className="mt-2 p-4 bg-slate-100 rounded-lg">
                       <img 
                         src={logoData.imageUrl} 
@@ -208,6 +224,35 @@ const Dashboard = () => {
                           toast.error('Invalid image URL');
                         }}
                       />
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <Label htmlFor="faviconUrl">Favicon URL (optional)</Label>
+                  <Input
+                    id="faviconUrl"
+                    value={logoData.faviconUrl}
+                    onChange={(e) => setLogoData({ ...logoData, faviconUrl: e.target.value })}
+                    placeholder="https://example.com/favicon.ico"
+                  />
+                  <p className="text-sm text-slate-500 mt-1">
+                    Add favicon URL to update browser tab icon (supports .ico, .png, .svg)
+                  </p>
+                </div>
+                {logoData.faviconUrl && (
+                  <div>
+                    <Label>Favicon Preview</Label>
+                    <div className="mt-2 p-4 bg-slate-100 rounded-lg flex items-center gap-3">
+                      <img 
+                        src={logoData.faviconUrl} 
+                        alt="Favicon preview" 
+                        className="h-8 w-8 object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          toast.error('Invalid favicon URL');
+                        }}
+                      />
+                      <span className="text-sm text-slate-600">This will appear in browser tabs</span>
                     </div>
                   </div>
                 )}

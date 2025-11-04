@@ -13,7 +13,21 @@ const Header = () => {
     const loadLogo = () => {
       const savedLogo = localStorage.getItem('logo_data');
       if (savedLogo) {
-        setLogoData(JSON.parse(savedLogo));
+        const logoData = JSON.parse(savedLogo);
+        setLogoData(logoData);
+        
+        // Update favicon if available
+        if (logoData.faviconUrl) {
+          const favicon = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+          if (favicon) {
+            favicon.href = logoData.faviconUrl;
+          } else {
+            const newFavicon = document.createElement('link');
+            newFavicon.rel = 'icon';
+            newFavicon.href = logoData.faviconUrl;
+            document.head.appendChild(newFavicon);
+          }
+        }
       }
     };
 
