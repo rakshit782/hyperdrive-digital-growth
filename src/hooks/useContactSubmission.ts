@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { localDB } from '@/utils/localStorageDB';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ContactSubmissionData {
   name: string;
@@ -31,6 +32,19 @@ export const useContactSubmission = () => {
 
       const contactId = await localDB.insert('contact_submissions', contactData);
       console.log('Contact submission stored successfully with ID:', contactId);
+
+      // Send email notification
+      try {
+        const { error: emailError } = await supabase.functions.invoke('send-contact-notification', {
+          body: data
+        });
+        
+        if (emailError) {
+          console.error('Failed to send email notification:', emailError);
+        }
+      } catch (emailErr) {
+        console.error('Email notification error:', emailErr);
+      }
 
       return { success: true, contactId };
     } catch (error) {

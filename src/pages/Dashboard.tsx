@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { LogOut, Save } from 'lucide-react';
+import { LogOut, Save, Mail, User, Phone, Building2, MessageSquare, Trash2 } from 'lucide-react';
+import { localDB } from '@/utils/localStorageDB';
 
 interface FooterData {
   email: string;
@@ -38,6 +39,7 @@ interface PricingTier {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [leads, setLeads] = useState<any[]>([]);
   const [footerData, setFooterData] = useState<FooterData>({
     email: 'info@amzadscout.com',
     phone: '+1 (555) 123-4567',
@@ -101,7 +103,33 @@ const Dashboard = () => {
 
     const savedLogo = localStorage.getItem('logo_data');
     if (savedLogo) setLogoData(JSON.parse(savedLogo));
+
+    // Load leads
+    loadLeads();
   }, [navigate]);
+
+  const loadLeads = async () => {
+    try {
+      const contactSubmissions = await localDB.findAll('contact_submissions');
+      setLeads(contactSubmissions.sort((a: any, b: any) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ));
+    } catch (error) {
+      console.error('Error loading leads:', error);
+    }
+  };
+
+  const deleteLead = (id: string) => {
+    if (confirm('Are you sure you want to delete this lead?')) {
+      try {
+        localDB.delete('contact_submissions', id);
+        loadLeads();
+        toast.success('Lead deleted successfully');
+      } catch (error) {
+        toast.error('Failed to delete lead');
+      }
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('dashboard_auth');
@@ -175,13 +203,95 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <Tabs defaultValue="logo" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs defaultValue="leads" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="leads">Leads</TabsTrigger>
             <TabsTrigger value="logo">Logo</TabsTrigger>
             <TabsTrigger value="footer">Footer</TabsTrigger>
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="pricing">Pricing</TabsTrigger>
           </TabsList>
+
+          {/* Leads Tab */}
+          <TabsContent value="leads">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Contact Form Submissions</span>
+                  <span className="text-sm font-normal text-muted-foreground">
+                    {leads.length} total leads
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {leads.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Mail className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No leads yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {leads.map((lead) => (
+                      <Card key={lead.id} className="border-l-4 border-l-primary">
+                        <CardContent className="pt-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="space-y-2 flex-1">
+                              <div className="flex items-center gap-2">
+                                <User className="w-4 h-4 text-muted-foreground" />
+                                <span className="font-semibold">{lead.name}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Mail className="w-4 h-4 text-muted-foreground" />
+                                <a href={`mailto:${lead.email}`} className="text-primary hover:underline">
+                                  {lead.email}
+                                </a>
+                              </div>
+                              {lead.phone && (
+                                <div className="flex items-center gap-2">
+                                  <Phone className="w-4 h-4 text-muted-foreground" />
+                                  <a href={`tel:${lead.phone}`} className="text-primary hover:underline">
+                                    {lead.phone}
+                                  </a>
+                                </div>
+                              )}
+                              {lead.company && (
+                                <div className="flex items-center gap-2">
+                                  <Building2 className="w-4 h-4 text-muted-foreground" />
+                                  <span>{lead.company}</span>
+                                </div>
+                              )}
+                              {lead.message && (
+                                <div className="flex items-start gap-2 mt-3">
+                                  <MessageSquare className="w-4 h-4 text-muted-foreground mt-1" />
+                                  <p className="text-sm text-muted-foreground">{lead.message}</p>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col items-end gap-2">
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(lead.created_at).toLocaleDateString()} {new Date(lead.created_at).toLocaleTimeString()}
+                              </span>
+                              <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded">
+                                {lead.form_type || 'contact'}
+                              </span>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => deleteLead(lead.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Logo Tab */}
           <TabsContent value="logo">

@@ -26,6 +26,7 @@ import DashboardAuth from "./pages/DashboardAuth";
 
 // Detailed service pages
 import DetailedServicePage from "./pages/DetailedServicePage";
+import AdLanding from "./pages/AdLanding";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ function App() {
             <Route path="/dashboard/login" element={<DashboardAuth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/services/:serviceType" element={<DetailedServicePage />} />
+            <Route path="/ad-landing" element={<AdLanding />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
