@@ -1,6 +1,7 @@
-
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { ContactFormDialog } from '@/components/ContactFormDialog';
 
 interface CTASectionProps {
   ctaTitle: string;
@@ -10,6 +11,8 @@ interface CTASectionProps {
 }
 
 const CTASection = ({ ctaTitle, ctaDescription, ctaButtonText, ctaButtonUrl }: CTASectionProps) => {
+  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
+
   return (
     <section className="py-12 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
       <div className="max-w-4xl mx-auto px-6 text-center">
@@ -23,12 +26,20 @@ const CTASection = ({ ctaTitle, ctaDescription, ctaButtonText, ctaButtonUrl }: C
         <Button 
           size="lg"
           className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-12 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-          onClick={() => window.location.href = ctaButtonUrl}
-          aria-label={`${ctaButtonText} - Navigate to ${ctaButtonUrl}`}
+          onClick={() => setIsContactFormOpen(true)}
+          aria-label={ctaButtonText}
         >
           {ctaButtonText}
           <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />
         </Button>
+
+        <ContactFormDialog 
+          open={isContactFormOpen}
+          onOpenChange={setIsContactFormOpen}
+          formType="service-inquiry"
+          title={ctaButtonText}
+          description={ctaDescription}
+        />
       </div>
     </section>
   );

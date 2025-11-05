@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, TrendingUp, Target } from "lucide-react";
+import { ContactFormDialog } from "@/components/ContactFormDialog";
 
 interface CTAData {
   title: string;
@@ -28,6 +29,7 @@ const defaultCTAData: CTAData = {
 
 const CTA = () => {
   const [ctaData, setCTAData] = useState<CTAData>(defaultCTAData);
+  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
 
   useEffect(() => {
     console.log("CTA: Component mounted, initializing...");
@@ -125,7 +127,7 @@ const CTA = () => {
             <Button 
               size="lg" 
               className="group bg-gradient-to-r from-blue-500 via-blue-600 to-purple-500 hover:from-blue-600 hover:via-blue-700 hover:to-purple-600 text-white px-10 py-6 text-xl font-semibold rounded-2xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-500 hover:scale-110 hover:-translate-y-2 border border-blue-400/30"
-              onClick={() => window.location.href = ctaData.primaryButtonLink}
+              onClick={() => setIsContactFormOpen(true)}
             >
               <Target className="mr-3 w-6 h-6" />
               {ctaData.primaryButtonText}
@@ -160,6 +162,14 @@ const CTA = () => {
           </div>
         </div>
       </div>
+
+      <ContactFormDialog 
+        open={isContactFormOpen}
+        onOpenChange={setIsContactFormOpen}
+        formType="strategy-call"
+        title={ctaData.primaryButtonText}
+        description="Let's discuss how we can help you achieve your growth goals."
+      />
     </section>
   );
 };
