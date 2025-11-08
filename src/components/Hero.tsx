@@ -92,27 +92,17 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70"></div>
       </div>
 
-      {/* Side Icons */}
-      <div className="absolute left-8 top-1/2 -translate-y-1/2 space-y-6 hidden lg:block z-20">
-        <div className="w-12 h-12 bg-yellow-500/20 backdrop-blur-sm rounded-lg flex items-center justify-center border border-yellow-500/30 hover:bg-yellow-500/30 transition-all cursor-pointer">
-          <Music className="w-6 h-6 text-yellow-500" />
-        </div>
-        <div className="w-12 h-12 bg-yellow-500/20 backdrop-blur-sm rounded-lg flex items-center justify-center border border-yellow-500/30 hover:bg-yellow-500/30 transition-all cursor-pointer">
-          <ImageIcon className="w-6 h-6 text-yellow-500" />
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="container relative z-10 px-6 py-20">
         <div className="max-w-5xl mx-auto text-center">
           {/* Top Stats Bar */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mb-12 animate-fade-in">
+          <div className="flex flex-wrap items-center justify-center gap-6 mb-10 animate-fade-in">
             {statsBlocks.map((stat, index) => (
               <div key={stat.id} className="flex items-center gap-2">
-                <span className={`text-2xl md:text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+                <span className={`text-xl md:text-2xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
                   {stat.number}
                 </span>
-                <span className="text-white/80 text-sm md:text-base">• {stat.label}</span>
+                <span className="text-white/80 text-xs md:text-sm">• {stat.label}</span>
                 {index < statsBlocks.length - 1 && (
                   <span className="text-white/40 hidden sm:inline ml-4">|</span>
                 )}
@@ -121,7 +111,7 @@ const Hero = () => {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 animate-slide-up leading-tight">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-5 animate-slide-up leading-tight">
             <span className="text-white">Your Business</span>
             <span className="text-white"> — </span>
             <span className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-lime-400 bg-clip-text text-transparent">
@@ -133,15 +123,15 @@ const Hero = () => {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-xl md:text-2xl text-white/80 mb-10 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <p className="text-base md:text-lg text-white/80 mb-8 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
             Connect with 15K+ Creators & Vendors Nationwide
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12 animate-scale-in" style={{ animationDelay: '0.3s' }}>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 animate-scale-in" style={{ animationDelay: '0.3s' }}>
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-lime-400 hover:from-yellow-500 hover:via-yellow-400 hover:to-lime-500 text-gray-900 px-10 py-6 text-lg font-semibold rounded-xl shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 min-w-[200px]"
+              className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-lime-400 hover:from-yellow-500 hover:via-yellow-400 hover:to-lime-500 text-gray-900 px-8 py-5 text-base font-semibold rounded-xl shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 min-w-[180px]"
               onClick={handlePrimaryButtonClick}
             >
               {ctaButtons.primaryText}
@@ -150,7 +140,7 @@ const Hero = () => {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-2 border-white/90 bg-transparent hover:bg-white/10 text-white px-10 py-6 text-lg font-semibold rounded-xl backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 min-w-[200px]"
+              className="border-2 border-white/90 bg-transparent hover:bg-white/10 text-white px-8 py-5 text-base font-semibold rounded-xl backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 min-w-[180px]"
               onClick={handleSecondaryButtonClick}
             >
               <Upload className="mr-2 w-5 h-5" />
