@@ -21,9 +21,9 @@ const Hero = () => {
   });
 
   const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>([
-    { id: "creators", number: "15,000+", label: "Creators", color: "from-lime-400 to-green-500" },
-    { id: "events", number: "500+", label: "Events", color: "from-green-400 to-emerald-500" },
-    { id: "products", number: "2,900+", label: "Products", color: "from-lime-300 to-green-400" }
+    { id: "clients", number: "500+", label: "Happy Clients", color: "from-lime-400 to-green-500" },
+    { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-green-400 to-emerald-500" },
+    { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-lime-300 to-green-400" }
   ]);
 
   useEffect(() => {
@@ -112,19 +112,20 @@ const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-5 animate-slide-up leading-tight">
-            <span className="text-white">Your Business</span>
-            <span className="text-white"> — </span>
+            <span className="text-white">Transform Your</span>
+            <span className="text-white"> </span>
             <span className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-lime-400 bg-clip-text text-transparent">
-              Discover, Create
+              E-Commerce Success
             </span>
-            <span className="block bg-gradient-to-r from-lime-400 to-green-400 bg-clip-text text-transparent">
-              & Connect
+            <span className="block text-white mt-2">With Expert</span>
+            <span className="bg-gradient-to-r from-lime-400 to-green-400 bg-clip-text text-transparent">
+              {" "}Digital Marketing
             </span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-base md:text-lg text-white/80 mb-8 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Connect with 15K+ Creators & Vendors Nationwide
+            Amazon, Walmart, Meta & Google Advertising Solutions That Drive Real Results
           </p>
 
           {/* CTA Buttons */}
@@ -151,16 +152,16 @@ const Hero = () => {
           {/* Trust Badges */}
           <div className="flex flex-wrap gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-              <span className="text-white text-sm font-medium">100% Nigerian-Owned</span>
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              <span className="text-white text-sm font-medium">Certified Partners</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
               <CheckCircle className="w-4 h-4 text-green-400" />
-              <span className="text-white text-sm font-medium">Verified Creators</span>
+              <span className="text-white text-sm font-medium">Proven Results</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
               <Shield className="w-4 h-4 text-yellow-400" />
-              <span className="text-white text-sm font-medium">Supporting Local Talent</span>
+              <span className="text-white text-sm font-medium">Data-Driven Strategy</span>
             </div>
           </div>
         </div>
