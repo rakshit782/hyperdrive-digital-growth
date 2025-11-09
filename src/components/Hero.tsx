@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Upload, CheckCircle, Shield, Music, Image as ImageIcon } from "lucide-react";
+import { ArrowRight, Play, Sparkles, TrendingUp, CheckCircle, Users, Award, Zap, Target, BarChart3, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface CTAButtons {
@@ -16,14 +16,15 @@ interface StatBlock {
 
 const Hero = () => {
   const [ctaButtons, setCTAButtons] = useState<CTAButtons>({
-    primaryText: "Explore Content",
-    secondaryText: "Submit Content"
+    primaryText: "Get Free Strategy Call",
+    secondaryText: "Watch Case Study"
   });
 
   const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>([
-    { id: "clients", number: "500+", label: "Happy Clients", color: "from-lime-400 to-green-500" },
-    { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-green-400 to-emerald-500" },
-    { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-lime-300 to-green-400" }
+    { id: "campaigns", number: "500+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
+    { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
+    { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
+    { id: "monitoring", number: "24/7", label: "Account Monitoring", color: "from-pink-400 to-blue-400" }
   ]);
 
   useEffect(() => {
@@ -81,94 +82,206 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
+    <section className="relative flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden py-12 md:py-16 lg:py-20">
+      {/* Enhanced Background Elements */}
       <div className="absolute inset-0">
-        <img 
-          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2850&q=80" 
-          alt="Creative team collaboration"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70"></div>
+        <div className="absolute inset-0 bg-mesh opacity-40"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/8 w-64 h-64 bg-gradient-to-r from-cyan-400/20 to-blue-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
+      
+      <div className="container-modern relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="text-center lg:text-left space-y-8">
+              {/* Trust Badge */}
+              <div className="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200/50 animate-fade-in shadow-modern">
+                <Sparkles className="w-5 h-5 mr-3 text-blue-600" />
+                <span className="text-sm font-medium text-gray-700">Trusted by 500+ Leading Brands</span>
+                <TrendingUp className="w-5 h-5 ml-3 text-green-600" />
+              </div>
+              
+              {/* Main Heading */}
+              <div className="space-y-6 animate-slide-up">
+                <h1 className="heading-modern text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-gray-900 leading-[0.9]">
+                  <span className="block">Scale Your Business</span>
+                  <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    With Precision
+                  </span>
+                </h1>
+                
+                <p className="text-modern text-lg md:text-xl lg:text-2xl font-light text-gray-600 max-w-2xl">
+                  Transform your advertising performance with our data-driven strategies across 
+                  <span className="font-medium text-gray-900"> Amazon, Walmart, and Meta platforms</span>
+                </p>
+              </div>
+              
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center animate-scale-in">
+                <Button 
+                  size="lg" 
+                  className="group btn-primary text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300"
+                  onClick={handlePrimaryButtonClick}
+                >
+                  {ctaButtons.primaryText}
+                  <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="group btn-secondary text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300"
+                  onClick={handleSecondaryButtonClick}
+                >
+                  <Play className="mr-3 w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                  {ctaButtons.secondaryText}
+                </Button>
+              </div>
 
-      {/* Main Content */}
-      <div className="container relative z-10 px-6 py-20">
-        <div className="max-w-5xl mx-auto text-center">
-          {/* Top Stats Bar */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mb-10 animate-fade-in">
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap gap-6 justify-center lg:justify-start pt-4">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span className="text-sm font-medium">Free Audit</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Shield className="w-5 h-5 text-blue-500" />
+                  <span className="text-sm font-medium">Risk-Free</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Zap className="w-5 h-5 text-yellow-500" />
+                  <span className="text-sm font-medium">24hr Setup</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Graphics */}
+            <div className="relative">
+              {/* Main Visual Element */}
+              <div className="relative bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-2xl border border-gray-200/50 backdrop-blur-sm">
+                {/* Dashboard Mockup */}
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg"></div>
+                      <span className="font-semibold text-gray-900">Performance Dashboard</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                    </div>
+                  </div>
+
+                  {/* Metrics Cards */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <BarChart3 className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-900">ROAS</span>
+                      </div>
+                      <div className="text-2xl font-bold text-blue-900">4.2x</div>
+                      <div className="text-xs text-blue-600">+127% vs last month</div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Target className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-900">Revenue</span>
+                      </div>
+                      <div className="text-2xl font-bold text-green-900">$89K</div>
+                      <div className="text-xs text-green-600">+89% growth</div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Users className="w-4 h-4 text-purple-600" />
+                        <span className="text-sm font-medium text-purple-900">Conversions</span>
+                      </div>
+                      <div className="text-2xl font-bold text-purple-900">2.4K</div>
+                      <div className="text-xs text-purple-600">+156% increase</div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Award className="w-4 h-4 text-orange-600" />
+                        <span className="text-sm font-medium text-orange-900">AOV</span>
+                      </div>
+                      <div className="text-2xl font-bold text-orange-900">$156</div>
+                      <div className="text-xs text-orange-600">+23% higher</div>
+                    </div>
+                  </div>
+
+                  {/* Success Indicator */}
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-4 rounded-xl text-white">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="w-6 h-6" />
+                      <div>
+                        <div className="font-semibold">Campaign Optimized</div>
+                        <div className="text-sm opacity-90">Your ads are performing 300% better</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating Elements */}
+                <div className="absolute -top-4 -right-4 w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                
+                <div className="absolute -bottom-4 -left-4 w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center shadow-lg" style={{ animation: 'pulse 2s infinite' }}>
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </div>
+              </div>
+
+              {/* Background decorative elements */}
+              <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-60 blur-xl"></div>
+              <div className="absolute -bottom-8 -right-8 w-20 h-20 bg-gradient-to-r from-purple-200 to-pink-200 rounded-full opacity-60 blur-xl"></div>
+            </div>
+          </div>
+          
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mt-16 animate-fade-in" style={{ animationDelay: '0.3s' }}>
             {statsBlocks.map((stat, index) => (
-              <div key={stat.id} className="flex items-center gap-2">
-                <span className={`text-xl md:text-2xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
-                  {stat.number}
-                </span>
-                <span className="text-white/80 text-xs md:text-sm">• {stat.label}</span>
-                {index < statsBlocks.length - 1 && (
-                  <span className="text-white/40 hidden sm:inline ml-4">|</span>
-                )}
+              <div 
+                key={stat.id} 
+                className="group relative"
+                style={{ animationDelay: `${index * 100 + 400}ms` }}
+              >
+                <div className="card-modern p-8 text-center min-h-[140px] flex flex-col justify-center relative overflow-hidden">
+                  <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                  
+                  <div className={`text-3xl lg:text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300`}>
+                    {stat.number}
+                  </div>
+                  <div className="text-sm lg:text-base text-gray-600 font-medium leading-tight">
+                    {stat.label}
+                  </div>
+                </div>
               </div>
             ))}
-          </div>
-
-          {/* Main Heading */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-5 animate-slide-up leading-tight">
-            <span className="text-white">Transform Your</span>
-            <span className="text-white"> </span>
-            <span className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-lime-400 bg-clip-text text-transparent">
-              E-Commerce Success
-            </span>
-            <span className="block text-white mt-2">With Expert</span>
-            <span className="bg-gradient-to-r from-lime-400 to-green-400 bg-clip-text text-transparent">
-              {" "}Digital Marketing
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-base md:text-lg text-white/80 mb-8 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Amazon, Walmart, Meta & Google Advertising Solutions That Drive Real Results
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 animate-scale-in" style={{ animationDelay: '0.3s' }}>
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-lime-400 hover:from-yellow-500 hover:via-yellow-400 hover:to-lime-500 text-gray-900 px-8 py-5 text-base font-semibold rounded-xl shadow-2xl hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 min-w-[180px]"
-              onClick={handlePrimaryButtonClick}
-            >
-              {ctaButtons.primaryText}
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-2 border-white/90 bg-transparent hover:bg-white/10 text-white px-8 py-5 text-base font-semibold rounded-xl backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 min-w-[180px]"
-              onClick={handleSecondaryButtonClick}
-            >
-              <Upload className="mr-2 w-5 h-5" />
-              {ctaButtons.secondaryText}
-            </Button>
-          </div>
-
-          {/* Trust Badges */}
-          <div className="flex flex-wrap gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-              <span className="text-white text-sm font-medium">Certified Partners</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-              <CheckCircle className="w-4 h-4 text-green-400" />
-              <span className="text-white text-sm font-medium">Proven Results</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-              <Shield className="w-4 h-4 text-yellow-400" />
-              <span className="text-white text-sm font-medium">Data-Driven Strategy</span>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Decorative Bottom Gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+      {/* Floating Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20 animate-pulse-modern"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`
+            }}
+          />
+        ))}
+      </div>
     </section>
   );
 };
