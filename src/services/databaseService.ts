@@ -1,3 +1,4 @@
+import { supabase } from '@/integrations/supabase/client';
 
 // Generic database service for SQL operations
 export interface SecurityLog {
@@ -45,16 +46,15 @@ class DatabaseService {
 
   async insertSecurityLog(logData: Omit<SecurityLog, 'id' | 'created_at'>): Promise<void> {
     try {
-      const response = await fetch(`${this.apiUrl}/security-logs`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(logData)
+      const { error } = await supabase.functions.invoke('neon-security-logs', {
+        body: {
+          action: 'insert',
+          logData
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to insert security log');
+      if (error) {
+        throw error;
       }
     } catch (error) {
       console.error('Database error - security log:', error);
@@ -64,13 +64,18 @@ class DatabaseService {
 
   async getSecurityLogs(limit: number = 100): Promise<SecurityLog[]> {
     try {
-      const response = await fetch(`${this.apiUrl}/security-logs?limit=${limit}`);
+      const { data, error } = await supabase.functions.invoke('neon-security-logs', {
+        body: {
+          action: 'list',
+          limit
+        }
+      });
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch security logs');
+      if (error) {
+        throw error;
       }
 
-      return await response.json();
+      return data?.logs || [];
     } catch (error) {
       console.error('Database error - fetch security logs:', error);
       return [];
