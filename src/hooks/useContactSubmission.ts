@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { localDB } from '@/utils/localStorageDB';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ContactSubmissionData {
@@ -30,8 +29,17 @@ export const useContactSubmission = () => {
         form_type: data.formType || 'contact'
       };
 
-      const contactId = await localDB.insert('contact_submissions', contactData);
-      console.log('Contact submission stored successfully with ID:', contactId);
+      // Store in Neon database via edge function
+      const { data: result, error } = await supabase.functions.invoke('neon-contact-submission', {
+        body: contactData
+      });
+
+      if (error) {
+        console.error('Failed to store contact submission:', error);
+        return { success: false, error: 'Failed to store contact submission' };
+      }
+
+      console.log('Contact submission stored successfully');
 
       // Send email notification
       try {
@@ -46,7 +54,7 @@ export const useContactSubmission = () => {
         console.error('Email notification error:', emailErr);
       }
 
-      return { success: true, contactId };
+      return { success: true, contactId: result?.id };
     } catch (error) {
       console.error('Contact submission error:', error);
       return { success: false, error: 'Failed to store contact submission' };

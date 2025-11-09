@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { localDB } from '@/utils/localStorageDB';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface LeadSubmissionData {
   name: string;
@@ -40,63 +40,54 @@ export const useLeadSubmission = () => {
         throw new Error('Name and email are required');
       }
 
-      // Generate unique lead number (will be handled by database trigger in Supabase)
-      const generateLeadNumber = () => {
-        const today = new Date();
-        const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
-        const randomStr = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-        return `LEAD-${dateStr}-${randomStr}`;
-      };
-
-      // Prepare lead data with all required fields
+      // Prepare lead data for Neon database
       const leadData = {
         name: data.name,
         email: data.email,
         phone: data.phone || null,
         company: data.company || null,
         source: data.source || 'website',
-        status: data.status || 'new' as const,
+        status: data.status || 'new',
         notes: data.notes || null,
-        lead_number: generateLeadNumber(), // For local storage, we generate it here
-        form_security: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        businessGoals: data.businessGoals,
+        website: data.website,
+        monthlyAdSpend: data.monthlyAdSpend,
+        primaryPlatform: data.primaryPlatform,
+        currentChallenges: data.currentChallenges,
+        uploadedFiles: data.uploadedFiles || {},
+        formSecurity: {
           timestamp: Date.now(),
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: document.referrer
-        },
-        lead_data: {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          businessGoals: data.businessGoals,
-          website: data.website,
-          monthlyAdSpend: data.monthlyAdSpend,
-          primaryPlatform: data.primaryPlatform,
-          currentChallenges: data.currentChallenges,
-          uploadedFiles: data.uploadedFiles || {},
-          submittedAt: new Date().toISOString(),
           userAgent: navigator.userAgent,
           pageUrl: window.location.href,
           referrer: document.referrer
         }
       };
 
-      console.log('Creating lead with data:', leadData);
+      console.log('Submitting lead to Neon database:', leadData);
 
-      // Insert lead data using local storage
-      const leadId = await localDB.insert('leads', leadData);
+      // Submit to Neon database via edge function
+      const { data: result, error } = await supabase.functions.invoke('neon-lead-submission', {
+        body: leadData
+      });
 
-      if (!leadId) {
-        throw new Error('Failed to create lead - local storage returned null');
+      if (error) {
+        throw new Error(error.message || 'Failed to submit lead');
       }
 
-      console.log('Lead created successfully with ID:', leadId);
+      if (!result?.success) {
+        throw new Error('Failed to create lead in database');
+      }
+
+      console.log('Lead created successfully with ID:', result.leadId);
 
       // Dispatch custom event for real-time updates
       window.dispatchEvent(new CustomEvent('leadCreated', {
-        detail: { id: leadId, ...leadData }
+        detail: { id: result.leadId, leadNumber: result.leadNumber, ...leadData }
       }));
 
-      return { success: true, leadId };
+      return { success: true, leadId: result.leadId };
     } catch (error) {
       console.error('Lead submission error:', error);
       

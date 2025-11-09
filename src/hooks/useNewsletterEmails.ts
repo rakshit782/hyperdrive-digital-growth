@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { localDB } from '@/utils/localStorageDB';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface NewsletterEmail {
   id?: string;
@@ -22,15 +22,20 @@ export const useNewsletterEmails = () => {
   const fetchEmails = async () => {
     try {
       setLoading(true);
-      console.log('Fetching newsletter emails from local storage...');
-      const emailsData = await localDB.findAll('newsletter_emails');
-      setEmails(emailsData);
-      console.log('Newsletter emails fetched from local storage:', emailsData);
+      console.log('Fetching newsletter emails from Neon database...');
+      const { data, error } = await supabase.functions.invoke('neon-newsletter', {
+        body: { action: 'list' }
+      });
+      
+      if (error) throw error;
+      
+      setEmails(data?.emails || []);
+      console.log('Newsletter emails fetched:', data?.emails);
     } catch (error) {
       console.error('Error fetching newsletter emails:', error);
       toast({
         title: "Error",
-        description: "Failed to load newsletter emails from local storage",
+        description: "Failed to load newsletter emails",
         variant: "destructive",
       });
     } finally {
@@ -42,26 +47,18 @@ export const useNewsletterEmails = () => {
     try {
       console.log('Adding newsletter email:', emailData);
       
-      // Check if email already exists
-      const existingEmail = await localDB.findWhere('newsletter_emails', 
-        (item) => item.email.toLowerCase() === emailData.email.toLowerCase()
-      );
+      const { data, error } = await supabase.functions.invoke('neon-newsletter', {
+        body: {
+          action: 'subscribe',
+          email: emailData.email,
+          name: emailData.name
+        }
+      });
 
-      if (existingEmail.length > 0) {
-        // Update existing email if it was unsubscribed
-        if (existingEmail[0].status === 'unsubscribed') {
-          await localDB.update('newsletter_emails', existingEmail[0].id, {
-            status: 'subscribed',
-            source: emailData.source || 'newsletter_form',
-            updated_at: new Date().toISOString()
-          });
-          console.log('Reactivated existing email subscription');
-          toast({
-            title: "Welcome Back!",
-            description: "Email subscription reactivated successfully",
-          });
-        } else {
-          console.log('Email already subscribed');
+      if (error) throw error;
+
+      if (!data?.success) {
+        if (data?.error === 'Email already subscribed') {
           toast({
             title: "Already Subscribed",
             description: "This email is already subscribed to our newsletter",
@@ -69,24 +66,22 @@ export const useNewsletterEmails = () => {
           });
           return { success: false, error: 'Email already subscribed' };
         }
+        throw new Error(data?.error || 'Failed to subscribe');
+      }
+
+      if (data?.reactivated) {
+        toast({
+          title: "Welcome Back!",
+          description: "Email subscription reactivated successfully",
+        });
       } else {
-        // Add new email
-        const newEmailData = {
-          ...emailData,
-          status: emailData.status || 'subscribed',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        
-        const id = await localDB.insert('newsletter_emails', newEmailData);
-        console.log('New email added with ID:', id);
         toast({
           title: "Success",
           description: "Email added to newsletter successfully",
         });
       }
 
-      await fetchEmails(); // Refresh the list
+      await fetchEmails();
       return { success: true };
     } catch (error) {
       console.error('Error adding newsletter email:', error);
@@ -101,15 +96,21 @@ export const useNewsletterEmails = () => {
 
   const updateEmailStatus = async (id: string, status: 'subscribed' | 'unsubscribed') => {
     try {
-      await localDB.update('newsletter_emails', id, { 
-        status,
-        updated_at: new Date().toISOString()
+      const { error } = await supabase.functions.invoke('neon-newsletter', {
+        body: {
+          action: 'update',
+          id,
+          status
+        }
       });
+
+      if (error) throw error;
+      
       toast({
         title: "Success",
         description: `Email ${status} successfully`,
       });
-      await fetchEmails(); // Refresh the list
+      await fetchEmails();
     } catch (error) {
       console.error('Error updating email status:', error);
       toast({
@@ -123,12 +124,20 @@ export const useNewsletterEmails = () => {
 
   const deleteEmail = async (id: string) => {
     try {
-      await localDB.delete('newsletter_emails', id);
+      const { error } = await supabase.functions.invoke('neon-newsletter', {
+        body: {
+          action: 'delete',
+          id
+        }
+      });
+
+      if (error) throw error;
+      
       toast({
         title: "Success",
         description: "Email deleted successfully",
       });
-      await fetchEmails(); // Refresh the list
+      await fetchEmails();
     } catch (error) {
       console.error('Error deleting email:', error);
       toast({
