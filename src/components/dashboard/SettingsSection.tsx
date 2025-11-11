@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Save } from "lucide-react";
-import { useState } from "react";
+import { Save, Upload } from "lucide-react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
 
 export function SettingsSection() {
@@ -14,10 +14,17 @@ export function SettingsSection() {
     address: localStorage.getItem("footer_address") || "New York, NY 10001",
   });
 
+  const savedLogoData = localStorage.getItem('logo_data');
+  const parsedLogoData = savedLogoData ? JSON.parse(savedLogoData) : { text: 'Digital Growth', imageUrl: '', faviconUrl: '' };
+  
   const [logoData, setLogoData] = useState({
-    text: localStorage.getItem("logo_text") || "Digital Growth",
-    imageUrl: localStorage.getItem("logo_image") || "",
+    text: parsedLogoData.text || "Digital Growth",
+    imageUrl: parsedLogoData.imageUrl || "",
+    faviconUrl: parsedLogoData.faviconUrl || "",
   });
+
+  const logoFileRef = useRef<HTMLInputElement>(null);
+  const faviconFileRef = useRef<HTMLInputElement>(null);
 
   const saveFooter = () => {
     localStorage.setItem("footer_email", footerData.email);
@@ -26,11 +33,32 @@ export function SettingsSection() {
     toast.success("Footer settings saved");
   };
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoData({ ...logoData, imageUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFaviconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoData({ ...logoData, faviconUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const saveLogo = () => {
-    localStorage.setItem("logo_text", logoData.text);
-    localStorage.setItem("logo_image", logoData.imageUrl);
+    localStorage.setItem('logo_data', JSON.stringify(logoData));
     window.dispatchEvent(new Event("logo-updated"));
-    toast.success("Logo settings saved");
+    toast.success("Logo and favicon settings saved");
   };
 
   return (
@@ -92,31 +120,96 @@ export function SettingsSection() {
                 placeholder="Your Brand Name"
               />
             </div>
+            
             <div>
-              <Label htmlFor="logoImage">Logo Image URL (optional)</Label>
-              <Input
-                id="logoImage"
-                value={logoData.imageUrl}
-                onChange={(e) => setLogoData({ ...logoData, imageUrl: e.target.value })}
-                placeholder="https://example.com/logo.png"
-              />
-            </div>
-            {logoData.imageUrl && (
-              <div className="p-4 bg-muted rounded-lg">
-                <img
-                  src={logoData.imageUrl}
-                  alt="Logo preview"
-                  className="h-12 object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    toast.error("Invalid image URL");
-                  }}
+              <Label htmlFor="logoUpload">Upload Logo Image</Label>
+              <div className="flex gap-2">
+                <Input
+                  ref={logoFileRef}
+                  id="logoUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="hidden"
                 />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => logoFileRef.current?.click()}
+                  className="w-full"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Choose Logo File
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Upload a logo image file (PNG, JPG, SVG)
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="faviconUpload">Upload Favicon</Label>
+              <div className="flex gap-2">
+                <Input
+                  ref={faviconFileRef}
+                  id="faviconUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFaviconUpload}
+                  className="hidden"
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => faviconFileRef.current?.click()}
+                  className="w-full"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Choose Favicon File
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Upload a favicon image (ICO, PNG - 32x32 or 16x16 recommended)
+              </p>
+            </div>
+
+            {logoData.imageUrl && (
+              <div className="space-y-2">
+                <Label>Logo Preview</Label>
+                <div className="p-4 bg-muted rounded-lg">
+                  <img
+                    src={logoData.imageUrl}
+                    alt="Logo preview"
+                    className="h-12 object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      toast.error("Invalid logo image");
+                    }}
+                  />
+                </div>
               </div>
             )}
+
+            {logoData.faviconUrl && (
+              <div className="space-y-2">
+                <Label>Favicon Preview</Label>
+                <div className="p-4 bg-muted rounded-lg flex items-center">
+                  <img
+                    src={logoData.faviconUrl}
+                    alt="Favicon preview"
+                    className="h-8 w-8 object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      toast.error("Invalid favicon image");
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
             <Button onClick={saveLogo} className="w-full">
               <Save className="h-4 w-4 mr-2" />
-              Save Logo
+              Save Logo & Favicon
             </Button>
           </CardContent>
         </Card>
