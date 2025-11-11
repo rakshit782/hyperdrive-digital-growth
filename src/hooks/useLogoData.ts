@@ -16,57 +16,80 @@ const DEFAULT_LOGO: LogoData = {
 
 export const useLogoData = () => {
   const [logoData, setLogoData] = useState<LogoData>(() => {
-    // Initialize from localStorage immediately
-    const savedLogo = localStorage.getItem('logo_data');
-    if (savedLogo) {
-      try {
-        return JSON.parse(savedLogo);
-      } catch {
-        return DEFAULT_LOGO;
+    // Initialize from localStorage immediately with fallback
+    try {
+      const savedLogo = localStorage.getItem('logo_data');
+      if (savedLogo) {
+        const parsed = JSON.parse(savedLogo);
+        // Validate parsed data has required fields
+        if (parsed && typeof parsed === 'object') {
+          return {
+            text: parsed.text || DEFAULT_LOGO.text,
+            imageUrl: parsed.imageUrl || DEFAULT_LOGO.imageUrl,
+            faviconUrl: parsed.faviconUrl || DEFAULT_LOGO.faviconUrl,
+            size: parsed.size || DEFAULT_LOGO.size,
+          };
+        }
       }
+    } catch (error) {
+      console.error('Failed to load logo from localStorage:', error);
     }
     return DEFAULT_LOGO;
   });
 
   useEffect(() => {
     const loadLogo = () => {
-      const savedLogo = localStorage.getItem('logo_data');
-      if (savedLogo) {
-        try {
+      try {
+        const savedLogo = localStorage.getItem('logo_data');
+        if (savedLogo) {
           const parsedData = JSON.parse(savedLogo);
-          setLogoData(parsedData);
-          
-          // Update favicon globally
-          if (parsedData.faviconUrl) {
-            updateFavicon(parsedData.faviconUrl);
+          if (parsedData && typeof parsedData === 'object') {
+            setLogoData({
+              text: parsedData.text || DEFAULT_LOGO.text,
+              imageUrl: parsedData.imageUrl || DEFAULT_LOGO.imageUrl,
+              faviconUrl: parsedData.faviconUrl || DEFAULT_LOGO.faviconUrl,
+              size: parsedData.size || DEFAULT_LOGO.size,
+            });
+            
+            // Update favicon globally
+            if (parsedData.faviconUrl) {
+              updateFavicon(parsedData.faviconUrl);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to parse logo data:', error);
+      }
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'logo_data' && e.newValue) {
+        try {
+          const parsedData = JSON.parse(e.newValue);
+          if (parsedData && typeof parsedData === 'object') {
+            setLogoData({
+              text: parsedData.text || DEFAULT_LOGO.text,
+              imageUrl: parsedData.imageUrl || DEFAULT_LOGO.imageUrl,
+              faviconUrl: parsedData.faviconUrl || DEFAULT_LOGO.faviconUrl,
+              size: parsedData.size || DEFAULT_LOGO.size,
+            });
+            if (parsedData.faviconUrl) {
+              updateFavicon(parsedData.faviconUrl);
+            }
           }
         } catch (error) {
-          console.error('Failed to parse logo data:', error);
+          console.error('Failed to parse storage event:', error);
         }
       }
     };
 
     // Listen for logo updates
     window.addEventListener('logo-updated', loadLogo);
-    
-    // Also listen for storage events (for cross-tab synchronization)
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'logo_data' && e.newValue) {
-        try {
-          const parsedData = JSON.parse(e.newValue);
-          setLogoData(parsedData);
-          if (parsedData.faviconUrl) {
-            updateFavicon(parsedData.faviconUrl);
-          }
-        } catch (error) {
-          console.error('Failed to parse storage event:', error);
-        }
-      }
-    });
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
       window.removeEventListener('logo-updated', loadLogo);
-      window.removeEventListener('storage', loadLogo);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 

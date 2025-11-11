@@ -4,7 +4,13 @@ import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "luc
 import { useLogoData } from "@/hooks/useLogoData";
 
 const Footer = () => {
-  const logoData = useLogoData();
+  let logoData;
+  try {
+    logoData = useLogoData();
+  } catch (error) {
+    console.error('Error in Footer useLogoData:', error);
+    logoData = { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.png', size: 80 };
+  }
 
   return (
     <footer className="bg-slate-900 text-white py-16">

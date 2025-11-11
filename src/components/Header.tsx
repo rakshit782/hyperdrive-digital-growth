@@ -8,7 +8,14 @@ import { useLogoData } from "@/hooks/useLogoData";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const logoData = useLogoData();
+  
+  let logoData;
+  try {
+    logoData = useLogoData();
+  } catch (error) {
+    console.error('Error in useLogoData:', error);
+    logoData = { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.png', size: 80 };
+  }
 
   const serviceItems = [
     { name: "Amazon Ads Management", href: "/services/amazon-advertising" },
