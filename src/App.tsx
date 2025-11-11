@@ -17,6 +17,11 @@ import BlogPost from "./pages/BlogPost";
 import WebsiteDevelopment from "./pages/WebsiteDevelopment";
 import NotFound from "./pages/NotFound";
 
+// Legal pages
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import RefundPolicy from "./pages/RefundPolicy";
+
 // Case study pages
 import AmazonCaseStudies from "./pages/AmazonCaseStudies";
 import MetaCaseStudies from "./pages/MetaCaseStudies";
@@ -60,6 +65,9 @@ function App() {
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/dashboard/login" element={<DashboardAuth />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/services/:serviceType" element={<DetailedServicePage />} />

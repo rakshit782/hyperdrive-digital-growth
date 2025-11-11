@@ -89,9 +89,9 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Company */}
+          {/* Useful Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Company</h3>
+            <h3 className="text-lg font-semibold">Useful Links</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/about" className="text-slate-300 hover:text-white transition-colors text-sm">
@@ -113,6 +113,21 @@ const Footer = () => {
                   Pricing
                 </Link>
               </li>
+              <li>
+                <Link to="/privacy" className="text-slate-300 hover:text-white transition-colors text-sm">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-slate-300 hover:text-white transition-colors text-sm">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/refund-policy" className="text-slate-300 hover:text-white transition-colors text-sm">
+                  Refund Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -131,23 +146,20 @@ const Footer = () => {
               <div className="space-y-2">
                 <div className="flex items-start space-x-3">
                   <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                  <div className="text-slate-300 text-sm">
-                    <div className="font-semibold">USA</div>
-                    <div id="footer-address">New York, NY 10001</div>
+                  <div className="text-slate-300 text-sm" id="footer-address">
+                    New York, NY 10001
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
                   <div className="text-slate-300 text-sm">
-                    <div className="font-semibold">UK</div>
-                    <div>London, United Kingdom</div>
+                    London, United Kingdom
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
                   <div className="text-slate-300 text-sm">
-                    <div className="font-semibold">India</div>
-                    <div>Gurgaon, India</div>
+                    Gurgaon, India
                   </div>
                 </div>
               </div>

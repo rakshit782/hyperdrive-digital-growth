@@ -8,6 +8,7 @@ import { LeadsSection } from '@/components/dashboard/LeadsSection';
 import { NewsletterSection } from '@/components/dashboard/NewsletterSection';
 import { SecuritySection } from '@/components/dashboard/SecuritySection';
 import { SettingsSection } from '@/components/dashboard/SettingsSection';
+import { LegalPagesSection } from '@/components/dashboard/LegalPagesSection';
 import { databaseService } from '@/services/databaseService';
 import { toast } from 'sonner';
 
@@ -124,6 +125,8 @@ const Dashboard = () => {
         return <SecuritySection logs={securityLogs} onRefresh={loadAllData} />;
       case 'settings':
         return <SettingsSection />;
+      case 'legal':
+        return <LegalPagesSection />;
       default:
         return <OverviewSection stats={stats} />;
     }
