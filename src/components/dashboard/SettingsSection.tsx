@@ -3,9 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Save } from "lucide-react";
-import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Save, Crop } from "lucide-react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
+import ReactCrop, { Crop as CropType, PixelCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 export function SettingsSection() {
   const [footerData, setFooterData] = useState({
@@ -24,6 +27,12 @@ export function SettingsSection() {
     size: parsedLogoData.size || 80,
   });
 
+  const [crop, setCrop] = useState<CropType>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+
   const saveFooter = () => {
     localStorage.setItem("footer_email", footerData.email);
     localStorage.setItem("footer_phone", footerData.phone);
@@ -35,6 +44,56 @@ export function SettingsSection() {
     localStorage.setItem('logo_data', JSON.stringify(logoData));
     window.dispatchEvent(new Event("logo-updated"));
     toast.success("Logo size updated successfully");
+  };
+
+  const applyCrop = () => {
+    if (!completedCrop || !imgRef.current || !previewCanvasRef.current) {
+      toast.error("Please select a crop area first");
+      return;
+    }
+
+    const canvas = previewCanvasRef.current;
+    const image = imgRef.current;
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      toast.error("Failed to get canvas context");
+      return;
+    }
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    canvas.width = completedCrop.width;
+    canvas.height = completedCrop.height;
+
+    ctx.drawImage(
+      image,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
+      0,
+      0,
+      completedCrop.width,
+      completedCrop.height
+    );
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        toast.error("Failed to crop image");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const croppedImageUrl = reader.result as string;
+        setLogoData({ ...logoData, imageUrl: croppedImageUrl });
+        setIsCropDialogOpen(false);
+        toast.success("Logo cropped! Click 'Save Logo Size' to apply changes.");
+      };
+      reader.readAsDataURL(blob);
+    }, 'image/png');
   };
 
   return (
@@ -91,7 +150,7 @@ export function SettingsSection() {
               <Label>Current Logo Preview (at {logoData.size}px)</Label>
               <div className="p-6 bg-muted rounded-lg flex items-center justify-center">
                 <img
-                  src="/logo.png"
+                  src={logoData.imageUrl}
                   alt="AMZ AD SCOUT Logo"
                   style={{ height: `${logoData.size}px` }}
                   className="object-contain"
@@ -114,6 +173,49 @@ export function SettingsSection() {
                 Adjust the height of your logo (40px - 160px)
               </p>
             </div>
+
+            <Dialog open={isCropDialogOpen} onOpenChange={setIsCropDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <Crop className="h-4 w-4 mr-2" />
+                  Crop Logo
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                  <DialogTitle>Crop Your Logo</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="max-h-[60vh] overflow-auto">
+                    <ReactCrop
+                      crop={crop}
+                      onChange={(c) => setCrop(c)}
+                      onComplete={(c) => setCompletedCrop(c)}
+                      aspect={undefined}
+                    >
+                      <img
+                        ref={imgRef}
+                        src={logoData.imageUrl}
+                        alt="Crop preview"
+                        className="max-w-full"
+                      />
+                    </ReactCrop>
+                  </div>
+                  <canvas
+                    ref={previewCanvasRef}
+                    className="hidden"
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="outline" onClick={() => setIsCropDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={applyCrop}>
+                      Apply Crop
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
 
             <Button onClick={saveLogoSize} className="w-full">
               <Save className="h-4 w-4 mr-2" />
