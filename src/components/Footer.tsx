@@ -52,37 +52,37 @@ const Footer = () => {
             <h3 className="text-lg font-semibold">Services</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/amazon-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
+                <Link to="/services/amazon-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
                   Amazon Advertising
                 </Link>
               </li>
               <li>
-                <Link to="/google-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
+                <Link to="/services/google-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
                   Google Advertising
                 </Link>
               </li>
               <li>
-                <Link to="/meta-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
+                <Link to="/services/meta-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
                   Meta Advertising
                 </Link>
               </li>
               <li>
-                <Link to="/walmart-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
+                <Link to="/services/walmart-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
                   Walmart Advertising
                 </Link>
               </li>
               <li>
-                <Link to="/website-development" className="text-slate-300 hover:text-white transition-colors text-sm">
+                <Link to="/services/website-development" className="text-slate-300 hover:text-white transition-colors text-sm">
                   Website Development
                 </Link>
               </li>
               <li>
-                <Link to="/shopify-development" className="text-slate-300 hover:text-white transition-colors text-sm">
+                <Link to="/services/shopify-development" className="text-slate-300 hover:text-white transition-colors text-sm">
                   Shopify Development
                 </Link>
               </li>
               <li>
-                <Link to="/account-management" className="text-slate-300 hover:text-white transition-colors text-sm">
+                <Link to="/services/account-management" className="text-slate-300 hover:text-white transition-colors text-sm">
                   Account Management
                 </Link>
               </li>
@@ -169,7 +169,7 @@ const Footer = () => {
 
         <div className="border-t border-slate-800 mt-12 pt-8 text-center">
           <p className="text-slate-400 text-sm">
-            © 2024 AMZ AD SCOUT. All rights reserved.
+            © 2025 AMZ AD SCOUT. All rights reserved.
           </p>
         </div>
       </div>
