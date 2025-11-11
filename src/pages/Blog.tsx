@@ -1,131 +1,40 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, User, ArrowRight, TrendingUp, Target, BarChart3 } from "lucide-react";
-import { fetchRSSFeeds } from "@/utils/rssFeedParser";
-
-interface BlogPostDisplay {
-  id: string | number;
-  title: string;
-  excerpt: string;
-  category: string;
-  author: string;
-  publishDate: string;
-  readTime: string;
-  image: string;
-  featured?: boolean;
-  link?: string;
-}
+import { Calendar, Clock, User, ArrowRight } from "lucide-react";
+import { serviceBlogPosts } from "@/data/blogPosts";
 
 const Blog = () => {
-  const [blogPosts, setBlogPosts] = useState<BlogPostDisplay[]>([
-    {
-      id: 1,
-      title: "10 Amazon PPC Strategies That Actually Work in 2024",
-      excerpt: "Discover the latest Amazon advertising strategies that are driving real results for sellers this year.",
-      category: "Amazon Advertising",
-      author: "Sarah Johnson",
-      publishDate: "March 15, 2024",
-      readTime: "8 min read",
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=300&fit=crop",
-      featured: true
-    },
-    {
-      id: 2,
-      title: "Google Ads vs Meta Ads: Which Platform Delivers Better ROI?",
-      excerpt: "A comprehensive comparison of the two biggest advertising platforms and how to choose the right one for your business.",
-      category: "Digital Marketing",
-      author: "Mike Chen",
-      publishDate: "March 12, 2024",
-      readTime: "12 min read",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=300&fit=crop"
-    },
-    {
-      id: 3,
-      title: "The Complete Guide to Walmart Marketplace Success",
-      excerpt: "Everything you need to know to start selling on Walmart and compete with Amazon sellers.",
-      category: "E-commerce",
-      author: "Lisa Rodriguez",
-      publishDate: "March 10, 2024",
-      readTime: "15 min read",
-      image: "https://images.unsplash.com/photo-1556742400-b5ad0e806a10?w=600&h=300&fit=crop"
-    },
-    {
-      id: 4,
-      title: "5 Common PPC Mistakes That Are Killing Your ROAS",
-      excerpt: "Learn about the most expensive mistakes in PPC advertising and how to avoid them to maximize your return on ad spend.",
-      category: "PPC Management",
-      author: "David Park",
-      publishDate: "March 8, 2024",
-      readTime: "10 min read",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=300&fit=crop"
-    },
-    {
-      id: 5,
-      title: "How to Scale Your E-commerce Business with Multi-Platform Advertising",
-      excerpt: "Strategic approaches to expanding your advertising reach across Amazon, Google, Meta, and beyond.",
-      category: "Growth Strategy",
-      author: "Emma Thompson",
-      publishDate: "March 5, 2024",
-      readTime: "14 min read",
-      image: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=600&h=300&fit=crop"
-    },
-    {
-      id: 6,
-      title: "The Future of E-commerce: AI and Automation in Digital Marketing",
-      excerpt: "Explore how artificial intelligence and automation are revolutionizing digital marketing and what it means for your business.",
-      category: "Technology",
-      author: "Alex Kumar",
-      publishDate: "March 1, 2024",
-      readTime: "11 min read",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=300&fit=crop"
-    }
-  ]);
+  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const [loading, setLoading] = useState(true);
+  const categories = [
+    "All",
+    "Amazon Advertising",
+    "Google Advertising",
+    "Meta Advertising",
+    "Walmart Advertising",
+    "Shopify Development",
+    "Website Development",
+    "PPC Management",
+    "Growth Strategy"
+  ];
 
-  useEffect(() => {
-    const loadRSSFeeds = async () => {
-      try {
-        const feeds = await fetchRSSFeeds();
-        if (feeds && feeds.length > 0) {
-          // Convert RSS feeds to display format
-          const convertedPosts: BlogPostDisplay[] = feeds.map((feed, index) => ({
-            id: feed.id,
-            title: feed.title,
-            excerpt: feed.description,
-            category: feed.categories?.[0] || 'Digital Marketing',
-            author: feed.author || 'Industry Expert',
-            publishDate: new Date(feed.pubDate).toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            }),
-            readTime: Math.ceil(feed.description.split(' ').length / 200) + ' min read',
-            image: feed.image || `https://images.unsplash.com/photo-${1556742049 + index}?w=600&h=300&fit=crop`,
-            featured: index === 0,
-            link: feed.link
-          }));
-          setBlogPosts(convertedPosts);
-        }
-      } catch (error) {
-        console.error('Failed to load RSS feeds:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadRSSFeeds();
-  }, []);
+  const filteredPosts = selectedCategory === "All" 
+    ? serviceBlogPosts 
+    : serviceBlogPosts.filter(post => post.category === selectedCategory);
 
-  const categories = ["All", "Amazon Advertising", "Digital Marketing", "E-commerce", "PPC Management", "Growth Strategy", "Technology"];
+  const featuredPost = filteredPosts.find(post => post.featured);
+  const regularPosts = filteredPosts.filter(post => !post.featured);
 
-  const featuredPost = blogPosts.find(post => post.featured);
-  const regularPosts = blogPosts.filter(post => !post.featured);
+  const handlePostClick = (slug: string) => {
+    navigate(`/blog/${slug}`);
+  };
 
   return (
     <>
@@ -150,11 +59,12 @@ const Blog = () => {
 
             {/* Category Filter */}
             <div className="flex flex-wrap justify-center gap-2 mb-12">
-              {categories.map((category, index) => (
+              {categories.map((category) => (
                 <Badge 
-                  key={index}
-                  variant={index === 0 ? "default" : "outline"}
-                  className="px-4 py-2 cursor-pointer hover:bg-blue-100 transition-colors"
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  className="px-4 py-2 cursor-pointer hover:bg-primary/20 transition-colors"
+                  onClick={() => setSelectedCategory(category)}
                 >
                   {category}
                 </Badge>
@@ -204,7 +114,7 @@ const Blog = () => {
                       </div>
                       <Button 
                         className="group"
-                        onClick={() => featuredPost.link && window.open(featuredPost.link, '_blank')}
+                        onClick={() => handlePostClick(featuredPost.slug)}
                       >
                         Read More
                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -252,7 +162,7 @@ const Blog = () => {
                         variant="outline" 
                         size="sm" 
                         className="group"
-                        onClick={() => post.link && window.open(post.link, '_blank')}
+                        onClick={() => handlePostClick(post.slug)}
                       >
                         Read More
                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

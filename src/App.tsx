@@ -12,6 +12,7 @@ import Services from "./pages/ServicesPage";
 import CaseStudies from "./pages/CaseStudies";
 import Pricing from "./pages/Pricing";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import WebsiteDevelopment from "./pages/WebsiteDevelopment";
 import NotFound from "./pages/NotFound";
 
@@ -48,6 +49,7 @@ function App() {
             <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/dashboard/login" element={<DashboardAuth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/services/:serviceType" element={<DetailedServicePage />} />
