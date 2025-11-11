@@ -147,7 +147,7 @@ const Footer = () => {
                   <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
                   <div className="text-slate-300 text-sm">
                     <div className="font-semibold">India</div>
-                    <div>Mumbai, India</div>
+                    <div>Gurgaon, India</div>
                   </div>
                 </div>
               </div>
