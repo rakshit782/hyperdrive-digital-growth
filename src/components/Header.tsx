@@ -54,7 +54,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             {logoData.imageUrl ? (
-              <img src={logoData.imageUrl} alt={logoData.text} className="h-10 object-contain" />
+              <img src={logoData.imageUrl} alt={logoData.text} className="max-h-20 w-auto object-contain" />
             ) : (
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {logoData.text}
