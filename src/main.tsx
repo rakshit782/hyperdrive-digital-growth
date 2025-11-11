@@ -14,17 +14,25 @@ performanceOptimizer.registerServiceWorker();
 logMigrationStatus();
 
 // Initialize local database fallback for offline mode
-import('./utils/localStorageDB').then(({ localDB }) => {
-  localDB.seedDefaultData().then(() => {
+import('./utils/localStorageDB')
+  .then(({ localDB }) => {
+    return localDB.seedDefaultData();
+  })
+  .then(() => {
     console.log('Local database initialized as fallback');
-  }).catch(error => {
+  })
+  .catch(error => {
     console.error('Failed to initialize local database:', error);
+    // Don't block app loading if local DB fails
   });
-});
 
 // Optimize rendering
 const container = document.getElementById("root");
-if (!container) throw new Error('Failed to find the root element');
+if (!container) {
+  console.error('Root element not found');
+  document.body.innerHTML = '<div style="padding: 20px; text-align: center;"><h1>Failed to load application</h1><p>Please refresh the page</p></div>';
+  throw new Error('Failed to find the root element');
+}
 
 const root = createRoot(container);
 
