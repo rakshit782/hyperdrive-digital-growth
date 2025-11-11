@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [logoData, setLogoData] = useState({ text: 'Digital Growth', imageUrl: '', size: 80 });
+  const [logoData, setLogoData] = useState({ text: 'AMZ AD SCOUT', imageUrl: '/logo.png', size: 80 });
 
   useEffect(() => {
     const loadLogo = () => {
