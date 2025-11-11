@@ -10,7 +10,7 @@ export interface LogoData {
 const DEFAULT_LOGO: LogoData = {
   text: 'AMZ AD SCOUT',
   imageUrl: '/logo.png',
-  faviconUrl: '/favicon.png',
+  faviconUrl: '/favicon.ico',
   size: 80,
 };
 

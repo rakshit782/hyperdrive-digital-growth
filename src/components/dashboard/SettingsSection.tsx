@@ -18,12 +18,12 @@ export function SettingsSection() {
   });
 
   const savedLogoData = localStorage.getItem('logo_data');
-  const parsedLogoData = savedLogoData ? JSON.parse(savedLogoData) : { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.png', size: 80 };
+  const parsedLogoData = savedLogoData ? JSON.parse(savedLogoData) : { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.ico', size: 80 };
   
   const [logoData, setLogoData] = useState({
     text: parsedLogoData.text || "AMZ AD SCOUT",
     imageUrl: parsedLogoData.imageUrl || "/logo.png",
-    faviconUrl: parsedLogoData.faviconUrl || "/favicon.png",
+    faviconUrl: parsedLogoData.faviconUrl || "/favicon.ico",
     size: parsedLogoData.size || 80,
   });
 

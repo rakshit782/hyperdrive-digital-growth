@@ -14,7 +14,7 @@ const Header = () => {
     logoData = useLogoData();
   } catch (error) {
     console.error('Error in useLogoData:', error);
-    logoData = { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.png', size: 80 };
+    logoData = { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.ico', size: 80 };
   }
 
   const serviceItems = [
