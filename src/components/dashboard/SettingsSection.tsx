@@ -13,7 +13,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 export function SettingsSection() {
   const [footerData, setFooterData] = useState({
     email: localStorage.getItem("footer_email") || "info@amzadscout.com",
-    phone: localStorage.getItem("footer_phone") || "+1 (555) 123-4567",
+    phone: localStorage.getItem("footer_phone") || "+91-9799411555",
     address: localStorage.getItem("footer_address") || "New York, NY 10001",
   });
 
