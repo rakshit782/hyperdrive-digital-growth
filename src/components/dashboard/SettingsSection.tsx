@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
 import { Save, Upload } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
@@ -15,12 +16,13 @@ export function SettingsSection() {
   });
 
   const savedLogoData = localStorage.getItem('logo_data');
-  const parsedLogoData = savedLogoData ? JSON.parse(savedLogoData) : { text: 'Digital Growth', imageUrl: '', faviconUrl: '' };
+  const parsedLogoData = savedLogoData ? JSON.parse(savedLogoData) : { text: 'Digital Growth', imageUrl: '', faviconUrl: '', size: 80 };
   
   const [logoData, setLogoData] = useState({
     text: parsedLogoData.text || "Digital Growth",
     imageUrl: parsedLogoData.imageUrl || "",
     faviconUrl: parsedLogoData.faviconUrl || "",
+    size: parsedLogoData.size || 80,
   });
 
   const logoFileRef = useRef<HTMLInputElement>(null);
@@ -39,6 +41,7 @@ export function SettingsSection() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoData({ ...logoData, imageUrl: reader.result as string });
+        toast.success("Logo uploaded! Click 'Save Logo & Favicon' to apply changes.");
       };
       reader.readAsDataURL(file);
     }
@@ -50,6 +53,7 @@ export function SettingsSection() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoData({ ...logoData, faviconUrl: reader.result as string });
+        toast.success("Favicon uploaded! Click 'Save Logo & Favicon' to apply changes.");
       };
       reader.readAsDataURL(file);
     }
@@ -112,13 +116,32 @@ export function SettingsSection() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="logoText">Logo Text</Label>
+              <Label htmlFor="logoText">Logo Text (Fallback)</Label>
               <Input
                 id="logoText"
                 value={logoData.text}
                 onChange={(e) => setLogoData({ ...logoData, text: e.target.value })}
                 placeholder="Your Brand Name"
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                This text will show if no logo image is uploaded
+              </p>
+            </div>
+            
+            <div>
+              <Label htmlFor="logoSize">Logo Size: {logoData.size}px</Label>
+              <Slider
+                id="logoSize"
+                min={40}
+                max={160}
+                step={10}
+                value={[logoData.size]}
+                onValueChange={(value) => setLogoData({ ...logoData, size: value[0] })}
+                className="mt-2"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Adjust the height of your logo (40px - 160px)
+              </p>
             </div>
             
             <div>
@@ -175,12 +198,13 @@ export function SettingsSection() {
 
             {logoData.imageUrl && (
               <div className="space-y-2">
-                <Label>Logo Preview</Label>
-                <div className="p-4 bg-muted rounded-lg">
+                <Label>Logo Preview (at {logoData.size}px)</Label>
+                <div className="p-4 bg-muted rounded-lg flex items-center">
                   <img
                     src={logoData.imageUrl}
                     alt="Logo preview"
-                    className="h-12 object-contain"
+                    style={{ height: `${logoData.size}px` }}
+                    className="object-contain"
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                       toast.error("Invalid logo image");

@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [logoData, setLogoData] = useState({ text: 'Digital Growth', imageUrl: '' });
+  const [logoData, setLogoData] = useState({ text: 'Digital Growth', imageUrl: '', size: 80 });
 
   useEffect(() => {
     const loadLogo = () => {
@@ -54,7 +54,12 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             {logoData.imageUrl ? (
-              <img src={logoData.imageUrl} alt={logoData.text} className="max-h-20 w-auto object-contain" />
+              <img 
+                src={logoData.imageUrl} 
+                alt={logoData.text} 
+                style={{ height: `${logoData.size || 80}px` }}
+                className="w-auto object-contain" 
+              />
             ) : (
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {logoData.text}
