@@ -1,40 +1,14 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLogoData } from "@/hooks/useLogoData";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [logoData, setLogoData] = useState({ text: 'AMZ AD SCOUT', imageUrl: '/logo.png', size: 80 });
-
-  useEffect(() => {
-    const loadLogo = () => {
-      const savedLogo = localStorage.getItem('logo_data');
-      if (savedLogo) {
-        const logoData = JSON.parse(savedLogo);
-        setLogoData(logoData);
-        
-        // Update favicon if available
-        if (logoData.faviconUrl) {
-          const favicon = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
-          if (favicon) {
-            favicon.href = logoData.faviconUrl;
-          } else {
-            const newFavicon = document.createElement('link');
-            newFavicon.rel = 'icon';
-            newFavicon.href = logoData.faviconUrl;
-            document.head.appendChild(newFavicon);
-          }
-        }
-      }
-    };
-
-    loadLogo();
-    window.addEventListener('logo-updated', loadLogo);
-    return () => window.removeEventListener('logo-updated', loadLogo);
-  }, []);
+  const logoData = useLogoData();
 
   const serviceItems = [
     { name: "Amazon Ads Management", href: "/services/amazon-advertising" },

@@ -1,18 +1,27 @@
 
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Star } from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { useLogoData } from "@/hooks/useLogoData";
 
 const Footer = () => {
+  const logoData = useLogoData();
+
   return (
     <footer className="bg-slate-900 text-white py-16">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Star className="w-6 h-6 text-yellow-400" />
-              <span className="text-xl font-bold">AMZ AD SCOUT</span>
-            </div>
+            {logoData.imageUrl ? (
+              <img 
+                src={logoData.imageUrl} 
+                alt={logoData.text}
+                style={{ height: '48px' }}
+                className="w-auto object-contain brightness-0 invert"
+              />
+            ) : (
+              <span className="text-xl font-bold">{logoData.text}</span>
+            )}
             <p className="text-slate-300 text-sm leading-relaxed">
               The Growth Agency specializing in Amazon advertising, digital marketing, and e-commerce solutions.
             </p>

@@ -41,7 +41,13 @@ export function SettingsSection() {
   };
 
   const saveLogoSize = () => {
-    localStorage.setItem('logo_data', JSON.stringify(logoData));
+    const updatedData = {
+      ...logoData,
+      text: logoData.text || 'AMZ AD SCOUT',
+      imageUrl: logoData.imageUrl || '/logo.png',
+      faviconUrl: logoData.faviconUrl || '/favicon.png',
+    };
+    localStorage.setItem('logo_data', JSON.stringify(updatedData));
     window.dispatchEvent(new Event("logo-updated"));
     toast.success("Logo size updated successfully");
   };
