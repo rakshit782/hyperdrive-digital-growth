@@ -128,9 +128,28 @@ const Footer = () => {
                 <Phone className="w-4 h-4 text-slate-400" />
                 <span className="text-slate-300 text-sm" id="footer-phone">+91-9799411555</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="w-4 h-4 text-slate-400" />
-                <span className="text-slate-300 text-sm" id="footer-address">New York, NY 10001</span>
+              <div className="space-y-2">
+                <div className="flex items-start space-x-3">
+                  <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-slate-300 text-sm">
+                    <div className="font-semibold">USA</div>
+                    <div id="footer-address">New York, NY 10001</div>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-slate-300 text-sm">
+                    <div className="font-semibold">UK</div>
+                    <div>London, United Kingdom</div>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-slate-300 text-sm">
+                    <div className="font-semibold">India</div>
+                    <div>Mumbai, India</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
