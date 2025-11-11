@@ -9,6 +9,7 @@ import { NewsletterSection } from '@/components/dashboard/NewsletterSection';
 import { SecuritySection } from '@/components/dashboard/SecuritySection';
 import { SettingsSection } from '@/components/dashboard/SettingsSection';
 import { LegalPagesSection } from '@/components/dashboard/LegalPagesSection';
+import { PricingSection } from '@/components/dashboard/PricingSection';
 import { databaseService } from '@/services/databaseService';
 import { toast } from 'sonner';
 
@@ -127,6 +128,8 @@ const Dashboard = () => {
         return <SettingsSection />;
       case 'legal':
         return <LegalPagesSection />;
+      case 'pricing-management':
+        return <PricingSection />;
       default:
         return <OverviewSection stats={stats} />;
     }

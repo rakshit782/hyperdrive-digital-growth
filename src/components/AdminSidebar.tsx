@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Mail, MessageSquare, Shield, Settings, LogOut, FileText } from "lucide-react";
+import { LayoutDashboard, Users, Mail, MessageSquare, Shield, Settings, LogOut, FileText, DollarSign } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -20,6 +20,7 @@ const menuItems = [
   { title: "Newsletter", icon: Mail, section: "newsletter" },
   { title: "Security Logs", icon: Shield, section: "security" },
   { title: "Legal Pages", icon: FileText, section: "legal" },
+  { title: "Pricing", icon: DollarSign, section: "pricing-management" },
   { title: "Settings", icon: Settings, section: "settings" },
 ];
 
