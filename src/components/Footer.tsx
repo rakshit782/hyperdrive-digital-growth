@@ -9,7 +9,7 @@ const Footer = () => {
     logoData = useLogoData();
   } catch (error) {
     console.error('Error in Footer useLogoData:', error);
-    logoData = { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.ico', size: 120 };
+    logoData = { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.ico', size: 40 };
   }
 
   return (
@@ -23,7 +23,7 @@ const Footer = () => {
                 src={logoData.imageUrl} 
                 alt={logoData.text}
                 style={{ height: '48px' }}
-                className="w-auto object-contain brightness-0 invert"
+                className="w-auto object-cover object-center brightness-0 invert"
               />
             ) : (
               <span className="text-xl font-bold">{logoData.text}</span>
