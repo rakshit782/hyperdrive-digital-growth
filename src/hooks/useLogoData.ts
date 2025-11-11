@@ -11,7 +11,7 @@ const DEFAULT_LOGO: LogoData = {
   text: 'AMZ AD SCOUT',
   imageUrl: '/logo.png',
   faviconUrl: '/favicon.ico',
-  size: 80,
+  size: 120,
 };
 
 export const useLogoData = () => {
