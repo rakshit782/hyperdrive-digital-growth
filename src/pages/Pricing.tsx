@@ -114,9 +114,9 @@ const Pricing = () => {
             </div>
 
             {/* Pricing Cards */}
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="flex flex-col gap-6 max-w-6xl mx-auto">
               {loading ? (
-                <div className="col-span-3 text-center py-12">
+                <div className="text-center py-12">
                   <p className="text-slate-600">Loading pricing plans...</p>
                 </div>
               ) : (
@@ -125,7 +125,7 @@ const Pricing = () => {
                   .map((plan) => (
                   <Card 
                     key={plan.id} 
-                    className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
+                    className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl ${
                       plan.is_popular 
                         ? 'border-2 border-blue-500 shadow-xl bg-white' 
                         : 'border border-slate-200 bg-white/80 backdrop-blur-sm'
@@ -138,45 +138,56 @@ const Pricing = () => {
                       </div>
                     )}
                     
-                    <CardHeader className={`text-center ${plan.is_popular ? 'pt-12' : 'pt-8'}`}>
-                      <CardTitle className="text-2xl font-bold text-slate-900">
-                        {plan.name}
-                      </CardTitle>
-                      <CardDescription className="text-slate-600 mt-2">
-                        {plan.description}
-                      </CardDescription>
-                      <div className="mt-6">
-                        <span className="text-5xl font-bold text-slate-900">
-                          ${billingCycle === 'yearly' && plan.price ? (plan.price * 12 * 0.8).toFixed(0) : plan.price || 'Custom'}
-                        </span>
-                        {plan.price && (
-                          <span className="text-slate-500 text-lg">
-                            /{billingCycle === 'yearly' ? 'year' : plan.billing_period}
-                          </span>
-                        )}
+                    <div className={`flex flex-col md:flex-row ${plan.is_popular ? 'pt-10' : ''}`}>
+                      {/* Left Side - Plan Details */}
+                      <div className="flex-1 p-8">
+                        <div className="mb-6">
+                          <CardTitle className="text-3xl font-bold text-slate-900 mb-2">
+                            {plan.name}
+                          </CardTitle>
+                          <CardDescription className="text-slate-600 text-lg">
+                            {plan.description}
+                          </CardDescription>
+                        </div>
+                        
+                        <ul className="space-y-3">
+                          {plan.features.map((feature, index) => (
+                            <li key={index} className="flex items-start space-x-3">
+                              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                              <span className="text-slate-700">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                    </CardHeader>
-                    
-                    <CardContent className="space-y-6">
-                      <ul className="space-y-4">
-                        {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-start space-x-3">
-                            <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-slate-700">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
                       
-                      <Button 
-                        className={`w-full py-3 text-lg font-semibold transition-all duration-300 ${
-                          plan.is_popular
-                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
-                            : 'bg-slate-900 hover:bg-slate-800 text-white'
-                        }`}
-                      >
-                        Get Started
-                      </Button>
-                    </CardContent>
+                      {/* Separator */}
+                      <div className="hidden md:block w-px bg-slate-200 my-8" />
+                      <div className="md:hidden h-px bg-slate-200 mx-8" />
+                      
+                      {/* Right Side - Pricing & CTA */}
+                      <div className="flex flex-col items-center justify-center p-8 md:w-80">
+                        <div className="text-center mb-6">
+                          <div className="text-5xl font-bold text-slate-900 mb-2">
+                            ${billingCycle === 'yearly' && plan.price ? (plan.price * 12 * 0.8).toFixed(0) : plan.price || 'Custom'}
+                          </div>
+                          {plan.price && (
+                            <div className="text-slate-500 text-lg">
+                              per {billingCycle === 'yearly' ? 'year' : plan.billing_period}
+                            </div>
+                          )}
+                        </div>
+                        
+                        <Button 
+                          className={`w-full py-3 text-lg font-semibold transition-all duration-300 ${
+                            plan.is_popular
+                              ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
+                              : 'bg-slate-900 hover:bg-slate-800 text-white'
+                          }`}
+                        >
+                          Get Started
+                        </Button>
+                      </div>
+                    </div>
                   </Card>
                   ))
               )}
