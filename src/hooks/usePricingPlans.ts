@@ -5,6 +5,43 @@ import { authService } from '@/services/authService';
 const SUPABASE_URL = "https://hznbshxhmhtenxcuffhx.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6bmJzaHhobWh0ZW54Y3VmZmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MzEzMjEsImV4cCI6MjA2NDIwNzMyMX0.jydxpMEn5Z-fDDJXA9XAbx_mHEi_eQPFNEYikM21gnY";
 
+const CACHE_KEY = 'pricing_plans_cache';
+const CACHE_TIMESTAMP_KEY = 'pricing_plans_cache_timestamp';
+
+const getLastMidnightUTC = (): number => {
+  const now = new Date();
+  const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
+  return midnight.getTime();
+};
+
+const isCacheValid = (): boolean => {
+  const cachedTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+  if (!cachedTimestamp) return false;
+  
+  const lastMidnight = getLastMidnightUTC();
+  return parseInt(cachedTimestamp) >= lastMidnight;
+};
+
+const getCachedPlans = (): PricingPlan[] | null => {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached || !isCacheValid()) return null;
+    return JSON.parse(cached);
+  } catch (error) {
+    console.error('Error reading cache:', error);
+    return null;
+  }
+};
+
+const setCachedPlans = (plans: PricingPlan[]) => {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(plans));
+    localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+  } catch (error) {
+    console.error('Error setting cache:', error);
+  }
+};
+
 export interface PricingPlan {
   id?: string;
   name: string;
@@ -19,8 +56,15 @@ export interface PricingPlan {
 }
 
 export const usePricingPlans = () => {
-  const [plans, setPlans] = useState<PricingPlan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [plans, setPlans] = useState<PricingPlan[]>(() => {
+    // Load from cache immediately if valid
+    const cached = getCachedPlans();
+    return cached || [];
+  });
+  const [loading, setLoading] = useState(() => {
+    // If we have valid cache, don't show loading
+    return !getCachedPlans();
+  });
   const { toast } = useToast();
 
   const getAuthHeaders = () => {
@@ -32,7 +76,17 @@ export const usePricingPlans = () => {
     };
   };
 
-  const fetchPlans = async () => {
+  const fetchPlans = async (skipCache: boolean = false) => {
+    // Check cache first unless explicitly skipped
+    if (!skipCache) {
+      const cached = getCachedPlans();
+      if (cached && cached.length > 0) {
+        setPlans(cached);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const response = await fetch(
         `${SUPABASE_URL}/functions/v1/neon-pricing-plans`,
@@ -48,7 +102,7 @@ export const usePricingPlans = () => {
 
       const data = await response.json();
       
-      setPlans(data.map((plan: any) => {
+      const processedPlans = data.map((plan: any) => {
         let features: string[] = [];
         let addons: string[] = [];
         
@@ -89,7 +143,12 @@ export const usePricingPlans = () => {
           features,
           addons
         };
-      }));
+      });
+      
+      setPlans(processedPlans);
+      
+      // Cache the fetched plans
+      setCachedPlans(processedPlans);
     } catch (error) {
       console.error('Error fetching pricing plans:', error);
       toast({
@@ -183,7 +242,10 @@ export const usePricingPlans = () => {
   };
 
   useEffect(() => {
-    fetchPlans();
+    // Check if cache is valid, if not fetch fresh data
+    if (!isCacheValid()) {
+      fetchPlans(true);
+    }
   }, []);
 
   return {
