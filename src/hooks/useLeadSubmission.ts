@@ -8,13 +8,16 @@ export interface LeadSubmissionData {
   email: string;
   phone?: string;
   company?: string;
+  brandName?: string;
+  website?: string;
+  amazonStoreUrl?: string;
+  walmartStoreUrl?: string;
   source?: string;
   status?: 'new' | 'contacted' | 'qualified' | 'converted' | 'lost';
   notes?: string;
   firstName?: string;
   lastName?: string;
   businessGoals?: string;
-  website?: string;
   monthlyAdSpend?: string;
   primaryPlatform?: string;
   currentChallenges?: string;
@@ -46,13 +49,16 @@ export const useLeadSubmission = () => {
         email: data.email,
         phone: data.phone || null,
         company: data.company || null,
+        brandName: data.brandName || null,
+        website: data.website || null,
+        amazonStoreUrl: data.amazonStoreUrl || null,
+        walmartStoreUrl: data.walmartStoreUrl || null,
         source: data.source || 'website',
         status: data.status || 'new',
         notes: data.notes || null,
         firstName: data.firstName,
         lastName: data.lastName,
         businessGoals: data.businessGoals,
-        website: data.website,
         monthlyAdSpend: data.monthlyAdSpend,
         primaryPlatform: data.primaryPlatform,
         currentChallenges: data.currentChallenges,

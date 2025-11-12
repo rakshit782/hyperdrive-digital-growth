@@ -7,19 +7,23 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { useContactSubmission } from '@/hooks/useContactSubmission';
+import { useLeadSubmission } from '@/hooks/useLeadSubmission';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
-const contactFormSchema = z.object({
+const leadFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
-  phone: z.string().min(10, 'Please enter a valid phone number').optional(),
-  company: z.string().min(2, 'Company name is required').optional(),
-  message: z.string().min(10, 'Message must be at least 10 characters').optional(),
+  phone: z.string().min(10, 'Please enter a valid phone number').optional().or(z.literal('')),
+  company: z.string().optional().or(z.literal('')),
+  brandName: z.string().optional().or(z.literal('')),
+  website: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  amazonStoreUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  walmartStoreUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  issues: z.string().min(10, 'Please describe your issues (at least 10 characters)').optional().or(z.literal('')),
 });
 
-type ContactFormValues = z.infer<typeof contactFormSchema>;
+type LeadFormValues = z.infer<typeof leadFormSchema>;
 
 interface ContactFormDialogProps {
   open: boolean;
@@ -36,29 +40,38 @@ export const ContactFormDialog = ({
   title = 'Get Started',
   description = 'Fill out the form below and we\'ll get back to you shortly.'
 }: ContactFormDialogProps) => {
-  const { submitContact, isSubmitting } = useContactSubmission();
+  const { submitLead, isSubmitting } = useLeadSubmission();
   const { toast } = useToast();
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const form = useForm<ContactFormValues>({
-    resolver: zodResolver(contactFormSchema),
+  const form = useForm<LeadFormValues>({
+    resolver: zodResolver(leadFormSchema),
     defaultValues: {
       name: '',
       email: '',
       phone: '',
       company: '',
-      message: '',
+      brandName: '',
+      website: '',
+      amazonStoreUrl: '',
+      walmartStoreUrl: '',
+      issues: '',
     },
   });
 
-  const onSubmit = async (data: ContactFormValues) => {
-    const result = await submitContact({
+  const onSubmit = async (data: LeadFormValues) => {
+    const result = await submitLead({
       name: data.name,
       email: data.email,
       phone: data.phone,
       company: data.company,
-      message: data.message,
-      formType,
+      brandName: data.brandName,
+      website: data.website,
+      amazonStoreUrl: data.amazonStoreUrl,
+      walmartStoreUrl: data.walmartStoreUrl,
+      notes: data.issues,
+      source: formType,
+      status: 'new',
     });
 
     if (result.success) {
@@ -75,7 +88,7 @@ export const ContactFormDialog = ({
     } else {
       toast({
         title: 'Error',
-        description: 'Something went wrong. Please try again.',
+        description: result.error || 'Something went wrong. Please try again.',
         variant: 'destructive',
       });
     }
@@ -156,13 +169,69 @@ export const ContactFormDialog = ({
 
               <FormField
                 control={form.control}
-                name="message"
+                name="brandName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Message</FormLabel>
+                    <FormLabel>Brand Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your brand name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Website URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://yourwebsite.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="amazonStoreUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amazon Store URL (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://amazon.com/..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="walmartStoreUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Walmart Store URL (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://walmart.com/..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="issues"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>What Issues Are You Facing?</FormLabel>
                     <FormControl>
                       <Textarea 
-                        placeholder="Tell us about your project..." 
+                        placeholder="Describe the challenges you're experiencing..." 
                         className="min-h-[100px]"
                         {...field} 
                       />

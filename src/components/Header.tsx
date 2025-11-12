@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLogoData } from "@/hooks/useLogoData";
+import { ContactFormDialog } from "@/components/ContactFormDialog";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
   
   let logoData;
   try {
@@ -118,7 +120,7 @@ const Header = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button>Get Started</Button>
+            <Button onClick={() => setIsContactFormOpen(true)}>Get Started</Button>
           </div>
 
           {/* Mobile menu button */}
@@ -194,12 +196,23 @@ const Header = () => {
               </Link>
               
               <div className="px-3 py-2">
-                <Button className="w-full">Get Started</Button>
+                <Button className="w-full" onClick={() => {
+                  setIsMenuOpen(false);
+                  setIsContactFormOpen(true);
+                }}>Get Started</Button>
               </div>
             </div>
           </div>
         )}
       </div>
+      
+      <ContactFormDialog 
+        open={isContactFormOpen}
+        onOpenChange={setIsContactFormOpen}
+        formType="header-cta"
+        title="Get Started"
+        description="Fill out the form below and we'll get back to you shortly."
+      />
     </header>
   );
 };

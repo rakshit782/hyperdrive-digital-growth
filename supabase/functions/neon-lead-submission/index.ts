@@ -26,22 +26,26 @@ serve(async (req: Request) => {
       
       const result = await client.queryObject(
         `INSERT INTO leads (
-          name, email, phone, company, source, status, notes, lead_number,
-          audit_type, website_url, current_spend, goals, lead_data, created_at, updated_at
+          name, email, phone, company, brand_name, website_url, amazon_store_url, walmart_store_url,
+          source, status, notes, lead_number, audit_type, current_spend, goals, lead_data, 
+          created_at, updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW())
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
         RETURNING id, lead_number`,
         [
           leadData.name,
           leadData.email,
           leadData.phone || null,
           leadData.company || null,
+          leadData.brandName || null,
+          leadData.website || null,
+          leadData.amazonStoreUrl || null,
+          leadData.walmartStoreUrl || null,
           leadData.source || 'website',
           leadData.status || 'new',
           leadData.notes || null,
           leadNumber,
           leadData.auditType || null,
-          leadData.websiteUrl || null,
           leadData.currentSpend || null,
           leadData.goals || null,
           JSON.stringify(leadData.uploadedFiles || {})

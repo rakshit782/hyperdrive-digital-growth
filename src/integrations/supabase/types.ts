@@ -733,8 +733,10 @@ export type Database = {
       }
       leads: {
         Row: {
+          amazon_store_url: string | null
           assigned_to: string | null
           audit_type: string | null
+          brand_name: string | null
           company: string | null
           created_at: string | null
           current_spend: string | null
@@ -750,11 +752,14 @@ export type Database = {
           source: string | null
           status: string | null
           updated_at: string | null
+          walmart_store_url: string | null
           website_url: string | null
         }
         Insert: {
+          amazon_store_url?: string | null
           assigned_to?: string | null
           audit_type?: string | null
+          brand_name?: string | null
           company?: string | null
           created_at?: string | null
           current_spend?: string | null
@@ -770,11 +775,14 @@ export type Database = {
           source?: string | null
           status?: string | null
           updated_at?: string | null
+          walmart_store_url?: string | null
           website_url?: string | null
         }
         Update: {
+          amazon_store_url?: string | null
           assigned_to?: string | null
           audit_type?: string | null
+          brand_name?: string | null
           company?: string | null
           created_at?: string | null
           current_spend?: string | null
@@ -790,6 +798,7 @@ export type Database = {
           source?: string | null
           status?: string | null
           updated_at?: string | null
+          walmart_store_url?: string | null
           website_url?: string | null
         }
         Relationships: []
