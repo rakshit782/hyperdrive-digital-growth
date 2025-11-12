@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ArrowRight, TrendingUp, DollarSign, Target, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { ContactFormDialog } from "@/components/ContactFormDialog";
 
 const WalmartCaseStudies = () => {
-  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
+  const navigate = useNavigate();
   const caseStudies = [
     {
       title: "Grocery Brand Marketplace Expansion",
@@ -217,7 +216,7 @@ const WalmartCaseStudies = () => {
                   <Button 
                     size="lg"
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                    onClick={() => setIsContactFormOpen(true)}
+                    onClick={() => navigate('/contact')}
                   >
                     Get Free Audit
                     <ArrowRight className="w-5 h-5 ml-2" />
@@ -229,14 +228,6 @@ const WalmartCaseStudies = () => {
         </div>
       </div>
       <Footer />
-      
-      <ContactFormDialog 
-        open={isContactFormOpen}
-        onOpenChange={setIsContactFormOpen}
-        formType="walmart-case-studies"
-        title="Get Your Free Walmart Ads Audit"
-        description="Discover how we can help you succeed on Walmart Marketplace."
-      />
     </>
   );
 };

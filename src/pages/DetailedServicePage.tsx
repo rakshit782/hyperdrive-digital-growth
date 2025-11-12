@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowRight, CheckCircle, TrendingUp, Award, Users, Target } from 'lucide-react';
 import { useServiceData } from '@/hooks/useServiceData';
 import { realBrandCaseStudies } from '@/data/realBrandCaseStudies';
-import { ContactFormDialog } from '@/components/ContactFormDialog';
 
 const serviceConfigs: Record<string, {
   title: string;
@@ -221,10 +220,10 @@ const serviceConfigs: Record<string, {
 
 const DetailedServicePage = () => {
   const { serviceType } = useParams<{ serviceType: string }>();
+  const navigate = useNavigate();
   const config = serviceConfigs[serviceType || ''];
   const { stats } = useServiceData(serviceType || '');
   const caseStudies = realBrandCaseStudies[serviceType || ''] || [];
-  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
 
   if (!config) {
     return (
@@ -272,7 +271,7 @@ const DetailedServicePage = () => {
                 <Button 
                   size="lg" 
                   className={`bg-gradient-to-r ${config.gradient} text-white px-8 py-4 text-lg`}
-                  onClick={() => setIsContactFormOpen(true)}
+                  onClick={() => navigate('/contact')}
                 >
                   Get Started Today
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -281,7 +280,7 @@ const DetailedServicePage = () => {
                   size="lg" 
                   variant="outline" 
                   className="px-8 py-4 text-lg"
-                  onClick={() => setIsContactFormOpen(true)}
+                  onClick={() => navigate('/contact')}
                 >
                   Schedule Consultation
                 </Button>
@@ -445,7 +444,7 @@ const DetailedServicePage = () => {
                   <Button 
                     size="lg"
                     className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 text-lg font-semibold"
-                    onClick={() => setIsContactFormOpen(true)}
+                    onClick={() => navigate('/contact')}
                   >
                     Get Free Consultation
                     <ArrowRight className="ml-2 w-5 h-5" />
@@ -453,7 +452,7 @@ const DetailedServicePage = () => {
                   <Button 
                     size="lg"
                     className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg font-semibold backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
-                    onClick={() => setIsContactFormOpen(true)}
+                    onClick={() => navigate('/contact')}
                   >
                     Schedule Strategy Call
                   </Button>
@@ -465,14 +464,6 @@ const DetailedServicePage = () => {
       </div>
       
       <Footer />
-      
-      <ContactFormDialog 
-        open={isContactFormOpen}
-        onOpenChange={setIsContactFormOpen}
-        formType={`${serviceType}-service`}
-        title={`Get Started with ${config.title}`}
-        description="Let's discuss how we can help you achieve your business goals."
-      />
     </>
   );
 };

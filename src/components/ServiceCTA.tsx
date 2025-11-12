@@ -23,7 +23,7 @@ const ServiceCTA = ({ title, description, buttonText, serviceType }: ServiceCTAP
         <Button 
           size="lg"
           className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-          onClick={() => window.location.href = '/free-audit'}
+          onClick={() => window.location.href = '/contact'}
         >
           {buttonText}
           <ArrowRight className="ml-2 w-5 h-5" />

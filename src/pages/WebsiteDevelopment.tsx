@@ -123,7 +123,7 @@ const WebsiteDevelopment = () => {
                   <Button 
                     size="lg" 
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                    onClick={() => window.location.href = '/free-audit'}
+                    onClick={() => window.location.href = '/contact'}
                   >
                     Get Free Consultation
                     <ArrowRight className="ml-2 w-5 h-5" />
@@ -314,7 +314,7 @@ const WebsiteDevelopment = () => {
               <Button 
                 size="lg"
                 className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-12 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                onClick={() => window.location.href = '/free-audit'}
+                onClick={() => window.location.href = '/contact'}
               >
                 Start Your Project
                 <ArrowRight className="ml-2 w-5 h-5" />

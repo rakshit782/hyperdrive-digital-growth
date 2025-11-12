@@ -33,7 +33,7 @@ export const amazonConfig: ServicePageConfig = {
   heroDescription: 'Maximize your Amazon sales with our proven advertising strategies. We help brands achieve 350% average sales growth through expert PPC management, listing optimization, and strategic campaign planning.',
   primaryButtonText: 'Get Free Amazon Audit',
   secondaryButtonText: 'View Success Stories',
-  primaryButtonUrl: '/free-audit',
+  primaryButtonUrl: '/contact',
   secondaryButtonUrl: '/amazon-case-studies',
   services: [
     {
@@ -90,7 +90,7 @@ export const amazonConfig: ServicePageConfig = {
   ctaTitle: 'Ready to Dominate Amazon?',
   ctaDescription: 'Get your free Amazon advertising audit and discover how we can triple your sales in 90 days.',
   ctaButtonText: 'Get Free Audit',
-  ctaButtonUrl: '/free-audit'
+  ctaButtonUrl: '/contact'
 };
 
 export const googleConfig: ServicePageConfig = {
@@ -100,7 +100,7 @@ export const googleConfig: ServicePageConfig = {
   heroDescription: 'Drive targeted traffic and conversions with strategic Google Ads campaigns. We help businesses achieve exceptional ROI through expert PPC management and search marketing optimization.',
   primaryButtonText: 'Get Free Google Audit',
   secondaryButtonText: 'View Success Stories',
-  primaryButtonUrl: '/free-audit',
+  primaryButtonUrl: '/contact',
   secondaryButtonUrl: '/case-studies',
   services: [
     {
@@ -157,5 +157,5 @@ export const googleConfig: ServicePageConfig = {
   ctaTitle: 'Ready to Dominate Google Search?',
   ctaDescription: 'Get your free Google Ads audit and discover how we can maximize your search marketing ROI.',
   ctaButtonText: 'Get Free Audit',
-  ctaButtonUrl: '/free-audit'
+  ctaButtonUrl: '/contact'
 };

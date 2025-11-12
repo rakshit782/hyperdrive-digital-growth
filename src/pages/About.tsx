@@ -6,11 +6,9 @@ import SEOHead from "@/components/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight } from "lucide-react";
-import { ContactFormDialog } from "@/components/ContactFormDialog";
 
 const About = () => {
   const navigate = useNavigate();
-  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
   const [aboutData, setAboutData] = useState({
     heroTitle: 'About Our Agency',
     heroDescription: "We're a team of digital marketing experts passionate about helping businesses achieve extraordinary growth through strategic advertising and innovative solutions.",
@@ -245,7 +243,7 @@ const About = () => {
                   <Button 
                     size="lg"
                     className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                    onClick={() => setIsContactFormOpen(true)}
+                    onClick={() => navigate('/contact')}
                   >
                     Get Free Consultation
                     <ArrowRight className="ml-2 w-5 h-5" />
@@ -264,14 +262,6 @@ const About = () => {
         </section>
       </div>
       <Footer />
-      
-      <ContactFormDialog 
-        open={isContactFormOpen}
-        onOpenChange={setIsContactFormOpen}
-        formType="about-consultation"
-        title="Get Free Consultation"
-        description="Let's discuss how we can help you achieve your digital marketing goals."
-      />
     </>
   );
 };

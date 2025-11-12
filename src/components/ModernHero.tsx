@@ -70,7 +70,7 @@ const defaultSettings: HeroSettings = {
   cta: {
     primary: {
       text: "Get FREE $2,000 Audit",
-      link: "/free-audit",
+      link: "/contact",
       enabled: true
     },
     secondary: {

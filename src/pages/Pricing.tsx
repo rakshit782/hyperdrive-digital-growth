@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,17 +10,14 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { usePricingPlans } from "@/hooks/usePricingPlans";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ContactFormDialog } from "@/components/ContactFormDialog";
 
 const Pricing = () => {
+  const navigate = useNavigate();
   const [isYearly, setIsYearly] = useState(false);
   const { plans, loading } = usePricingPlans();
-  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState("");
 
   const handleGetStarted = (planName: string) => {
-    setSelectedPlan(planName);
-    setIsContactFormOpen(true);
+    navigate('/contact');
   };
 
   const calculatePrice = (monthlyPrice: number) => {
@@ -185,24 +183,13 @@ const Pricing = () => {
                 or private quote. Our experts can tailor ad management, automation, and 
                 multi-marketplace integration around your exact business goals.
               </p>
-              <Button size="lg" onClick={() => {
-                setSelectedPlan("Custom Enterprise Plan");
-                setIsContactFormOpen(true);
-              }}>
+              <Button size="lg" onClick={() => navigate('/contact')}>
                 Contact Sales
               </Button>
             </div>
           </section>
         </main>
         <Footer />
-        
-        <ContactFormDialog 
-          open={isContactFormOpen}
-          onOpenChange={setIsContactFormOpen}
-          formType="pricing"
-          title={selectedPlan ? `Get Started with ${selectedPlan}` : "Get Started"}
-          description="Fill out the form below and we'll get back to you shortly."
-        />
       </div>
     </>
   );

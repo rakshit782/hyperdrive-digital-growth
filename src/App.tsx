@@ -16,6 +16,7 @@ import CaseStudies from "./pages/CaseStudies";
 import Pricing from "./pages/Pricing";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Contact from "./pages/Contact";
 import WebsiteDevelopment from "./pages/WebsiteDevelopment";
 import NotFound from "./pages/NotFound";
 
@@ -70,6 +71,9 @@ function App() {
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/free-audit" element={<Contact />} />
+                <Route path="/contact-us" element={<Contact />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
