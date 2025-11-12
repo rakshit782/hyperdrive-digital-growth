@@ -1,7 +1,20 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
 import { create } from "https://deno.land/x/djwt@v2.8/mod.ts";
+
+// Use crypto API for password hashing instead of bcrypt
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  const passwordHash = await hashPassword(password);
+  return passwordHash === hash;
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -98,7 +111,7 @@ serve(async (req: Request) => {
       }
 
       // Hash password
-      const hashedPassword = await bcrypt.hash(password);
+      const hashedPassword = await hashPassword(password);
 
       // Insert user
       const result = await client.queryObject(
