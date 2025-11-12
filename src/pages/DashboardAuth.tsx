@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -90,13 +90,12 @@ const DashboardAuth = () => {
             </Button>
           </form>
           
-          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-            <p className="text-sm font-semibold text-foreground mb-2">Admin Credentials:</p>
+          <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              Email: <code className="bg-muted px-2 py-1 rounded">rakshit@amzadscout.com</code>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Password: <code className="bg-muted px-2 py-1 rounded">Rakshit@@1234</code>
+              Don't have an account?{' '}
+              <Link to="/dashboard/signup" className="text-primary hover:underline">
+                Sign up
+              </Link>
             </p>
           </div>
         </CardContent>

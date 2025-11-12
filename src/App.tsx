@@ -32,6 +32,7 @@ import WalmartCaseStudies from "./pages/WalmartCaseStudies";
 // Dashboard
 import Dashboard from "./pages/Dashboard";
 import DashboardAuth from "./pages/DashboardAuth";
+import DashboardSignup from "./pages/DashboardSignup";
 
 // Detailed service pages
 import DetailedServicePage from "./pages/DetailedServicePage";
@@ -73,6 +74,7 @@ function App() {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/dashboard/login" element={<DashboardAuth />} />
+                <Route path="/dashboard/signup" element={<DashboardSignup />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/services/:serviceType" element={<DetailedServicePage />} />
                 <Route path="/ad-landing" element={<AdLanding />} />
