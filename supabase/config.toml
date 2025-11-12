@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.neon-pricing-plans]
 verify_jwt = false
+
+[functions.neon-leads]
+verify_jwt = false
+
+[functions.neon-contacts]
+verify_jwt = false

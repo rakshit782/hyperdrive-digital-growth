@@ -111,13 +111,18 @@ class DatabaseService {
 
   async getLeads(limit: number = 100): Promise<Lead[]> {
     try {
-      const response = await fetch(`${this.apiUrl}/leads?limit=${limit}`);
+      const { data, error } = await supabase.functions.invoke('neon-leads', {
+        body: {
+          action: 'list',
+          limit
+        }
+      });
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch leads');
+      if (error) {
+        throw error;
       }
 
-      return await response.json();
+      return data?.leads || [];
     } catch (error) {
       console.error('Database error - fetch leads:', error);
       return [];
@@ -152,13 +157,18 @@ class DatabaseService {
 
   async getContactSubmissions(limit: number = 100): Promise<any[]> {
     try {
-      const response = await fetch(`${this.apiUrl}/contact-submissions?limit=${limit}`);
+      const { data, error } = await supabase.functions.invoke('neon-contacts', {
+        body: {
+          action: 'list',
+          limit
+        }
+      });
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch contact submissions');
+      if (error) {
+        throw error;
       }
 
-      return await response.json();
+      return data?.contacts || [];
     } catch (error) {
       console.error('Database error - fetch contact submissions:', error);
       return [];
