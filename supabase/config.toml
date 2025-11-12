@@ -11,3 +11,18 @@ verify_jwt = false
 
 [functions.neon-security-logs]
 verify_jwt = false
+
+[functions.neon-auth-signup]
+verify_jwt = false
+
+[functions.neon-auth-login]
+verify_jwt = false
+
+[functions.neon-auth-verify]
+verify_jwt = false
+
+[functions.neon-auth-refresh]
+verify_jwt = false
+
+[functions.neon-pricing-plans]
+verify_jwt = false

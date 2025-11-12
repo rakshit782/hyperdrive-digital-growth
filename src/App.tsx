@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 
 // Direct imports for instant loading - no lazy loading
@@ -50,34 +51,36 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/services/website-development" element={<WebsiteDevelopment />} />
-              <Route path="/case-studies" element={<CaseStudies />} />
-              <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
-              <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
-              <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/refund-policy" element={<RefundPolicy />} />
-              <Route path="/dashboard/login" element={<DashboardAuth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/services/:serviceType" element={<DetailedServicePage />} />
-              <Route path="/ad-landing" element={<AdLanding />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <ScrollToTop />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/services/website-development" element={<WebsiteDevelopment />} />
+                <Route path="/case-studies" element={<CaseStudies />} />
+                <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
+                <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
+                <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="/dashboard/login" element={<DashboardAuth />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/services/:serviceType" element={<DetailedServicePage />} />
+                <Route path="/ad-landing" element={<AdLanding />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

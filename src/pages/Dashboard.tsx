@@ -12,10 +12,11 @@ import { LegalPagesSection } from '@/components/dashboard/LegalPagesSection';
 import { PricingSection } from '@/components/dashboard/PricingSection';
 import { databaseService } from '@/services/databaseService';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user, loading: authLoading, logout } = useAuth();
   const [activeSection, setActiveSection] = useState('overview');
   const [contacts, setContacts] = useState<any[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
@@ -24,32 +25,21 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuth();
-  }, [navigate]);
+    if (!authLoading) {
+      if (!user) {
+        navigate('/dashboard/login');
+        return;
+      }
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      navigate('/dashboard/login');
-      return;
+      if (user.role !== 'admin') {
+        toast.error('Access denied. Admin role required.');
+        navigate('/dashboard/login');
+        return;
+      }
+
+      loadAllData();
     }
-
-    // Verify admin role
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .single();
-
-    if (roleData?.role !== 'admin') {
-      toast.error('Access denied. Admin role required.');
-      navigate('/dashboard/login');
-      return;
-    }
-
-    loadAllData();
-  };
+  }, [user, authLoading, navigate]);
 
   const loadAllData = async () => {
     setLoading(true);
@@ -96,9 +86,8 @@ const Dashboard = () => {
     toast.info('Delete functionality coming soon');
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast.success('Logged out successfully');
+  const handleLogout = () => {
+    logout();
     navigate('/dashboard/login');
   };
 
@@ -154,6 +143,14 @@ const Dashboard = () => {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider defaultOpen>
       <div className="min-h-screen flex w-full bg-background">
@@ -167,6 +164,11 @@ const Dashboard = () => {
           <header className="h-16 border-b bg-card flex items-center px-6 gap-4">
             <SidebarTrigger />
             <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+            {user && (
+              <div className="ml-auto text-sm text-muted-foreground">
+                {user.email}
+              </div>
+            )}
           </header>
 
           <main className="flex-1 overflow-auto">

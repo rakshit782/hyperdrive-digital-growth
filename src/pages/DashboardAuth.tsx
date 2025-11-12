@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,48 +6,48 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Lock } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const DashboardAuth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/dashboard');
+    }
+  }, [user, loading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const { error } = await login(email, password);
 
-      if (error) throw error;
-
-      // Check if user has admin role
-      const { data: roleData, error: roleError } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', data.user.id)
-        .single();
-
-      if (roleError || roleData?.role !== 'admin') {
-        await supabase.auth.signOut();
-        toast.error('Access denied. Admin role required.');
-        return;
-      }
-
-      toast.success('Login successful!');
-      navigate('/dashboard');
-    } catch (error: any) {
-      console.error('Login error:', error);
-      toast.error(error.message || 'Invalid credentials');
-    } finally {
-      setLoading(false);
+    if (error) {
+      toast.error(error);
+      return;
     }
+
+    // Check if user has admin role
+    const currentUser = useAuth().user;
+    if (currentUser?.role !== 'admin') {
+      toast.error('Access denied. Admin role required.');
+      return;
+    }
+
+    toast.success('Login successful!');
+    navigate('/dashboard');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-6">
@@ -58,7 +58,7 @@ const DashboardAuth = () => {
           </div>
           <CardTitle className="text-2xl">Dashboard Login</CardTitle>
           <CardDescription>
-            Enter demo credentials to access the dashboard
+            Enter your admin credentials to access the dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -68,7 +68,7 @@ const DashboardAuth = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder="demo@amzadscout.com"
+                placeholder="rakshit@amzadscout.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -79,24 +79,24 @@ const DashboardAuth = () => {
               <Input
                 id="password"
                 type="password"
-                placeholder="demo123"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+            <Button type="submit" className="w-full">
+              Sign In
             </Button>
           </form>
           
           <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
             <p className="text-sm font-semibold text-foreground mb-2">Admin Credentials:</p>
             <p className="text-sm text-muted-foreground">
-              Email: <code className="bg-muted px-2 py-1 rounded">admin@demo.com</code>
+              Email: <code className="bg-muted px-2 py-1 rounded">rakshit@amzadscout.com</code>
             </p>
             <p className="text-sm text-muted-foreground">
-              Password: <code className="bg-muted px-2 py-1 rounded">Ask your administrator</code>
+              Password: <code className="bg-muted px-2 py-1 rounded">Rakshit@@1234</code>
             </p>
           </div>
         </CardContent>
