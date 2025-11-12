@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight } from "lucide-react";
+import { ContactFormDialog } from "@/components/ContactFormDialog";
 
 const About = () => {
+  const navigate = useNavigate();
+  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
   const [aboutData, setAboutData] = useState({
     heroTitle: 'About Our Agency',
     heroDescription: "We're a team of digital marketing experts passionate about helping businesses achieve extraordinary growth through strategic advertising and innovative solutions.",
@@ -48,6 +52,8 @@ const About = () => {
     "Google Ads Optimization", 
     "Meta Advertising Campaigns",
     "Walmart Marketplace Marketing",
+    "Multi-Marketplace Integration Service",
+    "Amazon Ads Automation Services",
     "Website Development",
     "Shopify Store Development",
     "Account Management Services"
@@ -56,7 +62,7 @@ const About = () => {
   const whyChooseUs = [
     {
       title: "Proven Track Record",
-      description: "Over 500+ successful campaigns with an average 300% ROAS improvement"
+      description: "10K+ successful campaigns with an average ROAS of 10x"
     },
     {
       title: "Expert Team",
@@ -239,14 +245,15 @@ const About = () => {
                   <Button 
                     size="lg"
                     className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                    onClick={() => setIsContactFormOpen(true)}
                   >
                     Get Free Consultation
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                   <Button 
-                    variant="outline"
                     size="lg"
-                    className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="bg-white/10 backdrop-blur-sm border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                    onClick={() => navigate("/case-studies")}
                   >
                     View Our Work
                   </Button>
@@ -257,6 +264,14 @@ const About = () => {
         </section>
       </div>
       <Footer />
+      
+      <ContactFormDialog 
+        open={isContactFormOpen}
+        onOpenChange={setIsContactFormOpen}
+        formType="about-consultation"
+        title="Get Free Consultation"
+        description="Let's discuss how we can help you achieve your digital marketing goals."
+      />
     </>
   );
 };
