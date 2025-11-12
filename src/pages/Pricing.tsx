@@ -1,216 +1,180 @@
 import { useState } from "react";
+import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Check, Star } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { usePricingPlans } from "@/hooks/usePricingPlans";
-
-const defaultPlans = [
-  {
-    id: '1',
-    name: 'Starter',
-    description: 'Perfect for small businesses getting started',
-    price: 499,
-    billing_period: 'month',
-    features: [
-      'Social media management',
-      'Basic analytics',
-      'Email support',
-      '2 campaigns per month',
-      'Brand strategy consultation'
-    ],
-    is_popular: false,
-    is_active: true,
-    sort_order: 1
-  },
-  {
-    id: '2',
-    name: 'Professional',
-    description: 'Ideal for growing businesses',
-    price: 999,
-    billing_period: 'month',
-    features: [
-      'Everything in Starter',
-      'Advanced analytics & reporting',
-      'Priority support',
-      '5 campaigns per month',
-      'A/B testing',
-      'Custom landing pages'
-    ],
-    is_popular: true,
-    is_active: true,
-    sort_order: 2
-  },
-  {
-    id: '3',
-    name: 'Enterprise',
-    description: 'For businesses that need it all',
-    price: null,
-    billing_period: 'custom',
-    features: [
-      'Everything in Professional',
-      'Dedicated account manager',
-      '24/7 phone support',
-      'Unlimited campaigns',
-      'Custom integrations',
-      'White-label reporting',
-      'Advanced automation'
-    ],
-    is_popular: false,
-    is_active: true,
-    sort_order: 3
-  }
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate } from "react-router-dom";
 
 const Pricing = () => {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [isYearly, setIsYearly] = useState(false);
   const { plans, loading } = usePricingPlans();
+  const navigate = useNavigate();
 
-  const activePlans = plans.filter(plan => plan.is_active);
-  const displayPlans = activePlans.length > 0 ? activePlans : defaultPlans;
+  const handleGetStarted = (planName: string) => {
+    navigate(`/contact?plan=${encodeURIComponent(planName)}`);
+  };
+
+  const calculatePrice = (monthlyPrice: number) => {
+    if (isYearly) {
+      return Math.round(monthlyPrice * 10);
+    }
+    return monthlyPrice;
+  };
 
   return (
     <>
-      <SEOHead 
-        title="Pricing Plans - Choose Your Growth Plan"
-        description="Simple, transparent pricing for digital marketing services. Choose the perfect plan for your business growth."
+      <SEOHead
+        title="Pricing Plans - AMZ Ad Scout"
+        description="Choose the perfect plan for your marketplace advertising needs. From small businesses to enterprise-level brands."
+        keywords="pricing, marketplace ads, Amazon ads pricing, advertising plans"
       />
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        {/* Header */}
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
+      <div className="min-h-screen flex flex-col bg-background">
+        <Header />
+        <main className="flex-1">
+          <section className="py-20 px-4 bg-gradient-to-b from-primary/5 to-background">
+            <div className="container mx-auto max-w-7xl text-center">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 Simple, Transparent Pricing
               </h1>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
-                Choose the perfect plan for your business. All plans include our core features with varying levels of support and customization.
+              <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+                Choose the perfect plan for your marketplace advertising needs. 
+                Scale as you grow, with no hidden fees.
               </p>
               
-              {/* Billing Toggle */}
-              <div className="flex items-center justify-center space-x-4 mb-12">
-                <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-blue-600' : 'text-slate-500'}`}>
+              <div className="flex items-center justify-center gap-4 mb-12">
+                <Label htmlFor="billing-toggle" className="text-base">
                   Monthly
-                </span>
-                <button
-                  onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-                  className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-                <span className={`text-sm font-medium ${billingCycle === 'yearly' ? 'text-blue-600' : 'text-slate-500'}`}>
+                </Label>
+                <Switch
+                  id="billing-toggle"
+                  checked={isYearly}
+                  onCheckedChange={setIsYearly}
+                />
+                <Label htmlFor="billing-toggle" className="text-base">
                   Yearly
-                  <Badge variant="secondary" className="ml-2">Save 20%</Badge>
-                </span>
+                  <span className="ml-2 text-sm text-primary font-semibold">
+                    Save 2 months!
+                  </span>
+                </Label>
               </div>
             </div>
+          </section>
 
-            {/* Pricing Cards */}
-            <div className="flex flex-col gap-6 max-w-6xl mx-auto">
+          <section className="py-16 px-4">
+            <div className="container mx-auto max-w-7xl">
               {loading ? (
-                <div className="text-center py-12">
-                  <p className="text-slate-600">Loading pricing plans...</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Card key={i} className="flex flex-col">
+                      <CardHeader>
+                        <Skeleton className="h-8 w-32 mb-2" />
+                        <Skeleton className="h-4 w-full" />
+                      </CardHeader>
+                      <CardContent className="flex-1">
+                        <Skeleton className="h-12 w-40 mb-4" />
+                        <Skeleton className="h-4 w-full mb-2" />
+                        <Skeleton className="h-4 w-full mb-2" />
+                        <Skeleton className="h-4 w-full" />
+                      </CardContent>
+                      <CardFooter>
+                        <Skeleton className="h-10 w-full" />
+                      </CardFooter>
+                    </Card>
+                  ))}
                 </div>
               ) : (
-                displayPlans
-                  .sort((a, b) => a.sort_order - b.sort_order)
-                  .map((plan) => (
-                  <Card 
-                    key={plan.id} 
-                    className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl ${
-                      plan.is_popular 
-                        ? 'border-2 border-blue-500 shadow-xl bg-white' 
-                        : 'border border-slate-200 bg-white/80 backdrop-blur-sm'
-                    }`}
-                  >
-                    {plan.is_popular && (
-                      <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 text-sm font-semibold">
-                        <Star className="w-4 h-4 inline mr-1" />
-                        Most Popular
-                      </div>
-                    )}
-                    
-                    <div className={`flex flex-col md:flex-row ${plan.is_popular ? 'pt-10' : ''}`}>
-                      {/* Left Side - Plan Details */}
-                      <div className="flex-1 p-8">
-                        <div className="mb-6">
-                          <CardTitle className="text-3xl font-bold text-slate-900 mb-2">
-                            {plan.name}
-                          </CardTitle>
-                          <CardDescription className="text-slate-600 text-lg">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {plans
+                    .sort((a, b) => a.sort_order - b.sort_order)
+                    .map((plan) => (
+                      <Card
+                        key={plan.id}
+                        className={`flex flex-col relative ${
+                          plan.is_popular
+                            ? "border-primary shadow-lg shadow-primary/20 scale-105"
+                            : "border-border"
+                        }`}
+                      >
+                        {plan.is_popular && (
+                          <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
+                            Most Popular
+                          </div>
+                        )}
+                        
+                        <CardHeader>
+                          <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                          <CardDescription className="text-sm">
                             {plan.description}
                           </CardDescription>
-                        </div>
-                        
-                        <ul className="space-y-3">
-                          {plan.features.map((feature, index) => (
-                            <li key={index} className="flex items-start space-x-3">
-                              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                              <span className="text-slate-700">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      {/* Separator */}
-                      <div className="hidden md:block w-px bg-slate-200 my-8" />
-                      <div className="md:hidden h-px bg-slate-200 mx-8" />
-                      
-                      {/* Right Side - Pricing & CTA */}
-                      <div className="flex flex-col items-center justify-center p-8 md:w-80">
-                        <div className="text-center mb-6">
-                          <div className="text-5xl font-bold text-slate-900 mb-2">
-                            ${billingCycle === 'yearly' && plan.price ? (plan.price * 12 * 0.8).toFixed(0) : plan.price || 'Custom'}
-                          </div>
-                          {plan.price && (
-                            <div className="text-slate-500 text-lg">
-                              per {billingCycle === 'yearly' ? 'year' : plan.billing_period}
+                        </CardHeader>
+
+                        <CardContent className="flex-1">
+                          <div className="mb-6">
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-4xl font-bold">
+                                ${calculatePrice(plan.price).toLocaleString()}
+                              </span>
+                              <span className="text-muted-foreground">
+                                /{isYearly ? "year" : "month"}
+                              </span>
                             </div>
-                          )}
-                        </div>
-                        
-                        <Button 
-                          className={`w-full py-3 text-lg font-semibold transition-all duration-300 ${
-                            plan.is_popular
-                              ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
-                              : 'bg-slate-900 hover:bg-slate-800 text-white'
-                          }`}
-                        >
-                          Get Started
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                  ))
+                            {isYearly && (
+                              <p className="text-sm text-muted-foreground mt-1">
+                                Billed annually
+                              </p>
+                            )}
+                          </div>
+
+                          <ul className="space-y-3">
+                            {plan.features.map((feature, idx) => (
+                              <li key={idx} className="flex items-start gap-2 text-sm">
+                                <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                                <span>{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </CardContent>
+
+                        <CardFooter>
+                          <Button
+                            className="w-full"
+                            variant={plan.is_popular ? "default" : "outline"}
+                            onClick={() => handleGetStarted(plan.name)}
+                          >
+                            Get Started
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                </div>
               )}
             </div>
+          </section>
 
-            {/* Bottom CTA */}
-            <div className="text-center mt-16">
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50 max-w-2xl mx-auto">
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">
-                  Need a Custom Solution?
-                </h3>
-                <p className="text-slate-600 mb-6">
-                  Contact us for enterprise pricing and custom solutions tailored to your specific needs.
-                </p>
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-                  Contact Sales
-                </Button>
-              </div>
+          <section className="py-16 px-4 bg-muted/50">
+            <div className="container mx-auto max-w-4xl text-center">
+              <h2 className="text-3xl font-bold mb-4">
+                Need a Custom Solution?
+              </h2>
+              <p className="text-muted-foreground mb-8">
+                Can't find a plan that fits your needs? Contact us for a custom strategy 
+                or private quote. Our experts can tailor ad management, automation, and 
+                multi-marketplace integration around your exact business goals.
+              </p>
+              <Button size="lg" onClick={() => navigate("/contact")}>
+                Contact Sales
+              </Button>
             </div>
-          </div>
-        </section>
+          </section>
+        </main>
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 };
