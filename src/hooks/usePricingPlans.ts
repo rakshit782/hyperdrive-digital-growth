@@ -47,15 +47,33 @@ export const usePricingPlans = () => {
 
       const data = await response.json();
       
+      console.log('Raw pricing data from API:', data);
+      
       setPlans(data.map((plan: any) => {
+        console.log(`Processing plan ${plan.name}, features:`, plan.features, typeof plan.features);
+        
         let features = [];
         try {
-          features = typeof plan.features === 'string' 
-            ? JSON.parse(plan.features) 
-            : plan.features || [];
+          if (typeof plan.features === 'string') {
+            features = JSON.parse(plan.features);
+          } else if (Array.isArray(plan.features)) {
+            features = plan.features;
+          } else if (plan.features && typeof plan.features === 'object') {
+            // Handle if features is an object with pointers or nested structure
+            console.warn(`Features for ${plan.name} is an object, attempting to extract:`, plan.features);
+            features = Object.values(plan.features);
+          } else {
+            features = [];
+          }
+          
+          // Ensure features is an array of strings
+          features = features.filter((f: any) => typeof f === 'string' || (f && f.text));
+          if (features.length > 0 && features[0].text) {
+            // Handle if features are objects with text property
+            features = features.map((f: any) => f.text || String(f));
+          }
         } catch (error) {
           console.error(`Error parsing features for plan ${plan.name}:`, error);
-          // Fallback to empty array if JSON is malformed
           features = [];
         }
         
