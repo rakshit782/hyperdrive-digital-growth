@@ -13,7 +13,7 @@ const Services = () => {
       title: 'Amazon Advertising',
       description: 'Expert PPC management, keyword optimization, and campaign strategies that maximize your Amazon sales and ROI.',
       icon: ShoppingCart,
-      link: '/amazon-advertising',
+      link: '/services/amazon-advertising',
       bgGradient: 'from-orange-500 via-red-500 to-pink-500',
       features: ['Sponsored Products', 'Sponsored Brands', 'Keyword Research', 'Performance Analytics']
     },
@@ -21,7 +21,7 @@ const Services = () => {
       title: 'Walmart Advertising',
       description: 'Comprehensive Walmart Connect advertising solutions to boost your visibility and sales on the growing marketplace.',
       icon: Store,
-      link: '/walmart-advertising',
+      link: '/services/walmart-advertising',
       bgGradient: 'from-blue-500 via-indigo-500 to-purple-500',
       features: ['Search Ads', 'Display Campaigns', 'Video Advertising', 'Performance Analytics']
     },
@@ -29,7 +29,7 @@ const Services = () => {
       title: 'Google Advertising',
       description: 'Drive targeted traffic and conversions with strategic Google Ads campaigns that deliver measurable results.',
       icon: Settings,
-      link: '/google-advertising',
+      link: '/services/google-advertising',
       bgGradient: 'from-green-500 via-teal-500 to-blue-500',
       features: ['Search Campaigns', 'Display Network', 'Shopping Ads', 'Performance Max']
     },
@@ -37,7 +37,7 @@ const Services = () => {
       title: 'Meta Advertising',
       description: 'Facebook and Instagram ad campaigns that drive traffic, generate leads, and increase conversions for your business.',
       icon: Users,
-      link: '/meta-advertising',
+      link: '/services/meta-advertising',
       bgGradient: 'from-purple-500 via-pink-500 to-red-500',
       features: ['Facebook Ads', 'Instagram Campaigns', 'Audience Targeting', 'Creative Optimization']
     },
@@ -45,7 +45,7 @@ const Services = () => {
       title: 'Account Management',
       description: 'Full-service account management with dedicated specialists monitoring and optimizing your campaigns 24/7.',
       icon: Settings,
-      link: '/account-management',
+      link: '/services/account-management',
       bgGradient: 'from-indigo-500 via-purple-500 to-pink-500',
       features: ['24/7 Monitoring', 'Performance Reports', 'Strategy Optimization', 'Dedicated Manager']
     },
@@ -53,7 +53,7 @@ const Services = () => {
       title: 'Website Development',
       description: 'Custom website development and design solutions that convert visitors into customers and drive business growth.',
       icon: Code,
-      link: '/website-development',
+      link: '/services/website-development',
       bgGradient: 'from-cyan-500 via-blue-500 to-indigo-500',
       features: ['Custom Design', 'Mobile Optimization', 'SEO Integration', 'Performance Optimization']
     },
@@ -61,7 +61,7 @@ const Services = () => {
       title: 'Shopify Development',
       description: 'Expert Shopify store development and customization to create a powerful e-commerce presence that drives sales.',
       icon: Code,
-      link: '/shopify-development',
+      link: '/services/shopify-development',
       bgGradient: 'from-emerald-500 via-green-500 to-teal-500',
       features: ['Custom Themes', 'App Integration', 'Mobile Optimization', 'Speed Enhancement']
     },
@@ -69,7 +69,7 @@ const Services = () => {
       title: 'Shopify Integration',
       description: 'Seamlessly integrate your Shopify store with Amazon and Walmart marketplaces for unified inventory management.',
       icon: Link2,
-      link: '/shopify-integration',
+      link: '/services/shopify-integration',
       bgGradient: 'from-teal-500 via-cyan-500 to-blue-500',
       features: ['Inventory Sync', 'Order Management', 'Product Listing', 'Multi-channel Setup']
     }
