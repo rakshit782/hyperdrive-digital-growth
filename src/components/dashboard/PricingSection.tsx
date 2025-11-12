@@ -19,6 +19,7 @@ export function PricingSection() {
     setEditingPlan({
       ...plan,
       features: [...plan.features],
+      addons: plan.addons ? [...plan.addons] : [],
     });
     setIsAdding(false);
   };
@@ -30,6 +31,7 @@ export function PricingSection() {
       price: 0,
       billing_period: "monthly",
       features: [""],
+      addons: [],
       is_popular: false,
       is_active: true,
       sort_order: plans.length + 1,
@@ -46,10 +48,12 @@ export function PricingSection() {
     }
 
     const filteredFeatures = (editingPlan.features || []).filter(f => f.trim() !== "");
+    const filteredAddons = (editingPlan.addons || []).filter(a => a.trim() !== "");
     
     await savePlan({
       ...editingPlan,
       features: filteredFeatures,
+      addons: filteredAddons,
     } as PricingPlan);
     
     setEditingPlan(null);
@@ -86,6 +90,27 @@ export function PricingSection() {
     if (!editingPlan) return;
     const newFeatures = (editingPlan.features || []).filter((_, i) => i !== index);
     setEditingPlan({ ...editingPlan, features: newFeatures });
+  };
+
+  const updateAddon = (index: number, value: string) => {
+    if (!editingPlan) return;
+    const newAddons = [...(editingPlan.addons || [])];
+    newAddons[index] = value;
+    setEditingPlan({ ...editingPlan, addons: newAddons });
+  };
+
+  const addAddon = () => {
+    if (!editingPlan) return;
+    setEditingPlan({
+      ...editingPlan,
+      addons: [...(editingPlan.addons || []), ""],
+    });
+  };
+
+  const removeAddon = (index: number) => {
+    if (!editingPlan) return;
+    const newAddons = (editingPlan.addons || []).filter((_, i) => i !== index);
+    setEditingPlan({ ...editingPlan, addons: newAddons });
   };
 
   if (loading) {
@@ -255,6 +280,45 @@ export function PricingSection() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>Add-ons (Optional)</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addAddon}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Add-on
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {(editingPlan.addons || []).map((addon, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      value={addon}
+                      onChange={(e) => updateAddon(index, e.target.value)}
+                      placeholder="e.g., Shopify Development (+$3500)"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeAddon(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                {(!editingPlan.addons || editingPlan.addons.length === 0) && (
+                  <p className="text-sm text-muted-foreground">
+                    No add-ons yet. Click "Add Add-on" to include optional services.
+                  </p>
+                )}
+              </div>
+            </div>
+
             <div className="flex gap-2 pt-4">
               <Button onClick={handleSave}>
                 Save Plan
@@ -335,6 +399,23 @@ export function PricingSection() {
                         </li>
                       )}
                     </ul>
+                    {plan.addons && plan.addons.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-sm font-semibold mb-1">Add-ons:</p>
+                        <ul className="text-sm space-y-1">
+                          {plan.addons.slice(0, 2).map((addon, idx) => (
+                            <li key={idx} className="text-muted-foreground">
+                              + {addon}
+                            </li>
+                          ))}
+                          {plan.addons.length > 2 && (
+                            <li className="text-muted-foreground">
+                              + {plan.addons.length - 2} more...
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>

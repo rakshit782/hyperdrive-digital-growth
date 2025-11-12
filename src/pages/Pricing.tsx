@@ -139,6 +139,22 @@ const Pricing = () => {
                               </li>
                             ))}
                           </ul>
+
+                          {plan.addons && plan.addons.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-border">
+                              <p className="text-xs font-semibold text-muted-foreground mb-2">
+                                Optional Add-ons:
+                              </p>
+                              <ul className="space-y-2">
+                                {plan.addons.map((addon, idx) => (
+                                  <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                    <span className="text-primary mt-0.5">+</span>
+                                    <span>{addon}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </CardContent>
 
                         <CardFooter>
