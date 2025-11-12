@@ -10,6 +10,8 @@ import { useLeadSubmission } from '@/hooks/useLeadSubmission';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import SEOHead from '@/components/SEOHead';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const leadFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -85,6 +87,7 @@ const Contact = () => {
         title="Contact Us - Get Your Free Audit"
         description="Contact us for a free audit of your Amazon, Walmart, or eCommerce business. Our experts will help you grow your brand."
       />
+      <Header />
       <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -246,6 +249,7 @@ const Contact = () => {
           )}
         </div>
       </div>
+      <Footer />
     </>
   );
 };
