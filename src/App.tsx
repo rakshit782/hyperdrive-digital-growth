@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthContext";
+import TrackingScriptInjector from "./components/TrackingScriptInjector";
 import Index from "./pages/Index";
 
 // Direct imports for instant loading - no lazy loading
@@ -59,6 +60,7 @@ function App() {
             <Sonner />
             <BrowserRouter>
               <ScrollToTop />
+              <TrackingScriptInjector />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />

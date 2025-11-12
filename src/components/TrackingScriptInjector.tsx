@@ -21,8 +21,8 @@ const TrackingScriptInjector = () => {
       
       console.log('TrackingScriptInjector: Starting injection for path:', currentPath);
       
-      // Load scripts from localStorage
-      const savedScripts = localStorage.getItem('trackingScripts');
+      // Load scripts from localStorage - check activeTrackingScripts first
+      const savedScripts = localStorage.getItem('activeTrackingScripts');
       console.log('TrackingScriptInjector: Raw localStorage data:', savedScripts);
       
       if (!savedScripts) {
@@ -73,8 +73,8 @@ const TrackingScriptInjector = () => {
           if (isExternalScript) {
             // External script - set src attribute
             scriptElement.src = scriptConfig.script.trim();
-            scriptElement.async = false; // Make synchronous for better source visibility
-            scriptElement.defer = false;
+            scriptElement.async = true; // Async loading for performance
+            scriptElement.defer = true;  // Defer execution
             console.log('TrackingScriptInjector: Created external script element:', scriptConfig.name, 'URL:', scriptConfig.script.trim());
           } else {
             // Inline script - use text content

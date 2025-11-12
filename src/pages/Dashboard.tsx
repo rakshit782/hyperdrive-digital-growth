@@ -10,6 +10,7 @@ import { SecuritySection } from '@/components/dashboard/SecuritySection';
 import { SettingsSection } from '@/components/dashboard/SettingsSection';
 import { LegalPagesSection } from '@/components/dashboard/LegalPagesSection';
 import { PricingSection } from '@/components/dashboard/PricingSection';
+import { TrackingSection } from '@/components/dashboard/TrackingSection';
 import { databaseService } from '@/services/databaseService';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -132,6 +133,8 @@ const Dashboard = () => {
         );
       case 'security':
         return <SecuritySection logs={securityLogs} onRefresh={loadAllData} />;
+      case 'tracking':
+        return <TrackingSection />;
       case 'settings':
         return <SettingsSection />;
       case 'legal':
