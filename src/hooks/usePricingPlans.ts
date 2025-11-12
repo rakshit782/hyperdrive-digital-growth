@@ -60,10 +60,21 @@ export const usePricingPlans = () => {
           // Separate features and addons
           for (const item of rawFeatures) {
             if (typeof item === 'string') {
-              features.push(item);
+              // Check if this string contains addon information
+              if (item.toLowerCase().startsWith('add-ons:') || item.toLowerCase().startsWith('add-on:')) {
+                // Extract addons from the string format
+                const addonsText = item.substring(item.indexOf(':') + 1).trim();
+                // Split by comma and clean up each addon
+                const extractedAddons = addonsText.split(',').map(a => a.trim()).filter(a => a);
+                addons.push(...extractedAddons);
+              } else {
+                // Regular feature
+                features.push(item);
+              }
             } else if (item && typeof item === 'object' && item['Add-ons']) {
-              // Extract addons from the object
-              addons = Array.isArray(item['Add-ons']) ? item['Add-ons'] : [];
+              // Extract addons from the object structure
+              const objAddons = Array.isArray(item['Add-ons']) ? item['Add-ons'] : [];
+              addons.push(...objAddons);
             }
           }
         } catch (error) {
