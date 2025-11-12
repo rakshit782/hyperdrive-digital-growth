@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles, TrendingUp, CheckCircle, Users, Award, Zap, Target, BarChart3, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
+import { ContactFormDialog } from "@/components/ContactFormDialog";
 
 interface CTAButtons {
   primaryText?: string;
@@ -15,6 +16,7 @@ interface StatBlock {
 }
 
 const Hero = () => {
+  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
   const [ctaButtons, setCTAButtons] = useState<CTAButtons>({
     primaryText: "Get Free Strategy Call",
     secondaryText: "Watch Case Study"
@@ -74,7 +76,7 @@ const Hero = () => {
   }, []);
 
   const handlePrimaryButtonClick = () => {
-    window.location.href = '/free-audit';
+    setIsContactFormOpen(true);
   };
 
   const handleSecondaryButtonClick = () => {
@@ -282,6 +284,14 @@ const Hero = () => {
           />
         ))}
       </div>
+      
+      <ContactFormDialog 
+        open={isContactFormOpen}
+        onOpenChange={setIsContactFormOpen}
+        formType="hero-cta"
+        title="Get Your Free Strategy Call"
+        description="Fill out the form below and we'll get back to you shortly."
+      />
     </section>
   );
 };
