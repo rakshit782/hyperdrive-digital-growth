@@ -47,13 +47,24 @@ export const usePricingPlans = () => {
 
       const data = await response.json();
       
-      setPlans(data.map((plan: any) => ({
-        ...plan,
-        price: Number(plan.price),
-        features: typeof plan.features === 'string' 
-          ? JSON.parse(plan.features) 
-          : plan.features || []
-      })));
+      setPlans(data.map((plan: any) => {
+        let features = [];
+        try {
+          features = typeof plan.features === 'string' 
+            ? JSON.parse(plan.features) 
+            : plan.features || [];
+        } catch (error) {
+          console.error(`Error parsing features for plan ${plan.name}:`, error);
+          // Fallback to empty array if JSON is malformed
+          features = [];
+        }
+        
+        return {
+          ...plan,
+          price: Number(plan.price),
+          features
+        };
+      }));
     } catch (error) {
       console.error('Error fetching pricing plans:', error);
       toast({
