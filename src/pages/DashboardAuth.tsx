@@ -6,25 +6,46 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Lock } from 'lucide-react';
-
-// Demo credentials
-const DEMO_EMAIL = "demo@amzadscout.com";
-const DEMO_PASSWORD = "demo123";
+import { supabase } from '@/integrations/supabase/client';
 
 const DashboardAuth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
-      localStorage.setItem('dashboard_auth', 'true');
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // Check if user has admin role
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', data.user.id)
+        .single();
+
+      if (roleError || roleData?.role !== 'admin') {
+        await supabase.auth.signOut();
+        toast.error('Access denied. Admin role required.');
+        return;
+      }
+
       toast.success('Login successful!');
       navigate('/dashboard');
-    } else {
-      toast.error('Invalid credentials. Use demo@amzadscout.com / demo123');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'Invalid credentials');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,18 +85,18 @@ const DashboardAuth = () => {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
           
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm font-semibold text-slate-900 mb-2">Demo Credentials:</p>
-            <p className="text-sm text-slate-600">
-              Email: <code className="bg-white px-2 py-1 rounded">demo@amzadscout.com</code>
+          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+            <p className="text-sm font-semibold text-foreground mb-2">Admin Credentials:</p>
+            <p className="text-sm text-muted-foreground">
+              Email: <code className="bg-muted px-2 py-1 rounded">admin@demo.com</code>
             </p>
-            <p className="text-sm text-slate-600">
-              Password: <code className="bg-white px-2 py-1 rounded">demo123</code>
+            <p className="text-sm text-muted-foreground">
+              Password: <code className="bg-muted px-2 py-1 rounded">Ask your administrator</code>
             </p>
           </div>
         </CardContent>

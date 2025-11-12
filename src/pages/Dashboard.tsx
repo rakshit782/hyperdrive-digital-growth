@@ -12,6 +12,7 @@ import { LegalPagesSection } from '@/components/dashboard/LegalPagesSection';
 import { PricingSection } from '@/components/dashboard/PricingSection';
 import { databaseService } from '@/services/databaseService';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -23,14 +24,32 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const isAuth = localStorage.getItem('dashboard_auth');
-    if (isAuth !== 'true') {
+    checkAuth();
+  }, [navigate]);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      navigate('/dashboard/login');
+      return;
+    }
+
+    // Verify admin role
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', session.user.id)
+      .single();
+
+    if (roleData?.role !== 'admin') {
+      toast.error('Access denied. Admin role required.');
       navigate('/dashboard/login');
       return;
     }
 
     loadAllData();
-  }, [navigate]);
+  };
 
   const loadAllData = async () => {
     setLoading(true);
@@ -77,8 +96,8 @@ const Dashboard = () => {
     toast.info('Delete functionality coming soon');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('dashboard_auth');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast.success('Logged out successfully');
     navigate('/dashboard/login');
   };
