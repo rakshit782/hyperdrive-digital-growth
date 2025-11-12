@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.neon-contacts]
 verify_jwt = false
+
+[functions.neon-visitor-logs]
+verify_jwt = false

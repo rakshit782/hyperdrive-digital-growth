@@ -8,6 +8,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthContext";
 import TrackingScriptInjector from "./components/TrackingScriptInjector";
+import { VisitorTracker } from "./components/VisitorTracker";
 import Index from "./pages/Index";
 
 // Direct imports for instant loading - no lazy loading
@@ -61,6 +62,7 @@ function App() {
             <BrowserRouter>
               <ScrollToTop />
               <TrackingScriptInjector />
+              <VisitorTracker />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />

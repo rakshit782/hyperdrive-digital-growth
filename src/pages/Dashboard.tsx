@@ -11,7 +11,9 @@ import { SettingsSection } from '@/components/dashboard/SettingsSection';
 import { LegalPagesSection } from '@/components/dashboard/LegalPagesSection';
 import { PricingSection } from '@/components/dashboard/PricingSection';
 import { TrackingSection } from '@/components/dashboard/TrackingSection';
+import { VisitorLogsSection } from '@/components/dashboard/VisitorLogsSection';
 import { databaseService } from '@/services/databaseService';
+import { getVisitorLogs } from '@/utils/visitorTracker';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -23,6 +25,7 @@ const Dashboard = () => {
   const [leads, setLeads] = useState<any[]>([]);
   const [newsletters, setNewsletters] = useState<any[]>([]);
   const [securityLogs, setSecurityLogs] = useState<any[]>([]);
+  const [visitorLogs, setVisitorLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,11 +48,12 @@ const Dashboard = () => {
   const loadAllData = async () => {
     setLoading(true);
     try {
-      const [contactsData, leadsData, newslettersData, logsData] = await Promise.all([
+      const [contactsData, leadsData, newslettersData, logsData, visitorLogsData] = await Promise.all([
         databaseService.getContactSubmissions(100),
         databaseService.getLeads(100),
         databaseService.getSecurityLogs(100),
         databaseService.getSecurityLogs(50),
+        getVisitorLogs(100),
       ]);
 
       setContacts(contactsData.sort((a: any, b: any) => 
@@ -62,6 +66,9 @@ const Dashboard = () => {
       // Note: newsletters need a separate endpoint - for now using empty array
       setNewsletters([]);
       setSecurityLogs(logsData.sort((a: any, b: any) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ));
+      setVisitorLogs(visitorLogsData.sort((a: any, b: any) => 
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       ));
     } catch (error) {
@@ -133,6 +140,8 @@ const Dashboard = () => {
         );
       case 'security':
         return <SecuritySection logs={securityLogs} onRefresh={loadAllData} />;
+      case 'visitor-logs':
+        return <VisitorLogsSection logs={visitorLogs} onRefresh={loadAllData} />;
       case 'tracking':
         return <TrackingSection />;
       case 'settings':

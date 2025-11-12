@@ -29,7 +29,7 @@ serve(async (req: Request) => {
             amazon_store_url, walmart_store_url, source, status, 
             notes, lead_number, audit_type, website_url, 
             current_spend, goals, lead_data, form_security, 
-            assigned_to, created_at, updated_at
+            created_at, updated_at
            FROM leads
            ORDER BY created_at DESC
            LIMIT $1`,
