@@ -1,105 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
   <url>
-    <loc>https://yourdomain.com/</loc>
+    <loc>https://amzadscout.com/</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services</loc>
+    <loc>https://amzadscout.com/services</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/amazon-advertising</loc>
+    <loc>https://amzadscout.com/services/amazon-advertising</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/google-advertising</loc>
+    <loc>https://amzadscout.com/services/google-advertising</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/meta-advertising</loc>
+    <loc>https://amzadscout.com/services/meta-advertising</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/walmart-advertising</loc>
+    <loc>https://amzadscout.com/services/walmart-advertising</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/shopify-development</loc>
+    <loc>https://amzadscout.com/services/shopify-development</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/shopify-integration</loc>
+    <loc>https://amzadscout.com/services/shopify-integration</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/website-development</loc>
+    <loc>https://amzadscout.com/services/website-development</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/listing-optimization</loc>
+    <loc>https://amzadscout.com/services/listing-optimization</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/product-cataloging</loc>
+    <loc>https://amzadscout.com/services/product-cataloging</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/services/account-management</loc>
+    <loc>https://amzadscout.com/services/account-management</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/about</loc>
+    <loc>https://amzadscout.com/about</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/contact</loc>
+    <loc>https://amzadscout.com/contact</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/pricing</loc>
+    <loc>https://amzadscout.com/pricing</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/case-studies</loc>
+    <loc>https://amzadscout.com/case-studies</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+
   <url>
-    <loc>https://yourdomain.com/blog</loc>
+    <loc>https://amzadscout.com/blog</loc>
     <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
+
 </urlset>
