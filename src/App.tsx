@@ -20,6 +20,8 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
 import WebsiteDevelopment from "./pages/WebsiteDevelopment";
+import ListingOptimizationPage from "./pages/ListingOptimizationPage";
+import ProductCatalogingPage from "./pages/ProductCatalogingPage";
 import NotFound from "./pages/NotFound";
 
 // Legal pages
@@ -68,6 +70,8 @@ function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/services/website-development" element={<WebsiteDevelopment />} />
+                <Route path="/services/listing-optimization" element={<ListingOptimizationPage />} />
+                <Route path="/services/product-cataloging" element={<ProductCatalogingPage />} />
                 <Route path="/case-studies" element={<CaseStudies />} />
                 <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
                 <Route path="/meta-case-studies" element={<MetaCaseStudies />} />

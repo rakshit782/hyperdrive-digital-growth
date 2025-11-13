@@ -7,9 +7,11 @@ interface SEOHeadProps {
   keywords?: string;
   image?: string;
   url?: string;
+  canonical?: string;
+  schema?: any;
 }
 
-const SEOHead = ({ title, description, keywords, image, url }: SEOHeadProps) => {
+const SEOHead = ({ title, description, keywords, image, url, canonical, schema }: SEOHeadProps) => {
   useEffect(() => {
     // Check for custom website title from settings
     const savedSettings = localStorage.getItem('websiteSettings');
@@ -90,6 +92,32 @@ const SEOHead = ({ title, description, keywords, image, url }: SEOHeadProps) => 
     setMetaName('twitter:description', description);
     if (image) setMetaName('twitter:image', image);
 
+    // Set canonical URL
+    if (canonical) {
+      let linkCanonical = document.querySelector('link[rel="canonical"]');
+      if (linkCanonical) {
+        linkCanonical.setAttribute('href', canonical);
+      } else {
+        linkCanonical = document.createElement('link');
+        linkCanonical.setAttribute('rel', 'canonical');
+        linkCanonical.setAttribute('href', canonical);
+        document.head.appendChild(linkCanonical);
+      }
+    }
+
+    // Add JSON-LD Schema
+    if (schema) {
+      let schemaScript = document.querySelector('script[type="application/ld+json"]');
+      if (schemaScript) {
+        schemaScript.textContent = JSON.stringify(schema);
+      } else {
+        schemaScript = document.createElement('script');
+        schemaScript.setAttribute('type', 'application/ld+json');
+        schemaScript.textContent = JSON.stringify(schema);
+        document.head.appendChild(schemaScript);
+      }
+    }
+
     // Listen for real-time title updates
     const handleSettingsUpdate = (event: CustomEvent) => {
       if (event.detail?.websiteTitle) {
@@ -104,7 +132,7 @@ const SEOHead = ({ title, description, keywords, image, url }: SEOHeadProps) => 
     return () => {
       window.removeEventListener('websiteSettingsUpdated', handleSettingsUpdate as EventListener);
     };
-  }, [title, description, keywords, image, url]);
+  }, [title, description, keywords, image, url, canonical, schema]);
 
   return null;
 };

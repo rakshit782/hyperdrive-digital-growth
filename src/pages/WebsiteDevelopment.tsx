@@ -92,11 +92,26 @@ const WebsiteDevelopment = () => {
     }
   ];
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "Shopify Development",
+    "provider": {
+      "@type": "Organization",
+      "name": "Digital Growth Agency"
+    },
+    "areaServed": "Worldwide",
+    "description": "Professional Shopify Development Partner offering Custom Shopify Theme Development, Shopify Plus Development, Shopify E-commerce Store Development, and Shopify Store Migration Services."
+  };
+
   return (
     <>
       <SEOHead 
-        title="Website Development Services - Custom Web Solutions"
-        description="Professional website development services. Custom web solutions, responsive design, and performance optimization for businesses of all sizes."
+        title="Shopify Development Partner | Custom Shopify Theme Development & Shopify Plus Experts"
+        description="Professional Shopify Developers offering Custom Shopify Theme Development, Shopify E-commerce Store Development, Shopify Plus Development, and Shopify Store Migration Services. Expert Shopify Development Partner."
+        keywords="Shopify Development Partner, Custom Shopify Theme Development Agency, Shopify E-commerce Store Development, Shopify Store Migration Services, Professional Shopify Developers, Shopify Plus Development Experts"
+        canonical={typeof window !== 'undefined' ? window.location.href : ''}
+        schema={schema}
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <Header />
@@ -107,16 +122,16 @@ const WebsiteDevelopment = () => {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-full border border-emerald-200/50 mb-6">
-                  <span className="text-sm font-medium text-emerald-700">Web Development Experts</span>
+                  <span className="text-sm font-medium text-emerald-700">Certified Shopify Development Partner</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-                  Website Development Services
+                  Professional Shopify Development Services
                 </h1>
                 <h2 className="text-xl md:text-2xl text-slate-700 font-medium mb-4">
-                  Custom Web Solutions & Digital Excellence
+                  Custom Shopify Theme Development & Shopify Plus Experts
                 </h2>
                 <p className="text-xl text-slate-600 leading-relaxed mb-8">
-                  Transform your digital presence with custom website development that drives results. We create fast, responsive, and SEO-optimized websites that convert visitors into customers.
+                  Expert Shopify Development Partner delivering Custom Shopify E-commerce Store Development, Shopify Plus Solutions, and Professional Shopify Store Migration Services. Transform your online store with our proven Shopify development expertise.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4">

@@ -19,25 +19,25 @@ const serviceConfigs: Record<string, {
   gradient: string;
 }> = {
   'amazon-advertising': {
-    title: 'Amazon Advertising Management',
-    subtitle: 'Dominate Amazon with Expert PPC & Marketplace Optimization',
-    description: 'Transform your Amazon presence with our proven advertising strategies. We help brands achieve 350% average sales growth through expert PPC management, listing optimization, and strategic campaign planning that delivers real results.',
+    title: 'Amazon Advertising Agency - Expert PPC Management Service',
+    subtitle: 'Amazon Ads Expert | Amazon DSP Agency | Amazon Sponsored Products Management',
+    description: 'Leading Amazon Advertising Agency specializing in Amazon PPC Management Service, Amazon DSP campaigns, and Amazon Sponsored Products Management. Our Amazon Ads Experts deliver proven PPC audit and optimization strategies that drive 350% average sales growth.',
     features: [
-      'Strategic Amazon PPC campaign setup and optimization',
-      'Advanced keyword research and competitive analysis',
-      'Listing optimization for maximum conversion rates',
-      'A+ Content and Enhanced Brand Content creation',
-      'Inventory management and advertising coordination',
-      'Real-time bid optimization and budget management',
-      'Detailed performance analytics and reporting',
-      'Amazon DSP advertising for brand awareness'
+      'Amazon PPC Management Service - Campaign setup and optimization',
+      'Amazon Ads Expert - Advanced keyword research and competitive analysis',
+      'Amazon Listing Optimization Service - Maximum conversion rates',
+      'A+ Content Creation and Optimization - Enhanced Brand Content',
+      'Amazon DSP Agency - Display and video advertising',
+      'Amazon Sponsored Products Management - Real-time bid optimization',
+      'Amazon PPC Audit and Optimization - Detailed performance analytics',
+      'Amazon SEO for Product Listings - Organic ranking improvements'
     ],
     benefits: [
       '350% average sales increase within 90 days',
       '45% reduction in advertising cost of sales (ACoS)',
       'Top 3 organic rankings for target keywords',
-      '24/7 campaign monitoring and optimization',
-      'Dedicated Amazon advertising specialist',
+      '24/7 Amazon PPC campaign monitoring and optimization',
+      'Dedicated Amazon Ads Expert specialist',
       'Transparent reporting and regular strategy calls'
     ],
     gradient: 'from-orange-500 to-yellow-500'
@@ -91,26 +91,26 @@ const serviceConfigs: Record<string, {
     gradient: 'from-purple-500 to-pink-500'
   },
   'walmart-advertising': {
-    title: 'Walmart Advertising Management',
-    subtitle: 'Capture Walmart Marketplace Opportunity',
-    description: 'Dominate the Walmart marketplace with our expert Walmart Connect advertising services. We help brands maximize visibility, drive sales, and capture market share on one of America\'s largest retail platforms.',
+    title: 'Walmart Advertising Agency - Walmart Connect Partner',
+    subtitle: 'Walmart Sponsored Products Expert | Walmart Performance Ads Management',
+    description: 'Certified Walmart Advertising Agency and Walmart Connect Partner specializing in Walmart Sponsored Products, Walmart Performance Ads Management, and comprehensive Walmart Advertising Strategy. Expert Walmart Marketplace Ad Agency services.',
     features: [
-      'Walmart Connect advertising campaign management',
-      'Sponsored Products and Sponsored Brands optimization',
-      'Item performance score improvement strategies',
-      'Competitive pricing and positioning analysis',
-      'Product listing optimization and enhancement',
-      'Inventory management and fulfillment coordination',
+      'Walmart Connect Partner - Official advertising campaign management',
+      'Walmart Sponsored Products Expert - Optimization and scaling',
+      'Walmart Performance Ads Management - ROI-focused strategies',
+      'Walmart Advertising Strategy - Competitive positioning',
+      'Walmart Marketplace Ad Agency - Item performance score improvement',
+      'Product listing optimization for Walmart marketplace',
       'Walmart DSP advertising for brand awareness',
       'Performance analytics and ROI tracking'
     ],
     benefits: [
-      '425% average revenue growth',
+      '425% average revenue growth on Walmart',
       '78% improvement in item performance score',
-      '340% increase in search visibility',
+      '340% increase in Walmart search visibility',
       '55% reduction in wasted ad spend',
-      'Dedicated Walmart advertising specialist',
-      'Access to exclusive beta features and opportunities'
+      'Dedicated Walmart Connect Partner specialist',
+      'Access to exclusive Walmart beta features'
     ],
     gradient: 'from-blue-600 to-blue-400'
   },
@@ -139,17 +139,17 @@ const serviceConfigs: Record<string, {
     gradient: 'from-green-500 to-emerald-500'
   },
   'shopify-development': {
-    title: 'Shopify Store Development',
-    subtitle: 'Launch & Scale Your Shopify E-commerce Store',
-    description: 'Build a powerful Shopify store that drives sales and grows with your business. Our Shopify experts create custom stores optimized for conversions, mobile experience, and seamless customer journeys.',
+    title: 'Shopify Development Partner - Professional Shopify Developers',
+    subtitle: 'Custom Shopify Theme Development | Shopify Plus Development Experts',
+    description: 'Certified Shopify Development Partner with Professional Shopify Developers specializing in Custom Shopify Theme Development Agency services, Shopify E-commerce Store Development, Shopify Store Migration Services, and Shopify Plus Development for enterprise brands.',
     features: [
-      'Custom Shopify theme development',
-      'Shopify Plus enterprise solutions',
-      'Product page optimization',
-      'Checkout flow optimization',
-      'Mobile app integration',
-      'Custom app development and integration',
-      'Migration from other platforms to Shopify',
+      'Custom Shopify Theme Development Agency - Unique designs',
+      'Shopify Plus Development Experts - Enterprise solutions',
+      'Shopify E-commerce Store Development - Complete setups',
+      'Shopify Store Migration Services - Platform transfers',
+      'Professional Shopify Developers - Custom app integration',
+      'Shopify Development Partner - Official certification',
+      'Mobile-responsive Shopify theme optimization',
       'Performance optimization and speed improvements'
     ],
     benefits: [
@@ -157,28 +157,24 @@ const serviceConfigs: Record<string, {
       '98% mobile performance score',
       '2.1s average page load time',
       '99.5% security and compliance rating',
-      'Shopify Partner certified developers',
+      'Certified Shopify Development Partner team',
       'Unlimited revisions during development'
     ],
     gradient: 'from-green-600 to-teal-500'
   },
   'shopify-integration': {
-    title: 'Shopify Multi-Marketplace Integration Services',
-    subtitle: 'Sell Everywhere - Amazon, Walmart, eBay, Etsy & More',
-    description: 'Expand your reach and multiply your sales by integrating your Shopify store with major marketplaces. We seamlessly connect Shopify with Amazon, Walmart, eBay, Etsy, Shein, Wayfair, and Rakuten, enabling centralized inventory management, automated order syncing, and multi-channel selling from one powerful dashboard.',
+    title: 'Multi-Marketplace Integration Agency',
+    subtitle: 'Integrate Shopify with Amazon FBA | Multi-Channel E-commerce Integration',
+    description: 'Leading Multi-Marketplace Integration Agency offering comprehensive Multi-Channel E-commerce Integration Service. Expert in Integrate Shopify with Amazon FBA, Walmart to Shopify Product Sync Solution, and Best Multi-Marketplace Sync Software for E-commerce Channel Management Solutions.',
     features: [
-      'Amazon Marketplace integration with real-time inventory sync',
-      'Walmart Marketplace connection and order fulfillment',
-      'eBay multi-listing integration with automated pricing',
-      'Etsy product catalog synchronization and management',
-      'Shein wholesale and dropshipping integration',
-      'Wayfair supplier portal integration and order processing',
-      'Rakuten marketplace setup and product feed optimization',
-      'Centralized inventory management across all channels',
-      'Automated order routing and fulfillment coordination',
-      'Multi-channel pricing strategy and dynamic repricing',
-      'Unified reporting and analytics dashboard',
-      'Product catalog mapping and attribute synchronization'
+      'Multi-Marketplace Integration Agency - Amazon, Walmart, eBay',
+      'Integrate Shopify with Amazon FBA - Real-time inventory sync',
+      'Walmart to Shopify Product Sync Solution - Order fulfillment',
+      'Multi-Channel E-commerce Integration Service - Centralized management',
+      'E-commerce Channel Management Solutions - Unified dashboard',
+      'Best Multi-Marketplace Sync Software - Automated operations',
+      'Product catalog mapping and attribute synchronization',
+      'Multi-channel pricing strategy and dynamic repricing'
     ],
     benefits: [
       '450% average sales increase from multi-channel selling',
@@ -187,7 +183,7 @@ const serviceConfigs: Record<string, {
       '78% reduction in overselling and stockouts',
       '92% faster order processing time',
       'Single dashboard for all marketplace operations',
-      'Dedicated marketplace integration specialist',
+      'Dedicated Multi-Marketplace Integration specialist',
       '24/7 monitoring and instant error alerts'
     ],
     gradient: 'from-cyan-500 to-blue-500'
@@ -242,11 +238,61 @@ const DetailedServicePage = () => {
     );
   }
 
+  const serviceSchemas: Record<string, any> = {
+    'amazon-advertising': {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Amazon Advertising Management",
+      "provider": {
+        "@type": "Organization",
+        "name": "Digital Growth Agency"
+      },
+      "areaServed": "Worldwide",
+      "description": "Amazon Advertising Agency - Amazon PPC Management Service, Amazon Ads Expert, Amazon DSP Agency"
+    },
+    'walmart-advertising': {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Walmart Advertising Management",
+      "provider": {
+        "@type": "Organization",
+        "name": "Digital Growth Agency"
+      },
+      "areaServed": "Worldwide",
+      "description": "Walmart Advertising Agency - Walmart Connect Partner, Walmart Sponsored Products Expert"
+    },
+    'shopify-development': {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Shopify Development",
+      "provider": {
+        "@type": "Organization",
+        "name": "Digital Growth Agency"
+      },
+      "areaServed": "Worldwide",
+      "description": "Shopify Development Partner - Custom Shopify Theme Development, Shopify Plus Development"
+    },
+    'shopify-integration': {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Multi-Marketplace Integration",
+      "provider": {
+        "@type": "Organization",
+        "name": "Digital Growth Agency"
+      },
+      "areaServed": "Worldwide",
+      "description": "Multi-Marketplace Integration Agency - Integrate Shopify with Amazon FBA"
+    }
+  };
+
   return (
     <>
       <SEOHead 
-        title={`${config.title} - Expert Digital Marketing Services`}
+        title={`${config.title} | Expert E-commerce Digital Marketing Services`}
         description={config.description}
+        keywords={`${config.title}, ${config.subtitle}, E-commerce Digital Marketing Agency`}
+        canonical={typeof window !== 'undefined' ? window.location.href : ''}
+        schema={serviceSchemas[serviceType || '']}
       />
       <Header />
       

@@ -10,10 +10,10 @@ import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight } from "luc
 const About = () => {
   const navigate = useNavigate();
   const [aboutData, setAboutData] = useState({
-    heroTitle: 'About Our Agency',
-    heroDescription: "We're a team of digital marketing experts passionate about helping businesses achieve extraordinary growth through strategic advertising and innovative solutions.",
-    missionText: 'To empower businesses with cutting-edge digital marketing strategies that drive measurable growth and sustainable success. We believe every business deserves access to expert-level advertising management and strategic guidance.',
-    visionText: 'To become the most trusted digital growth partner for businesses worldwide, known for delivering exceptional results, innovative strategies, and unparalleled client service in the digital marketing space.'
+    heroTitle: 'Top E-commerce Digital Marketing Agency - 10 Years of Proven Results',
+    heroDescription: "We're a certified team of E-commerce Advertising Experts with 10+ years experience delivering proven growth strategies. Specialized in Amazon PPC Management, Walmart Advertising, Shopify Development, and Multi-Marketplace Integration for online retailers.",
+    missionText: 'To empower e-commerce businesses with expert-level advertising management and proven growth strategies. As a leading Amazon Advertising Agency and Walmart Connect Partner, we deliver measurable growth through data-driven digital marketing solutions.',
+    visionText: 'To be recognized as the most trusted E-commerce Digital Marketing Agency worldwide, known for delivering exceptional results through innovative Amazon PPC strategies, professional Shopify development, and comprehensive multi-marketplace integration services.'
   });
 
   useEffect(() => {
@@ -46,15 +46,15 @@ const About = () => {
   ];
 
   const services = [
-    "Amazon Advertising Management",
-    "Google Ads Optimization", 
-    "Meta Advertising Campaigns",
-    "Walmart Marketplace Marketing",
-    "Multi-Marketplace Integration Service",
-    "Amazon Ads Automation Services",
-    "Website Development",
-    "Shopify Store Development",
-    "Account Management Services"
+    "Amazon Advertising Agency - PPC Management Service",
+    "Amazon Listing Optimization Service - A+ Content Creation", 
+    "Walmart Advertising Agency - Walmart Connect Partner",
+    "E-commerce Product Cataloging Services",
+    "Shopify Development Partner - Custom Theme Development",
+    "Multi-Marketplace Integration Agency",
+    "Professional Shopify Developers - Shopify Plus Experts",
+    "Amazon DSP Agency - Amazon Sponsored Products Management",
+    "E-commerce Channel Management Solutions"
   ];
 
   const whyChooseUs = [
@@ -79,8 +79,10 @@ const About = () => {
   return (
     <>
       <SEOHead 
-        title="About Us - Digital Growth Agency"
-        description="Learn about our mission to help businesses grow through strategic digital marketing and advertising solutions."
+        title="About Us - 10 Year E-commerce Digital Marketing Agency | Proven Results"
+        description="Leading E-commerce Digital Marketing Agency with 10+ years experience. Certified Amazon Advertising Agency, Walmart Connect Partner, and Shopify Development Partner. Proven E-commerce Growth Strategies for 500+ successful clients."
+        keywords="10 Year E-commerce Marketing Agency, Top E-commerce Advertising Experts, Amazon Advertising Agency, Walmart Connect Partner, Shopify Development Partner, Proven E-commerce Growth Strategies"
+        canonical={window.location.href}
       />
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
