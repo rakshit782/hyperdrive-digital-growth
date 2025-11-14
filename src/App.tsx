@@ -9,6 +9,7 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthContext";
 import TrackingScriptInjector from "./components/TrackingScriptInjector";
 import { VisitorTracker } from "./components/VisitorTracker";
+import GlobalTracking from "./components/GlobalTracking";
 import Index from "./pages/Index";
 
 // Direct imports for instant loading - no lazy loading
@@ -61,11 +62,12 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <BrowserRouter>
-              <ScrollToTop />
-              <TrackingScriptInjector />
-              <VisitorTracker />
-              <Routes>
+        <BrowserRouter>
+          <ScrollToTop />
+          <GlobalTracking />
+          <TrackingScriptInjector />
+          <VisitorTracker />
+          <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/services" element={<Services />} />
