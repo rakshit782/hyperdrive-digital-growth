@@ -108,15 +108,14 @@ const Hero = () => {
               {/* Main Heading */}
               <div className="space-y-6 animate-slide-up">
                 <h1 className="heading-modern text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-gray-900 leading-[0.9]">
-                  <span className="block">Scale Your Business</span>
+                  <span className="block">Amazon Advertising Agency</span>
                   <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    With Precision
+                    & Digital Marketing Experts
                   </span>
                 </h1>
                 
                 <p className="text-modern text-lg md:text-xl lg:text-2xl font-light text-gray-600 max-w-2xl">
-                  Transform your advertising performance with our data-driven strategies across 
-                  <span className="font-medium text-gray-900"> Amazon, Walmart, and Meta platforms</span>
+                  Leading <span className="font-medium text-gray-900">advertising agency</span> specializing in Amazon advertising, digital marketing, and e-commerce growth. Better results than Helium 10, Jungle Scout, or AMZ Scout alone.
                 </p>
               </div>
               
