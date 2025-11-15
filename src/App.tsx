@@ -43,6 +43,7 @@ import DashboardSignup from "./pages/DashboardSignup";
 // Detailed service pages
 import DetailedServicePage from "./pages/DetailedServicePage";
 import AdLanding from "./pages/AdLanding";
+import ToolAlternativesPage from "./pages/ToolAlternativesPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,6 +75,9 @@ function App() {
                 <Route path="/services/website-development" element={<WebsiteDevelopment />} />
                 <Route path="/services/listing-optimization" element={<ListingOptimizationPage />} />
                 <Route path="/services/product-cataloging" element={<ProductCatalogingPage />} />
+                <Route path="/amazon-tools-alternative" element={<ToolAlternativesPage />} />
+                <Route path="/helium-10-alternative" element={<ToolAlternativesPage />} />
+                <Route path="/jungle-scout-alternative" element={<ToolAlternativesPage />} />
                 <Route path="/case-studies" element={<CaseStudies />} />
                 <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
                 <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
