@@ -464,9 +464,11 @@ const CaseStudies = () => {
 
   return (
     <>
-      <SEOHead 
-        title="Case Studies - Proven Results in Digital Advertising"
-        description="Explore our successful case studies showing real results from Amazon, Walmart, Meta, and Google advertising campaigns."
+      <SEOHead
+        title="E-commerce Success Stories & Case Studies | Proven Amazon & Walmart Results"
+        description="Explore proven case studies showcasing real results from Amazon advertising, Walmart marketplace campaigns, Meta advertising, and Shopify development. See how our certified agency helped brands achieve 300-500% growth through data-driven strategies."
+        keywords="amazon advertising case studies, walmart advertising results, e-commerce success stories, amazon ppc case studies, marketplace growth results, proven advertising results, amazon agency portfolio, walmart success stories, shopify development case studies, real client results, amazon sales growth, sponsored products results, sponsored brands success, listing optimization results, conversion rate improvements, roi case studies, acos optimization results, revenue growth stories, market share gains, category domination results, product launch success, seasonal campaign results, prime day success stories, black friday results, international expansion success, multi-marketplace results, brand awareness growth, customer acquisition results, retention marketing success, remarketing campaign results, data-driven results, performance marketing case studies, growth strategy results, scalable growth examples, profit optimization results, inventory optimization success, fulfillment strategy results, account recovery success, ranking improvement results, review growth case studies"
+        canonical={window.location.href}
       />
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">

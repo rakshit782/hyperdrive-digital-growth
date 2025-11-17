@@ -39,8 +39,10 @@ const Blog = () => {
   return (
     <>
       <SEOHead 
-        title="Digital Marketing Blog - Expert Tips & Insights"
-        description="Stay updated with the latest digital marketing trends, Amazon advertising tips, and e-commerce strategies from our expert team."
+        title="E-commerce Marketing Blog | Amazon, Walmart & Shopify Growth Strategies"
+        description="Expert insights on Amazon PPC, Walmart advertising, Shopify development, and e-commerce growth strategies. Stay updated with the latest digital marketing trends, tips, and best practices from certified advertising professionals."
+        keywords="amazon advertising blog, amazon ppc tips, walmart advertising insights, shopify development blog, e-commerce marketing strategies, digital marketing blog, amazon seller tips, sponsored products guide, sponsored brands strategies, ppc optimization tips, listing optimization guide, amazon seo tips, conversion rate optimization, marketplace growth strategies, product launch tips, seasonal campaign strategies, amazon analytics insights, roi optimization guide, acos reduction tips, advertising budget tips, keyword research guide, competitive analysis tips, market research insights, inventory management tips, fulfillment strategies, international expansion guide, account health tips, review management strategies, ranking strategies, prime day tips, black friday strategies, q4 planning guide, growth hacking tips, performance marketing insights, customer acquisition strategies, retention marketing tips, remarketing strategies, data-driven marketing, amazon dsp insights, video advertising tips, influencer marketing guide, content marketing strategies, email marketing tips, social media advertising"
+        canonical={window.location.href}
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <Header />
