@@ -30,9 +30,10 @@ const Pricing = () => {
   return (
     <>
       <SEOHead
-        title="Pricing Plans - AMZ Ad Scout"
-        description="Choose the perfect plan for your marketplace advertising needs. From small businesses to enterprise-level brands."
-        keywords="pricing, marketplace ads, Amazon ads pricing, advertising plans"
+        title="Transparent Pricing Plans | Amazon & E-commerce Marketing Services"
+        description="Flexible pricing plans for Amazon PPC management, Walmart advertising, Shopify development, and e-commerce marketing services. From startups to enterprise brands, choose the perfect plan for your marketplace advertising needs with no hidden fees."
+        keywords="amazon advertising pricing, amazon ppc management cost, walmart advertising pricing, shopify development pricing, e-commerce marketing pricing, marketplace advertising cost, ppc management pricing, digital marketing pricing, amazon agency pricing, flexible pricing plans, monthly advertising plans, annual advertising plans, startup marketing plans, enterprise marketing pricing, small business advertising cost, marketplace management pricing, campaign management cost, listing optimization pricing, conversion optimization cost, roi optimization pricing, consulting services pricing, account management cost, seasonal campaign pricing, performance marketing pricing, growth strategy pricing, transparent pricing, no hidden fees, scalable pricing, affordable amazon management, professional ppc pricing, certified agency pricing, data-driven marketing cost, multi-marketplace pricing, international expansion pricing, account health pricing, review management cost, ranking services pricing, product launch pricing, advertising budget planning"
+        canonical={window.location.href}
       />
       <div className="min-h-screen flex flex-col bg-background">
         <Header />

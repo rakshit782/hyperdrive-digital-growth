@@ -79,52 +79,56 @@ const About = () => {
   return (
     <>
       <SEOHead 
-        title="About Us - 10 Year E-commerce Digital Marketing Agency | Proven Results"
+        title="About Us - Premier E-commerce Digital Marketing Agency | 10+ Years Proven Results"
         description="Leading E-commerce Digital Marketing Agency with 10+ years experience. Certified Amazon Advertising Agency, Walmart Connect Partner, and Shopify Development Partner. Proven E-commerce Growth Strategies for 500+ successful clients."
-        keywords="10 Year E-commerce Marketing Agency, Top E-commerce Advertising Experts, Amazon Advertising Agency, Walmart Connect Partner, Shopify Development Partner, Proven E-commerce Growth Strategies"
+        keywords="e-commerce digital marketing agency, amazon advertising agency, walmart connect partner, shopify development partner, amazon ppc management, professional amazon agency, certified advertising experts, e-commerce growth strategies, multi-marketplace integration, amazon seller central management, vendor central consulting, walmart marketplace advertising, shopify plus developers, e-commerce consulting services, amazon dsp agency, sponsored products management, sponsored brands campaigns, product listing optimization, a+ content creation, enhanced brand content, amazon storefront design, brand registry services, e-commerce photography, product photography services, lifestyle photography, infographic design services, amazon seo optimization, keyword research services, product launch strategy, conversion rate optimization, roi optimization services, data-driven marketing, performance marketing agency, customer acquisition strategy, retention marketing, remarketing campaigns, amazon analytics, competitive analysis, market research services, profit margin optimization, inventory management consulting, supply chain optimization, fulfillment strategy, fba consulting, fbm strategy consulting, international expansion services, global marketplace strategy, cross-border e-commerce, localization services, account health management, suspension prevention, reinstatement services, review management, customer service optimization, ranking strategy, category domination, seasonal campaign planning, prime day strategy, black friday strategy, cyber monday planning, q4 planning services, budget management, acos optimization, tacos management, roas maximization, scalable growth strategies"
         canonical={window.location.href}
       />
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10">
         {/* Hero Section */}
-        <section className="py-24 md:py-32">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
+        <section className="py-20 md:py-28 lg:py-36">
+          <div className="max-w-5xl mx-auto px-6 text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent mb-6 leading-tight">
               {aboutData.heroTitle}
             </h1>
-            <p className="text-xl md:text-2xl text-slate-600 leading-relaxed">
+            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-4xl mx-auto">
               {aboutData.heroDescription}
             </p>
           </div>
         </section>
 
         {/* Mission & Vision */}
-        <section className="py-16">
+        <section className="py-20 bg-card/50">
           <div className="max-w-6xl mx-auto px-6">
-            <div className="grid md:grid-cols-2 gap-12">
-              <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="bg-card border-border shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-slate-900 flex items-center">
-                    <Target className="w-6 h-6 mr-3 text-blue-600" />
+                  <CardTitle className="text-3xl font-bold text-foreground flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Target className="w-6 h-6 text-primary" />
+                    </div>
                     Our Mission
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-700 leading-relaxed text-lg">
+                  <p className="text-lg text-muted-foreground leading-relaxed">
                     {aboutData.missionText}
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
+              <Card className="bg-card border-border shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-slate-900 flex items-center">
-                    <Star className="w-6 h-6 mr-3 text-purple-600" />
+                  <CardTitle className="text-3xl font-bold text-foreground flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                      <Star className="w-6 h-6 text-secondary" />
+                    </div>
                     Our Vision
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-700 leading-relaxed text-lg">
+                  <p className="text-lg text-muted-foreground leading-relaxed">
                     {aboutData.visionText}
                   </p>
                 </CardContent>
