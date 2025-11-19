@@ -106,13 +106,13 @@ const About = () => {
                 Award-Winning Agency
               </Badge>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight">
-                <span className="bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   {aboutData.heroTitle}
                 </span>
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 max-w-3xl mx-auto">
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-10 max-w-3xl mx-auto">
                 {aboutData.heroDescription}
               </p>
 
@@ -203,10 +203,10 @@ const About = () => {
               <Badge variant="outline" className="mb-4">
                 Our Foundation
               </Badge>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
                 Core Values That Drive Us
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                 The principles that guide everything we do and shape our culture
               </p>
             </div>
@@ -217,15 +217,15 @@ const About = () => {
                 return (
                   <Card key={index} className="border-border hover:border-primary/50 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
                     <CardHeader>
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl mx-auto mb-4 group-hover:scale-110 transition-transform">
-                        <IconComponent className="w-8 h-8 text-primary-foreground" />
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <IconComponent className="w-8 h-8 text-primary" />
                       </div>
-                      <CardTitle className="text-xl font-bold text-foreground">
+                      <CardTitle className="text-lg font-bold text-foreground">
                         {value.title}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground leading-relaxed text-sm">
+                      <p className="text-muted-foreground leading-relaxed">
                         {value.description}
                       </p>
                     </CardContent>
@@ -244,10 +244,10 @@ const About = () => {
                 <Globe className="w-3 h-3 mr-2" />
                 Our Expertise
               </Badge>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
                 Comprehensive E-commerce Solutions
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                 Full-service digital marketing to accelerate your online growth
               </p>
             </div>
@@ -276,10 +276,10 @@ const About = () => {
               <Badge variant="outline" className="mb-4">
                 The Agency Advantage
               </Badge>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
                 Why Leading Brands Choose Us
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                 Experience the difference that true e-commerce expertise makes
               </p>
             </div>
@@ -288,9 +288,9 @@ const About = () => {
               {whyChooseUs.map((item, index) => (
                 <Card key={index} className="border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl group">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-xl font-bold text-foreground flex items-start gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                        <CheckCircle className="w-5 h-5 text-primary-foreground" />
+                    <CardTitle className="text-lg font-bold text-foreground flex items-start gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <CheckCircle className="w-5 h-5 text-primary" />
                       </div>
                       <span className="pt-1">{item.title}</span>
                     </CardTitle>
@@ -309,20 +309,19 @@ const About = () => {
         {/* CTA Section */}
         <section className="py-20 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
           <div className="max-w-5xl mx-auto px-6">
-            <Card className="border-2 border-primary/20 shadow-2xl overflow-hidden">
-              <div className="bg-gradient-to-r from-primary to-secondary p-1">
-                <CardContent className="bg-card p-12 md:p-16">
+            <Card className="border-2 border-primary/20 shadow-2xl overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5">
+              <CardContent className="p-12 md:p-16">
                   <div className="text-center">
                     <Badge variant="secondary" className="mb-6">
                       <Star className="w-3 h-3 mr-2" />
                       Start Your Growth Journey
                     </Badge>
                     
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-6">
                       Ready to Scale Your Business?
                     </h2>
                     
-                    <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+                    <p className="text-base md:text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
                       Join 500+ successful brands and start achieving breakthrough results with our proven strategies
                     </p>
                     
@@ -345,7 +344,6 @@ const About = () => {
                     </div>
                   </div>
                 </CardContent>
-              </div>
             </Card>
           </div>
         </section>
