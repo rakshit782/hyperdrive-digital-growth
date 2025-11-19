@@ -5,7 +5,8 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight, TrendingUp, Zap, Globe, BarChart3 } from "lucide-react";
 
 const About = () => {
   const navigate = useNavigate();
@@ -76,59 +77,117 @@ const About = () => {
     }
   ];
 
+  const stats = [
+    { value: "500+", label: "Brands Scaled", icon: Users },
+    { value: "10x", label: "Average ROAS", icon: TrendingUp },
+    { value: "10+", label: "Years Experience", icon: Award },
+    { value: "$100M+", label: "Ad Spend Managed", icon: BarChart3 }
+  ];
+
   return (
     <>
       <SEOHead 
         title="About Us - Premier E-commerce Digital Marketing Agency | 10+ Years Proven Results"
-        description="Leading E-commerce Digital Marketing Agency with 10+ years experience. Certified Amazon Advertising Agency, Walmart Connect Partner, and Shopify Development Partner. Proven E-commerce Growth Strategies for 500+ successful clients."
-        keywords="e-commerce digital marketing agency, amazon advertising agency, walmart connect partner, shopify development partner, amazon ppc management, professional amazon agency, certified advertising experts, e-commerce growth strategies, multi-marketplace integration, amazon seller central management, vendor central consulting, walmart marketplace advertising, shopify plus developers, e-commerce consulting services, amazon dsp agency, sponsored products management, sponsored brands campaigns, product listing optimization, a+ content creation, enhanced brand content, amazon storefront design, brand registry services, e-commerce photography, product photography services, lifestyle photography, infographic design services, amazon seo optimization, keyword research services, product launch strategy, conversion rate optimization, roi optimization services, data-driven marketing, performance marketing agency, customer acquisition strategy, retention marketing, remarketing campaigns, amazon analytics, competitive analysis, market research services, profit margin optimization, inventory management consulting, supply chain optimization, fulfillment strategy, fba consulting, fbm strategy consulting, international expansion services, global marketplace strategy, cross-border e-commerce, localization services, account health management, suspension prevention, reinstatement services, review management, customer service optimization, ranking strategy, category domination, seasonal campaign planning, prime day strategy, black friday strategy, cyber monday planning, q4 planning services, budget management, acos optimization, tacos management, roas maximization, scalable growth strategies, digital transformation agency, e-commerce automation, marketplace management software, amazon advertising consultant, ppc management services, sponsored display ads, amazon video ads, amazon posts optimization, amazon live shopping, amazon influencer program, amazon vine program, early reviewer program, subscribe and save optimization, amazon subscribe save, amazon fresh optimization, amazon business b2b, amazon handmade marketing, amazon renewed marketing, amazon warehouse deals, fulfillment by amazon optimization, seller fulfilled prime, multi-channel fulfillment, amazon logistics, inventory planning tools, demand forecasting, stock level optimization, listing quality score, content score optimization, image optimization services, video content creation, 3d rendering services, virtual photography, augmented reality shopping, voice search optimization, alexa skills development, amazon choice badge, bestseller rank optimization, sales velocity, launch ranking, external traffic campaigns, social media advertising, facebook ads for amazon, instagram shopping ads, tiktok advertising, pinterest ads management, google shopping ads, google merchant center, bing shopping campaigns, microsoft advertising, programmatic advertising, display advertising network, retargeting campaigns, dynamic remarketing, lookalike audiences, custom audiences, conversion tracking, pixel implementation, google tag manager setup, google analytics 4, data studio reporting, business intelligence, predictive analytics, machine learning models, artificial intelligence marketing, chatgpt for e-commerce, ai content generation, automated bidding strategies, smart campaigns, performance max campaigns, search ads optimization, shopping ads optimization, brand awareness campaigns, consideration campaigns, conversion campaigns, omnichannel marketing, unified commerce, headless commerce, composable commerce, shopify plus migration, magento to shopify, woocommerce migration, bigcommerce development, salesforce commerce cloud, adobe commerce, vtex platform, marketplace integration api, channel advisor, sellbrite, listing mirror, feedonomics, channeladvisor, walmart marketplace api, target plus marketplace, wayfair marketplace, houzz marketplace, overstock marketplace, newegg marketplace, rakuten marketplace, mercado libre, alibaba marketplace, aliexpress dropshipping, etsy marketplace optimization, ebay store optimization, facebook marketplace selling, google shopping actions, buy with google, shop pay integration, apple pay checkout, amazon pay integration, paypal commerce platform, stripe payments, square online, afterpay integration, klarna financing, affirm payment plans, buy now pay later, subscription box services, recurring revenue models, membership programs, loyalty programs, referral marketing, affiliate marketing programs, influencer partnerships, brand ambassador programs, user generated content, social proof optimization, trust badges, security seals, ssl certificates, gdpr compliance, ccpa compliance, pci compliance, ada compliance, wcag accessibility, mobile optimization, progressive web apps, amp pages, core web vitals, page speed optimization, lazy loading, image compression, cdn integration, cloudflare setup, aws hosting, google cloud platform, microsoft azure, server optimization, caching strategies, redis implementation, varnish cache, nginx optimization, apache optimization, php optimization, node.js applications, react development, next.js framework, gatsby framework, vue.js development, angular development, typescript development, graphql api, rest api development, webhook integration, zapier automation, make integration, n8n workflows, api marketplace, rapid api, postman api, swagger documentation, open api specification, microservices architecture, serverless computing, lambda functions, cloud functions, edge computing, jamstack architecture, static site generation, incremental static regeneration, server side rendering, client side rendering, single page applications, wordpress development, drupal development, joomla development, craft cms, contentful cms, sanity cms, strapi cms, ghost cms, prismic cms, dato cms, hubspot cms, webflow development, bubble.io, no-code platforms, low-code platforms, citizen development, rapid application development"
+        description="Leading e-commerce marketing agency with 10+ years expertise in Amazon, Walmart & Shopify. 500+ brands scaled profitably with proven ROI-driven strategies."
+        keywords="e-commerce marketing agency, amazon advertising agency, walmart marketplace optimization, shopify development partner, digital marketing agency, ppc management services, amazon ppc agency, walmart connect partner, e-commerce optimization, multi-channel marketing, online marketplace advertising, amazon seller agency, walmart seller solutions, shopify plus agency, performance marketing agency, roi-focused marketing, data-driven e-commerce, marketplace management, amazon listing optimization, product catalog management, e-commerce growth agency, online retail marketing, amazon sponsored ads, walmart sponsored products, shopify theme development, amazon dsp agency, programmatic advertising, conversion rate optimization, e-commerce analytics, marketplace strategy, omnichannel retail, amazon brand registry, walmart brand portal, shopify app development, amazon fba consulting, fulfillment optimization, inventory management, pricing strategy, competitive analysis, market research, consumer insights, e-commerce automation, marketing technology, retail media network, sponsored display ads, sponsored brand ads, product targeting, audience targeting, keyword research, bid optimization, campaign management, a+ content creation, enhanced brand content, product photography, lifestyle photography, infographic design, amazon storefront, brand store design, listing enhancement, seo optimization, search term optimization, backend keywords, product title optimization, bullet point optimization, product description writing, review management, feedback monitoring, seller central management, vendor central optimization, advertising console, campaign analytics, performance reporting, roi tracking, sales attribution, funnel analysis, customer journey, lifetime value optimization, retention marketing, email marketing automation, crm integration, customer segmentation, personalization strategies, dynamic pricing, promotional strategy, lightning deals, coupons management, prime day strategy, black friday optimization, holiday campaign planning, seasonal marketing, new product launch, market expansion, international marketplace, cross-border e-commerce, localization services, currency optimization, global fulfillment, multi-marketplace sync, inventory forecasting, demand planning, supply chain optimization, fulfillment by amazon, seller fulfilled prime, walmart fulfillment services, third party logistics, warehouse management, order management system"
         canonical={window.location.href}
       />
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10">
+      <div className="min-h-screen bg-background">
         {/* Hero Section */}
-        <section className="py-20 md:py-28 lg:py-36">
-          <div className="max-w-5xl mx-auto px-6 text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent mb-6 leading-tight">
-              {aboutData.heroTitle}
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-4xl mx-auto">
-              {aboutData.heroDescription}
-            </p>
+        <section className="relative py-24 md:py-32 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
+          <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+          
+          <div className="relative max-w-7xl mx-auto px-6">
+            <div className="text-center max-w-4xl mx-auto">
+              <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm font-semibold">
+                <Star className="w-4 h-4 mr-2 inline-block" />
+                Award-Winning Agency
+              </Badge>
+              
+              <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent">
+                  {aboutData.heroTitle}
+                </span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 max-w-3xl mx-auto">
+                {aboutData.heroDescription}
+              </p>
+
+              <div className="flex flex-wrap justify-center gap-4">
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate('/contact')}
+                  className="group"
+                >
+                  Get Free Consultation
+                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  onClick={() => navigate('/case-studies')}
+                >
+                  View Case Studies
+                </Button>
+              </div>
+            </div>
+
+            {/* Stats Section */}
+            <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+              {stats.map((stat, index) => {
+                const IconComponent = stat.icon;
+                return (
+                  <div key={index} className="text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border hover:border-primary/50 transition-all hover:shadow-lg group">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4 group-hover:scale-110 transition-transform">
+                      <IconComponent className="w-6 h-6" />
+                    </div>
+                    <div className="text-3xl md:text-4xl font-bold text-foreground mb-2">{stat.value}</div>
+                    <div className="text-sm text-muted-foreground font-medium">{stat.label}</div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
 
         {/* Mission & Vision */}
-        <section className="py-20 bg-card/50">
-          <div className="max-w-6xl mx-auto px-6">
+        <section className="py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6">
             <div className="grid md:grid-cols-2 gap-8">
-              <Card className="bg-card border-border shadow-lg hover:shadow-xl transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-3xl font-bold text-foreground flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Target className="w-6 h-6 text-primary" />
+              <Card className="border-border hover:border-primary/50 transition-all hover:shadow-xl group">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Target className="w-7 h-7 text-primary" />
                     </div>
-                    Our Mission
-                  </CardTitle>
+                    <CardTitle className="text-3xl font-bold text-foreground">
+                      Our Mission
+                    </CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-base text-muted-foreground leading-relaxed">
                     {aboutData.missionText}
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card border-border shadow-lg hover:shadow-xl transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-3xl font-bold text-foreground flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
-                      <Star className="w-6 h-6 text-secondary" />
+              <Card className="border-border hover:border-primary/50 transition-all hover:shadow-xl group">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Zap className="w-7 h-7 text-secondary" />
                     </div>
-                    Our Vision
-                  </CardTitle>
+                    <CardTitle className="text-3xl font-bold text-foreground">
+                      Our Vision
+                    </CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-base text-muted-foreground leading-relaxed">
                     {aboutData.visionText}
                   </p>
                 </CardContent>
@@ -138,32 +197,35 @@ const About = () => {
         </section>
 
         {/* Core Values */}
-        <section className="py-16">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                Our Core Values
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <Badge variant="outline" className="mb-4">
+                Our Foundation
+              </Badge>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                Core Values That Drive Us
               </h2>
-              <p className="text-xl text-slate-600">
-                The principles that guide everything we do
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                The principles that guide everything we do and shape our culture
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {values.map((value, index) => {
                 const IconComponent = value.icon;
                 return (
-                  <Card key={index} className="bg-white/80 backdrop-blur-sm shadow-xl border-0 text-center hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                  <Card key={index} className="border-border hover:border-primary/50 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
                     <CardHeader>
-                      <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <IconComponent className="w-8 h-8 text-white" />
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <IconComponent className="w-8 h-8 text-primary-foreground" />
                       </div>
-                      <CardTitle className="text-xl font-bold text-slate-900">
+                      <CardTitle className="text-xl font-bold text-foreground">
                         {value.title}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-slate-600 leading-relaxed">
+                      <p className="text-muted-foreground leading-relaxed text-sm">
                         {value.description}
                       </p>
                     </CardContent>
@@ -175,23 +237,30 @@ const About = () => {
         </section>
 
         {/* Services Overview */}
-        <section className="py-16">
-          <div className="max-w-4xl mx-auto px-6">
-            <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
-              <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-bold text-slate-900 mb-4">
-                  What We Do
-                </CardTitle>
-                <CardDescription className="text-lg text-slate-600">
-                  Comprehensive digital marketing services to grow your business
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-4">
+        <section className="py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <Badge variant="outline" className="mb-4">
+                <Globe className="w-3 h-3 mr-2" />
+                Our Expertise
+              </Badge>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                Comprehensive E-commerce Solutions
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Full-service digital marketing to accelerate your online growth
+              </p>
+            </div>
+
+            <Card className="border-border overflow-hidden">
+              <CardContent className="p-8 md:p-12">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {services.map((service, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-slate-700 font-medium">{service}</span>
+                    <div key={index} className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors group">
+                      <div className="mt-1">
+                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 group-hover:scale-110 transition-transform" />
+                      </div>
+                      <span className="text-foreground font-medium text-sm leading-relaxed">{service}</span>
                     </div>
                   ))}
                 </div>
@@ -201,30 +270,33 @@ const About = () => {
         </section>
 
         {/* Why Choose Us */}
-        <section className="py-16">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                Why Choose Us
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <Badge variant="outline" className="mb-4">
+                The Agency Advantage
+              </Badge>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                Why Leading Brands Choose Us
               </h2>
-              <p className="text-xl text-slate-600">
-                What sets us apart in the digital marketing landscape
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Experience the difference that true e-commerce expertise makes
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-6">
               {whyChooseUs.map((item, index) => (
-                <Card key={index} className="bg-white/80 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-bold text-slate-900 flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-3">
-                        <CheckCircle className="w-4 h-4 text-white" />
+                <Card key={index} className="border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl group">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-xl font-bold text-foreground flex items-start gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <CheckCircle className="w-5 h-5 text-primary-foreground" />
                       </div>
-                      {item.title}
+                      <span className="pt-1">{item.title}</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-slate-600 leading-relaxed">
+                  <CardContent className="pl-[3.75rem]">
+                    <p className="text-muted-foreground leading-relaxed">
                       {item.description}
                     </p>
                   </CardContent>
@@ -235,34 +307,45 @@ const About = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <Card className="bg-gradient-to-r from-blue-600 to-purple-600 border-0 text-white">
-              <CardContent className="py-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  Ready to Grow Your Business?
-                </h2>
-                <p className="text-xl mb-8 text-blue-100">
-                  Let's discuss how we can help you achieve your digital marketing goals
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button 
-                    size="lg"
-                    className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                    onClick={() => navigate('/contact')}
-                  >
-                    Get Free Consultation
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                  <Button 
-                    size="lg"
-                    className="bg-white/10 backdrop-blur-sm border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                    onClick={() => navigate("/case-studies")}
-                  >
-                    View Our Work
-                  </Button>
-                </div>
-              </CardContent>
+        <section className="py-20 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+          <div className="max-w-5xl mx-auto px-6">
+            <Card className="border-2 border-primary/20 shadow-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-primary to-secondary p-1">
+                <CardContent className="bg-card p-12 md:p-16">
+                  <div className="text-center">
+                    <Badge variant="secondary" className="mb-6">
+                      <Star className="w-3 h-3 mr-2" />
+                      Start Your Growth Journey
+                    </Badge>
+                    
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+                      Ready to Scale Your Business?
+                    </h2>
+                    
+                    <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+                      Join 500+ successful brands and start achieving breakthrough results with our proven strategies
+                    </p>
+                    
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      <Button 
+                        size="lg"
+                        onClick={() => navigate('/contact')}
+                        className="group"
+                      >
+                        Get Free Strategy Session
+                        <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                      <Button 
+                        size="lg"
+                        variant="outline"
+                        onClick={() => navigate('/case-studies')}
+                      >
+                        Explore Success Stories
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </div>
             </Card>
           </div>
         </section>
