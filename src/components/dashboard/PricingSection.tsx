@@ -10,16 +10,37 @@ import { Pencil, Trash2, Plus, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Helper types for editing
+interface EditingFeature {
+  text: string;
+  included?: boolean;
+}
+
+interface EditingAddon {
+  name: string;
+  price: number;
+}
+
+interface EditingPlan extends Omit<PricingPlan, 'features' | 'addons'> {
+  features: EditingFeature[];
+  addons: EditingAddon[];
+}
+
 export function PricingSection() {
   const { plans, loading, savePlan, deletePlan } = usePricingPlans();
-  const [editingPlan, setEditingPlan] = useState<Partial<PricingPlan> | null>(null);
+  const [editingPlan, setEditingPlan] = useState<Partial<EditingPlan> | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
   const handleEdit = (plan: PricingPlan) => {
+    const editFeatures: EditingFeature[] = (plan.features || []).map(f => 
+      typeof f === 'string' ? { text: f, included: true } : f
+    );
+    const editAddons: EditingAddon[] = plan.addons || [];
+
     setEditingPlan({
       ...plan,
-      features: [...plan.features],
-      addons: plan.addons ? [...plan.addons] : [],
+      features: editFeatures,
+      addons: editAddons,
     });
     setIsAdding(false);
   };
@@ -30,7 +51,7 @@ export function PricingSection() {
       description: "",
       price: 0,
       billing_period: "monthly",
-      features: [""],
+      features: [{ text: "", included: true }],
       addons: [],
       is_popular: false,
       is_active: true,
@@ -47,8 +68,11 @@ export function PricingSection() {
       return;
     }
 
-    const filteredFeatures = (editingPlan.features || []).filter(f => f.trim() !== "");
-    const filteredAddons = (editingPlan.addons || []).filter(a => a.trim() !== "");
+    const filteredFeatures = (editingPlan.features || [])
+      .filter(f => f.text.trim() !== "")
+      .map(f => ({ text: f.text, included: f.included }));
+    const filteredAddons = (editingPlan.addons || [])
+      .filter(a => a.name.trim() !== "");
     
     await savePlan({
       ...editingPlan,
@@ -71,10 +95,14 @@ export function PricingSection() {
     }
   };
 
-  const updateFeature = (index: number, value: string) => {
+  const updateFeature = (index: number, field: 'text' | 'included', value: string | boolean) => {
     if (!editingPlan) return;
     const newFeatures = [...(editingPlan.features || [])];
-    newFeatures[index] = value;
+    if (field === 'text') {
+      newFeatures[index] = { ...newFeatures[index], text: value as string };
+    } else {
+      newFeatures[index] = { ...newFeatures[index], included: value as boolean };
+    }
     setEditingPlan({ ...editingPlan, features: newFeatures });
   };
 
@@ -82,7 +110,7 @@ export function PricingSection() {
     if (!editingPlan) return;
     setEditingPlan({
       ...editingPlan,
-      features: [...(editingPlan.features || []), ""],
+      features: [...(editingPlan.features || []), { text: "", included: true }],
     });
   };
 
@@ -92,10 +120,14 @@ export function PricingSection() {
     setEditingPlan({ ...editingPlan, features: newFeatures });
   };
 
-  const updateAddon = (index: number, value: string) => {
+  const updateAddon = (index: number, field: 'name' | 'price', value: string | number) => {
     if (!editingPlan) return;
     const newAddons = [...(editingPlan.addons || [])];
-    newAddons[index] = value;
+    if (field === 'name') {
+      newAddons[index] = { ...newAddons[index], name: value as string };
+    } else {
+      newAddons[index] = { ...newAddons[index], price: value as number };
+    }
     setEditingPlan({ ...editingPlan, addons: newAddons });
   };
 
@@ -103,7 +135,7 @@ export function PricingSection() {
     if (!editingPlan) return;
     setEditingPlan({
       ...editingPlan,
-      addons: [...(editingPlan.addons || []), ""],
+      addons: [...(editingPlan.addons || []), { name: "", price: 0 }],
     });
   };
 
@@ -140,7 +172,7 @@ export function PricingSection() {
 
       <Alert>
         <AlertDescription>
-          Manage your pricing plans here. Changes will be reflected on the public pricing page immediately.
+          Manage pricing plans stored in JSON format (localStorage). Changes are saved locally and can be modified anytime from this dashboard.
         </AlertDescription>
       </Alert>
 
@@ -148,124 +180,96 @@ export function PricingSection() {
         <Card className="border-primary">
           <CardHeader>
             <CardTitle>{isAdding ? "Add New Plan" : "Edit Plan"}</CardTitle>
-            <CardDescription>
-              {isAdding ? "Create a new pricing plan" : "Update the pricing plan details"}
-            </CardDescription>
+            <CardDescription>Fill in the details for the pricing plan</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
                 <Label htmlFor="name">Plan Name *</Label>
                 <Input
                   id="name"
                   value={editingPlan.name || ""}
-                  onChange={(e) =>
-                    setEditingPlan({ ...editingPlan, name: e.target.value })
-                  }
-                  placeholder="e.g., Starter Plan"
+                  onChange={(e) => setEditingPlan({ ...editingPlan, name: e.target.value })}
+                  placeholder="e.g., Starter, Professional"
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="price">Price (USD) *</Label>
+              <div>
+                <Label htmlFor="price">Monthly Price ($) *</Label>
                 <Input
                   id="price"
                   type="number"
                   value={editingPlan.price || 0}
-                  onChange={(e) =>
-                    setEditingPlan({ ...editingPlan, price: Number(e.target.value) })
-                  }
-                  placeholder="799"
+                  onChange={(e) => setEditingPlan({ ...editingPlan, price: parseFloat(e.target.value) })}
+                  placeholder="999"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div>
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 value={editingPlan.description || ""}
-                onChange={(e) =>
-                  setEditingPlan({ ...editingPlan, description: e.target.value })
-                }
-                placeholder="Best for: Small businesses or new sellers..."
-                rows={2}
+                onChange={(e) => setEditingPlan({ ...editingPlan, description: e.target.value })}
+                placeholder="Brief description of the plan"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
                 <Label htmlFor="billing_period">Billing Period</Label>
                 <Input
                   id="billing_period"
                   value={editingPlan.billing_period || "monthly"}
-                  onChange={(e) =>
-                    setEditingPlan({ ...editingPlan, billing_period: e.target.value })
-                  }
-                  placeholder="monthly"
+                  onChange={(e) => setEditingPlan({ ...editingPlan, billing_period: e.target.value })}
                 />
               </div>
-
-              <div className="space-y-2">
+              <div>
                 <Label htmlFor="sort_order">Sort Order</Label>
                 <Input
                   id="sort_order"
                   type="number"
                   value={editingPlan.sort_order || 0}
-                  onChange={(e) =>
-                    setEditingPlan({ ...editingPlan, sort_order: Number(e.target.value) })
-                  }
+                  onChange={(e) => setEditingPlan({ ...editingPlan, sort_order: parseInt(e.target.value) })}
                 />
               </div>
-
               <div className="space-y-2">
-                <Label>Status</Label>
-                <div className="flex items-center space-x-4 pt-2">
-                  <div className="flex items-center space-x-2">
+                <Label>Options</Label>
+                <div className="flex items-center space-x-4">
+                  <label className="flex items-center space-x-2 cursor-pointer">
                     <Switch
-                      id="is_active"
-                      checked={editingPlan.is_active}
-                      onCheckedChange={(checked) =>
-                        setEditingPlan({ ...editingPlan, is_active: checked })
-                      }
+                      checked={editingPlan.is_popular || false}
+                      onCheckedChange={(checked) => setEditingPlan({ ...editingPlan, is_popular: checked })}
                     />
-                    <Label htmlFor="is_active">Active</Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
+                    <span className="text-sm">Popular</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
                     <Switch
-                      id="is_popular"
-                      checked={editingPlan.is_popular}
-                      onCheckedChange={(checked) =>
-                        setEditingPlan({ ...editingPlan, is_popular: checked })
-                      }
+                      checked={editingPlan.is_active !== false}
+                      onCheckedChange={(checked) => setEditingPlan({ ...editingPlan, is_active: checked })}
                     />
-                    <Label htmlFor="is_popular">Popular</Label>
-                  </div>
+                    <span className="text-sm">Active</span>
+                  </label>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
+            <div>
+              <div className="flex justify-between items-center mb-2">
                 <Label>Features</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addFeature}
-                >
+                <Button type="button" variant="outline" size="sm" onClick={addFeature}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add Feature
                 </Button>
               </div>
               <div className="space-y-2">
                 {(editingPlan.features || []).map((feature, index) => (
-                  <div key={index} className="flex gap-2">
+                  <div key={index} className="flex gap-2 items-start">
                     <Input
-                      value={feature}
-                      onChange={(e) => updateFeature(index, e.target.value)}
-                      placeholder="Enter feature description"
+                      value={feature.text}
+                      onChange={(e) => updateFeature(index, 'text', e.target.value)}
+                      placeholder="Feature description"
+                      className="flex-1"
                     />
                     <Button
                       type="button"
@@ -280,26 +284,29 @@ export function PricingSection() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
+            <div>
+              <div className="flex justify-between items-center mb-2">
                 <Label>Add-ons (Optional)</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addAddon}
-                >
+                <Button type="button" variant="outline" size="sm" onClick={addAddon}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add Add-on
                 </Button>
               </div>
               <div className="space-y-2">
                 {(editingPlan.addons || []).map((addon, index) => (
-                  <div key={index} className="flex gap-2">
+                  <div key={index} className="flex gap-2 items-start">
                     <Input
-                      value={addon}
-                      onChange={(e) => updateAddon(index, e.target.value)}
-                      placeholder="e.g., Shopify Development (+$3500)"
+                      value={addon.name}
+                      onChange={(e) => updateAddon(index, 'name', e.target.value)}
+                      placeholder="Add-on name"
+                      className="flex-1"
+                    />
+                    <Input
+                      type="number"
+                      value={addon.price}
+                      onChange={(e) => updateAddon(index, 'price', parseFloat(e.target.value))}
+                      placeholder="Price"
+                      className="w-32"
                     />
                     <Button
                       type="button"
@@ -311,15 +318,10 @@ export function PricingSection() {
                     </Button>
                   </div>
                 ))}
-                {(!editingPlan.addons || editingPlan.addons.length === 0) && (
-                  <p className="text-sm text-muted-foreground">
-                    No add-ons yet. Click "Add Add-on" to include optional services.
-                  </p>
-                )}
               </div>
             </div>
 
-            <div className="flex gap-2 pt-4">
+            <div className="flex gap-2">
               <Button onClick={handleSave}>
                 Save Plan
               </Button>
@@ -373,50 +375,36 @@ export function PricingSection() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-2xl font-bold">
-                      ${plan.price.toLocaleString()}
-                      <span className="text-sm font-normal text-muted-foreground">
-                        /{plan.billing_period}
-                      </span>
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Sort Order: {plan.sort_order}
-                    </p>
+                <div className="space-y-4">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold">${plan.price}</span>
+                    <span className="text-muted-foreground">/ {plan.billing_period}</span>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold mb-2">Features:</p>
-                    <ul className="text-sm space-y-1">
-                      {plan.features.slice(0, 3).map((feature, idx) => (
-                        <li key={idx} className="text-muted-foreground">
-                          • {feature}
-                        </li>
-                      ))}
-                      {plan.features.length > 3 && (
-                        <li className="text-muted-foreground">
-                          + {plan.features.length - 3} more...
-                        </li>
-                      )}
+                    <h4 className="font-semibold mb-2">Features:</h4>
+                    <ul className="space-y-1">
+                      {plan.features.map((feature, idx) => {
+                        const featureText = typeof feature === 'string' ? feature : feature.text;
+                        return (
+                          <li key={idx} className="text-sm text-muted-foreground">
+                            • {featureText}
+                          </li>
+                        );
+                      })}
                     </ul>
-                    {plan.addons && plan.addons.length > 0 && (
-                      <div className="mt-3">
-                        <p className="text-sm font-semibold mb-1">Add-ons:</p>
-                        <ul className="text-sm space-y-1">
-                          {plan.addons.slice(0, 2).map((addon, idx) => (
-                            <li key={idx} className="text-muted-foreground">
-                              + {addon}
-                            </li>
-                          ))}
-                          {plan.addons.length > 2 && (
-                            <li className="text-muted-foreground">
-                              + {plan.addons.length - 2} more...
-                            </li>
-                          )}
-                        </ul>
-                      </div>
-                    )}
                   </div>
+                  {plan.addons && plan.addons.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-2">Add-ons:</h4>
+                      <ul className="space-y-1">
+                        {plan.addons.map((addon, idx) => (
+                          <li key={idx} className="text-sm text-muted-foreground">
+                            • {addon.name} (+${addon.price})
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
