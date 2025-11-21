@@ -172,7 +172,7 @@ export function PricingSection() {
 
       <Alert>
         <AlertDescription>
-          Manage pricing plans stored in JSON format (localStorage). Changes are saved locally and can be modified anytime from this dashboard.
+          Manage pricing plans stored in the database. Changes are saved globally and will be visible to all users.
         </AlertDescription>
       </Alert>
 
