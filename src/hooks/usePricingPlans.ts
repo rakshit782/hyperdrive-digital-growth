@@ -16,12 +16,58 @@ export interface PricingPlan {
   sort_order: number;
 }
 
+const CACHE_KEY = 'pricing_plans_cache';
+const CACHE_TIMESTAMP_KEY = 'pricing_plans_cache_timestamp';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export const usePricingPlans = () => {
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  const getCachedPlans = () => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+      
+      if (cached && timestamp) {
+        const age = Date.now() - parseInt(timestamp);
+        if (age < CACHE_DURATION) {
+          return JSON.parse(cached);
+        }
+      }
+    } catch (e) {
+      console.error('Error reading cache:', e);
+    }
+    return null;
+  };
+
+  const setCachedPlans = (plansData: PricingPlan[]) => {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(plansData));
+      localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+    } catch (e) {
+      console.error('Error setting cache:', e);
+    }
+  };
+
   const fetchPlans = async () => {
+    // Try cache first for instant loading
+    const cached = getCachedPlans();
+    if (cached) {
+      setPlans(cached);
+      setLoading(false);
+      
+      // Fetch fresh data in background
+      fetchFreshPlans();
+      return;
+    }
+
+    // No cache, fetch immediately
+    await fetchFreshPlans();
+  };
+
+  const fetchFreshPlans = async () => {
     try {
       const { data, error } = await supabase
         .from('pricing_plans')
@@ -45,7 +91,9 @@ export const usePricingPlans = () => {
             ? plan.addons
             : []
         }));
-        setPlans(processedPlans.sort((a: any, b: any) => a.sort_order - b.sort_order));
+        const sortedPlans = processedPlans.sort((a: any, b: any) => a.sort_order - b.sort_order);
+        setPlans(sortedPlans);
+        setCachedPlans(sortedPlans);
       } else {
         const processedPlans = data.map((plan: any) => {
           let features = [];
@@ -83,15 +131,14 @@ export const usePricingPlans = () => {
           };
         });
         setPlans(processedPlans);
+        setCachedPlans(processedPlans);
       }
     } catch (error) {
       console.error('Error loading pricing plans:', error);
-      setPlans([]);
-      toast({
-        title: "Error",
-        description: "Failed to load pricing plans",
-        variant: "destructive"
-      });
+      // Don't clear plans if we have cached data
+      if (plans.length === 0) {
+        setPlans([]);
+      }
     } finally {
       setLoading(false);
     }
@@ -140,6 +187,10 @@ export const usePricingPlans = () => {
         });
       }
       
+      // Clear cache after save
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+      
       await fetchPlans();
     } catch (error) {
       console.error('Error saving plan:', error);
@@ -160,6 +211,10 @@ export const usePricingPlans = () => {
         .eq('id', id);
 
       if (error) throw error;
+
+      // Clear cache after delete
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.removeItem(CACHE_TIMESTAMP_KEY);
 
       await fetchPlans();
       toast({
