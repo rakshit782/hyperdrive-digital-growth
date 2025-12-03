@@ -45,14 +45,14 @@ const Dashboard = () => {
     }
   }, [user, authLoading, navigate]);
 
-  const loadAllData = async () => {
+  const loadAllData = async (forceRefresh: boolean = false) => {
     setLoading(true);
     try {
       const [contactsData, leadsData, newslettersData, logsData, visitorLogsData] = await Promise.all([
-        databaseService.getContactSubmissions(100),
-        databaseService.getLeads(100),
-        databaseService.getSecurityLogs(100),
-        databaseService.getSecurityLogs(50),
+        databaseService.getContactSubmissions(100, forceRefresh),
+        databaseService.getLeads(100, forceRefresh),
+        databaseService.getSecurityLogs(100, forceRefresh),
+        databaseService.getSecurityLogs(50, forceRefresh),
         getVisitorLogs(100),
       ]);
 
@@ -78,6 +78,8 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  const handleRefresh = () => loadAllData(true);
 
   const deleteContact = async (id: string) => {
     // Implement delete via API
@@ -123,25 +125,25 @@ const Dashboard = () => {
           <ContactsSection
             contacts={contacts}
             onDelete={deleteContact}
-            onRefresh={loadAllData}
+            onRefresh={handleRefresh}
           />
         );
       case 'leads':
         return (
-          <LeadsSection leads={leads} onDelete={deleteLead} onRefresh={loadAllData} />
+          <LeadsSection leads={leads} onDelete={deleteLead} onRefresh={handleRefresh} />
         );
       case 'newsletter':
         return (
           <NewsletterSection
             newsletters={newsletters}
             onDelete={deleteNewsletter}
-            onRefresh={loadAllData}
+            onRefresh={handleRefresh}
           />
         );
       case 'security':
-        return <SecuritySection logs={securityLogs} onRefresh={loadAllData} />;
+        return <SecuritySection logs={securityLogs} onRefresh={handleRefresh} />;
       case 'visitor-logs':
-        return <VisitorLogsSection logs={visitorLogs} onRefresh={loadAllData} />;
+        return <VisitorLogsSection logs={visitorLogs} onRefresh={handleRefresh} />;
       case 'tracking':
         return <TrackingSection />;
       case 'settings':

@@ -37,11 +37,78 @@ export interface WebsiteSetting {
   updated_at: string | null;
 }
 
+// Cache configuration
+const CACHE_DURATION = 3 * 60 * 1000; // 3 minutes
+const CACHE_KEYS = {
+  LEADS: 'dashboard_leads_cache',
+  LEADS_TIMESTAMP: 'dashboard_leads_cache_timestamp',
+  CONTACTS: 'dashboard_contacts_cache',
+  CONTACTS_TIMESTAMP: 'dashboard_contacts_cache_timestamp',
+  SECURITY_LOGS: 'dashboard_security_logs_cache',
+  SECURITY_LOGS_TIMESTAMP: 'dashboard_security_logs_cache_timestamp',
+};
+
 class DatabaseService {
   private apiUrl: string;
 
   constructor(apiUrl: string = '/api') {
     this.apiUrl = apiUrl;
+  }
+
+  // Generic cache helpers
+  private getFromCache<T>(cacheKey: string, timestampKey: string): T | null {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      const timestamp = localStorage.getItem(timestampKey);
+      
+      if (cached && timestamp) {
+        const age = Date.now() - parseInt(timestamp);
+        if (age < CACHE_DURATION) {
+          return JSON.parse(cached);
+        }
+      }
+    } catch (e) {
+      console.error('Error reading cache:', e);
+    }
+    return null;
+  }
+
+  private setCache<T>(cacheKey: string, timestampKey: string, data: T): void {
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(data));
+      localStorage.setItem(timestampKey, Date.now().toString());
+    } catch (e) {
+      console.error('Error setting cache:', e);
+    }
+  }
+
+  private clearCache(cacheKey: string, timestampKey: string): void {
+    try {
+      localStorage.removeItem(cacheKey);
+      localStorage.removeItem(timestampKey);
+    } catch (e) {
+      console.error('Error clearing cache:', e);
+    }
+  }
+
+  // Clear all dashboard caches
+  clearAllCaches(): void {
+    Object.values(CACHE_KEYS).forEach(key => {
+      localStorage.removeItem(key);
+    });
+  }
+
+  // Clear specific caches
+  clearLeadsCache(): void {
+    this.clearCache(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP);
+  }
+
+  clearContactsCache(): void {
+    this.clearCache(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP);
+  }
+
+  clearSecurityLogsCache(): void {
+    this.clearCache(CACHE_KEYS.SECURITY_LOGS, CACHE_KEYS.SECURITY_LOGS_TIMESTAMP);
   }
 
   async insertSecurityLog(logData: Omit<SecurityLog, 'id' | 'created_at'>): Promise<void> {
@@ -56,13 +123,25 @@ class DatabaseService {
       if (error) {
         throw error;
       }
+      
+      // Clear cache after insert
+      this.clearSecurityLogsCache();
     } catch (error) {
       console.error('Database error - security log:', error);
       // Don't throw error to prevent form submission from failing
     }
   }
 
-  async getSecurityLogs(limit: number = 100): Promise<SecurityLog[]> {
+  async getSecurityLogs(limit: number = 100, forceRefresh: boolean = false): Promise<SecurityLog[]> {
+    // Try cache first unless forced refresh
+    if (!forceRefresh) {
+      const cached = this.getFromCache<SecurityLog[]>(CACHE_KEYS.SECURITY_LOGS, CACHE_KEYS.SECURITY_LOGS_TIMESTAMP);
+      if (cached) {
+        console.log('Returning cached security logs');
+        return cached;
+      }
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('neon-security-logs', {
         body: {
@@ -75,7 +154,9 @@ class DatabaseService {
         throw error;
       }
 
-      return data?.logs || [];
+      const logs = data?.logs || [];
+      this.setCache(CACHE_KEYS.SECURITY_LOGS, CACHE_KEYS.SECURITY_LOGS_TIMESTAMP, logs);
+      return logs;
     } catch (error) {
       console.error('Database error - fetch security logs:', error);
       return [];
@@ -102,6 +183,9 @@ class DatabaseService {
 
       const result = await response.json();
       console.log('Lead inserted successfully:', result);
+      
+      // Clear cache after insert
+      this.clearLeadsCache();
       return result;
     } catch (error) {
       console.error('Database error - insert lead:', error);
@@ -109,7 +193,16 @@ class DatabaseService {
     }
   }
 
-  async getLeads(limit: number = 100): Promise<Lead[]> {
+  async getLeads(limit: number = 100, forceRefresh: boolean = false): Promise<Lead[]> {
+    // Try cache first unless forced refresh
+    if (!forceRefresh) {
+      const cached = this.getFromCache<Lead[]>(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP);
+      if (cached) {
+        console.log('Returning cached leads');
+        return cached;
+      }
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('neon-leads', {
         body: {
@@ -122,7 +215,9 @@ class DatabaseService {
         throw error;
       }
 
-      return data?.leads || [];
+      const leads = data?.leads || [];
+      this.setCache(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP, leads);
+      return leads;
     } catch (error) {
       console.error('Database error - fetch leads:', error);
       return [];
@@ -149,13 +244,25 @@ class DatabaseService {
       if (!response.ok) {
         throw new Error('Failed to insert contact submission');
       }
+      
+      // Clear cache after insert
+      this.clearContactsCache();
     } catch (error) {
       console.error('Database error - contact submission:', error);
       // Don't throw error to prevent form submission from failing
     }
   }
 
-  async getContactSubmissions(limit: number = 100): Promise<any[]> {
+  async getContactSubmissions(limit: number = 100, forceRefresh: boolean = false): Promise<any[]> {
+    // Try cache first unless forced refresh
+    if (!forceRefresh) {
+      const cached = this.getFromCache<any[]>(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP);
+      if (cached) {
+        console.log('Returning cached contacts');
+        return cached;
+      }
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('neon-contacts', {
         body: {
@@ -168,7 +275,9 @@ class DatabaseService {
         throw error;
       }
 
-      return data?.contacts || [];
+      const contacts = data?.contacts || [];
+      this.setCache(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP, contacts);
+      return contacts;
     } catch (error) {
       console.error('Database error - fetch contact submissions:', error);
       return [];
