@@ -1,146 +1,191 @@
 {
-  "plans": [
-    {
-      "id": "starter",
-      "name": "Starter",
-      "description": "Perfect for small businesses getting started",
-      "price": 999,
-      "billing_period": "monthly",
-      "is_popular": false,
-      "is_active": true,
-      "sort_order": 1,
-      "features": [
-        {
-          "text": "Basic SEO Optimization",
-          "included": true
-        },
-        {
-          "text": "Monthly Performance Reports",
-          "included": true
-        },
-        {
-          "text": "Email Support",
-          "included": true
-        },
-        {
-          "text": "Up to 5 Keywords",
-          "included": true
-        }
-      ],
-      "addons": [
-        {
-          "name": "Additional Keywords (5)",
-          "price": 200
-        },
-        {
-          "name": "Priority Support",
-          "price": 150
-        }
-      ]
-    },
-    {
-      "id": "professional",
-      "name": "Professional",
-      "description": "Ideal for growing businesses",
-      "price": 2499,
-      "billing_period": "monthly",
-      "is_popular": true,
-      "is_active": true,
-      "sort_order": 2,
-      "features": [
-        {
-          "text": "Advanced SEO Optimization",
-          "included": true
-        },
-        {
-          "text": "Bi-weekly Performance Reports",
-          "included": true
-        },
-        {
-          "text": "Priority Email & Phone Support",
-          "included": true
-        },
-        {
-          "text": "Up to 15 Keywords",
-          "included": true
-        },
-        {
-          "text": "Social Media Management",
-          "included": true
-        },
-        {
-          "text": "Content Strategy",
-          "included": true
-        }
-      ],
-      "addons": [
-        {
-          "name": "Additional Keywords (10)",
-          "price": 350
-        },
-        {
-          "name": "Advanced Analytics",
-          "price": 500
-        },
-        {
-          "name": "Dedicated Account Manager",
-          "price": 800
-        }
-      ]
-    },
-    {
-      "id": "enterprise",
-      "name": "Enterprise",
-      "description": "For large-scale operations",
-      "price": 4999,
-      "billing_period": "monthly",
-      "is_popular": false,
-      "is_active": true,
-      "sort_order": 3,
-      "features": [
-        {
-          "text": "Enterprise SEO Suite",
-          "included": true
-        },
-        {
-          "text": "Weekly Performance Reports",
-          "included": true
-        },
-        {
-          "text": "24/7 Dedicated Support",
-          "included": true
-        },
-        {
-          "text": "Unlimited Keywords",
-          "included": true
-        },
-        {
-          "text": "Full Social Media Management",
-          "included": true
-        },
-        {
-          "text": "Custom Content Strategy",
-          "included": true
-        },
-        {
-          "text": "Conversion Rate Optimization",
-          "included": true
-        },
-        {
-          "text": "API Access",
-          "included": true
-        }
-      ],
-      "addons": [
-        {
-          "name": "White Label Reporting",
-          "price": 1000
-        },
-        {
-          "name": "Custom Integrations",
-          "price": 1500
-        }
-      ]
-    }
-  ]
+  "ppcManagement": {
+    "title": "Performance Marketing – Unified PPC Management",
+    "subtitle": "Same pricing for Amazon, Walmart, Meta & Google Ads",
+    "note": "Pricing based on total product / SKU count. 12-month lowest price floor = $349/month",
+    "tiers": [
+      {
+        "skuRange": "1 – 15 SKUs",
+        "oneMonth": 499,
+        "threeMonth": 474,
+        "sixMonth": 449,
+        "twelveMonth": 399
+      },
+      {
+        "skuRange": "16 – 50 SKUs",
+        "oneMonth": 699,
+        "threeMonth": 664,
+        "sixMonth": 629,
+        "twelveMonth": 499
+      },
+      {
+        "skuRange": "50+ SKUs",
+        "oneMonth": 799,
+        "threeMonth": 759,
+        "sixMonth": 719,
+        "twelveMonth": 599
+      }
+    ],
+    "includes": [
+      "SP / SB / SD, search, display & retargeting campaigns",
+      "Multi-channel integration (Amazon / Walmart / Meta / Google)",
+      "Weekly optimization, bid automation & negatives",
+      "Ranking + retargeting strategy",
+      "Competitive intelligence + keyword expansion",
+      "Weekly or Monthly reporting dashboard",
+      "WhatsApp + Email support"
+    ]
+  },
+  "listingServices": {
+    "title": "Listing, Design & Conversion Services",
+    "services": [
+      {
+        "name": "Listing Optimization",
+        "description": "Titles, bullets, descriptions, backend terms",
+        "pricing": "Starting at $2 per ASIN"
+      },
+      {
+        "name": "EBC / A+ Content Design",
+        "description": "Copywriting + graphic design modules",
+        "pricing": "$999 per ASIN"
+      },
+      {
+        "name": "Amazon Storefront Design",
+        "description": "Multipage brand storefront",
+        "pricing": "$999"
+      }
+    ]
+  },
+  "marketplaceIntelligence": {
+    "title": "Marketplace Intelligence & Automation",
+    "services": [
+      {
+        "name": "Keyword & Competitor Tracking",
+        "description": "Min 5 SKUs",
+        "pricing": "$49 per product / month"
+      },
+      {
+        "name": "Inventory & Repricing Automation",
+        "description": "12-month contract required",
+        "pricing": "$49/month"
+      },
+      {
+        "name": "AI-Based Automation Tool",
+        "description": "Ads bid automation & smart rules",
+        "pricing": "Starts at $199/month (Min 12-month contract)"
+      }
+    ]
+  },
+  "shopifyDevelopment": {
+    "title": "Shopify & Web Development",
+    "services": [
+      {
+        "name": "Shopify Multi-Marketplace Integration",
+        "description": "Amazon, Walmart, eBay, Etsy, Shein, etc",
+        "pricing": "$49/month or $499 annually"
+      },
+      {
+        "name": "Shopify Store Development",
+        "description": "Full store setup, redesign, theme build",
+        "pricing": "Starts at $999 (Custom scope)"
+      },
+      {
+        "name": "Website Development (Custom / WordPress / React)",
+        "description": "Corporate, ecommerce or SaaS website",
+        "pricing": "Starts at $999 (no upper limit)"
+      }
+    ]
+  },
+  "accountManagement": {
+    "title": "Full Service Account Management",
+    "services": [
+      {
+        "name": "Complete Marketplace Account Management",
+        "description": "Ads management, listing optimization (up to 50 SKUs), repricing, reporting, FBA prep, inventory alerts, support case management",
+        "pricing": "$999 per month"
+      }
+    ]
+  },
+  "walmartAds": {
+    "title": "Walmart Ads Management",
+    "services": [
+      {
+        "name": "Walmart PPC Management",
+        "description": "Full Walmart advertising management",
+        "pricing": "$499 per month"
+      }
+    ]
+  },
+  "addOns": {
+    "title": "Add-Ons",
+    "services": [
+      {
+        "name": "Dedicated Strategy Manager",
+        "pricing": "$1,249/month"
+      },
+      {
+        "name": "Graphic Ad Creative Packs",
+        "pricing": "$99 per pack"
+      },
+      {
+        "name": "Product Video Creation",
+        "pricing": "$399"
+      },
+      {
+        "name": "Reinstatement / Compliance Recovery",
+        "pricing": "$3,999 per case"
+      }
+    ]
+  },
+  "examples": {
+    "title": "Real Example Pricing Scenarios",
+    "scenarios": [
+      {
+        "client": "10-SKU brand launching ads",
+        "services": "PPC + Listing Optimization",
+        "price": "$449 + ($2 × 10)"
+      },
+      {
+        "client": "50+ SKU enterprise",
+        "services": "6-month PPC + Account Mgmt + Walmart Ads",
+        "price": "$719 + $999 + $499 = $2,217/month"
+      },
+      {
+        "client": "Shopify + Marketplace automation",
+        "services": "Shopify Integration + AI + Tracking",
+        "price": "$49 + $199 + ($49×5) = $493/month"
+      },
+      {
+        "client": "D2C brand",
+        "services": "Website + Meta + Google",
+        "price": "$999 + $499"
+      }
+    ]
+  },
+  "contractIncentives": {
+    "title": "Contract Incentives",
+    "plans": [
+      {
+        "plan": "3-Month",
+        "discount": "5% Off",
+        "notes": "Test performance"
+      },
+      {
+        "plan": "6-Month",
+        "discount": "10% Off",
+        "notes": "Active scaling"
+      },
+      {
+        "plan": "12-Month",
+        "discount": "Best value",
+        "notes": "Locks pricing & guarantees support"
+      }
+    ],
+    "minimumPrice": "$349/month",
+    "minimumNote": "Absolute floor"
+  },
+  "guarantee": {
+    "title": "Performance Guarantee",
+    "text": "If performance does not improve within 60 days, we continue working free until improvement."
+  }
 }

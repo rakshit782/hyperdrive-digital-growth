@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import defaultPricingData from '@/data/pricingData.json';
 
 export interface PricingPlan {
   id?: string;
@@ -78,61 +77,49 @@ export const usePricingPlans = () => {
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        // Use default data if no plans in database
-        const processedPlans = defaultPricingData.plans.map((plan: any) => ({
-          ...plan,
-          features: Array.isArray(plan.features) 
-            ? plan.features.filter((f: any) => {
-                if (typeof f === 'string') return true;
-                return f.included !== false;
-              })
-            : [],
-          addons: Array.isArray(plan.addons) 
-            ? plan.addons
-            : []
-        }));
-        const sortedPlans = processedPlans.sort((a: any, b: any) => a.sort_order - b.sort_order);
-        setPlans(sortedPlans);
-        setCachedPlans(sortedPlans);
-      } else {
-        const processedPlans = data.map((plan: any) => {
-          let features = [];
-          let addons = [];
-          
-          // Parse features JSON which contains both features and addons
-          if (plan.features) {
-            try {
-              const parsed = typeof plan.features === 'string' 
-                ? JSON.parse(plan.features) 
-                : plan.features;
-              
-              features = Array.isArray(parsed.features) 
-                ? parsed.features.filter((f: any) => {
+        // No plans in database - return empty array
+        setPlans([]);
+        setLoading(false);
+        return;
+      }
+
+      const processedPlans = data.map((plan: any) => {
+        let features = [];
+        let addons = [];
+        
+        // Parse features JSON which contains both features and addons
+        if (plan.features) {
+          try {
+            const parsed = typeof plan.features === 'string' 
+              ? JSON.parse(plan.features) 
+              : plan.features;
+            
+            features = Array.isArray(parsed.features) 
+              ? parsed.features.filter((f: any) => {
+                  if (typeof f === 'string') return true;
+                  return f.included !== false;
+                })
+              : Array.isArray(parsed)
+                ? parsed.filter((f: any) => {
                     if (typeof f === 'string') return true;
                     return f.included !== false;
                   })
-                : Array.isArray(parsed)
-                  ? parsed.filter((f: any) => {
-                      if (typeof f === 'string') return true;
-                      return f.included !== false;
-                    })
-                  : [];
-              
-              addons = Array.isArray(parsed.addons) ? parsed.addons : [];
-            } catch (e) {
-              console.error('Error parsing features:', e);
-            }
+                : [];
+            
+            addons = Array.isArray(parsed.addons) ? parsed.addons : [];
+          } catch (e) {
+            console.error('Error parsing features:', e);
           }
-          
-          return {
-            ...plan,
-            features,
-            addons
-          };
-        });
-        setPlans(processedPlans);
-        setCachedPlans(processedPlans);
-      }
+        }
+        
+        return {
+          ...plan,
+          features,
+          addons
+        };
+      });
+      setPlans(processedPlans);
+      setCachedPlans(processedPlans);
     } catch (error) {
       console.error('Error loading pricing plans:', error);
       // Don't clear plans if we have cached data
