@@ -1,6 +1,5 @@
-
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { Mail, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 import { useLogoData } from "@/hooks/useLogoData";
 
 const Footer = () => {
@@ -138,10 +137,6 @@ const Footer = () => {
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-slate-400" />
                 <span className="text-slate-300 text-sm" id="footer-email">info@amzadscout.com</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="w-4 h-4 text-slate-400" />
-                <span className="text-slate-300 text-sm" id="footer-phone">+91-9799411555</span>
               </div>
               <div className="space-y-2">
                 <div className="flex items-start space-x-3">
