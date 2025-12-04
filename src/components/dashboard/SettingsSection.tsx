@@ -13,7 +13,6 @@ import 'react-image-crop/dist/ReactCrop.css';
 export function SettingsSection() {
   const [footerData, setFooterData] = useState({
     email: localStorage.getItem("footer_email") || "info@amzadscout.com",
-    phone: localStorage.getItem("footer_phone") || "+91-9799411555",
     address: localStorage.getItem("footer_address") || "New York, NY 10001",
   });
 
@@ -35,7 +34,6 @@ export function SettingsSection() {
 
   const saveFooter = () => {
     localStorage.setItem("footer_email", footerData.email);
-    localStorage.setItem("footer_phone", footerData.phone);
     localStorage.setItem("footer_address", footerData.address);
     toast.success("Footer settings saved");
   };
@@ -122,14 +120,6 @@ export function SettingsSection() {
                 type="email"
                 value={footerData.email}
                 onChange={(e) => setFooterData({ ...footerData, email: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                value={footerData.phone}
-                onChange={(e) => setFooterData({ ...footerData, phone: e.target.value })}
               />
             </div>
             <div>
