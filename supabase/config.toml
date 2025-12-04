@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.neon-visitor-logs]
 verify_jwt = false
+
+[functions.generate-daily-blogs]
+verify_jwt = false
