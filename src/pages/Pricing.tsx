@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Check, Target, Paintbrush, Brain, ShoppingCart, Users, Store, Plus, Calculator, Gift, Shield } from "lucide-react";
+import { Check, Target, Paintbrush, Brain, ShoppingCart, Users, Plus, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -127,13 +127,6 @@ const Pricing = () => {
                   services={pricingData.accountManagement.services}
                 />
 
-                {/* Walmart Ads */}
-                <ServiceCard 
-                  icon={<Store className="h-6 w-6" />}
-                  title={pricingData.walmartAds.title}
-                  services={pricingData.walmartAds.services}
-                />
-
                 {/* Add-Ons */}
                 <ServiceCard 
                   icon={<Plus className="h-6 w-6" />}
@@ -141,74 +134,6 @@ const Pricing = () => {
                   services={pricingData.addOns.services}
                 />
               </div>
-            </div>
-          </section>
-
-          {/* Example Scenarios */}
-          <section className="py-12 px-4">
-            <div className="container mx-auto max-w-7xl">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <Calculator className="h-6 w-6 text-primary" />
-                    <CardTitle className="text-xl md:text-2xl">{pricingData.examples.title}</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Example Client</TableHead>
-                          <TableHead>Selected Services</TableHead>
-                          <TableHead className="text-right">Final Price</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {pricingData.examples.scenarios.map((scenario, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell className="font-medium">{scenario.client}</TableCell>
-                            <TableCell className="text-muted-foreground">{scenario.services}</TableCell>
-                            <TableCell className="text-right font-semibold text-primary">{scenario.price}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </section>
-
-          {/* Contract Incentives */}
-          <section className="py-12 px-4 bg-muted/30">
-            <div className="container mx-auto max-w-7xl">
-              <Card className="border-primary/20">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <Gift className="h-6 w-6 text-primary" />
-                    <CardTitle className="text-xl md:text-2xl">{pricingData.contractIncentives.title}</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {pricingData.contractIncentives.plans.map((plan, idx) => (
-                      <Card key={idx} className={idx === 2 ? "border-primary bg-primary/5" : ""}>
-                        <CardContent className="pt-6 text-center">
-                          <h4 className="font-bold text-lg">{plan.plan}</h4>
-                          <p className="text-2xl font-bold text-primary my-2">{plan.discount}</p>
-                          <p className="text-sm text-muted-foreground">{plan.notes}</p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                  <div className="bg-muted p-4 rounded-lg text-center">
-                    <p className="text-sm text-muted-foreground">
-                      Minimum allowed PPC price: <span className="font-bold text-foreground">{pricingData.contractIncentives.minimumPrice}</span> ({pricingData.contractIncentives.minimumNote})
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </section>
 
