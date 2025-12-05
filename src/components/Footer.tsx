@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Mail, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 import { useLogoData } from "@/hooks/useLogoData";
+import amazonAdsPartnerLogo from "@/assets/amazon-ads-partner-logo.png";
 
 const Footer = () => {
   let logoData;
@@ -30,6 +31,24 @@ const Footer = () => {
             <p className="text-slate-300 text-sm leading-relaxed">
               The Growth Agency specializing in Amazon advertising, digital marketing, and e-commerce solutions.
             </p>
+            
+            {/* Amazon Ads Partner Badge */}
+            <div className="space-y-2">
+              <p className="text-sm text-slate-400 font-medium">Authorized Partner of</p>
+              <a 
+                href="https://advertising.amazon.com/partners/directory/details/amzn1.ads1.ma1.dspc6lp65lyixfrwl0focrtxh/AMZ-AD-SCOUT"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src={amazonAdsPartnerLogo} 
+                  alt="Amazon Ads Partner"
+                  className="h-8 w-auto"
+                />
+              </a>
+            </div>
+            
             <div className="flex space-x-4">
               <a href="#" className="text-slate-400 hover:text-white transition-colors">
                 <Facebook className="w-5 h-5" />
