@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { Mail, MapPin, Linkedin } from "lucide-react";
 import { useLogoData } from "@/hooks/useLogoData";
 import amazonAdsPartnerLogo from "@/assets/amazon-ads-partner-logo.png";
 
@@ -50,17 +50,8 @@ const Footer = () => {
             </div>
             
             <div className="flex space-x-4">
-              <a href="#" className="text-slate-400 hover:text-white transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-slate-400 hover:text-white transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-slate-400 hover:text-white transition-colors">
+              <a href="https://www.linkedin.com/company/amz-adscout/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                 <Linkedin className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-slate-400 hover:text-white transition-colors">
-                <Instagram className="w-5 h-5" />
               </a>
             </div>
           </div>
