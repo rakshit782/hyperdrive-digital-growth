@@ -131,6 +131,11 @@ const Footer = () => {
                   Refund Policy
                 </Link>
               </li>
+              <li>
+                <Link to="/amazon-ads-partner" className="text-slate-300 hover:text-white transition-colors text-sm">
+                  Amazon Ads Partner
+                </Link>
+              </li>
             </ul>
           </div>
 
