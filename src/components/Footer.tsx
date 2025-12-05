@@ -33,7 +33,7 @@ const Footer = () => {
             </p>
             
             {/* Amazon Ads Partner Badge */}
-            <div className="space-y-2">
+            <div className="space-y-2 pt-4">
               <p className="text-sm text-slate-400 font-medium">Authorized Partner of</p>
               <a 
                 href="https://advertising.amazon.com/partners/directory/details/amzn1.ads1.ma1.dspc6lp65lyixfrwl0focrtxh/AMZ-AD-SCOUT"
@@ -46,12 +46,6 @@ const Footer = () => {
                   alt="Amazon Ads Partner"
                   className="h-8 w-auto"
                 />
-              </a>
-            </div>
-            
-            <div className="flex space-x-4">
-              <a href="https://www.linkedin.com/company/amz-adscout/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
-                <Linkedin className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -168,6 +162,13 @@ const Footer = () => {
                   </div>
                 </div>
               </div>
+            </div>
+            
+            {/* Social Links */}
+            <div className="flex space-x-4 pt-4">
+              <a href="https://www.linkedin.com/company/amz-adscout/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                <Linkedin className="w-5 h-5" />
+              </a>
             </div>
           </div>
         </div>
