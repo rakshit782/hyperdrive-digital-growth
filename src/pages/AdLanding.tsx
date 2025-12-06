@@ -24,8 +24,6 @@ import {
   ArrowRight
 } from 'lucide-react';
 import amazonAdsPartnerLogo from "@/assets/amazon-ads-partner-logo.png";
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 const adLeadSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name is too long'),
@@ -128,8 +126,22 @@ const AdLanding = () => {
         <meta name="description" content="Scale your business with certified ad management experts. Authorized partners of Amazon Ads, Walmart Ads & Meta Ads. Get your free strategy call today." />
       </Helmet>
 
-      <Header />
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Header */}
+        <header className="py-4 px-6 border-b border-white/10">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-bold text-white">AMZ AD SCOUT</span>
+            </div>
+            <div className="hidden md:flex items-center gap-3">
+              <span className="text-slate-400 text-sm">Authorized Partner</span>
+              <img src={amazonAdsPartnerLogo} alt="Amazon Ads Partner" className="h-6 w-auto opacity-80" />
+            </div>
+          </div>
+        </header>
 
         {/* Hero Section */}
         <section className="relative py-12 lg:py-20 overflow-hidden">
@@ -410,8 +422,15 @@ const AdLanding = () => {
           </div>
         </section>
 
+        {/* Footer */}
+        <footer className="py-8 border-t border-white/10">
+          <div className="max-w-7xl mx-auto px-6 text-center">
+            <p className="text-slate-400 text-sm">
+              © {new Date().getFullYear()} AMZ AD SCOUT. All rights reserved. | Authorized Partner of Amazon Ads, Walmart Ads & Meta Ads
+            </p>
+          </div>
+        </footer>
       </div>
-      <Footer />
     </>
   );
 };

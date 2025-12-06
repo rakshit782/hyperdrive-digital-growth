@@ -117,36 +117,6 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-slate-300 hover:text-white transition-colors text-sm">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/free-audit" className="text-slate-300 hover:text-white transition-colors text-sm">
-                  Free Audit
-                </Link>
-              </li>
-              <li>
-                <Link to="/services/listing-optimization" className="text-slate-300 hover:text-white transition-colors text-sm">
-                  Listing Optimization
-                </Link>
-              </li>
-              <li>
-                <Link to="/services/product-cataloging" className="text-slate-300 hover:text-white transition-colors text-sm">
-                  Product Cataloging
-                </Link>
-              </li>
-              <li>
-                <Link to="/amazon-tools-alternative" className="text-slate-300 hover:text-white transition-colors text-sm">
-                  Amazon Tools Alternative
-                </Link>
-              </li>
-              <li>
-                <Link to="/ad-landing" className="text-slate-300 hover:text-white transition-colors text-sm">
-                  Ads Management
-                </Link>
-              </li>
-              <li>
                 <Link to="/privacy" className="text-slate-300 hover:text-white transition-colors text-sm">
                   Privacy Policy
                 </Link>
