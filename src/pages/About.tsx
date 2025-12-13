@@ -11,10 +11,11 @@ import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight, TrendingUp
 const About = () => {
   const navigate = useNavigate();
   const [aboutData, setAboutData] = useState({
-    heroTitle: 'Leading E-commerce Growth Agency | 500+ Brands Scaled Profitably',
-    heroDescription: "Premier e-commerce marketing agency with 10+ years of proven expertise. We specialize in Amazon advertising management, Walmart marketplace optimization, Shopify development, and multi-channel growth strategies. Our data-driven approach has helped 500+ brands achieve measurable ROI and sustainable growth across all major marketplaces.",
-    missionText: 'To revolutionize e-commerce success by delivering cutting-edge advertising strategies and marketplace optimization. As certified partners with Amazon, Walmart, and Shopify, we combine advanced analytics, AI-driven insights, and proven methodologies to maximize your revenue, reduce costs, and dominate your category across all digital channels.',
-    visionText: 'To become the global leader in e-commerce growth solutions, recognized for transforming brands through innovative marketplace strategies, performance marketing excellence, and scalable systems that deliver consistent results. We envision a future where every e-commerce business has access to enterprise-level expertise and technology to compete and win in the digital marketplace.'
+    heroTitle: 'Your E-commerce Growth Partner',
+    heroSubtitle: '500+ Brands Scaled Profitably',
+    heroDescription: "Premier agency with 10+ years expertise in Amazon advertising, Walmart optimization, and Shopify development. Our data-driven approach delivers measurable ROI across all major marketplaces.",
+    missionText: 'To revolutionize e-commerce success through cutting-edge advertising strategies and marketplace optimization. We combine advanced analytics, AI-driven insights, and proven methodologies to maximize revenue and dominate categories.',
+    visionText: 'To become the global leader in e-commerce growth solutions, transforming brands through innovative strategies and scalable systems. We envision every business having access to enterprise-level expertise to compete and win.'
   });
 
   useEffect(() => {
@@ -106,13 +107,17 @@ const About = () => {
                 Award-Winning Agency
               </Badge>
               
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
                 <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   {aboutData.heroTitle}
                 </span>
               </h1>
               
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-10 max-w-3xl mx-auto">
+              <p className="text-xl md:text-2xl font-semibold text-foreground/80 mb-4">
+                {aboutData.heroSubtitle}
+              </p>
+              
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
                 {aboutData.heroDescription}
               </p>
 
