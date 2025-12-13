@@ -11,6 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLeadSubmission } from '@/hooks/useLeadSubmission';
 import { useToast } from '@/hooks/use-toast';
+import { useLogoData } from '@/hooks/useLogoData';
 import { 
   Loader2, 
   CheckCircle2, 
@@ -41,6 +42,14 @@ const AdLanding = () => {
   const { submitLead, isSubmitting } = useLeadSubmission();
   const { toast } = useToast();
   const [isSuccess, setIsSuccess] = useState(false);
+  
+  let logoData;
+  try {
+    logoData = useLogoData();
+  } catch (error) {
+    console.error('Error in AdLanding useLogoData:', error);
+    logoData = { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.ico', size: 70 };
+  }
 
   const form = useForm<AdLeadFormValues>({
     resolver: zodResolver(adLeadSchema),
@@ -131,10 +140,16 @@ const AdLanding = () => {
         <header className="py-4 px-6 border-b border-white/10">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">AMZ AD SCOUT</span>
+              {logoData.imageUrl ? (
+                <img 
+                  src={logoData.imageUrl} 
+                  alt={logoData.text}
+                  style={{ height: '50px' }}
+                  className="w-auto object-contain brightness-0 invert"
+                />
+              ) : (
+                <span className="text-xl font-bold text-white">{logoData.text}</span>
+              )}
             </div>
             <div className="hidden md:flex items-center gap-3">
               <span className="text-slate-400 text-sm">Authorized Partner</span>
