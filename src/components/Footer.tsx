@@ -173,9 +173,12 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-slate-800 mt-12 pt-8 text-center">
+        <div className="border-t border-slate-800 mt-12 pt-8 text-center space-y-2">
           <p className="text-slate-400 text-sm">
             © 2025 AMZ AD SCOUT. All rights reserved.
+          </p>
+          <p className="text-slate-500 text-xs">
+            We are not affiliated with or endorsed by Amazon.
           </p>
         </div>
       </div>
