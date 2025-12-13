@@ -424,9 +424,12 @@ const AdLanding = () => {
 
         {/* Footer */}
         <footer className="py-8 border-t border-white/10">
-          <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="max-w-7xl mx-auto px-6 text-center space-y-2">
             <p className="text-slate-400 text-sm">
               © {new Date().getFullYear()} AMZ AD SCOUT. All rights reserved. | Authorized Partner of Amazon Ads, Walmart Ads & Meta Ads
+            </p>
+            <p className="text-slate-500 text-xs">
+              We are not affiliated with or endorsed by Amazon.
             </p>
           </div>
         </footer>
