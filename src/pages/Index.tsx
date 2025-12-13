@@ -20,16 +20,15 @@ const Index = () => {
   const schema = {
     "@context": "https://schema.org",
     "@type": ["Organization", "LocalBusiness", "ProfessionalService"],
-    "name": "AMZ Ad Scout - Premier Amazon Advertising Agency & Digital Marketing Agency",
+    "name": "AMZ Ad Scout - E-commerce Growth Specialists",
     "alternateName": [
-      "Amazon Agency", 
+      "E-commerce Growth Agency", 
       "Digital Marketing Agency", 
-      "Advertising Agency", 
-      "Amazon Advertising Agency",
-      "Amazon PPC Agency",
+      "Advertising Management Services", 
+      "Marketplace Advertising Specialists",
       "E-commerce Marketing Agency"
     ],
-    "description": "Leading Amazon advertising agency and digital marketing agency. Professional alternative to Helium 10, Jungle Scout, AMZ Scout, and Smart Scout. Expert Amazon PPC management, sponsored ads optimization, and data-driven e-commerce growth strategies for online sellers.",
+    "description": "Independent e-commerce growth specialists helping brands advertise on Amazon, Walmart, and Meta platforms. Data-driven advertising management, marketplace optimization, and proven growth strategies for online sellers. We are not affiliated with or endorsed by Amazon.",
     "url": window.location.origin,
     "logo": `${window.location.origin}/logo.png`,
     "image": `${window.location.origin}/logo.png`,
@@ -53,44 +52,40 @@ const Index = () => {
     },
     "serviceArea": "Worldwide",
     "knowsAbout": [
-      "Amazon Advertising", 
-      "Amazon Agency Services",
+      "Advertising on Amazon", 
+      "E-commerce Advertising Services",
       "PPC Management", 
       "Digital Marketing", 
       "E-commerce Growth", 
-      "Advertising Agency Services",
+      "Advertising Management Services",
       "Performance Marketing",
-      "Amazon Sponsored Products",
-      "Amazon Sponsored Brands",
-      "Amazon DSP",
-      "Helium 10 Alternative",
-      "Jungle Scout Alternative",
-      "AMZ Scout Alternative",
-      "Smart Scout Alternative"
+      "Marketplace Advertising",
+      "Walmart Advertising Management",
+      "Meta Advertising Management"
     ],
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
-      "name": "Amazon Advertising & Digital Marketing Agency Services",
+      "name": "E-commerce Advertising & Growth Services",
       "itemListElement": [
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Amazon Advertising Agency Services",
-            "description": "Full-service Amazon advertising agency offering expert PPC management, Sponsored Products optimization, Sponsored Brands campaigns, and Amazon DSP. Professional alternative to software tools like Helium 10, Jungle Scout, AMZ Scout, and Smart Scout with dedicated account management.",
+            "name": "Advertising Management for Amazon Sellers",
+            "description": "Full-service advertising management helping brands succeed on Amazon through expert PPC management, listing optimization, and data-driven campaign strategies. Independent service provider - not affiliated with Amazon.",
             "provider": {
               "@type": "Organization",
               "name": "AMZ Ad Scout"
             },
-            "serviceType": "Amazon Advertising Management"
+            "serviceType": "Advertising Management"
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Digital Marketing Agency Services",
-            "description": "Comprehensive digital marketing agency specializing in e-commerce advertising, multi-channel campaigns, conversion optimization, and ROI-focused strategies for online retailers and Amazon sellers.",
+            "name": "E-commerce Marketing Services",
+            "description": "Comprehensive digital marketing specializing in e-commerce advertising, multi-channel campaigns, conversion optimization, and ROI-focused strategies for online retailers.",
             "provider": {
               "@type": "Organization",
               "name": "AMZ Ad Scout"
@@ -102,8 +97,8 @@ const Index = () => {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Amazon Agency Consulting & Strategy",
-            "description": "Expert Amazon agency consulting for sellers seeking professional guidance beyond tools like Helium 10 and Jungle Scout. Data-driven strategies, market analysis, and hands-on execution for sustainable growth.",
+            "name": "Marketplace Growth Consulting",
+            "description": "Expert consulting for sellers seeking professional guidance on marketplace advertising. Data-driven strategies, market analysis, and hands-on execution for sustainable growth.",
             "provider": {
               "@type": "Organization",
               "name": "AMZ Ad Scout"
@@ -123,9 +118,9 @@ const Index = () => {
   return (
     <>
       <SEOHead 
-        title="Amazon Advertising Agency | Amazon Agency | Digital Marketing Agency | Advertising Agency"
-        description="Premier Amazon advertising agency and digital marketing agency with proven results. Professional alternative to Helium 10, Jungle Scout, AMZ Scout, and Smart Scout software. Expert Amazon PPC management, sponsored ads optimization, marketplace strategies, and full-service advertising agency solutions for e-commerce sellers and brands seeking growth."
-        keywords="amazon advertising, amazon agency, advertising agency, digital marketing agency, amz scout, helium10, jungle scout, smart scout, amazon advertising agency, amazon ppc agency, amazon seller agency, e-commerce agency, ppc management, sponsored products, sponsored brands, helium 10 alternative, jungle scout alternative, amz scout alternative, smart scout alternative, best amazon agency, top digital marketing agency, amazon ppc management, walmart advertising, shopify development, meta advertising, facebook ads, instagram ads, amazon dsp, amazon marketing services, e-commerce marketing, multi-marketplace integration, product cataloging, listing optimization, amazon seo, amazon keyword research, product launch, a+ content, brand registry, storefront design, enhanced brand content, e-commerce consulting, marketplace optimization, conversion rate optimization, amazon analytics, roi optimization, campaign management, multi-channel ecommerce, cross-platform marketing, vendor central, seller central management, product photography, lifestyle photography, infographic design, walmart marketplace, walmart seller services, walmart ppc, target plus, ebay marketing, etsy marketing, google shopping ads, google merchant center, social media advertising, influencer marketing, content marketing, email marketing automation, marketing analytics, data-driven marketing, performance marketing, growth hacking, conversion funnel, customer acquisition, retention marketing, remarketing campaigns, display advertising, video advertising, amazon video ads, product videography, brand development, brand strategy, competitive analysis, market research, niche research, profit margin analysis, inventory management, supply chain optimization, fulfillment strategy, fba consulting, fbm strategy, 3pl integration, international expansion, global marketplace, amazon international, cross-border ecommerce, localization services, currency optimization, tax strategy, compliance consulting, account health, suspension prevention, reinstatement services, review management, customer service optimization, feedback management, ranking strategy, best seller rank, category domination, seasonal campaigns, holiday marketing, prime day strategy, black friday cyber monday, q4 planning, budget management, acos optimization, tacos management, roas maximization, profit maximization, scalable growth, professional amazon management, amazon account management, amazon consulting, sponsored display, pay per click, sales growth strategy, amazon listing services, amazon product listings, amazon seller tools, amazon seller software, ecommerce growth agency, online retail marketing, advertising campaign optimization, ppc advertising, search advertising, product advertising, brand advertising"
+        title="E-commerce Growth Specialists | Advertising Management for Amazon, Walmart & Meta Sellers"
+        description="Independent e-commerce growth specialists helping brands advertise on Amazon, Walmart, and Meta platforms. Data-driven advertising management with proven results. We are not affiliated with or endorsed by Amazon."
+        keywords="advertising management, e-commerce growth, marketplace advertising, advertising for amazon sellers, walmart advertising management, meta advertising, ppc management, sponsored products management, e-commerce agency, advertising management services, marketplace optimization, listing optimization, keyword research, product launch, e-commerce consulting, conversion rate optimization, roi optimization, campaign management, multi-channel ecommerce, performance marketing, growth strategies, ecommerce growth specialists, online retail marketing, advertising campaign optimization, ppc advertising, brand advertising"
         canonical={window.location.href}
         schema={schema}
       />

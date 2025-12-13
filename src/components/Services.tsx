@@ -10,8 +10,8 @@ const Services = () => {
 
   const services = [
     {
-      title: 'Amazon Advertising',
-      description: 'Expert PPC management, keyword optimization, and campaign strategies that maximize your Amazon sales and ROI.',
+      title: 'Advertising for Amazon Sellers',
+      description: 'Expert PPC management, keyword optimization, and campaign strategies that maximize your sales and ROI on Amazon. We are not affiliated with Amazon.',
       icon: ShoppingCart,
       link: '/services/amazon-advertising',
       bgGradient: 'from-orange-500 via-red-500 to-pink-500',

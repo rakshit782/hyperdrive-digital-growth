@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Mail, MapPin, Linkedin } from "lucide-react";
 import { useLogoData } from "@/hooks/useLogoData";
-import amazonAdsPartnerLogo from "@/assets/amazon-ads-partner-logo.png";
 
 const Footer = () => {
   let logoData;
@@ -32,21 +31,10 @@ const Footer = () => {
               The Growth Agency specializing in Amazon advertising, digital marketing, and e-commerce solutions.
             </p>
             
-            {/* Amazon Ads Partner Badge */}
+            {/* E-commerce Expertise Badge */}
             <div className="space-y-2 pt-4">
-              <p className="text-sm text-slate-400 font-medium">Authorized Partner of</p>
-              <a 
-                href="https://advertising.amazon.com/partners/directory/details/amzn1.ads1.ma1.dspc6lp65lyixfrwl0focrtxh/AMZ-AD-SCOUT"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block hover:opacity-80 transition-opacity"
-              >
-                <img 
-                  src={amazonAdsPartnerLogo} 
-                  alt="Amazon Ads Partner"
-                  className="h-8 w-auto"
-                />
-              </a>
+              <p className="text-sm text-slate-400 font-medium">E-commerce Growth Specialists</p>
+              <p className="text-xs text-slate-500">Helping brands advertise on major marketplaces</p>
             </div>
           </div>
 

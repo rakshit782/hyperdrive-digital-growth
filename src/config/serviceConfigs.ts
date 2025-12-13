@@ -28,16 +28,16 @@ export interface ServicePageConfig {
 
 export const amazonConfig: ServicePageConfig = {
   serviceType: 'amazon',
-  title: 'Amazon Advertising Management',
-  subtitle: 'Expert Amazon PPC & Marketplace Optimization',
-  heroDescription: 'Maximize your Amazon sales with our proven advertising strategies. We help brands achieve 350% average sales growth through expert PPC management, listing optimization, and strategic campaign planning.',
-  primaryButtonText: 'Get Free Amazon Audit',
+  title: 'Advertising Management for Amazon Sellers',
+  subtitle: 'Expert PPC & Marketplace Optimization',
+  heroDescription: 'Maximize your sales on Amazon with our proven advertising strategies. We help brands achieve 350% average sales growth through expert PPC management, listing optimization, and strategic campaign planning. We are not affiliated with or endorsed by Amazon.',
+  primaryButtonText: 'Get Free Audit',
   secondaryButtonText: 'View Success Stories',
   primaryButtonUrl: '/contact',
   secondaryButtonUrl: '/amazon-case-studies',
   services: [
     {
-      title: 'Amazon PPC Management',
+      title: 'PPC Campaign Management',
       description: 'Strategic campaign setup and optimization for maximum ROI and visibility.',
       icon: 'Target',
       gradient: 'bg-gradient-to-r from-orange-500 to-red-500'
@@ -69,14 +69,14 @@ export const amazonConfig: ServicePageConfig = {
       color: 'bg-gradient-to-r from-green-500 to-emerald-500'
     },
     {
-      title: 'Expert Team',
-      description: 'Certified Amazon advertising specialists with years of marketplace experience.',
+      title: 'Experienced Team',
+      description: 'Advertising specialists with years of marketplace experience.',
       icon: 'Users',
       color: 'bg-gradient-to-r from-blue-500 to-indigo-500'
     },
     {
       title: 'Data-Driven Approach',
-      description: 'Advanced analytics and AI-powered optimization for maximum performance.',
+      description: 'Advanced analytics and optimization for maximum performance.',
       icon: 'BarChart3',
       color: 'bg-gradient-to-r from-purple-500 to-pink-500'
     },
@@ -87,8 +87,8 @@ export const amazonConfig: ServicePageConfig = {
       color: 'bg-gradient-to-r from-orange-500 to-red-500'
     }
   ],
-  ctaTitle: 'Ready to Dominate Amazon?',
-  ctaDescription: 'Get your free Amazon advertising audit and discover how we can triple your sales in 90 days.',
+  ctaTitle: 'Ready to Grow Your Amazon Business?',
+  ctaDescription: 'Get your free advertising audit and discover how we can help grow your sales. We are not affiliated with or endorsed by Amazon.',
   ctaButtonText: 'Get Free Audit',
   ctaButtonUrl: '/contact'
 };
