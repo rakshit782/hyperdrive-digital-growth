@@ -19,7 +19,7 @@ const Header = () => {
   }
 
   const serviceItems = [
-    { name: "Amazon Ads Management", href: "/services/amazon-advertising" },
+    { name: "Advertising for Amazon Sellers", href: "/services/amazon-advertising" },
     { name: "Meta Ads Management", href: "/services/meta-advertising" },
     { name: "Google Ads Management", href: "/services/google-advertising" },
     { name: "Walmart Ads Management", href: "/services/walmart-advertising" },

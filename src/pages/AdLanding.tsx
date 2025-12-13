@@ -24,7 +24,6 @@ import {
   Zap,
   ArrowRight
 } from 'lucide-react';
-import amazonAdsPartnerLogo from "@/assets/amazon-ads-partner-logo.png";
 
 const adLeadSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name is too long'),
@@ -131,8 +130,8 @@ const AdLanding = () => {
   return (
     <>
       <Helmet>
-        <title>Expert Amazon, Walmart & Meta Ad Management | AMZ AD SCOUT</title>
-        <meta name="description" content="Scale your business with certified ad management experts. Authorized partners of Amazon Ads, Walmart Ads & Meta Ads. Get your free strategy call today." />
+        <title>Expert E-commerce Advertising Management | AMZ AD SCOUT</title>
+        <meta name="description" content="Grow your business with expert advertising management for Amazon, Walmart & Meta platforms. Independent specialists helping brands succeed. We are not affiliated with or endorsed by Amazon." />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -152,8 +151,7 @@ const AdLanding = () => {
               )}
             </div>
             <div className="hidden md:flex items-center gap-3">
-              <span className="text-slate-400 text-sm">Authorized Partner</span>
-              <img src={amazonAdsPartnerLogo} alt="Amazon Ads Partner" className="h-6 w-auto opacity-80" />
+              <span className="text-slate-400 text-sm">E-commerce Growth Specialists</span>
             </div>
           </div>
         </header>
@@ -164,7 +162,7 @@ const AdLanding = () => {
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
           
           <div className="max-w-7xl mx-auto px-6 relative z-10">
-            {/* Partner Badges */}
+            {/* Platform Expertise Badges */}
             <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
               {platforms.map((platform, index) => (
                 <div 
@@ -172,7 +170,7 @@ const AdLanding = () => {
                   className={`inline-flex items-center gap-2 ${platform.bgColor} border ${platform.borderColor} rounded-full px-4 py-2`}
                 >
                   <Award className={`w-4 h-4 bg-gradient-to-r ${platform.color} bg-clip-text`} style={{ color: platform.color.includes('amber') ? '#f59e0b' : platform.color.includes('blue') ? '#3b82f6' : '#6366f1' }} />
-                  <span className="text-white/90 text-sm font-medium">Authorized {platform.name} Partner</span>
+                  <span className="text-white/90 text-sm font-medium">{platform.name} Specialists</span>
                 </div>
               ))}
             </div>
@@ -231,7 +229,7 @@ const AdLanding = () => {
                     {platforms.map((platform, index) => (
                       <div key={index} className="flex items-center gap-3">
                         <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${platform.color}`}></div>
-                        <span className="text-slate-300">{platform.name} - Authorized Partner</span>
+                        <span className="text-slate-300">{platform.name} Management</span>
                       </div>
                     ))}
                   </div>
@@ -441,10 +439,10 @@ const AdLanding = () => {
         <footer className="py-8 border-t border-white/10">
           <div className="max-w-7xl mx-auto px-6 text-center space-y-2">
             <p className="text-slate-400 text-sm">
-              © {new Date().getFullYear()} AMZ AD SCOUT. All rights reserved. | Authorized Partner of Amazon Ads, Walmart Ads & Meta Ads
+              © {new Date().getFullYear()} AMZ AD SCOUT. All rights reserved. | E-commerce Advertising Specialists
             </p>
             <p className="text-slate-500 text-xs">
-              We are not affiliated with or endorsed by Amazon.
+              We are not affiliated with or endorsed by Amazon, Walmart, or Meta.
             </p>
           </div>
         </footer>

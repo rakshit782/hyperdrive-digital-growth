@@ -48,14 +48,14 @@ const About = () => {
   ];
 
   const services = [
-    "Amazon Advertising Agency - PPC Management Service",
-    "Amazon Listing Optimization Service - A+ Content Creation", 
-    "Walmart Advertising Agency - Walmart Connect Partner",
+    "Advertising Management for Amazon Sellers - PPC Management",
+    "Listing Optimization Services - A+ Content Creation", 
+    "Walmart Advertising Management - Marketplace Specialists",
     "E-commerce Product Cataloging Services",
-    "Shopify Development Partner - Custom Theme Development",
-    "Multi-Marketplace Integration Agency",
-    "Professional Shopify Developers - Shopify Plus Experts",
-    "Amazon DSP Agency - Amazon Sponsored Products Management",
+    "Shopify Development - Custom Theme Development",
+    "Multi-Marketplace Integration Services",
+    "Professional Shopify Developers - Store Experts",
+    "Marketplace Advertising Management - Sponsored Products",
     "E-commerce Channel Management Solutions"
   ];
 
@@ -65,16 +65,16 @@ const About = () => {
       description: "500+ brands scaled profitably with 10,000+ successful campaigns achieving an average ROAS of 10x across all marketplaces"
     },
     {
-      title: "Certified Expert Team",
-      description: "Amazon Advertising Partners, Walmart Connect Certified, and Shopify Plus Partners with 50+ years combined experience"
+      title: "Experienced Team",
+      description: "Industry specialists with 50+ years combined experience in e-commerce advertising and marketplace management"
     },
     {
       title: "Advanced Data Analytics",
-      description: "Proprietary AI-driven analytics platform providing real-time insights, predictive modeling, and automated optimization"
+      description: "Proprietary analytics platform providing real-time insights, predictive modeling, and automated optimization"
     },
     {
       title: "White-Glove Service",
-      description: "Dedicated account managers, weekly strategy calls, transparent reporting, and 24/7 support for enterprise clients"
+      description: "Dedicated account managers, weekly strategy calls, transparent reporting, and responsive support for all clients"
     }
   ];
 
@@ -88,9 +88,9 @@ const About = () => {
   return (
     <>
       <SEOHead 
-        title="About Us - Premier E-commerce Digital Marketing Agency | 10+ Years Proven Results"
-        description="Leading e-commerce marketing agency with 10+ years expertise in Amazon, Walmart & Shopify. 500+ brands scaled profitably with proven ROI-driven strategies."
-        keywords="e-commerce marketing agency, amazon advertising agency, walmart marketplace optimization, shopify development partner, digital marketing agency, ppc management services, amazon ppc agency, walmart connect partner, e-commerce optimization, multi-channel marketing, online marketplace advertising, amazon seller agency, walmart seller solutions, shopify plus agency, performance marketing agency, roi-focused marketing, data-driven e-commerce, marketplace management, amazon listing optimization, product catalog management, e-commerce growth agency, online retail marketing, amazon sponsored ads, walmart sponsored products, shopify theme development, amazon dsp agency, programmatic advertising, conversion rate optimization, e-commerce analytics, marketplace strategy, omnichannel retail, amazon brand registry, walmart brand portal, shopify app development, amazon fba consulting, fulfillment optimization, inventory management, pricing strategy, competitive analysis, market research, consumer insights, e-commerce automation, marketing technology, retail media network, sponsored display ads, sponsored brand ads, product targeting, audience targeting, keyword research, bid optimization, campaign management, a+ content creation, enhanced brand content, product photography, lifestyle photography, infographic design, amazon storefront, brand store design, listing enhancement, seo optimization, search term optimization, backend keywords, product title optimization, bullet point optimization, product description writing, review management, feedback monitoring, seller central management, vendor central optimization, advertising console, campaign analytics, performance reporting, roi tracking, sales attribution, funnel analysis, customer journey, lifetime value optimization, retention marketing, email marketing automation, crm integration, customer segmentation, personalization strategies, dynamic pricing, promotional strategy, lightning deals, coupons management, prime day strategy, black friday optimization, holiday campaign planning, seasonal marketing, new product launch, market expansion, international marketplace, cross-border e-commerce, localization services, currency optimization, global fulfillment, multi-marketplace sync, inventory forecasting, demand planning, supply chain optimization, fulfillment by amazon, seller fulfilled prime, walmart fulfillment services, third party logistics, warehouse management, order management system"
+        title="About Us - E-commerce Growth Specialists | 10+ Years Proven Results"
+        description="Independent e-commerce advertising specialists with 10+ years expertise helping brands succeed on Amazon, Walmart & Shopify. 500+ brands scaled profitably. We are not affiliated with or endorsed by Amazon."
+        keywords="e-commerce advertising specialists, advertising for amazon sellers, walmart marketplace optimization, shopify development, digital marketing services, ppc management services, e-commerce optimization, multi-channel marketing, online marketplace advertising, seller solutions, performance marketing, roi-focused marketing, data-driven e-commerce, marketplace management, listing optimization, product catalog management, e-commerce growth, online retail marketing"
         canonical={window.location.href}
       />
       <Header />

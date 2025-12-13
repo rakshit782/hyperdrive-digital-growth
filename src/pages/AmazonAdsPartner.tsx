@@ -5,28 +5,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Award, CheckCircle, TrendingUp, Users, Target, BarChart3, Shield, Zap } from "lucide-react";
-import amazonAdsPartnerLogo from "@/assets/amazon-ads-partner-logo.png";
 
 const AmazonAdsPartner = () => {
   const benefits = [
     {
       icon: Award,
-      title: "Certified Expertise",
-      description: "Our team holds official Amazon Ads certifications, ensuring campaigns are managed by qualified professionals."
+      title: "Experienced Team",
+      description: "Our team has extensive experience managing advertising campaigns for brands selling on Amazon."
     },
     {
       icon: TrendingUp,
-      title: "Advanced Strategies",
-      description: "Access to beta features, advanced tools, and strategies exclusive to Amazon Ads partners."
+      title: "Proven Strategies",
+      description: "Access to advanced tools and data-driven strategies that deliver measurable results."
     },
     {
       icon: Users,
       title: "Dedicated Support",
-      description: "Priority access to Amazon Ads support and account management resources."
+      description: "Personalized account management with responsive support for all your advertising needs."
     },
     {
       icon: Target,
-      title: "Proven Results",
+      title: "Results-Focused",
       description: "Track record of delivering exceptional ROI for brands across diverse categories."
     },
     {
@@ -36,8 +35,8 @@ const AmazonAdsPartner = () => {
     },
     {
       icon: CheckCircle,
-      title: "Compliance Assured",
-      description: "All campaigns adhere to Amazon's advertising policies and best practices."
+      title: "Best Practices",
+      description: "All campaigns follow advertising best practices and platform guidelines."
     }
   ];
 
@@ -51,8 +50,8 @@ const AmazonAdsPartner = () => {
   return (
     <>
       <Helmet>
-        <title>Authorized Amazon Ads Partner | AMZ AD SCOUT</title>
-        <meta name="description" content="AMZ AD SCOUT is an authorized Amazon Ads Partner, delivering certified expertise and proven results for your Amazon advertising campaigns." />
+        <title>Advertising Management for Amazon Sellers | AMZ AD SCOUT</title>
+        <meta name="description" content="AMZ AD SCOUT provides expert advertising management services for brands selling on Amazon. We are an independent service provider - not affiliated with or endorsed by Amazon." />
       </Helmet>
       
       <Header />
@@ -70,54 +69,63 @@ const AmazonAdsPartner = () => {
               <div className="text-left">
                 <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-4 py-2 mb-6">
                   <Award className="w-4 h-4 text-amber-500" />
-                  <span className="text-amber-500 text-sm font-medium">Official Partner</span>
+                  <span className="text-amber-500 text-sm font-medium">E-commerce Growth Specialists</span>
                 </div>
                 
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                  Authorized Partner of{" "}
+                  Advertising Management for{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
-                    Amazon Ads
+                    Amazon Sellers
                   </span>
                 </h1>
                 
                 <p className="text-lg md:text-xl text-slate-300 mb-8 leading-relaxed">
-                  AMZ AD SCOUT is proud to be recognized as an authorized Amazon Ads Partner, 
-                  demonstrating our commitment to excellence and expertise in Amazon advertising.
+                  AMZ AD SCOUT helps brands achieve advertising success on Amazon through 
+                  expert campaign management and data-driven optimization strategies.
+                </p>
+                
+                {/* Disclaimer */}
+                <p className="text-sm text-slate-400 mb-8 italic">
+                  We are not affiliated with or endorsed by Amazon.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <a 
-                    href="https://advertising.amazon.com/partners/directory/details/amzn1.ads1.ma1.dspc6lp65lyixfrwl0focrtxh/AMZ-AD-SCOUT"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold px-8 w-full sm:w-auto">
-                      View Our Partner Profile
-                    </Button>
-                  </a>
                   <Link to="/contact">
+                    <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold px-8 w-full sm:w-auto">
+                      Get Free Consultation
+                    </Button>
+                  </Link>
+                  <Link to="/case-studies">
                     <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 w-full sm:w-auto">
-                      Get Started Today
+                      View Success Stories
                     </Button>
                   </Link>
                 </div>
               </div>
               
-              {/* Right Content - Partner Badge */}
+              {/* Right Content - Services Highlight */}
               <div className="flex flex-col items-center lg:items-end">
-                <a 
-                  href="https://advertising.amazon.com/partners/directory/details/amzn1.ads1.ma1.dspc6lp65lyixfrwl0focrtxh/AMZ-AD-SCOUT"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 lg:p-12 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105"
-                >
-                  <img 
-                    src={amazonAdsPartnerLogo} 
-                    alt="Amazon Ads Partner Badge"
-                    className="h-24 lg:h-32 w-auto"
-                  />
-                </a>
-                <p className="text-slate-400 text-sm mt-4">Verified Partner Badge</p>
+                <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 lg:p-12 border border-white/10">
+                  <h3 className="text-2xl font-bold text-white mb-4">Our Services Include:</h3>
+                  <ul className="space-y-3 text-slate-300">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-amber-500" />
+                      PPC Campaign Management
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-amber-500" />
+                      Listing Optimization
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-amber-500" />
+                      Keyword Research & Strategy
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-amber-500" />
+                      Performance Analytics
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -137,20 +145,20 @@ const AmazonAdsPartner = () => {
           </div>
         </section>
 
-        {/* What It Means Section */}
+        {/* What We Offer Section */}
         <section className="py-20 lg:py-28 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <div className="inline-flex items-center gap-2 bg-amber-100 rounded-full px-4 py-2 mb-4">
                 <Shield className="w-4 h-4 text-amber-600" />
-                <span className="text-amber-700 text-sm font-medium">Partner Benefits</span>
+                <span className="text-amber-700 text-sm font-medium">Our Expertise</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                What Does Being an Amazon Ads Partner Mean?
+                Why Brands Choose AMZ AD SCOUT
               </h2>
               <p className="text-lg text-slate-600">
-                As an authorized Amazon Ads Partner, we've demonstrated proven expertise, 
-                a track record of success, and commitment to delivering exceptional results for our clients.
+                We bring years of experience helping brands succeed with their 
+                advertising campaigns on Amazon and other major marketplaces.
               </p>
             </div>
             
@@ -180,23 +188,23 @@ const AmazonAdsPartner = () => {
               <div>
                 <div className="inline-flex items-center gap-2 bg-amber-100 rounded-full px-4 py-2 mb-4">
                   <Zap className="w-4 h-4 text-amber-600" />
-                  <span className="text-amber-700 text-sm font-medium">Why Choose Us</span>
+                  <span className="text-amber-700 text-sm font-medium">Your Growth Partner</span>
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
-                  Partner with Certified Amazon Advertising Experts
+                  Helping Brands Advertise on Amazon
                 </h2>
                 <p className="text-lg text-slate-600 mb-8">
-                  Our Amazon Ads Partner status means you get access to exclusive tools, 
-                  strategies, and support that non-partner agencies simply can't provide.
+                  Our experienced team provides comprehensive advertising management 
+                  services tailored to help your brand succeed on Amazon.
                 </p>
                 
                 <div className="space-y-4">
                   {[
-                    "Direct access to Amazon Ads beta features",
-                    "Priority support from Amazon's partner team",
-                    "Advanced reporting and analytics tools",
-                    "Certified campaign management expertise",
-                    "Exclusive training and best practices"
+                    "Data-driven campaign optimization",
+                    "Dedicated account management team",
+                    "Transparent reporting and analytics",
+                    "Continuous performance monitoring",
+                    "Strategic growth planning"
                   ].map((item, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -206,13 +214,18 @@ const AmazonAdsPartner = () => {
                     </div>
                   ))}
                 </div>
+                
+                {/* Disclaimer */}
+                <p className="text-sm text-slate-500 mt-6 italic">
+                  We are an independent service provider and are not affiliated with or endorsed by Amazon.
+                </p>
               </div>
               
               <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-8 lg:p-12 text-white">
-                <h3 className="text-2xl font-bold mb-4">Ready to Scale Your Amazon Advertising?</h3>
+                <h3 className="text-2xl font-bold mb-4">Ready to Grow Your Amazon Business?</h3>
                 <p className="text-white/90 mb-8">
-                  Get a free audit of your current Amazon advertising performance and discover 
-                  how our partner-level expertise can drive better results.
+                  Get a free audit of your current advertising performance and discover 
+                  how our expertise can drive better results for your brand.
                 </p>
                 <div className="space-y-4">
                   <Link to="/contact" className="block">
@@ -222,7 +235,7 @@ const AmazonAdsPartner = () => {
                   </Link>
                   <Link to="/services/amazon-advertising" className="block">
                     <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 w-full">
-                      Explore Amazon Ad Services
+                      Explore Our Services
                     </Button>
                   </Link>
                 </div>
@@ -238,11 +251,14 @@ const AmazonAdsPartner = () => {
           
           <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Work with an Authorized Partner?
+              Ready to Scale Your Advertising?
             </h2>
-            <p className="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">
-              Partner with a certified Amazon Ads agency and take your advertising to the next level. 
-              Experience the difference that expertise makes.
+            <p className="text-lg text-slate-300 mb-6 max-w-2xl mx-auto">
+              Work with experienced advertising professionals and take your 
+              marketplace performance to the next level.
+            </p>
+            <p className="text-sm text-slate-400 mb-10 italic">
+              We are not affiliated with or endorsed by Amazon.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/contact">
