@@ -5,7 +5,7 @@ const GlobalTracking = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Google Analytics 4
+    // Google tag (gtag.js)
     const gaScript = document.createElement('script');
     gaScript.async = true;
     gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-5K1GGB3SBR';
@@ -16,11 +16,7 @@ const GlobalTracking = () => {
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-5K1GGB3SBR', {
-        page_path: window.location.pathname,
-        page_title: document.title,
-        page_location: window.location.href
-      });
+      gtag('config', 'G-5K1GGB3SBR');
     `;
     document.head.appendChild(gaInlineScript);
 
