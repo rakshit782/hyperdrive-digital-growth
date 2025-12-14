@@ -66,7 +66,7 @@ const defaultSettings: HeroSettings = {
     highlight: "Higher ROAS",
     subtitle: "in 90 Days"
   },
-  description: "Join 500+ brands that increased their advertising revenue by an average of 300% with our proven Amazon, Walmart & Meta strategies.",
+  description: "Join 900+ clients that increased their advertising revenue by an average of 300% with our proven Amazon, Walmart & Meta strategies.",
   cta: {
     primary: {
       text: "Get FREE $2,000 Audit",
@@ -88,7 +88,7 @@ const defaultSettings: HeroSettings = {
   trustBadge: {
     enabled: true,
     rating: "4.9/5",
-    text: "from 500+ Happy Clients"
+    text: "from 900+ Happy Clients"
   },
   urgency: {
     enabled: true,

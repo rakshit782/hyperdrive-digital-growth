@@ -12,8 +12,8 @@ const About = () => {
   const navigate = useNavigate();
   const [aboutData, setAboutData] = useState({
     heroTitle: 'Your E-commerce Growth Partner',
-    heroSubtitle: '500+ Brands Scaled Profitably',
-    heroDescription: "Premier agency with 10+ years expertise in Amazon advertising, Walmart optimization, and Shopify development. Our data-driven approach delivers measurable ROI across all major marketplaces.",
+    heroSubtitle: '900+ Happy Clients Served',
+    heroDescription: "Premier agency with 9+ years expertise in Amazon advertising, Walmart optimization, and Shopify development. Our data-driven approach delivers measurable ROI across all major marketplaces.",
     missionText: 'To revolutionize e-commerce success through cutting-edge advertising strategies and marketplace optimization. We combine advanced analytics, AI-driven insights, and proven methodologies to maximize revenue and dominate categories.',
     visionText: 'To become the global leader in e-commerce growth solutions, transforming brands through innovative strategies and scalable systems. We envision every business having access to enterprise-level expertise to compete and win.'
   });
@@ -62,7 +62,7 @@ const About = () => {
   const whyChooseUs = [
     {
       title: "Proven Track Record",
-      description: "500+ brands scaled profitably with 10,000+ successful campaigns achieving an average ROAS of 10x across all marketplaces"
+      description: "500+ brands scaled profitably with 50K+ successful campaigns achieving an average ROAS of 10x across all marketplaces"
     },
     {
       title: "Experienced Team",
@@ -81,8 +81,8 @@ const About = () => {
   const stats = [
     { value: "500+", label: "Brands Scaled", icon: Users },
     { value: "10x", label: "Average ROAS", icon: TrendingUp },
-    { value: "10+", label: "Years Experience", icon: Award },
-    { value: "$100M+", label: "Ad Spend Managed", icon: BarChart3 }
+    { value: "9+", label: "Years Experience", icon: Award },
+    { value: "$50M+", label: "Ad Spend Managed", icon: BarChart3 }
   ];
 
   return (
@@ -327,7 +327,7 @@ const About = () => {
                     </h2>
                     
                     <p className="text-base md:text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-                      Join 500+ successful brands and start achieving breakthrough results with our proven strategies
+                      Join 900+ successful clients and start achieving breakthrough results with our proven strategies
                     </p>
                     
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -113,10 +113,10 @@ const AdLanding = () => {
   ];
 
   const stats = [
-    { icon: TrendingUp, value: "300%+", label: "Average ROAS", color: "text-emerald-400" },
-    { icon: Users, value: "500+", label: "Happy Clients", color: "text-blue-400" },
+    { icon: TrendingUp, value: "10x", label: "Average ROAS", color: "text-emerald-400" },
+    { icon: Users, value: "900+", label: "Happy Clients", color: "text-blue-400" },
     { icon: Target, value: "$50M+", label: "Ad Spend Managed", color: "text-purple-400" },
-    { icon: BarChart3, value: "98%", label: "Client Retention", color: "text-amber-400" }
+    { icon: BarChart3, value: "$250M+", label: "Revenue Generated", color: "text-amber-400" }
   ];
 
   const benefits = [

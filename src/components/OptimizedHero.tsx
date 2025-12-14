@@ -78,7 +78,7 @@ const OptimizedHero = memo(() => {
             <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 animate-fade-in delay-600">
               <div className="flex items-center justify-center lg:justify-start space-x-8 text-slate-600 dark:text-slate-400">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">500+</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">900+</div>
                   <div className="text-sm">Happy Clients</div>
                 </div>
                 <div className="text-center">
@@ -86,7 +86,7 @@ const OptimizedHero = memo(() => {
                   <div className="text-sm">Avg ROI</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">10+</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">9+</div>
                   <div className="text-sm">Years Experience</div>
                 </div>
               </div>

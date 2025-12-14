@@ -23,10 +23,10 @@ const Hero = () => {
   });
 
   const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>([
-    { id: "campaigns", number: "500+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
+    { id: "campaigns", number: "50K+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
     { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
     { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
-    { id: "monitoring", number: "24/7", label: "Account Monitoring", color: "from-pink-400 to-blue-400" }
+    { id: "revenue", number: "$250M+", label: "Revenue Generated", color: "from-pink-400 to-blue-400" }
   ]);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ const Hero = () => {
               {/* Trust Badge */}
               <div className="inline-flex items-center px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200/50 animate-fade-in shadow-modern">
                 <Sparkles className="w-5 h-5 mr-3 text-blue-600" />
-                <span className="text-sm font-medium text-gray-700">Trusted by 500+ Leading Brands</span>
+                <span className="text-sm font-medium text-gray-700">Trusted by 900+ Leading Brands</span>
                 <TrendingUp className="w-5 h-5 ml-3 text-green-600" />
               </div>
               
