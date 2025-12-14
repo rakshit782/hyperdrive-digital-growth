@@ -148,7 +148,7 @@ const ModernServices = () => {
         <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-blue-600 mb-2">500+</div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">900+</div>
               <div className="text-slate-600">Happy Clients</div>
             </div>
             <div>
@@ -156,12 +156,12 @@ const ModernServices = () => {
               <div className="text-slate-600">Ad Spend Managed</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-cyan-600 mb-2">300%</div>
+              <div className="text-3xl font-bold text-cyan-600 mb-2">10x</div>
               <div className="text-slate-600">Average ROAS</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-indigo-600 mb-2">24/7</div>
-              <div className="text-slate-600">Expert Support</div>
+              <div className="text-3xl font-bold text-indigo-600 mb-2">$250M+</div>
+              <div className="text-slate-600">Revenue Generated</div>
             </div>
           </div>
         </div>

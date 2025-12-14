@@ -7,25 +7,25 @@ const Stats = () => {
     {
       icon: Users,
       title: "Happy Clients",
-      value: "500+",
+      value: "900+",
       description: "Satisfied customers worldwide"
     },
     {
       icon: Award,
       title: "Projects Completed",
-      value: "1000+",
+      value: "1500+",
       description: "Successful projects delivered"
     },
     {
       icon: TrendingUp,
-      title: "Growth Rate",
-      value: "150%",
+      title: "Client Growth",
+      value: "300%",
       description: "Average client growth"
     },
     {
       icon: BarChart3,
       title: "Years Experience",
-      value: "10+",
+      value: "9+",
       description: "In digital marketing"
     }
   ];

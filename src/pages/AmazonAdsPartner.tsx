@@ -41,10 +41,10 @@ const AmazonAdsPartner = () => {
   ];
 
   const stats = [
-    { value: "500+", label: "Brands Served" },
-    { value: "300%+", label: "Average ROAS" },
+    { value: "500+", label: "Brands Scaled" },
+    { value: "10x", label: "Average ROAS" },
     { value: "$50M+", label: "Ad Spend Managed" },
-    { value: "98%", label: "Client Retention" }
+    { value: "$250M+", label: "Revenue Generated" }
   ];
 
   return (
