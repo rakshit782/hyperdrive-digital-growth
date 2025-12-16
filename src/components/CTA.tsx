@@ -146,7 +146,7 @@ const CTA = () => {
           {/* Trust Indicators */}
           <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-blue-400 mb-2">500+</div>
+              <div className="text-2xl sm:text-3xl font-bold text-blue-400 mb-2">900+</div>
               <div className="text-slate-400 text-sm">Happy Clients</div>
             </div>
             <div className="text-center">
