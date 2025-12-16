@@ -127,6 +127,32 @@ const AdLanding = () => {
     'No-obligation consultation',
   ];
 
+  const amazonFeatures = [
+    {
+      title: 'Sponsored Products Mastery',
+      description: 'Drive targeted traffic with optimized keyword bidding, negative keyword management, and strategic product targeting.',
+    },
+    {
+      title: 'Sponsored Brands & Display',
+      description: 'Build brand awareness with headline search ads, video ads, and retargeting campaigns that convert browsers into buyers.',
+    },
+    {
+      title: 'Amazon DSP Campaigns',
+      description: 'Reach high-intent shoppers on and off Amazon with programmatic display advertising and audience targeting.',
+    },
+    {
+      title: 'Listing Optimization',
+      description: 'SEO-optimized titles, bullet points, and A+ Content that rank higher and convert better than competitors.',
+    },
+  ];
+
+  const whyChooseUs = [
+    { metric: '50K+', label: 'Campaigns Managed', description: 'Successfully optimized campaigns across all Amazon ad types' },
+    { metric: '300%', label: 'Average ROI Increase', description: 'Our clients see significant returns on their ad spend' },
+    { metric: '24/7', label: 'Campaign Monitoring', description: 'Real-time optimization and bid adjustments for maximum performance' },
+    { metric: '9+', label: 'Years Experience', description: 'Proven track record with Amazon advertising since the beginning' },
+  ];
+
   return (
     <>
       <Helmet>
@@ -432,6 +458,76 @@ const AdLanding = () => {
                 </CardContent>
               </Card>
             </div>
+          </div>
+        </section>
+
+        {/* Amazon Ads Expertise Section */}
+        <section className="py-16 bg-slate-800/50">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 rounded-full text-sm font-medium mb-4">
+                Amazon Advertising Experts
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Why Amazon Sellers Choose Us
+              </h2>
+              <p className="text-slate-400 max-w-2xl mx-auto">
+                We've managed over $50M+ in Amazon ad spend and helped 500+ brands scale their businesses with proven strategies.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+              {amazonFeatures.map((feature, index) => (
+                <Card key={index} className="bg-white/5 backdrop-blur-lg border-white/10 hover:bg-white/10 transition-all duration-300">
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
+                    <p className="text-slate-400">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {whyChooseUs.map((item, index) => (
+                <div key={index} className="text-center p-6 rounded-xl bg-gradient-to-b from-white/5 to-transparent border border-white/10">
+                  <div className="text-3xl md:text-4xl font-bold text-amber-400 mb-2">{item.metric}</div>
+                  <div className="text-white font-medium mb-1">{item.label}</div>
+                  <p className="text-slate-500 text-xs">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Social Proof Section */}
+        <section className="py-12 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center">
+              <p className="text-slate-300 text-lg mb-6">
+                "Working with AMZ AD SCOUT transformed our Amazon business. Our ROAS increased by 340% in just 3 months, and we've seen consistent month-over-month growth ever since."
+              </p>
+              <p className="text-amber-400 font-semibold">— Sarah M., Health & Wellness Brand Owner</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA Section */}
+        <section className="py-16">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Ready to Scale Your Amazon Sales?
+            </h2>
+            <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
+              Join 900+ successful brands who trust us with their Amazon advertising. Get your free strategy call today and discover how we can help you achieve 10x ROAS.
+            </p>
+            <Button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold px-8 py-6 text-lg"
+              size="lg"
+            >
+              Get Your Free Strategy Call
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
           </div>
         </section>
 
