@@ -2,6 +2,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
+import PlatformLogos from "@/components/PlatformLogos";
 import Services from "@/components/Services";
 import Stats from "@/components/Stats";
 import CaseStudies from "@/components/CaseStudies";
@@ -127,6 +128,7 @@ const Index = () => {
       <div className="min-h-screen bg-white">
         <Header />
         <Hero />
+        <PlatformLogos />
         <Services />
         <Stats />
         <CaseStudies />
