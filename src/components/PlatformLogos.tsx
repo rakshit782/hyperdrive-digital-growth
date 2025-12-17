@@ -31,11 +31,11 @@ const PlatformLogos = () => {
 
           {/* Meta Ads */}
           <div className="group px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/5">
-            <img 
-              src={metaLogo} 
-              alt="Meta" 
-              className="h-7 md:h-8 w-auto opacity-50 group-hover:opacity-90 transition-opacity brightness-0 invert"
-            />
+          <img 
+            src={metaLogo} 
+            alt="Meta" 
+            className="h-9 md:h-12 w-auto opacity-50 group-hover:opacity-90 transition-opacity brightness-0 invert"
+          />
           </div>
 
           {/* Google Ads */}
