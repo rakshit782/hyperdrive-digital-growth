@@ -30,8 +30,8 @@ const PlatformLogos = () => {
           {/* Meta Ads */}
           <div className="group px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/5">
             <svg className="h-7 md:h-8 w-auto opacity-50 group-hover:opacity-90 transition-opacity" viewBox="0 0 100 36" fill="none">
-              <path d="M8.5 10c2.5 0 4.2 1.2 5.5 3.2l4 6.3 4-6.3c1.3-2 3-3.2 5.5-3.2 4 0 7 3.5 7 8.5 0 2.5-.8 4.5-2 6-1.2 1.5-2.8 2.5-4.5 2.5-2 0-3.8-1-5.5-3.5L18 17l-4.5 6.5c-1.7 2.5-3.5 3.5-5.5 3.5-1.7 0-3.3-1-4.5-2.5-1.2-1.5-2-3.5-2-6 0-5 3-8.5 7-8.5z" fill="white"/>
-              <text x="40" y="22" fill="white" fontSize="13" fontWeight="600" fontFamily="Arial">Meta</text>
+              <path d="M6 18c0-5.5 2.2-10 6-10 2.2 0 3.8 1.2 5.2 3.2L18 12l.8.8 5.2 8.4c1 1.6 2 2.8 4 2.8 2.4 0 4-2.8 4-6s-1.6-6-4-6c-2 0-3 1.2-4 2.8l-.8 1.2-.8-1.2c-1.4-2.2-3-4-6.4-4C10.2 11 6 14.5 6 18zm12 0l-1.6-2.4C15 13.4 13.8 12 12 12c-2.4 0-4 2.8-4 6s1.6 6 4 6c2 0 3-1.2 4-2.8l.8-1.2.8 1.2c1.4 2.2 3 4 6.4 4 5.8 0 10-3.5 10-7s-2.2-10-6-10c-2.2 0-3.8 1.2-5.2 3.2L22 12l-.8-.8-5.2 8.4c-1 1.6-2 2.8-4 2.8" fill="none" stroke="white" strokeWidth="2"/>
+              <text x="42" y="23" fill="white" fontSize="14" fontWeight="600" fontFamily="Arial">Meta</text>
             </svg>
           </div>
 
@@ -46,8 +46,9 @@ const PlatformLogos = () => {
           {/* Shopify */}
           <div className="group px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/5">
             <svg className="h-7 md:h-8 w-auto opacity-50 group-hover:opacity-90 transition-opacity" viewBox="0 0 110 36" fill="none">
-              <path d="M20.5 7.5c-.1 0-.2.1-.3.1-.1 0-.2-.1-.3-.2-.4-.5-1-.8-1.6-.8-.1 0-.3 0-.4.1l-.3-.4c-.5-.5-1.1-.7-1.8-.7-1.4 0-2.8 1-3.8 2.8l-1.5.5c-.5.1-.5.2-.6.6l-1.2 9.2 9.5 1.8 5.2-1.3c0 0-2.6-10.8-2.7-11.4-.1-.2-.1-.3-.2-.3zm-4.2-.3c0 .1-.1.1-.1.2l-2 .6c.4-1.4 1.1-2.1 1.8-2.3.1.5.2 1 .3 1.5zm-1.5-1.8c.1 0 .2 0 .3.1-.9.4-1.9 1.4-2.3 3.4l-1.6.5c.5-1.7 1.7-4 3.6-4zm.7 8.9l-1.1-.2c.5-.2 1-.3 1.4-.1.1.1.1.2-.3.3zm2.5-6.1c0-.1 0-.2 0-.3.5.1.8.5.9 1l-1-.3c0-.1 0-.3.1-.4z" fill="white"/>
-              <text x="26" y="22" fill="white" fontSize="14" fontWeight="600" fontFamily="Arial">Shopify</text>
+              <path d="M21 6c-.2 0-.4.2-.4.2s-.4-.3-.9-.4c-.1-.4-.3-.7-.5-.9-.7-.7-1.6-.7-1.8-.7-1.4 0-2.5 1-3 2.5l-1.2.4c-.4.1-.4.1-.5.5L11 19l8.5 1.6 4.5-1.1S21.2 6.2 21 6zm-3.5.2l-1.8.6c.2-.8.6-1.5 1.3-1.8.2.4.4.8.5 1.2zm-1.8-1.5c.1 0 .2 0 .3.1-.9.3-1.6 1.2-1.9 2.8l-1.4.4c.4-1.3 1.4-3.3 3-3.3z" fill="white"/>
+              <path d="M20.6 6.2c0-.1-.1-.2-.2-.2-.1 0-.3.2-.3.2s-.4-.3-.9-.4c-.1-.4-.3-.7-.5-.9l.1.1c.2.1.3.3.4.6l.2 1 2-.6s.9 10.4.9 10.5l-4.5 1.1 4.5-1.1c0 0-.9-10.2-.9-10.3l-2 .6-.2-1z" fill="white" opacity="0.7"/>
+              <text x="28" y="22" fill="white" fontSize="14" fontWeight="600" fontFamily="Arial">Shopify</text>
             </svg>
           </div>
 
