@@ -6,7 +6,7 @@ import SEOHead from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, CheckCircle, TrendingUp, Award, Users, Target, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle, TrendingUp, Award, Users, Target } from 'lucide-react';
 import { useServiceData } from '@/hooks/useServiceData';
 import { realBrandCaseStudies } from '@/data/realBrandCaseStudies';
 
@@ -225,11 +225,11 @@ const DetailedServicePage = () => {
     return (
       <>
         <Header />
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950">
+        <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4 text-white">Service Not Found</h1>
+            <h1 className="text-4xl font-bold mb-4">Service Not Found</h1>
             <Link to="/services">
-              <Button className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">View All Services</Button>
+              <Button>View All Services</Button>
             </Link>
           </div>
         </div>
@@ -286,12 +286,11 @@ const DetailedServicePage = () => {
   };
 
   const serviceKeywords: Record<string, string> = {
-    'amazon-advertising': 'Amazon Advertising Agency, Amazon PPC Management Service, Amazon Ads Expert, Amazon DSP Agency',
-    'google-advertising': 'Google Advertising Management, Google Ads Agency, Google PPC Management',
-    'meta-advertising': 'Meta Advertising, Facebook Advertising, Instagram Advertising',
-    'walmart-advertising': 'Walmart Advertising, Walmart Connect, Walmart Marketplace Advertising',
-    'shopify-development': 'Shopify Development Partner, Custom Shopify Theme Development',
-    'shopify-integration': 'Multi-Marketplace Integration Agency, Shopify Integration'
+    'amazon-advertising': 'Amazon Advertising Agency, Amazon PPC Management Service, Amazon Ads Expert, Amazon DSP Agency, Amazon Sponsored Products Management, Amazon PPC Audit and Optimization, Amazon Listing Optimization Service, A+ Content Creation and Optimization, Amazon SEO for Product Listings, amazon ppc agency, amazon advertising management, sponsored products ads, sponsored brands ads, sponsored display ads, amazon dsp campaigns, amazon video ads, amazon ppc optimization, amazon advertising strategy, amazon ads consultant, amazon marketing services, amazon seller central ads, amazon vendor central ads, amazon advertising api, amazon attribution, amazon marketing stream, amazon brand analytics, amazon search terms report, amazon advertising console, bulk operations amazon, campaign manager amazon, portfolio management amazon, negative keywords amazon, keyword harvesting amazon, product targeting amazon, category targeting amazon, asin targeting amazon, audience targeting amazon, remarketing amazon, lookalike audiences amazon, in market audiences amazon, lifestyle audiences amazon, views remarketing amazon, amazon stores, brand store optimization, posts on amazon, manage your experiments amazon, sponsored brands video, moderation amazon ads, budget rules amazon, dayparting amazon ads, placement optimization amazon, top of search amazon, product pages amazon, rest of search amazon, bid optimization amazon, dynamic bidding amazon, fixed bids amazon, rule based bidding amazon, placement multipliers amazon, sponsored products reporting, sponsored brands reporting, sponsored display reporting, advertising cost of sales acos, return on ad spend roas, total advertising cost of sales tacos, impression share amazon, click through rate ctr amazon, conversion rate amazon, cost per click cpc amazon, advertising attributed sales',
+    'google-advertising': 'Google Advertising Management, Google Ads Agency, Google PPC Management, Google Search Ads, Google Shopping Ads, Google Display Ads, YouTube Advertising, Google Ads Expert, google ads management, google adwords, ppc management, search engine marketing sem, pay per click advertising, google ads campaign, google shopping campaign, display advertising, video advertising youtube, remarketing campaigns, google remarketing, google analytics, conversion tracking google, google tag manager, google ads api, google ads editor, google keyword planner, quality score optimization, ad rank optimization, google ads bidding strategies, target cpa bidding, target roas bidding, maximize conversions google, maximize clicks google, manual cpc bidding, enhanced cpc google, portfolio bid strategy, smart bidding google, automated bidding google, responsive search ads, expanded text ads, call only ads, dynamic search ads, local service ads google, performance max campaigns, discovery ads google, demand gen campaigns, app campaigns google, smart campaigns google, location extensions google, call extensions google, sitelink extensions google, callout extensions google, structured snippets google, price extensions google, promotion extensions google, image extensions google, lead form extensions google, seller ratings google, merchant promotions google, product ratings google, dynamic remarketing google, customer match google, similar audiences google, in market audiences google, affinity audiences google, custom intent audiences google, life events targeting google, demographic targeting google, household income targeting, parental status targeting, device targeting google, location targeting google, radius targeting google, language targeting google, ad scheduling google, dayparting google ads',
+    'meta-advertising': 'Meta Advertising, Facebook Advertising, Instagram Advertising, Facebook Ads Management, Instagram Ads Agency, Social Media Advertising, Facebook Marketing, Instagram Marketing, Meta Ads Expert, facebook ads agency, instagram ads management, facebook campaign, instagram campaign, meta business suite, facebook ads manager, instagram ads manager, facebook pixel, meta pixel, conversion api facebook, facebook catalog, instagram shopping, facebook shops, instagram shops, dynamic product ads, collection ads facebook, carousel ads facebook, video ads facebook, story ads instagram, reels ads instagram, facebook messenger ads, whatsapp business ads, audience network facebook, facebook gaming ads, instant experience ads, lead generation ads facebook, facebook lead forms, page likes campaign, post engagement campaign, event responses facebook, video views campaign, brand awareness facebook, reach campaign facebook, traffic campaign facebook, app installs facebook, conversions campaign facebook, catalog sales campaign, store traffic campaign, messages campaign facebook, lookalike audiences facebook, custom audiences facebook, saved audiences facebook, detailed targeting facebook, interest targeting facebook, behavior targeting facebook, demographic targeting facebook, location targeting facebook, age targeting facebook, gender targeting facebook, language targeting facebook, connection targeting facebook, exclusion targeting facebook, page engagement targeting, app activity targeting, offline activity targeting, website custom audiences, customer list audiences, app activity audiences, offline activity audiences, engagement custom audiences, instagram engagement audiences, facebook page engagement, video engagement audiences, lead form audiences, instant experience audiences, shopping audiences facebook, facebook creator audiences',
+    'walmart-advertising': 'Walmart Advertising, Walmart Connect, Walmart Marketplace Advertising, Walmart PPC, Walmart Sponsored Products, Walmart Display Ads, Walmart Search Ads, Walmart Advertising Agency, walmart connect agency, walmart marketplace, walmart seller center, walmart advertising platform, walmart retail media, walmart sponsored products, walmart product ads, walmart search brand amplifier, walmart onsite display, walmart offsite display, walmart native banner, walmart video ads walmart, walmart streaming tv ads, walmart audio ads, walmart walmart dsp, walmart audience targeting, walmart demographic targeting, walmart behavioral targeting, walmart in market audiences walmart, walmart purchase based audiences, walmart walmart data, walmart spark reviewer program, walmart rich media content, walmart enhanced content walmart, walmart item specifications, walmart product images walmart, walmart product videos walmart, walmart product reviews walmart, walmart seller ratings walmart, walmart search ranking walmart, walmart category ranking, walmart browse ranking walmart, walmart conversion rate walmart, walmart add to cart rate, walmart purchase rate walmart, walmart basket size walmart, walmart average order value walmart, walmart customer reviews walmart, walmart questions answers walmart, walmart free shipping walmart, walmart two day shipping, walmart next day delivery, walmart pickup today, walmart curbside pickup, walmart store fulfillment, walmart walmart fulfillment services wfs, walmart marketplace integration, walmart api integration walmart, walmart product feed walmart, walmart inventory sync walmart, walmart order management walmart, walmart walmart growth partners, walmart strategic seller walmart, walmart pro seller walmart',
+    'shopify-development': 'Shopify Development Partner, Custom Shopify Theme Development, Shopify Plus Development, Shopify E-commerce Store Development, Shopify Store Migration Services, Professional Shopify Developers, Shopify Plus Development Experts, shopify development agency, shopify developer, custom shopify store, shopify theme customization, shopify liquid development, shopify app development, shopify integration services, shopify pos integration, shopify migration services, shopify store setup, shopify design services, shopify conversion optimization, shopify seo services, shopify speed optimization, shopify checkout optimization, shopify payment gateway, shopify shipping setup, shopify inventory management, shopify multivendor marketplace, shopify b2b store, shopify wholesale store, shopify subscription app, shopify membership site, shopify dropshipping, shopify print on demand, shopify custom app development, shopify private app, shopify public app, shopify api integration, erp integration shopify, crm integration shopify, email marketing shopify, klaviyo integration, mailchimp shopify, omnisend shopify, social media integration shopify, facebook shop integration, instagram shopping shopify, tiktok shopping integration, pinterest shopping, google shopping feed, amazon fba integration, walmart marketplace shopify, ebay integration shopify, shipping carrier integration, shipstation shopify, shipsurance integration, aftership tracking, route protection shopify, shopify analytics, google analytics shopify, facebook pixel shopify, tiktok pixel shopify, snapchat pixel shopify, pinterest tag shopify, hotjar integration shopify, lucky orange shopify, review apps shopify, yotpo reviews, judge me reviews, loox reviews shopify, loyalty program shopify, smile io integration, referral program shopify, abandoned cart recovery, back in stock notifications, product recommendations shopify, upsell apps shopify, cross sell shopify, bundle app shopify, quantity breaks shopify, tiered pricing shopify, volume discounts shopify, shopify subscription apps, recharge subscriptions, bold subscriptions shopify, membership app shopify, customer accounts shopify, wishlist app shopify, size chart app, ar try on shopify, 3d product viewer, zoom image shopify, color swatches shopify, variant options shopify, product options shopify, custom product builder, product customizer shopify, live chat shopify, chatbot integration, helpdesk integration shopify, zendesk shopify, gorgias support shopify, tidio live chat, popup apps shopify, email popup shopify, exit intent popup, spin wheel popup, announcement bar shopify, sticky cart shopify, free shipping bar, countdown timer shopify, stock countdown, urgency timer shopify, page builder shopify, gemchild pages, shogun page builder, pagefly shopify, zipify pages shopify, landing page builder, blog customization shopify, mega menu shopify, navigation menu shopify, search autocomplete shopify, predictive search shopify, collection filters shopify, product filter app, ajax search shopify, video background shopify, image slider shopify, product slider shopify, testimonial slider, instagram feed shopify, social proof shopify, trust badges shopify, payment icons shopify, security badges, shipping calculator shopify, delivery date picker, gift message shopify, gift wrap option, product personalization, custom fields shopify, checkout customization shopify, checkout upsell, thank you page, post purchase upsell, one click upsell, cart upsell shopify, product bundles shopify, frequently bought together, complete the look, recommended products shopify, related products shopify, recently viewed shopify, new arrivals section, featured collection shopify, best sellers section, sale collection shopify, clearance section shopify, seasonal collection, holiday collection shopify, gift guide shopify, shop by category, shop by brand, shop by price, advanced filtering shopify, multi currency shopify, currency converter, geolocation app shopify, language translator shopify, multi language store, international shipping, duties calculator shopify, tax calculator shopify, vat calculator, price localization shopify, local payment methods, international checkout, global ecommerce shopify, cross border selling'
   };
 
   return (
@@ -305,36 +304,27 @@ const DetailedServicePage = () => {
       />
       <Header />
       
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         {/* Hero Section */}
-        <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950">
-          {/* Animated glowing orbs */}
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-          
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
-          
-          <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
-            <div className="text-center">
-              <Badge className="mb-6 bg-white/10 backdrop-blur-sm text-blue-300 border border-white/10 px-4 py-2">
-                <Sparkles className="w-4 h-4 mr-2 inline" />
+        <section className="py-24 md:py-32">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <Badge className={`mb-4 bg-gradient-to-r ${config.gradient} text-white border-0`}>
                 Premium Service
               </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight max-w-5xl mx-auto">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
                 {config.title}
               </h1>
-              <p className="text-xl md:text-2xl font-medium text-blue-200 mb-6">
+              <p className="text-2xl font-semibold text-slate-700 mb-4">
                 {config.subtitle}
               </p>
-              <p className="text-lg text-slate-300 leading-relaxed max-w-4xl mx-auto mb-10">
+              <p className="text-xl text-slate-600 leading-relaxed max-w-4xl mx-auto">
                 {config.description}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transform hover:-translate-y-1 transition-all duration-300"
+                  className={`bg-gradient-to-r ${config.gradient} text-white px-8 py-4 text-lg`}
                   onClick={() => navigate('/contact')}
                 >
                   Get Started Today
@@ -343,7 +333,7 @@ const DetailedServicePage = () => {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-2 border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white px-8 py-6 text-lg font-semibold rounded-xl transition-all duration-300"
+                  className="px-8 py-4 text-lg"
                   onClick={() => navigate('/contact')}
                 >
                   Schedule Consultation
@@ -355,27 +345,16 @@ const DetailedServicePage = () => {
 
         {/* Stats Section */}
         {stats.length > 0 && (
-          <section className="py-20 relative overflow-hidden bg-slate-900">
-            <div className="absolute top-1/2 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl -translate-y-1/2" />
-            <div className="absolute top-1/2 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2" />
-            
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-              <div className="text-center mb-12">
-                <span className="inline-block px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-sm font-medium mb-4">
-                  Our Track Record
-                </span>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Proven Results
-                </h2>
-              </div>
+          <section className="py-16">
+            <div className="max-w-6xl mx-auto px-6">
               <div className="grid md:grid-cols-4 gap-6">
                 {stats.map((stat) => (
-                  <Card key={stat.id} className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm border border-white/10 text-center hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-2">
-                    <CardContent className="pt-8 pb-8">
-                      <div className="text-4xl font-bold text-white mb-2">
+                  <Card key={stat.id} className="bg-white/80 backdrop-blur-sm shadow-xl border-0 text-center">
+                    <CardContent className="pt-6">
+                      <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
                         {stat.stat_value}
                       </div>
-                      <div className="text-sm font-semibold text-blue-300 mb-1">
+                      <div className="text-sm font-semibold text-slate-700 mb-1">
                         {stat.stat_label}
                       </div>
                       <div className="text-xs text-slate-500">
@@ -390,34 +369,23 @@ const DetailedServicePage = () => {
         )}
 
         {/* Features Section */}
-        <section className="py-20 relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950">
-          <div className="absolute top-0 right-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
-          
-          <div className="max-w-7xl mx-auto px-6 relative z-10">
-            <div className="text-center mb-16">
-              <span className="inline-block px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-sm font-medium mb-4">
-                Our Services
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+        <section className="py-16">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
                 What's Included
               </h2>
-              <p className="text-lg text-slate-400">
+              <p className="text-xl text-slate-600">
                 Comprehensive services designed for maximum impact
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               {config.features.map((feature, index) => (
-                <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm border border-white/10 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1">
-                  <CardContent className="p-6">
-                    <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-white/10">
-                      <span className="text-xs font-bold text-blue-400">{String(index + 1).padStart(2, '0')}</span>
-                    </div>
-                    <div className="flex items-start space-x-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-500/20">
-                        <CheckCircle className="w-5 h-5 text-white" />
-                      </div>
-                      <span className="text-slate-200 font-medium pr-10">{feature}</span>
+                <Card key={index} className="bg-white/80 backdrop-blur-sm shadow-lg border-0">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start space-x-3">
+                      <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 mt-1" />
+                      <span className="text-slate-700 font-medium">{feature}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -427,19 +395,13 @@ const DetailedServicePage = () => {
         </section>
 
         {/* Benefits Section */}
-        <section className="py-20 relative overflow-hidden bg-slate-900">
-          <div className="absolute top-1/4 left-0 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl" />
-          
-          <div className="max-w-7xl mx-auto px-6 relative z-10">
-            <div className="text-center mb-16">
-              <span className="inline-block px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-sm font-medium mb-4">
+        <section className="py-16">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
                 Why Choose Us
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Our Advantages
               </h2>
-              <p className="text-lg text-slate-400">
+              <p className="text-xl text-slate-600">
                 Proven results and dedicated support
               </p>
             </div>
@@ -448,12 +410,12 @@ const DetailedServicePage = () => {
                 const icons = [TrendingUp, Award, Users, Target, CheckCircle, Award];
                 const Icon = icons[index % icons.length];
                 return (
-                  <Card key={index} className="group text-center bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm border border-white/10 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-2">
+                  <Card key={index} className="bg-white/80 backdrop-blur-sm shadow-lg border-0 text-center hover:shadow-xl transition-all duration-300">
                     <CardHeader>
-                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+                      <div className={`w-14 h-14 bg-gradient-to-r ${config.gradient} rounded-full flex items-center justify-center mx-auto mb-4`}>
                         <Icon className="w-7 h-7 text-white" />
                       </div>
-                      <CardTitle className="text-lg text-white">
+                      <CardTitle className="text-lg text-slate-900">
                         {benefit}
                       </CardTitle>
                     </CardHeader>
@@ -466,51 +428,45 @@ const DetailedServicePage = () => {
 
         {/* Case Studies Section */}
         {caseStudies.length > 0 && (
-          <section className="py-20 relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950">
-            <div className="absolute top-0 right-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
-            
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-              <div className="text-center mb-16">
-                <span className="inline-block px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-sm font-medium mb-4">
+          <section className="py-16">
+            <div className="max-w-6xl mx-auto px-6">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
                   Success Stories
-                </span>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Real Results
                 </h2>
-                <p className="text-lg text-slate-400">
+                <p className="text-xl text-slate-600">
                   Real results from real brands we've worked with
                 </p>
               </div>
               <div className="grid md:grid-cols-2 gap-8">
                 {caseStudies.map((study) => (
-                  <Card key={study.id} className="group overflow-hidden bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-sm border border-white/10 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-2">
+                  <Card key={study.id} className="bg-white/80 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                     {study.image_url && (
                       <div className="h-48 overflow-hidden">
                         <img 
                           src={study.image_url} 
                           alt={study.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     )}
                     <CardContent className="p-6">
                       <div className="flex items-center gap-3 mb-4">
-                        <Badge className="bg-white/10 text-slate-300 border-white/10">{study.industry}</Badge>
-                        <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0">
+                        <Badge variant="secondary">{study.industry}</Badge>
+                        <Badge className={`bg-gradient-to-r ${config.gradient} text-white border-0`}>
                           {study.client_name}
                         </Badge>
                       </div>
-                      <h3 className="text-xl font-bold text-white mb-3">
+                      <h3 className="text-xl font-bold text-slate-900 mb-3">
                         {study.title}
                       </h3>
-                      <p className="text-slate-400 mb-4">
+                      <p className="text-slate-600 mb-4">
                         {study.description}
                       </p>
-                      <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
+                      <div className="grid grid-cols-3 gap-4 pt-4 border-t">
                         {Object.entries(study.results).slice(0, 3).map(([key, value]) => (
                           <div key={key} className="text-center">
-                            <div className="text-xl font-bold text-green-400">
+                            <div className={`text-xl font-bold bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}>
                               {value}
                             </div>
                             <div className="text-xs text-slate-500 capitalize">
@@ -528,33 +484,35 @@ const DetailedServicePage = () => {
         )}
 
         {/* CTA Section */}
-        <section className="py-24 relative overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl" />
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
-          
-          <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-            <div className="inline-flex items-center px-4 py-2 bg-blue-500/10 text-blue-400 rounded-full text-sm font-medium mb-8 border border-blue-500/20">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Ready to Transform Your Business?
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to Get Started?
-            </h2>
-            <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-              Let's discuss how we can help you achieve your business goals
-            </p>
-            <Button 
-              size="lg"
-              className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-12 py-6 text-lg font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transform hover:-translate-y-1 transition-all duration-300"
-              onClick={() => navigate('/contact')}
-            >
-              Start Your Free Consultation
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-            <p className="mt-6 text-sm text-slate-500">
-              No commitment required • Free consultation • Results guaranteed
-            </p>
+        <section className="py-16">
+          <div className="max-w-4xl mx-auto px-6">
+            <Card className={`bg-gradient-to-r ${config.gradient} border-0 text-white`}>
+              <CardContent className="py-12 text-center">
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  Ready to Get Started?
+                </h2>
+                <p className="text-xl mb-8 opacity-90">
+                  Let's discuss how we can help you achieve your business goals
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button 
+                    size="lg"
+                    className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 text-lg font-semibold"
+                    onClick={() => navigate('/contact')}
+                  >
+                    Get Free Consultation
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                  <Button 
+                    size="lg"
+                    className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg font-semibold backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
+                    onClick={() => navigate('/contact')}
+                  >
+                    Schedule Strategy Call
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       </div>

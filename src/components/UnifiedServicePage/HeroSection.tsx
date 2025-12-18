@@ -1,6 +1,7 @@
+
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface HeroSectionProps {
   title: string;
@@ -33,51 +34,37 @@ const HeroSection = ({
   primaryColor,
   secondaryColor
 }: HeroSectionProps) => {
+  // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   return (
-    <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950">
-      {/* Animated glowing orbs */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-      
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
-      
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+    <section className="pt-28 pb-12 relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div className="max-w-6xl mx-auto px-6 relative">
+        <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div>
-            {/* Badge */}
-            <div className="mb-8">
-              <span className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm text-blue-300 rounded-full text-sm font-medium border border-white/10">
-                <Sparkles className="w-4 h-4 mr-2" />
-                {badgeText}
+            <div className="mb-6">
+              <span className={`inline-flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm text-${primaryColor}-700 rounded-full text-sm font-medium border border-${primaryColor}-200/50 shadow-sm`}>
+                <span aria-label={badgeText}>{badgeIcon}</span>
+                <span className="ml-2">{badgeText}</span>
               </span>
             </div>
-            
-            {/* Title */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">
               {title}
             </h1>
-            
-            {/* Subtitle */}
-            <h2 className="text-xl md:text-2xl text-blue-200 font-medium mb-6">
+            <h2 className="text-lg md:text-xl text-slate-700 font-medium mb-4">
               {subtitle}
             </h2>
-            
-            {/* Description */}
-            <p className="text-lg text-slate-300 leading-relaxed mb-8 max-w-xl">
+            <p className="text-lg text-slate-600 leading-relaxed mb-6 max-w-xl">
               {heroDescription}
             </p>
             
-            {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-10">
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transform hover:-translate-y-1 transition-all duration-300"
+                className={`bg-gradient-to-r from-${primaryColor}-600 to-${secondaryColor}-600 hover:from-${primaryColor}-700 hover:to-${secondaryColor}-700 text-white px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300`}
                 onClick={() => window.location.href = primaryButtonUrl}
                 aria-label={`${primaryButtonText} - Navigate to ${primaryButtonUrl}`}
               >
@@ -88,7 +75,7 @@ const HeroSection = ({
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-2 border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white px-8 py-6 text-lg font-semibold rounded-xl transition-all duration-300"
+                className="border-2 border-slate-300 bg-white/90 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-3 text-base font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
                 onClick={() => window.location.href = secondaryButtonUrl}
                 aria-label={`${secondaryButtonText} - Navigate to ${secondaryButtonUrl}`}
               >
@@ -96,34 +83,30 @@ const HeroSection = ({
               </Button>
             </div>
 
-            {/* Stats row */}
-            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10">
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200/60">
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">450%</div>
-                <div className="text-sm text-slate-400 mt-1">Avg ROI Increase</div>
+                <div className="text-xl font-bold text-slate-900">450%</div>
+                <div className="text-xs text-slate-600 mt-1">Avg ROI Increase</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">95%</div>
-                <div className="text-sm text-slate-400 mt-1">Client Satisfaction</div>
+                <div className="text-xl font-bold text-slate-900">95%</div>
+                <div className="text-xs text-slate-600 mt-1">Client Satisfaction</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">200+</div>
-                <div className="text-sm text-slate-400 mt-1">Success Stories</div>
+                <div className="text-xl font-bold text-slate-900">200+</div>
+                <div className="text-xs text-slate-600 mt-1">Success Stories</div>
               </div>
             </div>
           </div>
           
-          {/* Hero image */}
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-3xl blur-2xl" />
-            <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-3xl p-2 border border-white/10">
-              <img
-                src={heroImage}
-                alt={heroImageAlt}
-                className="relative w-full rounded-2xl object-cover h-80 md:h-96"
-                loading="lazy"
-              />
-            </div>
+            <div className={`absolute inset-0 bg-gradient-to-r from-${primaryColor}-400 to-${secondaryColor}-500 rounded-2xl blur-2xl opacity-20`}></div>
+            <img
+              src={heroImage}
+              alt={heroImageAlt}
+              className="relative w-full rounded-2xl shadow-xl object-cover h-72"
+              loading="lazy"
+            />
           </div>
         </div>
       </div>
