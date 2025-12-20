@@ -400,6 +400,84 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaDescription: 'Get your free website consultation and discover how we can create a powerful digital solution for your business.',
     ctaButtonText: 'Get Free Consultation',
     ctaButtonUrl: '/free-audit'
+  },
+  'amazon-integration': {
+    serviceType: 'amazon-integration',
+    title: 'Amazon Integration & Automation',
+    subtitle: 'Streamline Operations & Scale Your Amazon Business',
+    heroDescription: 'Comprehensive Amazon automation solutions that save time and maximize profits. From product cataloging to repricing automation, we help brands streamline operations and scale efficiently on Amazon marketplace.',
+    primaryButtonText: 'Get Free Consultation',
+    secondaryButtonText: 'View Case Studies',
+    primaryButtonUrl: '/contact',
+    secondaryButtonUrl: '/amazon-case-studies',
+    services: [
+      {
+        title: 'Amazon Cataloging',
+        description: 'Complete product catalog setup, optimization, and management for Amazon marketplace.',
+        icon: 'FileText',
+        gradient: 'bg-gradient-to-r from-orange-500 to-amber-500'
+      },
+      {
+        title: 'Listing Optimization',
+        description: 'SEO-focused titles, bullet points, and descriptions for maximum visibility and conversions.',
+        icon: 'Search',
+        gradient: 'bg-gradient-to-r from-blue-500 to-indigo-500'
+      },
+      {
+        title: 'Repricing Automation',
+        description: 'Dynamic competitive pricing strategies to win Buy Box and maximize profits.',
+        icon: 'RefreshCw',
+        gradient: 'bg-gradient-to-r from-green-500 to-emerald-500'
+      },
+      {
+        title: 'Inventory Management',
+        description: 'Real-time stock monitoring, low inventory alerts, and demand forecasting.',
+        icon: 'Package',
+        gradient: 'bg-gradient-to-r from-purple-500 to-pink-500'
+      },
+      {
+        title: 'Amazon Ads Automation',
+        description: 'Automated campaign optimization, bid adjustments, and performance tracking.',
+        icon: 'Target',
+        gradient: 'bg-gradient-to-r from-red-500 to-rose-500'
+      },
+      {
+        title: 'Multi-Account Management',
+        description: 'Centralized control and reporting for multiple Amazon seller accounts.',
+        icon: 'Users',
+        gradient: 'bg-gradient-to-r from-cyan-500 to-blue-500'
+      }
+    ],
+    benefits: [
+      {
+        title: 'Time Savings',
+        description: '85% reduction in manual catalog management time.',
+        icon: 'Clock',
+        color: 'bg-gradient-to-r from-blue-500 to-indigo-500'
+      },
+      {
+        title: 'Buy Box Dominance',
+        description: '40% average increase in Buy Box win rate.',
+        icon: 'Award',
+        color: 'bg-gradient-to-r from-green-500 to-emerald-500'
+      },
+      {
+        title: 'Inventory Accuracy',
+        description: '99.5% inventory accuracy with real-time alerts.',
+        icon: 'CheckCircle',
+        color: 'bg-gradient-to-r from-orange-500 to-amber-500'
+      },
+      {
+        title: 'Profit Optimization',
+        description: '35% improvement in profit margins through smart repricing.',
+        icon: 'TrendingUp',
+        color: 'bg-gradient-to-r from-purple-500 to-pink-500'
+      }
+    ],
+    ctaTitle: 'Ready to Automate Your Amazon Business?',
+    ctaDescription: 'Get your free consultation and discover how we can streamline your Amazon operations and boost profitability.',
+    ctaButtonText: 'Get Free Consultation',
+    ctaButtonUrl: '/contact'
   }
 };
 
