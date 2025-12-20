@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingCart, Store, Users, Settings, Link2, Code, Target, TrendingUp } from "lucide-react";
+import { ArrowRight, ShoppingCart, Store, Users, Settings, Link2, Code, Target, TrendingUp, Cog } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Services = () => {
@@ -88,6 +88,16 @@ const Services = () => {
       bgGlow: 'bg-teal-500/10',
       features: ['Inventory Sync', 'Order Management', 'Product Listing', 'Multi-channel Setup'],
       stats: '99.9% Sync Accuracy'
+    },
+    {
+      title: 'Amazon Integration & Automation',
+      description: 'Comprehensive Amazon automation for cataloging, listing optimization, repricing, inventory management, and ads automation.',
+      icon: Cog,
+      link: '/services/amazon-integration',
+      gradient: 'from-orange-500 to-amber-500',
+      bgGlow: 'bg-orange-500/10',
+      features: ['Cataloging', 'Repricing', 'Inventory Alerts', 'Ads Automation'],
+      stats: '85% Time Saved'
     }
   ];
 
