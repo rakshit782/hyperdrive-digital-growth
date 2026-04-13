@@ -29,6 +29,7 @@ import NotFound from "./pages/NotFound";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import RefundPolicy from "./pages/RefundPolicy";
+import EULA from "./pages/EULA";
 import AmazonAdsPartner from "./pages/AmazonAdsPartner";
 
 // Case study pages
