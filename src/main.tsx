@@ -47,7 +47,7 @@ root.render(
 );
 
 // Report web vitals in development
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   import('./utils/reportWebVitals').then(({ reportWebVitals }) => {
     reportWebVitals(console.log);
   });
