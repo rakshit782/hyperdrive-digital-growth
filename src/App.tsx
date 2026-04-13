@@ -94,6 +94,7 @@ function App() {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/amazon-ads-partner" element={<AmazonAdsPartner />} />
+                <Route path="/eula" element={<EULA />} />
                 <Route path="/dashboard/login" element={<DashboardAuth />} />
                 <Route path="/dashboard/signup" element={<DashboardSignup />} />
                 <Route path="/dashboard" element={<Dashboard />} />
