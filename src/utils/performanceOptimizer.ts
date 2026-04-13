@@ -156,7 +156,7 @@ export class PerformanceOptimizer {
 
   // Service Worker registration for caching
   registerServiceWorker() {
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+    if ('serviceWorker' in navigator && import.meta.env.PROD) {
       window.addEventListener('load', () => {
         // Unregister existing service workers first to ensure clean state
         navigator.serviceWorker.getRegistrations().then(registrations => {

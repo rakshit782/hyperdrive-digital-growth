@@ -30,6 +30,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import RefundPolicy from "./pages/RefundPolicy";
 import EULA from "./pages/EULA";
+import AMZCoPilotPrivacy from "./pages/AMZCoPilotPrivacy";
 import AmazonAdsPartner from "./pages/AmazonAdsPartner";
 
 // Case study pages
@@ -95,6 +96,7 @@ function App() {
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/amazon-ads-partner" element={<AmazonAdsPartner />} />
                 <Route path="/eula" element={<EULA />} />
+                <Route path="/amz-copilot-privacy" element={<AMZCoPilotPrivacy />} />
                 <Route path="/dashboard/login" element={<DashboardAuth />} />
                 <Route path="/dashboard/signup" element={<DashboardSignup />} />
                 <Route path="/dashboard" element={<Dashboard />} />

@@ -6,7 +6,7 @@ import SEOHead from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, CheckCircle, TrendingUp, Award, Users, Target } from 'lucide-react';
+import { ArrowRight, CheckCircle, TrendingUp, Award, Users, Target, FileText, Shield } from 'lucide-react';
 import { useServiceData } from '@/hooks/useServiceData';
 import { realBrandCaseStudies } from '@/data/realBrandCaseStudies';
 
@@ -515,6 +515,42 @@ const DetailedServicePage = () => {
                   </Card>
                 ))}
               </div>
+            </div>
+          </section>
+        )}
+
+        {/* AMZ CoPilot Legal Links - Only for amazon-integration */}
+        {serviceType === 'amazon-integration' && (
+          <section className="py-12">
+            <div className="max-w-4xl mx-auto px-6">
+              <Card className="bg-white/80 backdrop-blur-sm shadow-lg border-0">
+                <CardContent className="py-8 text-center">
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3">AMZ CoPilot</h3>
+                  <p className="text-slate-600 mb-6">
+                    Review the legal terms and privacy practices for our Amazon seller management app.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => navigate('/eula')}
+                    >
+                      <FileText className="w-5 h-5" />
+                      End User License Agreement
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => navigate('/amz-copilot-privacy')}
+                    >
+                      <Shield className="w-5 h-5" />
+                      Privacy Policy
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </section>
         )}
