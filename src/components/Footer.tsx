@@ -166,7 +166,7 @@ const Footer = () => {
               © 2025 AMZ AD SCOUT. All rights reserved.
             </p>
             <p className="text-slate-500 text-xs">
-              We are not affiliated with or endorsed by Amazon.
+              An Amazon SPN Agency & Shopify Partners
             </p>
           </div>
         </div>
