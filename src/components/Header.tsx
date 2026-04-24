@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogoData } from "@/hooks/useLogoData";
+import amazonSpnLogo from "@/assets/amazon-spn-certified.png";
 
 const Header = () => {
   const navigate = useNavigate();
