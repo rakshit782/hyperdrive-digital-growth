@@ -36,19 +36,29 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-1">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
-            {logoData.imageUrl ? (
-              <img 
-                src={logoData.imageUrl} 
-                alt={logoData.text} 
-                style={{ height: `${logoData.size || 70}px` }}
-                className="w-auto object-contain" 
-              />
-            ) : (
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {logoData.text}
+          <Link to="/" className="flex items-center gap-3">
+            <div className="flex flex-col items-start">
+              {logoData.imageUrl ? (
+                <img 
+                  src={logoData.imageUrl} 
+                  alt={logoData.text} 
+                  style={{ height: `${logoData.size || 70}px` }}
+                  className="w-auto object-contain" 
+                />
+              ) : (
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {logoData.text}
+                </span>
+              )}
+              <span className="text-[10px] font-semibold tracking-[0.15em] text-gray-600 mt-0.5 ml-1">
+                AN AMAZON SPN AGENCY
               </span>
-            )}
+            </div>
+            <img
+              src={amazonSpnLogo}
+              alt="Amazon SPN Certified Service Provider Network"
+              className="h-10 md:h-12 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
