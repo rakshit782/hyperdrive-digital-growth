@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.generate-daily-blogs]
 verify_jwt = false
+
+[functions.neon-certificates]
+verify_jwt = false

@@ -1,0 +1,202 @@
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
+import { verify } from "https://deno.land/x/djwt@v2.8/mod.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const JWT_SECRET = Deno.env.get("JWT_SECRET")!;
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+async function ensureTable(client: Client) {
+  await client.queryArray(`
+    CREATE TABLE IF NOT EXISTS internship_certificates (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      certificate_id TEXT NOT NULL UNIQUE,
+      student_name TEXT NOT NULL,
+      email TEXT,
+      role TEXT NOT NULL,
+      department TEXT,
+      start_date DATE NOT NULL,
+      end_date DATE NOT NULL,
+      issue_date DATE NOT NULL DEFAULT CURRENT_DATE,
+      mentor_name TEXT,
+      performance TEXT,
+      status TEXT NOT NULL DEFAULT 'active',
+      notes TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+}
+
+async function requireAdmin(req: Request, client: Client) {
+  const authHeader = req.headers.get("x-admin-token") ?? "";
+  if (!authHeader) return null;
+  try {
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(JWT_SECRET),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["verify"],
+    );
+    const payload = await verify(authHeader, key);
+    const result = await client.queryObject<{ role: string | null }>(
+      "SELECT ur.role FROM users u LEFT JOIN user_roles ur ON u.id = ur.user_id WHERE u.id = $1",
+      [payload.sub],
+    );
+    const role = result.rows[0]?.role;
+    return role === "admin" ? payload.sub : null;
+  } catch (_e) {
+    return null;
+  }
+}
+
+async function nextCertificateId(client: Client) {
+  const year = new Date().getFullYear();
+  const prefix = `AAS-INT-${year}-`;
+  const res = await client.queryObject<{ certificate_id: string }>(
+    `SELECT certificate_id FROM internship_certificates
+     WHERE certificate_id LIKE $1 ORDER BY certificate_id DESC LIMIT 1`,
+    [`${prefix}%`],
+  );
+  const last = res.rows[0]?.certificate_id;
+  const nextNum = last ? parseInt(last.slice(prefix.length), 10) + 1 : 1;
+  return `${prefix}${String(nextNum).padStart(4, "0")}`;
+}
+
+serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  const client = new Client(Deno.env.get("NEON_DATABASE_URL")!);
+
+  try {
+    const body = await req.json();
+    const action = body.action as string;
+
+    await client.connect();
+    await ensureTable(client);
+
+    // Public action: verify a certificate
+    if (action === "verify") {
+      const code = String(body.certificate_id ?? "").trim();
+      if (!code) return json({ error: "Certificate ID required" }, 400);
+
+      const result = await client.queryObject(
+        `SELECT certificate_id, student_name, role, department, start_date, end_date,
+                issue_date, mentor_name, performance, status
+         FROM internship_certificates
+         WHERE upper(certificate_id) = upper($1)`,
+        [code],
+      );
+
+      if (result.rows.length === 0) {
+        return json({ found: false });
+      }
+      return json({ found: true, certificate: result.rows[0] });
+    }
+
+    // Admin-only actions
+    const adminId = await requireAdmin(req, client);
+    if (!adminId) return json({ error: "Unauthorized" }, 401);
+
+    if (action === "list") {
+      const result = await client.queryObject(
+        `SELECT * FROM internship_certificates ORDER BY created_at DESC LIMIT 500`,
+      );
+      return json({ certificates: result.rows });
+    }
+
+    if (action === "create") {
+      const c = body.certificate ?? {};
+      const certId = (c.certificate_id && String(c.certificate_id).trim()) ||
+        (await nextCertificateId(client));
+      const result = await client.queryObject(
+        `INSERT INTO internship_certificates
+          (certificate_id, student_name, email, role, department, start_date, end_date,
+           issue_date, mentor_name, performance, notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,COALESCE($8, CURRENT_DATE),$9,$10,$11)
+         RETURNING *`,
+        [
+          certId,
+          c.student_name,
+          c.email || null,
+          c.role,
+          c.department || null,
+          c.start_date,
+          c.end_date,
+          c.issue_date || null,
+          c.mentor_name || null,
+          c.performance || null,
+          c.notes || null,
+        ],
+      );
+      return json({ certificate: result.rows[0] });
+    }
+
+    if (action === "bulk_create") {
+      const rows = Array.isArray(body.certificates) ? body.certificates : [];
+      const created: unknown[] = [];
+      for (const c of rows) {
+        const certId = (c.certificate_id && String(c.certificate_id).trim()) ||
+          (await nextCertificateId(client));
+        const result = await client.queryObject(
+          `INSERT INTO internship_certificates
+            (certificate_id, student_name, email, role, department, start_date, end_date,
+             issue_date, mentor_name, performance, notes)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,COALESCE($8, CURRENT_DATE),$9,$10,$11)
+           ON CONFLICT (certificate_id) DO NOTHING
+           RETURNING *`,
+          [
+            certId,
+            c.student_name,
+            c.email || null,
+            c.role,
+            c.department || null,
+            c.start_date,
+            c.end_date,
+            c.issue_date || null,
+            c.mentor_name || null,
+            c.performance || null,
+            c.notes || null,
+          ],
+        );
+        if (result.rows[0]) created.push(result.rows[0]);
+      }
+      return json({ created: created.length, certificates: created });
+    }
+
+    if (action === "set_status") {
+      const result = await client.queryObject(
+        `UPDATE internship_certificates SET status = $2, updated_at = now()
+         WHERE id = $1 RETURNING *`,
+        [body.id, body.status],
+      );
+      return json({ certificate: result.rows[0] });
+    }
+
+    if (action === "delete") {
+      await client.queryArray(`DELETE FROM internship_certificates WHERE id = $1`, [body.id]);
+      return json({ success: true });
+    }
+
+    return json({ error: "Invalid action" }, 400);
+  } catch (error) {
+    console.error("Certificates error:", error);
+    return json({ error: String(error) }, 500);
+  } finally {
+    try {
+      await client.end();
+    } catch (_e) { /* ignore */ }
+  }
+});
