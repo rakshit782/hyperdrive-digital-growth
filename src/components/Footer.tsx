@@ -105,6 +105,11 @@ const Footer = () => {
                   </Link>
                 </li>
                 <li>
+                  <Link to="/verify-certificate" className="text-slate-300 hover:text-white transition-colors text-sm">
+                    Verify Certificate
+                  </Link>
+                </li>
+                <li>
                   <Link to="/privacy" className="text-slate-300 hover:text-white transition-colors text-sm">
                     Privacy Policy
                   </Link>

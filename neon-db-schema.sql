@@ -117,3 +117,22 @@ SELECT id, 'admin'
 FROM users 
 WHERE email = 'rakshit@amzadscout.com'
 ON CONFLICT (user_id) DO UPDATE SET role = 'admin';
+
+-- Internship certificates (run this in your Neon SQL editor)
+CREATE TABLE IF NOT EXISTS internship_certificates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  certificate_id TEXT NOT NULL UNIQUE,
+  student_name TEXT NOT NULL,
+  email TEXT,
+  role TEXT NOT NULL,
+  department TEXT,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  issue_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  mentor_name TEXT,
+  performance TEXT,
+  status TEXT NOT NULL DEFAULT 'active',
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

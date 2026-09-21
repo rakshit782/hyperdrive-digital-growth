@@ -16,25 +16,29 @@ const json = (body: unknown, status = 200) =>
   });
 
 async function ensureTable(client: Client) {
-  await client.queryArray(`
-    CREATE TABLE IF NOT EXISTS internship_certificates (
-      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      certificate_id TEXT NOT NULL UNIQUE,
-      student_name TEXT NOT NULL,
-      email TEXT,
-      role TEXT NOT NULL,
-      department TEXT,
-      start_date DATE NOT NULL,
-      end_date DATE NOT NULL,
-      issue_date DATE NOT NULL DEFAULT CURRENT_DATE,
-      mentor_name TEXT,
-      performance TEXT,
-      status TEXT NOT NULL DEFAULT 'active',
-      notes TEXT,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-    )
-  `);
+  try {
+    await client.queryArray(`
+      CREATE TABLE IF NOT EXISTS internship_certificates (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        certificate_id TEXT NOT NULL UNIQUE,
+        student_name TEXT NOT NULL,
+        email TEXT,
+        role TEXT NOT NULL,
+        department TEXT,
+        start_date DATE NOT NULL,
+        end_date DATE NOT NULL,
+        issue_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        mentor_name TEXT,
+        performance TEXT,
+        status TEXT NOT NULL DEFAULT 'active',
+        notes TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `);
+  } catch (e) {
+    console.warn("ensureTable skipped:", String(e));
+  }
 }
 
 async function requireAdmin(req: Request, client: Client) {

@@ -47,6 +47,7 @@ import DashboardSignup from "./pages/DashboardSignup";
 import DetailedServicePage from "./pages/DetailedServicePage";
 import AdLanding from "./pages/AdLanding";
 import ToolAlternativesPage from "./pages/ToolAlternativesPage";
+import VerifyCertificate from "./pages/VerifyCertificate";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -102,6 +103,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/services/:serviceType" element={<DetailedServicePage />} />
                 <Route path="/ad-landing" element={<AdLanding />} />
+                <Route path="/verify-certificate" element={<VerifyCertificate />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
