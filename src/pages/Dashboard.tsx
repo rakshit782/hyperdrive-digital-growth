@@ -12,6 +12,7 @@ import { LegalPagesSection } from '@/components/dashboard/LegalPagesSection';
 import { PricingSection } from '@/components/dashboard/PricingSection';
 import { TrackingSection } from '@/components/dashboard/TrackingSection';
 import { VisitorLogsSection } from '@/components/dashboard/VisitorLogsSection';
+import { CertificatesSection } from '@/components/dashboard/CertificatesSection';
 import { databaseService } from '@/services/databaseService';
 import { getVisitorLogs } from '@/utils/visitorTracker';
 import { toast } from 'sonner';
@@ -148,6 +149,8 @@ const Dashboard = () => {
         return <TrackingSection />;
       case 'settings':
         return <SettingsSection />;
+      case 'certificates':
+        return <CertificatesSection />;
       case 'legal':
         return <LegalPagesSection />;
       case 'pricing-management':
