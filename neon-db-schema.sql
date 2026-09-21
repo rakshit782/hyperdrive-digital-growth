@@ -102,14 +102,11 @@ CREATE INDEX IF NOT EXISTS idx_contact_submissions_created_at ON contact_submiss
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
 CREATE INDEX IF NOT EXISTS idx_newsletter_emails_email ON newsletter_emails(email);
 
--- Create admin user (replace with your credentials)
--- Password hash for 'Rakshit@@1234'
+-- Create admin user. Login uses SHA-256 hashing (see neon-auth-login/signup functions).
+-- Hash below = SHA-256 of 'Rakshit@@1234'
 INSERT INTO users (email, password_hash, full_name)
-VALUES ('rakshit@amzadscout.com', '$2a$10$mocked.hash.replace.this', 'Rakshit')
-ON CONFLICT (email) DO NOTHING;
-
--- Note: You'll need to hash the password properly using bcrypt
--- You can use the signup endpoint to create the admin user or update this hash manually
+VALUES ('rakshit@amzadscout.com', '6b54031250ed150b4e6bd9c3c5e3842289fccb82bcfed46fcb702f4b9d7272c6', 'Rakshit')
+ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 -- Grant admin role to the user (update after user is created)
 INSERT INTO user_roles (user_id, role)
