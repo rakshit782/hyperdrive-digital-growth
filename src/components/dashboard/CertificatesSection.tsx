@@ -17,6 +17,7 @@ const emptyForm = {
   email: "",
   role: "",
   department: "",
+  city: "",
   start_date: "",
   end_date: "",
   issue_date: "",
@@ -69,9 +70,9 @@ export function CertificatesSection() {
   const handleBulk = async () => {
     const lines = bulkText.split("\n").map((l) => l.trim()).filter(Boolean);
     const rows = lines.map((line) => {
-      const [student_name, role, start_date, end_date, email, department, mentor_name] =
+      const [student_name, role, start_date, end_date, email, department, mentor_name, city] =
         line.split(",").map((v) => (v || "").trim());
-      return { student_name, role, start_date, end_date, email, department, mentor_name };
+      return { student_name, role, start_date, end_date, email, department, mentor_name, city };
     });
     const invalid = rows.filter((r) => !r.student_name || !r.role || !r.start_date || !r.end_date);
     if (rows.length === 0 || invalid.length > 0) {
@@ -156,7 +157,7 @@ export function CertificatesSection() {
             <CardHeader>
               <CardTitle>New certificate</CardTitle>
               <CardDescription>
-                Leave the certificate ID blank to generate one automatically (AAS-INT-YEAR-0001).
+                Leave the certificate ID blank to generate one automatically (AMZ/CITY/DEPT/YEAR/MONTH/IN/123456).
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -166,6 +167,7 @@ export function CertificatesSection() {
                 {field("start_date", "Start date", "date")}
                 {field("end_date", "End date", "date")}
                 {field("email", "Email (optional)", "email")}
+                {field("city", "City", "text", "e.g. Jaipur")}
                 {field("department", "Department (optional)")}
                 {field("mentor_name", "Mentor (optional)")}
                 {field("performance", "Performance (optional)", "text", "e.g. Excellent")}
@@ -191,7 +193,7 @@ export function CertificatesSection() {
             <CardHeader>
               <CardTitle>Bulk add</CardTitle>
               <CardDescription>
-                One student per line: Name, Role, Start date (YYYY-MM-DD), End date, Email, Department, Mentor
+                One student per line: Name, Role, Start date (YYYY-MM-DD), End date, Email, Department, Mentor, City
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -199,7 +201,7 @@ export function CertificatesSection() {
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
                 className="min-h-[200px] font-mono text-sm"
-                placeholder={"Riya Sharma, Amazon PPC Intern, 2026-01-05, 2026-04-05, riya@mail.com, Advertising, Rahul"}
+                placeholder={"Riya Sharma, Amazon PPC Intern, 2026-01-05, 2026-04-05, riya@mail.com, Advertising, Rahul, Jaipur"}
               />
               <Button onClick={handleBulk} disabled={saving}>
                 {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}

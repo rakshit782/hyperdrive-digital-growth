@@ -65,17 +65,34 @@ async function requireAdmin(req: Request, client: Client) {
   }
 }
 
-async function nextCertificateId(client: Client) {
-  const year = new Date().getFullYear();
-  const prefix = `AAS-INT-${year}-`;
-  const res = await client.queryObject<{ certificate_id: string }>(
-    `SELECT certificate_id FROM internship_certificates
-     WHERE certificate_id LIKE $1 ORDER BY certificate_id DESC LIMIT 1`,
-    [`${prefix}%`],
-  );
-  const last = res.rows[0]?.certificate_id;
-  const nextNum = last ? parseInt(last.slice(prefix.length), 10) + 1 : 1;
-  return `${prefix}${String(nextNum).padStart(4, "0")}`;
+const sanitize = (v: string) =>
+  (v || "").normalize("NFKD").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+
+function deptInitials(dept: string) {
+  const words = (dept || "").split(/[^A-Za-z0-9]+/).filter(Boolean);
+  if (words.length === 0) return "GEN";
+  if (words.length === 1) return sanitize(words[0]).slice(0, 3) || "GEN";
+  return words.map((w) => sanitize(w).charAt(0)).join("").slice(0, 5);
+}
+
+async function nextCertificateId(client: Client, c: Record<string, unknown> = {}) {
+  const city = sanitize(String(c.city ?? "")).slice(0, 12) || "IND";
+  const dept = deptInitials(String(c.department ?? ""));
+  const base = c.start_date ? new Date(String(c.start_date)) : new Date();
+  const d = isNaN(base.getTime()) ? new Date() : base;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const rand = String(Math.floor(100000 + Math.random() * 900000));
+    const id = `AMZ/${city}/${dept}/${year}/${month}/IN/${rand}`;
+    const res = await client.queryObject(
+      `SELECT 1 FROM internship_certificates WHERE certificate_id = $1`,
+      [id],
+    );
+    if (res.rows.length === 0) return id;
+  }
+  return `AMZ/${city}/${dept}/${year}/${month}/IN/${Date.now().toString().slice(-6)}`;
 }
 
 serve(async (req: Request) => {
@@ -125,7 +142,7 @@ serve(async (req: Request) => {
     if (action === "create") {
       const c = body.certificate ?? {};
       const certId = (c.certificate_id && String(c.certificate_id).trim()) ||
-        (await nextCertificateId(client));
+        (await nextCertificateId(client, c));
       const result = await client.queryObject(
         `INSERT INTO internship_certificates
           (certificate_id, student_name, email, role, department, start_date, end_date,
@@ -154,7 +171,7 @@ serve(async (req: Request) => {
       const created: unknown[] = [];
       for (const c of rows) {
         const certId = (c.certificate_id && String(c.certificate_id).trim()) ||
-          (await nextCertificateId(client));
+          (await nextCertificateId(client, c));
         const result = await client.queryObject(
           `INSERT INTO internship_certificates
             (certificate_id, student_name, email, role, department, start_date, end_date,
