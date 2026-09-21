@@ -13,6 +13,7 @@ export interface Certificate {
   email?: string | null;
   role: string;
   department?: string | null;
+  city?: string | null;
   start_date: string;
   end_date: string;
   issue_date?: string;
