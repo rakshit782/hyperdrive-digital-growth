@@ -145,9 +145,9 @@ serve(async (req: Request) => {
         (await nextCertificateId(client, c));
       const result = await client.queryObject(
         `INSERT INTO internship_certificates
-          (certificate_id, student_name, email, role, department, start_date, end_date,
+          (certificate_id, student_name, email, role, department, city, start_date, end_date,
            issue_date, mentor_name, performance, notes)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,COALESCE($8, CURRENT_DATE),$9,$10,$11)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,COALESCE($9, CURRENT_DATE),$10,$11,$12)
          RETURNING *`,
         [
           certId,
@@ -155,6 +155,7 @@ serve(async (req: Request) => {
           c.email || null,
           c.role,
           c.department || null,
+          c.city || null,
           c.start_date,
           c.end_date,
           c.issue_date || null,
