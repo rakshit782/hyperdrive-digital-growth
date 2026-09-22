@@ -102,7 +102,7 @@ class AuthService {
     }
   }
 
-  async verifyToken(): Promise<{ data: User | null; error: string | null }> {
+  async verifyToken(retry = true): Promise<{ data: User | null; error: string | null }> {
     if (!this.session?.accessToken) {
       return { data: null, error: 'No session' };
     }
@@ -117,15 +117,19 @@ class AuthService {
         },
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        // Try to refresh token
-        if (response.status === 401 && this.session.refreshToken) {
-          const refreshResult = await this.refreshToken();
-          if (refreshResult.data) {
-            return await this.verifyToken();
+        // Access token expired -> try a single refresh, then give up cleanly
+        if (response.status === 401) {
+          if (retry && this.session?.refreshToken) {
+            const refreshResult = await this.refreshToken();
+            if (refreshResult.data) {
+              return await this.verifyToken(false);
+            }
           }
+          this.logout();
+          return { data: null, error: 'Session expired. Please sign in again.' };
         }
         throw new Error(data.error || 'Token verification failed');
       }
@@ -141,6 +145,7 @@ class AuthService {
       return { data: null, error: error.message };
     }
   }
+
 
   async refreshToken() {
     if (!this.session?.refreshToken) {
