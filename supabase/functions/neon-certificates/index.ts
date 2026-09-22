@@ -26,6 +26,7 @@ async function ensureTable(client: Client) {
         email TEXT,
         role TEXT NOT NULL,
         department TEXT,
+        city TEXT,
         start_date DATE NOT NULL,
         end_date DATE NOT NULL,
         issue_date DATE NOT NULL DEFAULT CURRENT_DATE,
