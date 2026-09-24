@@ -209,11 +209,19 @@ const VerifyCertificate = () => {
               </div>
             </div>
 
-            <div className="flex justify-center print:hidden">
+            <div className="flex justify-center gap-3 print:hidden">
               <Button variant="outline" onClick={() => window.print()}>
                 <Printer className="h-4 w-4 mr-2" />
                 Print / Save as PDF
               </Button>
+              {qrUrl && (
+                <Button variant="outline" asChild>
+                  <a href={qrUrl} download={`verify-qr-${cert.certificate_id.replace(/\//g, "-")}.png`}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download QR
+                  </a>
+                </Button>
+              )}
             </div>
           </div>
         )}
