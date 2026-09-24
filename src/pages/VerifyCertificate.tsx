@@ -195,8 +195,17 @@ const VerifyCertificate = () => {
                     >
                       {cert.status === "active" ? "Active" : "Revoked"}
                     </span>
-                  </div>
                 </div>
+
+                {/* QR — scan to verify */}
+                {qrUrl && (
+                  <div className="mt-8 flex flex-col items-center gap-2">
+                    <img src={qrUrl} alt="Scan to verify this certificate" className="h-24 w-24" />
+                    <p className="text-[9px] uppercase tracking-[0.25em] text-slate-400">
+                      Scan to verify
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
