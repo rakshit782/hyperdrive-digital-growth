@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Plus, RefreshCw, Trash2, Ban, CheckCircle, ExternalLink } from "lucide-react";
+import { Loader2, Plus, RefreshCw, Trash2, Ban, CheckCircle, ExternalLink, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { certificateService, Certificate } from "@/services/certificateService";
 
@@ -249,6 +249,19 @@ export function CertificatesSection() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right space-x-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          title="Preview certificate"
+                          onClick={() =>
+                            window.open(
+                              `/verify-certificate?id=${encodeURIComponent(c.certificate_id)}`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                         <Button size="sm" variant="ghost" onClick={() => toggleStatus(c)}>
                           {c.status === "active" ? (
                             <Ban className="h-4 w-4" />

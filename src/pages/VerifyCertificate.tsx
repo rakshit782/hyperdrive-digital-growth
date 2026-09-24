@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -36,6 +36,12 @@ const VerifyCertificate = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const initial = params.get("id");
+    if (initial) runSearch(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
