@@ -114,39 +114,71 @@ const VerifyCertificate = () => {
             </div>
 
             {/* Printable certificate */}
-            <div className="border-4 border-slate-900 rounded-lg bg-white p-10 text-center space-y-5 print:border-2">
-              <p className="text-xs tracking-[0.3em] font-semibold text-slate-500">AMZ AD SCOUT</p>
-              <p className="text-[10px] tracking-[0.2em] text-slate-400">AN AMAZON SPN AGENCY</p>
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
-                Certificate of Internship
-              </h2>
-              <p className="text-slate-600 text-sm">This is to certify that</p>
-              <p className="text-3xl font-bold text-slate-900">{cert.student_name}</p>
-              <p className="text-slate-600 text-sm leading-relaxed max-w-xl mx-auto">
-                has successfully completed an internship as{" "}
-                <strong>{cert.role}</strong>
-                {cert.department ? ` in the ${cert.department} team` : ""} from{" "}
-                <strong>{formatDate(cert.start_date)}</strong> to{" "}
-                <strong>{formatDate(cert.end_date)}</strong>.
-                {cert.performance ? ` Performance: ${cert.performance}.` : ""}
-              </p>
+            <div className="bg-white border border-slate-200 rounded-lg p-2 shadow-sm print:shadow-none print:border-0">
+              <div className="border-2 border-slate-900 rounded-md px-6 py-10 md:px-14 text-center overflow-hidden">
+                {/* Header */}
+                <div className="flex flex-col items-center gap-2">
+                  <img src="/logo.png" alt="AMZ AD SCOUT" className="h-12 w-auto" />
+                  <p className="text-[10px] tracking-[0.35em] font-semibold text-slate-900 uppercase">
+                    AMZ AD SCOUT
+                  </p>
+                  <p className="text-[9px] tracking-[0.25em] text-slate-400 uppercase">
+                    An Amazon SPN Agency
+                  </p>
+                </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-6 text-left text-sm max-w-md mx-auto">
-                <div>
-                  <p className="text-slate-500">Issued on</p>
-                  <p className="font-medium text-slate-900">{formatDate(cert.issue_date)}</p>
+                {/* Ornamental divider */}
+                <div className="flex items-center justify-center gap-3 my-8" aria-hidden="true">
+                  <span className="h-px w-16 bg-slate-300" />
+                  <span className="h-1.5 w-1.5 rotate-45 bg-amber-500" />
+                  <span className="h-px w-16 bg-slate-300" />
                 </div>
-                <div>
-                  <p className="text-slate-500">Mentor</p>
-                  <p className="font-medium text-slate-900">{cert.mentor_name || "-"}</p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Certificate ID</p>
-                  <p className="font-medium text-slate-900">{cert.certificate_id}</p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Status</p>
-                  <p className="font-medium text-slate-900 capitalize">{cert.status}</p>
+
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
+                  Certificate of Internship
+                </h2>
+
+                <p className="mt-6 text-slate-500 text-sm">This is to certify that</p>
+                <p className="mt-3 text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+                  {cert.student_name}
+                </p>
+                <p className="mt-5 text-slate-600 text-sm leading-relaxed max-w-lg mx-auto">
+                  has successfully completed an internship as{" "}
+                  <strong className="text-slate-900">{cert.role}</strong>
+                  {cert.department ? ` in the ${cert.department} team` : ""} from{" "}
+                  <strong className="text-slate-900">{formatDate(cert.start_date)}</strong> to{" "}
+                  <strong className="text-slate-900">{formatDate(cert.end_date)}</strong>.
+                  {cert.performance ? ` Performance: ${cert.performance}.` : ""}
+                </p>
+
+                {/* Details — symmetric 2x2 grid */}
+                <div className="mt-10 -mx-6 md:-mx-14 border-t border-slate-200 grid grid-cols-2 text-sm">
+                  <div className="py-4 px-4 border-r border-slate-200">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Issued on</p>
+                    <p className="mt-1 font-medium text-slate-900">{formatDate(cert.issue_date)}</p>
+                  </div>
+                  <div className="py-4 px-4">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Mentor</p>
+                    <p className="mt-1 font-medium text-slate-900">{cert.mentor_name || "—"}</p>
+                  </div>
+                  <div className="py-4 px-4 border-t border-r border-slate-200">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Certificate ID</p>
+                    <p className="mt-1 font-medium text-slate-900 break-all text-xs md:text-sm">
+                      {cert.certificate_id}
+                    </p>
+                  </div>
+                  <div className="py-4 px-4 border-t border-slate-200">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Status</p>
+                    <span
+                      className={`mt-2 inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium ${
+                        cert.status === "active"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-red-50 text-red-700"
+                      }`}
+                    >
+                      {cert.status === "active" ? "Active" : "Revoked"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
