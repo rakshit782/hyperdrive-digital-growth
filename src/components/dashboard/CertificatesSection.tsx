@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Plus, RefreshCw, Trash2, Ban, CheckCircle, ExternalLink, Eye } from "lucide-react";
+import { Loader2, Plus, Pencil, X, RefreshCw, Trash2, Ban, CheckCircle, ExternalLink, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { certificateService, Certificate } from "@/services/certificateService";
 
@@ -23,6 +23,7 @@ const emptyForm = {
   issue_date: "",
   mentor_name: "",
   performance: "",
+  dept_code: "",
 };
 
 export function CertificatesSection() {
@@ -31,6 +32,37 @@ export function CertificatesSection() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
   const [bulkText, setBulkText] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [regenerate, setRegenerate] = useState(false);
+  const [tab, setTab] = useState("single");
+
+  const startEdit = (c: Certificate) => {
+    const d = (v?: string | null) => (v ? String(v).slice(0, 10) : "");
+    setForm({
+      certificate_id: c.certificate_id || "",
+      student_name: c.student_name || "",
+      email: c.email || "",
+      role: c.role || "",
+      department: c.department || "",
+      city: c.city || "",
+      start_date: d(c.start_date),
+      end_date: d(c.end_date),
+      issue_date: d(c.issue_date),
+      mentor_name: c.mentor_name || "",
+      performance: c.performance || "",
+      dept_code: "",
+    });
+    setEditingId(c.id!);
+    setRegenerate(false);
+    setTab("single");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setRegenerate(false);
+    setForm({ ...emptyForm });
+  };
 
   const load = async () => {
     setLoading(true);
@@ -56,9 +88,15 @@ export function CertificatesSection() {
     }
     setSaving(true);
     try {
-      const { certificate } = await certificateService.create(form);
-      toast.success(`Certificate ${certificate.certificate_id} created`);
-      setForm({ ...emptyForm });
+      if (editingId) {
+        const { certificate } = await certificateService.update(editingId, { ...form, regenerate_id: regenerate });
+        toast.success(`Certificate ${certificate.certificate_id} updated`);
+        cancelEdit();
+      } else {
+        const { certificate } = await certificateService.create(form);
+        toast.success(`Certificate ${certificate.certificate_id} created`);
+        setForm({ ...emptyForm });
+      }
       load();
     } catch (e: any) {
       toast.error(e.message || "Failed to create certificate");
@@ -70,9 +108,9 @@ export function CertificatesSection() {
   const handleBulk = async () => {
     const lines = bulkText.split("\n").map((l) => l.trim()).filter(Boolean);
     const rows = lines.map((line) => {
-      const [student_name, role, start_date, end_date, email, department, mentor_name, city] =
+      const [student_name, role, start_date, end_date, email, department, mentor_name, city, dept_code] =
         line.split(",").map((v) => (v || "").trim());
-      return { student_name, role, start_date, end_date, email, department, mentor_name, city };
+      return { student_name, role, start_date, end_date, email, department, mentor_name, city, dept_code };
     });
     const invalid = rows.filter((r) => !r.student_name || !r.role || !r.start_date || !r.end_date);
     if (rows.length === 0 || invalid.length > 0) {
@@ -146,18 +184,18 @@ export function CertificatesSection() {
         </div>
       </div>
 
-      <Tabs defaultValue="single">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
-          <TabsTrigger value="single">Add certificate</TabsTrigger>
+          <TabsTrigger value="single">{editingId ? "Edit certificate" : "Add certificate"}</TabsTrigger>
           <TabsTrigger value="bulk">Bulk add</TabsTrigger>
         </TabsList>
 
         <TabsContent value="single">
           <Card>
             <CardHeader>
-              <CardTitle>New certificate</CardTitle>
+              <CardTitle>{editingId ? "Edit certificate" : "New certificate"}</CardTitle>
               <CardDescription>
-                Leave the certificate ID blank to generate one automatically (AMZ/CITY/DEPT/YEAR/MONTH/IN/123456).
+                Leave the certificate ID blank to generate one automatically: AMZ/CITY/CODE/YEAR/MONTH/IN/123456. City uses its first 3 letters (e.g. JAI); Code uses your custom code, else department initials, else GEN.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -172,16 +210,28 @@ export function CertificatesSection() {
                 {field("mentor_name", "Mentor (optional)")}
                 {field("performance", "Performance (optional)", "text", "e.g. Excellent")}
                 {field("issue_date", "Issue date (optional)", "date")}
+                {field("dept_code", "ID code instead of GEN (optional)", "text", "e.g. PPC or MKT")}
                 {field("certificate_id", "Certificate ID (optional)")}
-                <div className="md:col-span-2">
+                {editingId && (
+                  <label className="md:col-span-2 flex items-center gap-2 text-sm text-muted-foreground">
+                    <input type="checkbox" checked={regenerate} onChange={(e) => setRegenerate(e.target.checked)} />
+                    Generate a new certificate ID from city, code and start date
+                  </label>
+                )}
+                <div className="md:col-span-2 flex gap-2">
                   <Button type="submit" disabled={saving}>
                     {saving ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     ) : (
                       <Plus className="h-4 w-4 mr-2" />
                     )}
-                    Create certificate
+                    {editingId ? "Save changes" : "Create certificate"}
                   </Button>
+                  {editingId && (
+                    <Button type="button" variant="outline" onClick={cancelEdit}>
+                      <X className="h-4 w-4 mr-2" /> Cancel
+                    </Button>
+                  )}
                 </div>
               </form>
             </CardContent>
@@ -193,7 +243,7 @@ export function CertificatesSection() {
             <CardHeader>
               <CardTitle>Bulk add</CardTitle>
               <CardDescription>
-                One student per line: Name, Role, Start date (YYYY-MM-DD), End date, Email, Department, Mentor, City
+                One student per line: Name, Role, Start date (YYYY-MM-DD), End date, Email, Department, Mentor, City, ID code (optional)
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -261,6 +311,9 @@ export function CertificatesSection() {
                           }
                         >
                           <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" title="Edit" onClick={() => startEdit(c)}>
+                          <Pencil className="h-4 w-4" />
                         </Button>
                         <Button size="sm" variant="ghost" onClick={() => toggleStatus(c)}>
                           {c.status === "active" ? (
