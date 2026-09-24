@@ -39,6 +39,9 @@ const VerifyCertificate = () => {
     }
   };
 
+  const cert = result?.certificate;
+  const isValid = result?.found && cert?.status === "active";
+
   useEffect(() => {
     const initial = params.get("id");
     if (initial) runSearch(initial);
@@ -65,9 +68,6 @@ const VerifyCertificate = () => {
     setParams(code.trim() ? { id: code.trim() } : {});
     runSearch(code);
   };
-
-  const cert = result?.certificate;
-  const isValid = result?.found && cert?.status === "active";
 
   return (
     <div className="min-h-screen bg-background">
