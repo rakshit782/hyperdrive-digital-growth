@@ -25,22 +25,34 @@ export interface Certificate {
 }
 
 async function call(body: Record<string, unknown>, withAdmin = false) {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    apikey: SUPABASE_ANON_KEY,
+  const request = async () => {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      apikey: SUPABASE_ANON_KEY,
+    };
+    if (withAdmin) {
+      const token = authService.getAccessToken();
+      if (!token) throw new Error("Session expired. Please sign in again.");
+      headers["x-admin-token"] = token;
+    }
+
+    return fetch(ENDPOINT, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
   };
-  if (withAdmin) {
-    const token = authService.getAccessToken();
-    if (token) headers["x-admin-token"] = token;
+
+  let response = await request();
+  if (withAdmin && response.status === 401) {
+    const refreshed = await authService.refreshToken();
+    if (!refreshed.data) {
+      throw new Error("Session expired. Please sign in again.");
+    }
+    response = await request();
   }
 
-  const response = await fetch(ENDPOINT, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body),
-  });
-
-  const data = await response.json();
+  const data = await response.json().catch(() => ({ error: "Request failed" }));
   if (!response.ok) throw new Error(data.error || "Request failed");
   return data;
 }

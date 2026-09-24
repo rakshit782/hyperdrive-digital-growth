@@ -30,13 +30,6 @@ const DashboardAuth = () => {
       return;
     }
 
-    // Check if user has admin role
-    const currentUser = useAuth().user;
-    if (currentUser?.role !== 'admin') {
-      toast.error('Access denied. Admin role required.');
-      return;
-    }
-
     toast.success('Login successful!');
     navigate('/dashboard');
   };
