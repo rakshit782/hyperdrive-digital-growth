@@ -6,7 +6,8 @@ import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { BadgeCheck, XCircle, Search, Printer, Loader2 } from "lucide-react";
+import { BadgeCheck, XCircle, Search, Printer, Loader2, Download } from "lucide-react";
+import QRCode from "qrcode";
 import { certificateService, Certificate } from "@/services/certificateService";
 
 const formatDate = (value?: string | null) => {
@@ -22,6 +23,7 @@ const VerifyCertificate = () => {
   const [code, setCode] = useState(params.get("id") || "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ found: boolean; certificate?: Certificate } | null>(null);
+  const [qrUrl, setQrUrl] = useState<string>("");
 
   const runSearch = async (value: string) => {
     if (!value.trim()) return;
@@ -37,20 +39,35 @@ const VerifyCertificate = () => {
     }
   };
 
+  const cert = result?.certificate;
+  const isValid = result?.found && cert?.status === "active";
+
   useEffect(() => {
     const initial = params.get("id");
     if (initial) runSearch(initial);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!cert) {
+      setQrUrl("");
+      return;
+    }
+    const verifyUrl = `${window.location.origin}/verify-certificate?id=${encodeURIComponent(cert.certificate_id)}`;
+    QRCode.toDataURL(verifyUrl, {
+      width: 320,
+      margin: 1,
+      color: { dark: "#0f172a", light: "#ffffff" },
+    })
+      .then(setQrUrl)
+      .catch(() => setQrUrl(""));
+  }, [cert]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setParams(code.trim() ? { id: code.trim() } : {});
     runSearch(code);
   };
-
-  const cert = result?.certificate;
-  const isValid = result?.found && cert?.status === "active";
 
   return (
     <div className="min-h-screen bg-background">
@@ -114,48 +131,98 @@ const VerifyCertificate = () => {
             </div>
 
             {/* Printable certificate */}
-            <div className="border-4 border-slate-900 rounded-lg bg-white p-10 text-center space-y-5 print:border-2">
-              <p className="text-xs tracking-[0.3em] font-semibold text-slate-500">AMZ AD SCOUT</p>
-              <p className="text-[10px] tracking-[0.2em] text-slate-400">AN AMAZON SPN AGENCY</p>
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
-                Certificate of Internship
-              </h2>
-              <p className="text-slate-600 text-sm">This is to certify that</p>
-              <p className="text-3xl font-bold text-slate-900">{cert.student_name}</p>
-              <p className="text-slate-600 text-sm leading-relaxed max-w-xl mx-auto">
-                has successfully completed an internship as{" "}
-                <strong>{cert.role}</strong>
-                {cert.department ? ` in the ${cert.department} team` : ""} from{" "}
-                <strong>{formatDate(cert.start_date)}</strong> to{" "}
-                <strong>{formatDate(cert.end_date)}</strong>.
-                {cert.performance ? ` Performance: ${cert.performance}.` : ""}
-              </p>
+            <div className="bg-white border border-slate-200 rounded-lg p-2 shadow-sm print:shadow-none print:border-0">
+              <div className="border-2 border-slate-900 rounded-md px-6 py-10 md:px-14 text-center overflow-hidden">
+                {/* Header */}
+                <div className="flex flex-col items-center gap-2">
+                  <img src="/logo.png" alt="AMZ AD SCOUT" className="h-12 w-auto" />
+                  <p className="text-[10px] tracking-[0.35em] font-semibold text-slate-900 uppercase">
+                    AMZ AD SCOUT
+                  </p>
+                  <p className="text-[9px] tracking-[0.25em] text-slate-400 uppercase">
+                    An Amazon SPN Agency
+                  </p>
+                </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-6 text-left text-sm max-w-md mx-auto">
-                <div>
-                  <p className="text-slate-500">Issued on</p>
-                  <p className="font-medium text-slate-900">{formatDate(cert.issue_date)}</p>
+                {/* Ornamental divider */}
+                <div className="flex items-center justify-center gap-3 my-8" aria-hidden="true">
+                  <span className="h-px w-16 bg-slate-300" />
+                  <span className="h-1.5 w-1.5 rotate-45 bg-amber-500" />
+                  <span className="h-px w-16 bg-slate-300" />
                 </div>
-                <div>
-                  <p className="text-slate-500">Mentor</p>
-                  <p className="font-medium text-slate-900">{cert.mentor_name || "-"}</p>
+
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
+                  Certificate of Internship
+                </h2>
+
+                <p className="mt-6 text-slate-500 text-sm">This is to certify that</p>
+                <p className="mt-3 text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+                  {cert.student_name}
+                </p>
+                <p className="mt-5 text-slate-600 text-sm leading-relaxed max-w-lg mx-auto">
+                  has successfully completed an internship as{" "}
+                  <strong className="text-slate-900">{cert.role}</strong>
+                  {cert.department ? ` in the ${cert.department} team` : ""} from{" "}
+                  <strong className="text-slate-900">{formatDate(cert.start_date)}</strong> to{" "}
+                  <strong className="text-slate-900">{formatDate(cert.end_date)}</strong>.
+                  {cert.performance ? ` Performance: ${cert.performance}.` : ""}
+                </p>
+
+                {/* Details — symmetric 2x2 grid */}
+                <div className="mt-10 -mx-6 md:-mx-14 border-t border-slate-200 grid grid-cols-2 text-sm">
+                  <div className="py-4 px-4 border-r border-slate-200">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Issued on</p>
+                    <p className="mt-1 font-medium text-slate-900">{formatDate(cert.issue_date)}</p>
+                  </div>
+                  <div className="py-4 px-4">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Mentor</p>
+                    <p className="mt-1 font-medium text-slate-900">{cert.mentor_name || "—"}</p>
+                  </div>
+                  <div className="py-4 px-4 border-t border-r border-slate-200">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Certificate ID</p>
+                    <p className="mt-1 font-medium text-slate-900 break-all text-xs md:text-sm">
+                      {cert.certificate_id}
+                    </p>
+                  </div>
+                  <div className="py-4 px-4 border-t border-slate-200">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Status</p>
+                    <span
+                      className={`mt-2 inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium ${
+                        cert.status === "active"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-red-50 text-red-700"
+                      }`}
+                    >
+                      {cert.status === "active" ? "Active" : "Revoked"}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-slate-500">Certificate ID</p>
-                  <p className="font-medium text-slate-900">{cert.certificate_id}</p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Status</p>
-                  <p className="font-medium text-slate-900 capitalize">{cert.status}</p>
-                </div>
+
+                {/* QR — scan to verify */}
+                {qrUrl && (
+                  <div className="mt-8 flex flex-col items-center gap-2">
+                    <img src={qrUrl} alt="Scan to verify this certificate" className="h-24 w-24" />
+                    <p className="text-[9px] uppercase tracking-[0.25em] text-slate-400">
+                      Scan to verify
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex justify-center print:hidden">
+            <div className="flex justify-center gap-3 print:hidden">
               <Button variant="outline" onClick={() => window.print()}>
                 <Printer className="h-4 w-4 mr-2" />
                 Print / Save as PDF
               </Button>
+              {qrUrl && (
+                <Button variant="outline" asChild>
+                  <a href={qrUrl} download={`verify-qr-${cert.certificate_id.replace(/\//g, "-")}.png`}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download QR
+                  </a>
+                </Button>
+              )}
             </div>
           </div>
         )}
