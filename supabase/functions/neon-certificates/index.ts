@@ -78,8 +78,9 @@ function deptInitials(dept: string) {
 }
 
 async function nextCertificateId(client: Client, c: Record<string, unknown> = {}) {
-  const city = sanitize(String(c.city ?? "")).slice(0, 12) || "IND";
-  const dept = deptInitials(String(c.department ?? ""));
+  const city = sanitize(String(c.city ?? "")).replace(/[0-9]/g, "").slice(0, 3) || "IND";
+  const customCode = String(c.dept_code ?? "").replace(/[^A-Za-z]/g, "").toUpperCase().slice(0, 10);
+  const dept = customCode || deptInitials(String(c.department ?? ""));
   const base = c.start_date ? new Date(String(c.start_date)) : new Date();
   const d = isNaN(base.getTime()) ? new Date() : base;
   const year = d.getFullYear();
@@ -200,6 +201,29 @@ serve(async (req: Request) => {
         if (result.rows[0]) created.push(result.rows[0]);
       }
       return json({ created: created.length, certificates: created });
+    }
+
+    if (action === "update") {
+      const c = body.certificate ?? {};
+      if (!body.id) return json({ error: "id required" }, 400);
+      if (!c.student_name || !c.role || !c.start_date || !c.end_date) {
+        return json({ error: "Name, role, start date and end date are required" }, 400);
+      }
+      let certId = c.certificate_id && String(c.certificate_id).trim();
+      if (!certId || c.regenerate_id) certId = await nextCertificateId(client, c);
+      const result = await client.queryObject(
+        `UPDATE amz_app.internship_certificates SET
+           certificate_id=$2, student_name=$3, email=$4, role=$5, department=$6, city=$7,
+           start_date=$8, end_date=$9, issue_date=COALESCE($10, issue_date), mentor_name=$11,
+           performance=$12, updated_at=now()
+         WHERE id=$1 RETURNING *`,
+        [
+          body.id, certId, c.student_name, c.email || null, c.role, c.department || null,
+          c.city || null, c.start_date, c.end_date, c.issue_date || null,
+          c.mentor_name || null, c.performance || null,
+        ],
+      );
+      return json({ certificate: result.rows[0] });
     }
 
     if (action === "set_status") {

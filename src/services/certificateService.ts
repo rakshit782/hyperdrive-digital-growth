@@ -68,6 +68,8 @@ export const certificateService = {
     call({ action: "create", certificate }, true) as Promise<{ certificate: Certificate }>,
   bulkCreate: (certificates: Partial<Certificate>[]) =>
     call({ action: "bulk_create", certificates }, true) as Promise<{ created: number }>,
+  update: (id: string, certificate: Record<string, unknown>) =>
+    call({ action: "update", id, certificate }, true) as Promise<{ certificate: Certificate }>,
   setStatus: (id: string, status: string) => call({ action: "set_status", id, status }, true),
   remove: (id: string) => call({ action: "delete", id }, true),
 };
