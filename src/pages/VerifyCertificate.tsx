@@ -37,6 +37,12 @@ const VerifyCertificate = () => {
     }
   };
 
+  useEffect(() => {
+    const initial = params.get("id");
+    if (initial) runSearch(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setParams(code.trim() ? { id: code.trim() } : {});
