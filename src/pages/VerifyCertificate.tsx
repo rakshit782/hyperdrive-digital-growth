@@ -6,7 +6,8 @@ import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { BadgeCheck, XCircle, Search, Printer, Loader2 } from "lucide-react";
+import { BadgeCheck, XCircle, Search, Printer, Loader2, Download } from "lucide-react";
+import QRCode from "qrcode";
 import { certificateService, Certificate } from "@/services/certificateService";
 
 const formatDate = (value?: string | null) => {
@@ -42,6 +43,21 @@ const VerifyCertificate = () => {
     if (initial) runSearch(initial);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!cert) {
+      setQrUrl("");
+      return;
+    }
+    const verifyUrl = `${window.location.origin}/verify-certificate?id=${encodeURIComponent(cert.certificate_id)}`;
+    QRCode.toDataURL(verifyUrl, {
+      width: 320,
+      margin: 1,
+      color: { dark: "#0f172a", light: "#ffffff" },
+    })
+      .then(setQrUrl)
+      .catch(() => setQrUrl(""));
+  }, [cert]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
