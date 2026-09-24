@@ -33,7 +33,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(data);
         setSession(authService.getSession());
       } else {
-        console.error('Session verification failed:', error);
+        // Expected when the access token has expired — not an app error.
+        console.warn('Session verification skipped:', error);
         authService.logout();
       }
     }
