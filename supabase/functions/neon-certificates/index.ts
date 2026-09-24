@@ -19,7 +19,8 @@ const json = (body: unknown, status = 200) =>
 async function ensureTable(client: Client) {
   try {
     await client.queryArray(`
-      CREATE TABLE IF NOT EXISTS internship_certificates (
+      CREATE SCHEMA IF NOT EXISTS amz_app;
+      CREATE TABLE IF NOT EXISTS amz_app.internship_certificates (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         certificate_id TEXT NOT NULL UNIQUE,
         student_name TEXT NOT NULL,
@@ -88,7 +89,7 @@ async function nextCertificateId(client: Client, c: Record<string, unknown> = {}
     const rand = String(Math.floor(100000 + Math.random() * 900000));
     const id = `AMZ/${city}/${dept}/${year}/${month}/IN/${rand}`;
     const res = await client.queryObject(
-      `SELECT 1 FROM internship_certificates WHERE certificate_id = $1`,
+      `SELECT 1 FROM amz_app.internship_certificates WHERE certificate_id = $1`,
       [id],
     );
     if (res.rows.length === 0) return id;
@@ -118,7 +119,7 @@ serve(async (req: Request) => {
       const result = await client.queryObject(
         `SELECT certificate_id, student_name, role, department, start_date, end_date,
                 issue_date, mentor_name, performance, status
-         FROM internship_certificates
+         FROM amz_app.internship_certificates
          WHERE upper(certificate_id) = upper($1)`,
         [code],
       );
@@ -135,7 +136,7 @@ serve(async (req: Request) => {
 
     if (action === "list") {
       const result = await client.queryObject(
-        `SELECT * FROM internship_certificates ORDER BY created_at DESC LIMIT 500`,
+        `SELECT * FROM amz_app.internship_certificates ORDER BY created_at DESC LIMIT 500`,
       );
       return json({ certificates: result.rows });
     }
@@ -145,7 +146,7 @@ serve(async (req: Request) => {
       const certId = (c.certificate_id && String(c.certificate_id).trim()) ||
         (await nextCertificateId(client, c));
       const result = await client.queryObject(
-        `INSERT INTO internship_certificates
+        `INSERT INTO amz_app.internship_certificates
           (certificate_id, student_name, email, role, department, city, start_date, end_date,
            issue_date, mentor_name, performance, notes)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,COALESCE($9, CURRENT_DATE),$10,$11,$12)
@@ -175,7 +176,7 @@ serve(async (req: Request) => {
         const certId = (c.certificate_id && String(c.certificate_id).trim()) ||
           (await nextCertificateId(client, c));
         const result = await client.queryObject(
-          `INSERT INTO internship_certificates
+          `INSERT INTO amz_app.internship_certificates
             (certificate_id, student_name, email, role, department, city, start_date, end_date,
              issue_date, mentor_name, performance, notes)
            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,COALESCE($9, CURRENT_DATE),$10,$11,$12)
@@ -203,7 +204,7 @@ serve(async (req: Request) => {
 
     if (action === "set_status") {
       const result = await client.queryObject(
-        `UPDATE internship_certificates SET status = $2, updated_at = now()
+        `UPDATE amz_app.internship_certificates SET status = $2, updated_at = now()
          WHERE id = $1 RETURNING *`,
         [body.id, body.status],
       );
@@ -211,7 +212,7 @@ serve(async (req: Request) => {
     }
 
     if (action === "delete") {
-      await client.queryArray(`DELETE FROM internship_certificates WHERE id = $1`, [body.id]);
+      await client.queryArray(`DELETE FROM amz_app.internship_certificates WHERE id = $1`, [body.id]);
       return json({ success: true });
     }
 
