@@ -195,6 +195,7 @@ const VerifyCertificate = () => {
                     >
                       {cert.status === "active" ? "Active" : "Revoked"}
                     </span>
+                  </div>
                 </div>
 
                 {/* QR — scan to verify */}
