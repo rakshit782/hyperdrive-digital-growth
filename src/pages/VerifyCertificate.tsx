@@ -23,6 +23,7 @@ const VerifyCertificate = () => {
   const [code, setCode] = useState(params.get("id") || "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ found: boolean; certificate?: Certificate } | null>(null);
+  const [qrUrl, setQrUrl] = useState<string>("");
 
   const runSearch = async (value: string) => {
     if (!value.trim()) return;
