@@ -96,13 +96,11 @@ const BlogPost = () => {
         <article className="py-12 md:py-20">
           <div className="max-w-4xl mx-auto px-6">
             {/* Back Button */}
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/blog")}
-              className="mb-8 group"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-              Back to Blog
+            <Button asChild variant="ghost" className="mb-8 group">
+              <Link to="/blog">
+                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+                Back to Blog
+              </Link>
             </Button>
 
             {/* Article Header */}

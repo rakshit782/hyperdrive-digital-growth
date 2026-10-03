@@ -47,41 +47,25 @@ const Footer = () => {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Services</h3>
               <ul className="space-y-2">
-                <li>
-                  <Link to="/services/amazon-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
-                    Amazon Advertising
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/services/google-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
-                    Google Advertising
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/services/meta-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
-                    Meta Advertising
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/services/walmart-advertising" className="text-slate-300 hover:text-white transition-colors text-sm">
-                    Walmart Advertising
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/services/website-development" className="text-slate-300 hover:text-white transition-colors text-sm">
-                    Website Development
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/services/shopify-development" className="text-slate-300 hover:text-white transition-colors text-sm">
-                    Shopify Development
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/services/account-management" className="text-slate-300 hover:text-white transition-colors text-sm">
-                    Account Management
-                  </Link>
-                </li>
+                {[
+                  { name: "Amazon Advertising", to: "/services/amazon-advertising" },
+                  { name: "Google Advertising", to: "/services/google-advertising" },
+                  { name: "Meta Advertising", to: "/services/meta-advertising" },
+                  { name: "Walmart Advertising", to: "/services/walmart-advertising" },
+                  { name: "Website Development", to: "/services/website-development" },
+                  { name: "Shopify Development", to: "/services/shopify-development" },
+                  { name: "Shopify Integration", to: "/services/shopify-integration" },
+                  { name: "Account Management", to: "/services/account-management" },
+                  { name: "Amazon Integration & Automation", to: "/services/amazon-integration" },
+                  { name: "Listing Optimization", to: "/services/listing-optimization" },
+                  { name: "Product Cataloging", to: "/services/product-cataloging" },
+                ].map((item) => (
+                  <li key={item.to}>
+                    <Link to={item.to} className="text-slate-300 hover:text-white transition-colors text-sm">
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -102,6 +86,21 @@ const Footer = () => {
                 <li>
                   <Link to="/blog" className="text-slate-300 hover:text-white transition-colors text-sm">
                     Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/services" className="text-slate-300 hover:text-white transition-colors text-sm">
+                    Services
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/pricing" className="text-slate-300 hover:text-white transition-colors text-sm">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" className="text-slate-300 hover:text-white transition-colors text-sm">
+                    Contact
                   </Link>
                 </li>
                 <li>

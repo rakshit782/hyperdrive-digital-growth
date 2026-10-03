@@ -12,7 +12,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     heroDescription: 'Grow your business on Walmart marketplace with our expert advertising strategies. We help brands achieve 380% average revenue growth through Walmart Connect optimization and strategic marketplace positioning.',
     primaryButtonText: 'Get Free Walmart Audit',
     secondaryButtonText: 'View Case Studies',
-    primaryButtonUrl: '/free-audit',
+    primaryButtonUrl: '/contact',
     secondaryButtonUrl: '/walmart-case-studies',
     services: [
       {
@@ -69,7 +69,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaTitle: 'Ready to Conquer Walmart?',
     ctaDescription: 'Get your free Walmart marketplace audit and learn how we can multiply your revenue.',
     ctaButtonText: 'Get Free Audit',
-    ctaButtonUrl: '/free-audit'
+    ctaButtonUrl: '/contact'
   },
   meta: {
     serviceType: 'meta',
@@ -78,7 +78,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     heroDescription: 'Drive explosive growth with our Meta advertising expertise. We help businesses achieve 650% average ROAS through strategic Facebook and Instagram campaigns that convert prospects into customers.',
     primaryButtonText: 'Get Free Meta Audit',
     secondaryButtonText: 'View Success Stories',
-    primaryButtonUrl: '/free-audit',
+    primaryButtonUrl: '/contact',
     secondaryButtonUrl: '/case-studies',
     services: [
       {
@@ -135,7 +135,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaTitle: 'Ready to Scale with Meta?',
     ctaDescription: 'Get your free Meta advertising audit and discover how we can 10x your social media ROI.',
     ctaButtonText: 'Get Free Audit',
-    ctaButtonUrl: '/free-audit'
+    ctaButtonUrl: '/contact'
   },
   'account-management': {
     serviceType: 'account-management',
@@ -144,7 +144,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     heroDescription: 'Let our experts manage your e-commerce accounts while you focus on growing your business. We provide comprehensive account management across all major platforms with dedicated specialists.',
     primaryButtonText: 'Get Free Consultation',
     secondaryButtonText: 'View Our Process',
-    primaryButtonUrl: '/free-audit',
+    primaryButtonUrl: '/contact',
     secondaryButtonUrl: '/case-studies',
     services: [
       {
@@ -201,7 +201,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaTitle: 'Ready for Professional Management?',
     ctaDescription: 'Get your free account audit and discover how we can optimize your e-commerce operations.',
     ctaButtonText: 'Get Free Audit',
-    ctaButtonUrl: '/free-audit'
+    ctaButtonUrl: '/contact'
   },
   'shopify-integration': {
     serviceType: 'shopify-integration',
@@ -210,7 +210,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     heroDescription: 'Connect your Shopify store with Amazon, Walmart, and other marketplaces. We handle complex integrations so you can sell everywhere without the technical headaches.',
     primaryButtonText: 'Get Integration Quote',
     secondaryButtonText: 'View Integrations',
-    primaryButtonUrl: '/free-audit',
+    primaryButtonUrl: '/contact',
     secondaryButtonUrl: '/case-studies',
     services: [
       {
@@ -267,7 +267,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaTitle: 'Ready to Expand Your Reach?',
     ctaDescription: 'Get your free integration consultation and discover how we can connect your store to major marketplaces.',
     ctaButtonText: 'Get Free Consultation',
-    ctaButtonUrl: '/free-audit'
+    ctaButtonUrl: '/contact'
   },
   'shopify-development': {
     serviceType: 'shopify-development',
@@ -276,7 +276,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     heroDescription: 'Build high-converting Shopify stores that drive sales and provide exceptional user experiences. From custom themes to advanced functionality, we create stores that scale.',
     primaryButtonText: 'Start Your Project',
     secondaryButtonText: 'View Portfolio',
-    primaryButtonUrl: '/free-audit',
+    primaryButtonUrl: '/contact',
     secondaryButtonUrl: '/case-studies',
     services: [
       {
@@ -333,7 +333,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaTitle: 'Ready to Build Your Dream Store?',
     ctaDescription: 'Get your free Shopify development consultation and discover how we can create the perfect store for your business.',
     ctaButtonText: 'Get Free Consultation',
-    ctaButtonUrl: '/free-audit'
+    ctaButtonUrl: '/contact'
   },
   'website-development': {
     serviceType: 'website-development',
@@ -342,7 +342,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     heroDescription: 'Create powerful, responsive websites that drive results. From corporate sites to complex web applications, we build digital solutions that grow with your business.',
     primaryButtonText: 'Start Your Project',
     secondaryButtonText: 'View Our Work',
-    primaryButtonUrl: '/free-audit',
+    primaryButtonUrl: '/contact',
     secondaryButtonUrl: '/case-studies',
     services: [
       {
@@ -399,7 +399,7 @@ const defaultConfigs: Record<string, ServicePageConfig> = {
     ctaTitle: 'Ready to Transform Your Online Presence?',
     ctaDescription: 'Get your free website consultation and discover how we can create a powerful digital solution for your business.',
     ctaButtonText: 'Get Free Consultation',
-    ctaButtonUrl: '/free-audit'
+    ctaButtonUrl: '/contact'
   },
   'amazon-integration': {
     serviceType: 'amazon-integration',

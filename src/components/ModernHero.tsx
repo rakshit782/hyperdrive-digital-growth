@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { ArrowRight, Play, CheckCircle, Star, Zap, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { canonicalAppPath } from "@/lib/canonicalAppPath";
 
 interface BackgroundImage {
   url: string;
@@ -141,13 +143,9 @@ const ModernHero: React.FC = () => {
     }
   }, [settings.backgroundImages.length]);
 
-  const handlePrimaryClick = () => {
-    window.location.href = settings.cta.primary.link;
-  };
-
-  const handleSecondaryClick = () => {
-    window.location.href = settings.cta.secondary.link;
-  };
+  const primaryHref = canonicalAppPath(settings.cta.primary.link);
+  const secondaryHref = canonicalAppPath(settings.cta.secondary.link);
+  const isAppPath = (href: string) => href.startsWith("/") && !href.startsWith("//");
 
   return (
     <section className="relative min-h-screen overflow-hidden flex items-center justify-center">
@@ -209,24 +207,42 @@ const ModernHero: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
             {settings.cta.primary.enabled && (
               <Button 
+                asChild
                 size="lg" 
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-6 text-xl font-bold rounded-2xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all duration-300"
-                onClick={handlePrimaryClick}
               >
-                {settings.cta.primary.text}
-                <ArrowRight className="w-6 h-6 ml-3" />
+                {isAppPath(primaryHref) ? (
+                  <Link to={primaryHref} aria-label={`${settings.cta.primary.text} — Contact`}>
+                    {settings.cta.primary.text}
+                    <ArrowRight className="w-6 h-6 ml-3" />
+                  </Link>
+                ) : (
+                  <a href={primaryHref} aria-label={`${settings.cta.primary.text} — Contact`}>
+                    {settings.cta.primary.text}
+                    <ArrowRight className="w-6 h-6 ml-3" />
+                  </a>
+                )}
               </Button>
             )}
             
             {settings.cta.secondary.enabled && (
               <Button 
+                asChild
                 variant="outline" 
                 size="lg"
                 className="border-2 border-white/40 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white px-10 py-6 text-xl font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={handleSecondaryClick}
               >
-                <Play className="w-6 h-6 mr-3" />
-                {settings.cta.secondary.text}
+                {isAppPath(secondaryHref) ? (
+                  <Link to={secondaryHref}>
+                    <Play className="w-6 h-6 mr-3" />
+                    {settings.cta.secondary.text}
+                  </Link>
+                ) : (
+                  <a href={secondaryHref}>
+                    <Play className="w-6 h-6 mr-3" />
+                    {settings.cta.secondary.text}
+                  </a>
+                )}
               </Button>
             )}
           </div>

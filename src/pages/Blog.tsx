@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -11,7 +11,6 @@ import { useBlogPosts } from "@/hooks/useBlogPosts";
 import { format } from "date-fns";
 
 const Blog = () => {
-  const navigate = useNavigate();
   const { posts, loading, error } = useBlogPosts();
   const [selectedTag, setSelectedTag] = useState<string>("All");
 
@@ -30,10 +29,6 @@ const Blog = () => {
 
   const featuredPost = filteredPosts[0];
   const regularPosts = filteredPosts.slice(1);
-
-  const handlePostClick = (slug: string) => {
-    navigate(`/blog/${slug}`);
-  };
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '';
@@ -156,12 +151,11 @@ const Blog = () => {
                           {estimateReadTime(featuredPost.content)}
                         </div>
                       </div>
-                      <Button 
-                        className="group"
-                        onClick={() => handlePostClick(featuredPost.slug)}
-                      >
-                        Read More
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      <Button asChild className="group">
+                        <Link to={`/blog/${featuredPost.slug}`} aria-label={`Read more: ${featuredPost.title}`}>
+                          Read More
+                          <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        </Link>
                       </Button>
                     </div>
                   </div>
@@ -203,14 +197,11 @@ const Blog = () => {
                           {estimateReadTime(post.content)}
                         </div>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="group w-full"
-                        onClick={() => handlePostClick(post.slug)}
-                      >
-                        Read More
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      <Button asChild variant="outline" size="sm" className="group w-full">
+                        <Link to={`/blog/${post.slug}`} aria-label={`Read more: ${post.title}`}>
+                          Read More
+                          <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        </Link>
                       </Button>
                     </CardContent>
                   </Card>

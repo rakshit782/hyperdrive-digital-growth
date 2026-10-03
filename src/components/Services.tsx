@@ -1,12 +1,12 @@
 
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingCart, Store, Users, Settings, Link2, Code, Target, TrendingUp, Cog } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { buttonVariants } from "@/components/ui/button";
+import { ArrowRight, ShoppingCart, Store, Users, Settings, Link2, Code, Target, TrendingUp, Cog, FileText, Database } from "lucide-react";
+import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const Services = () => {
-  const navigate = useNavigate();
 
   const services = [
     {
@@ -98,6 +98,26 @@ const Services = () => {
       bgGlow: 'bg-orange-500/10',
       features: ['Cataloging', 'Repricing', 'Inventory Alerts', 'Ads Automation'],
       stats: '85% Time Saved'
+    },
+    {
+      title: 'Listing Optimization',
+      description: 'Professional Amazon SEO for Product Listings with keyword research, title optimization, and bullet point enhancement for maximum visibility.',
+      icon: FileText,
+      link: '/services/listing-optimization',
+      gradient: 'from-orange-500 to-amber-500',
+      bgGlow: 'bg-orange-500/10',
+      features: ['A+ Content', 'Amazon SEO', 'Product Photography', 'Keyword Research'],
+      stats: 'A+ Content Creation'
+    },
+    {
+      title: 'Product Cataloging',
+      description: 'Professional Product Data Management Agency offering comprehensive cataloging solutions for online retailers.',
+      icon: Database,
+      link: '/services/product-cataloging',
+      gradient: 'from-indigo-500 to-purple-500',
+      bgGlow: 'bg-indigo-500/10',
+      features: ['Product Data', 'Multi-channel', 'PIM Service', 'SKU Cataloging'],
+      stats: 'Product Data Management'
     }
   ];
 
@@ -120,21 +140,27 @@ const Services = () => {
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((service, index) => {
+          {services.map((service) => {
             const IconComponent = service.icon;
             return (
               <Card
-                key={index}
+                key={service.link}
                 className="group cursor-pointer relative overflow-hidden bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 rounded-2xl"
-                onClick={() => navigate(service.link)}
               >
+                <Link
+                  to={service.link}
+                  aria-label={`Learn more about ${service.title}`}
+                  className="absolute inset-0 z-20 rounded-2xl"
+                >
+                  <span className="sr-only">Learn more about {service.title}</span>
+                </Link>
                 {/* Top Gradient Line */}
                 <div className={`h-1 bg-gradient-to-r ${service.gradient}`} />
                 
                 {/* Background Glow on Hover */}
                 <div className={`absolute inset-0 ${service.bgGlow} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                 
-                <CardHeader className="relative z-10 pb-2">
+                <CardHeader className="relative z-10 pointer-events-none pb-2">
                   <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                     <IconComponent className="w-7 h-7 text-white" />
                   </div>
@@ -143,7 +169,7 @@ const Services = () => {
                   </CardTitle>
                 </CardHeader>
                 
-                <CardContent className="relative z-10 pt-0">
+                <CardContent className="relative z-10 pointer-events-none pt-0">
                   <CardDescription className="text-slate-600 mb-4 text-sm leading-relaxed line-clamp-3">
                     {service.description}
                   </CardDescription>
@@ -172,17 +198,16 @@ const Services = () => {
                     </div>
                   </div>
                   
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between p-0 h-auto font-semibold text-slate-700 group-hover:text-blue-600 transition-all duration-300"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(service.link);
-                    }}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      buttonVariants({ variant: "ghost" }),
+                      "w-full justify-between p-0 h-auto font-semibold text-slate-700 group-hover:text-blue-600 transition-all duration-300"
+                    )}
                   >
                     Learn More
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
-                  </Button>
+                  </span>
                 </CardContent>
               </Card>
             );

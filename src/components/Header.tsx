@@ -1,13 +1,11 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLogoData } from "@/hooks/useLogoData";
 import amazonSpnLogo from "@/assets/amazon-spn-certified.png";
 
 const Header = () => {
-  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   
@@ -30,6 +28,12 @@ const Header = () => {
     { name: "Website Development", href: "/services/website-development" },
     { name: "Account Management", href: "/services/account-management" },
   ];
+
+  const closeServicesIfFocusLeaves = (event: React.FocusEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      setIsServicesOpen(false);
+    }
+  };
 
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
@@ -76,37 +80,46 @@ const Header = () => {
               About
             </Link>
             
-            {/* Services Dropdown */}
+            {/* Services Dropdown. Links stay in the DOM; CSS hides them until hover or focus. */}
             <div 
               className="relative group"
               onMouseEnter={() => setIsServicesOpen(true)}
               onMouseLeave={() => setIsServicesOpen(false)}
+              onFocus={() => setIsServicesOpen(true)}
+              onBlur={closeServicesIfFocusLeaves}
             >
               <button 
+                type="button"
                 className="flex items-center text-gray-700 hover:text-blue-600 transition-colors py-2"
+                aria-expanded={isServicesOpen}
+                aria-haspopup="true"
               >
                 Services <ChevronDown className="ml-1 h-4 w-4" />
               </button>
               
-              {isServicesOpen && (
-                <div className="absolute top-full left-0 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  <Link 
-                    to="/services" 
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-semibold border-b border-gray-100"
+              <div
+                className={`absolute top-full left-0 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 ${
+                  isServicesOpen
+                    ? "visible opacity-100 pointer-events-auto"
+                    : "invisible opacity-0 pointer-events-none group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:visible group-focus-within:opacity-100 group-focus-within:pointer-events-auto"
+                }`}
+              >
+                <Link 
+                  to="/services" 
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-semibold border-b border-gray-100"
+                >
+                  All Services
+                </Link>
+                {serviceItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
                   >
-                    All Services
+                    {item.name}
                   </Link>
-                  {serviceItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
+                ))}
+              </div>
             </div>
 
             <Link 
@@ -114,6 +127,12 @@ const Header = () => {
               className="text-gray-700 hover:text-blue-600 transition-colors"
             >
               Case Studies
+            </Link>
+            <Link 
+              to="/pricing" 
+              className="text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              Pricing
             </Link>
             <Link 
               to="/blog" 
@@ -125,83 +144,97 @@ const Header = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button onClick={() => navigate('/contact')}>Get Started</Button>
+            <Button asChild>
+              <Link to="/contact" aria-label="Get Started — Contact">Get Started</Link>
+            </Button>
           </div>
 
           {/* Mobile menu button */}
           <button
+            type="button"
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-expanded={isMenuOpen}
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+        {/* Mobile Navigation. Links stay in the DOM and are hidden until the menu opens. */}
+        <div className={isMenuOpen ? "md:hidden" : "hidden"}>
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+            <Link 
+              to="/" 
+              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link 
+              to="/about" 
+              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              About
+            </Link>
+            
+            {/* Mobile Services */}
+            <div className="px-3 py-2">
+              <div className="text-base font-medium text-gray-700 mb-2">Services</div>
               <Link 
-                to="/" 
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
+                to="/services" 
+                className="block px-3 py-1 text-sm text-gray-600 hover:text-blue-600 font-semibold"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Home
+                All Services
               </Link>
-              <Link 
-                to="/about" 
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-              
-              {/* Mobile Services */}
-              <div className="px-3 py-2">
-                <div className="text-base font-medium text-gray-700 mb-2">Services</div>
-                <Link 
-                  to="/services" 
-                  className="block px-3 py-1 text-sm text-gray-600 hover:text-blue-600 font-semibold"
+              {serviceItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="block px-3 py-1 text-sm text-gray-600 hover:text-blue-600"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  All Services
+                  {item.name}
                 </Link>
-                {serviceItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className="block px-3 py-1 text-sm text-gray-600 hover:text-blue-600"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
+              ))}
+            </div>
 
-              <Link 
-                to="/case-studies" 
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Case Studies
-              </Link>
-              <Link 
-                to="/blog" 
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Blog
-              </Link>
-              
-              <div className="px-3 py-2">
-                <Button className="w-full" onClick={() => {
-                  setIsMenuOpen(false);
-                  navigate('/contact');
-                }}>Get Started</Button>
-              </div>
+            <Link 
+              to="/case-studies" 
+              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Case Studies
+            </Link>
+            <Link 
+              to="/pricing" 
+              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Pricing
+            </Link>
+            <Link 
+              to="/blog" 
+              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Blog
+            </Link>
+            
+            <div className="px-3 py-2">
+              <Button asChild className="w-full">
+                <Link
+                  to="/contact"
+                  aria-label="Get Started — Contact"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Get Started
+                </Link>
+              </Button>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </header>
   );

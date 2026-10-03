@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Check, Target, Paintbrush, Brain, ShoppingCart, Users, Plus, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,6 @@ import SEOHead from "@/components/SEOHead";
 import pricingData from "@/data/pricingData.json";
 
 const Pricing = () => {
-  const navigate = useNavigate();
 
   return (
     <>
@@ -152,8 +151,10 @@ const Pricing = () => {
                         📌 {pricingData.guarantee.text}
                       </p>
                     </div>
-                    <Button size="lg" onClick={() => navigate('/contact')}>
-                      Get Started Today
+                    <Button asChild size="lg">
+                      <Link to="/contact" aria-label="Get Started Today — Contact">
+                        Get Started Today
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -172,19 +173,19 @@ const Pricing = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
+                  asChild
                   size="lg" 
                   variant="secondary"
-                  onClick={() => navigate('/contact')}
                 >
-                  Contact Sales
+                  <Link to="/contact">Contact Sales</Link>
                 </Button>
                 <Button 
+                  asChild
                   size="lg" 
                   variant="outline"
                   className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-                  onClick={() => navigate('/services')}
                 >
-                  View All Services
+                  <Link to="/services">View All Services</Link>
                 </Button>
               </div>
             </div>

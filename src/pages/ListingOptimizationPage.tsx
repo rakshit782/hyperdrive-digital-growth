@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowRight, CheckCircle, TrendingUp, Target, Eye, Image } from 'lucide-react';
 
 const ListingOptimizationPage = () => {
-  const navigate = useNavigate();
 
   const schema = {
     "@context": "https://schema.org",
@@ -85,20 +84,24 @@ const ListingOptimizationPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
                 <Button 
+                  asChild
                   size="lg" 
                   className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-8 py-4 text-lg"
-                  onClick={() => navigate('/contact')}
                 >
-                  Get Started Today
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <Link to="/contact" aria-label="Get Started Today — Listing Optimization">
+                    Get Started Today
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Link>
                 </Button>
                 <Button 
+                  asChild
                   size="lg" 
                   variant="outline" 
                   className="px-8 py-4 text-lg"
-                  onClick={() => navigate('/contact')}
                 >
-                  Free Listing Audit
+                  <Link to="/contact" aria-label="Free Listing Audit — Contact">
+                    Free Listing Audit
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -168,12 +171,14 @@ const ListingOptimizationPage = () => {
               Partner with the Best Product Listing Optimization Company for proven results
             </p>
             <Button 
+              asChild
               size="lg" 
               className="bg-gradient-to-r from-orange-500 to-amber-500 text-white px-8 py-4 text-lg"
-              onClick={() => navigate('/contact')}
             >
-              Start Your Free Consultation
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <Link to="/contact" aria-label="Start Your Free Consultation — Listing Optimization">
+                Start Your Free Consultation
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
             </Button>
           </div>
         </section>

@@ -1,7 +1,9 @@
 
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { canonicalAppPath } from '@/lib/canonicalAppPath';
 
 interface HeroSectionProps {
   title: string;
@@ -63,23 +65,25 @@ const HeroSection = ({
             
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <Button 
+                asChild
                 size="lg" 
                 className={`bg-gradient-to-r from-${primaryColor}-600 to-${secondaryColor}-600 hover:from-${primaryColor}-700 hover:to-${secondaryColor}-700 text-white px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300`}
-                onClick={() => window.location.href = primaryButtonUrl}
-                aria-label={`${primaryButtonText} - Navigate to ${primaryButtonUrl}`}
               >
-                {primaryButtonText}
-                <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />
+                <Link to={canonicalAppPath(primaryButtonUrl)} aria-label={`${primaryButtonText} — Contact`}>
+                  {primaryButtonText}
+                  <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />
+                </Link>
               </Button>
               
               <Button 
+                asChild
                 variant="outline" 
                 size="lg"
                 className="border-2 border-slate-300 bg-white/90 backdrop-blur-sm hover:bg-white text-slate-800 px-8 py-3 text-base font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-                onClick={() => window.location.href = secondaryButtonUrl}
-                aria-label={`${secondaryButtonText} - Navigate to ${secondaryButtonUrl}`}
               >
-                {secondaryButtonText}
+                <Link to={canonicalAppPath(secondaryButtonUrl)}>
+                  {secondaryButtonText}
+                </Link>
               </Button>
             </div>
 
