@@ -1,6 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/free-audit", "destination": "/contact", "permanent": true },
+    { "source": "/contact-us", "destination": "/contact", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/about", "destination": "/index.html" },
     { "source": "/services", "destination": "/index.html" },
@@ -26,8 +30,6 @@
     { "source": "/pricing", "destination": "/index.html" },
     { "source": "/blog", "destination": "/index.html" },
     { "source": "/contact", "destination": "/index.html" },
-    { "source": "/free-audit", "destination": "/index.html" },
-    { "source": "/contact-us", "destination": "/index.html" },
     { "source": "/privacy", "destination": "/index.html" },
     { "source": "/terms", "destination": "/index.html" },
     { "source": "/refund-policy", "destination": "/index.html" },

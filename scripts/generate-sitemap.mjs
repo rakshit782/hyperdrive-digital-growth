@@ -8,7 +8,8 @@
  * Included: every concrete public route, plus service slugs from
  * DetailedServicePage's serviceConfigs (so /services/amazon-integration is
  * listed even though it only matches /services/:serviceType).
- * Excluded: /verify-certificate, client-only routes (/ad-landing, /dashboard
+ * Excluded: /blog (noindex; PR #3), /free-audit and /contact-us (308 to
+ * /contact), /verify-certificate, client-only routes (/ad-landing, /dashboard
  * and children, /blog/:slug), and the "*" not-found route.
  *
  * Hosting for those URLs lives in vercel.json (valid JSON, so the notes are
@@ -37,6 +38,9 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://www.amzadscout.com";
 const SITEMAP_EXCLUDE = new Set([
+  "/blog",
+  "/free-audit",
+  "/contact-us",
   "/verify-certificate",
   "/ad-landing",
   "/dashboard",
