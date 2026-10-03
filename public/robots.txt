@@ -4,4 +4,4 @@ Disallow: /dashboard
 Disallow: /dashboard/*
 
 # Sitemaps
-Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://www.amzadscout.com/sitemap.xml
