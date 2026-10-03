@@ -20,6 +20,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  ssr: {
+    // CJS packages whose named exports Node cannot import from the SSR bundle.
+    noExternal: ['react-helmet-async'],
+  },
   define: {
     global: 'globalThis',
   },

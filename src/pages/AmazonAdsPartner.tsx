@@ -1,5 +1,5 @@
-import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
+import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -49,10 +49,11 @@ const AmazonAdsPartner = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Advertising Management for Amazon Sellers | AMZ AD SCOUT</title>
-        <meta name="description" content="AMZ AD SCOUT provides expert advertising management services for brands selling on Amazon. We are an independent service provider - not affiliated with or endorsed by Amazon." />
-      </Helmet>
+      <SEOHead
+        title="Advertising Management for Amazon Sellers | AMZ AD SCOUT"
+        description="AMZ AD SCOUT provides expert advertising management services for brands selling on Amazon. We are an independent service provider - not affiliated with or endorsed by Amazon."
+        canonical="https://www.amzadscout.com/amazon-ads-partner"
+      />
       
       <Header />
       

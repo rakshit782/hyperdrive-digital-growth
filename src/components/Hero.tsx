@@ -268,17 +268,17 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Floating Elements */}
+      {/* Floating Elements. Positions are fixed so server HTML and hydration match. */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(12)].map((_, i) => (
+        {Array.from({ length: 12 }, (_, i) => (
           <div
             key={i}
             className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20 animate-pulse-modern"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 3}s`
+              left: `${(i * 37 + 13) % 100}%`,
+              top: `${(i * 53 + 7) % 100}%`,
+              animationDelay: `${(i % 5) * 0.6}s`,
+              animationDuration: `${2.4 + (i % 4) * 0.7}s`
             }}
           />
         ))}

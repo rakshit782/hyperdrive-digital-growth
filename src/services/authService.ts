@@ -22,6 +22,7 @@ class AuthService {
   }
 
   private loadSession() {
+    if (typeof localStorage === 'undefined') return;
     const stored = localStorage.getItem('auth_session');
     if (stored) {
       try {
