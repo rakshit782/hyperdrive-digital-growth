@@ -8,7 +8,7 @@ const RefundPolicy = () => {
     <>
       <SEOHead 
         title="Refund and Cancellation Policy for Services | AMZ AD SCOUT"
-        description="Read how AMZ AD SCOUT handles refund requests, cancellations and billing questions for our services, and how to reach us. Questions? Contact our team."
+        description="Read AMZ AD SCOUT's refund and cancellation terms for our services, including how billing works and how to reach us with questions. Contact our team anytime."
         keywords="refund policy, money back guarantee, refund eligibility, cancellation policy"
         canonical={window.location.href}
       />

@@ -26,7 +26,7 @@ const serviceConfigs: Record<string, {
     subtitle: 'Amazon Ads Expert | Amazon DSP Agency | Amazon Sponsored Products Management',
     description: 'Leading Amazon Advertising Agency specializing in Amazon PPC Management Service, Amazon DSP campaigns, and Amazon Sponsored Products Management. Our Amazon Ads Experts deliver proven PPC audit and optimization strategies that drive 350% average sales growth.',
     seoTitle: "Amazon PPC & Advertising Management Agency | AMZ AD SCOUT",
-    metaDescription: "Get Amazon PPC managed end to end: Sponsored Products, Sponsored Brands and DSP campaigns, keyword research and ongoing bid optimization. Request a free audit.",
+    metaDescription: "Get Amazon PPC managed end to end: Sponsored Products and Sponsored Brands campaigns, keyword research and ongoing bid optimization. Request a free audit today.",
     features: [
       'Amazon PPC Management Service - Campaign setup and optimization',
       'Amazon Ads Expert - Advanced keyword research and competitive analysis',
