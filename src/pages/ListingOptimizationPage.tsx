@@ -14,10 +14,15 @@ const ListingOptimizationPage = () => {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "serviceType": "E-commerce Listing Optimization",
+    "@id": "https://www.amzadscout.com/services/listing-optimization#service",
+    "name": "Amazon Listing Optimization",
+    "serviceType": "Listing optimization",
+    "url": "https://www.amzadscout.com/services/listing-optimization",
     "provider": {
       "@type": "Organization",
-      "name": "Digital Growth Agency"
+      "@id": "https://www.amzadscout.com/#organization",
+      "name": "AMZ AD SCOUT",
+      "url": "https://www.amzadscout.com/"
     },
     "areaServed": "Worldwide",
     "description": "Amazon Listing Optimization Service, E-commerce Listing Optimization Agency, A+ Content Creation and Optimization, Product Photography Optimization Services"

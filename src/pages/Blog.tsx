@@ -65,6 +65,7 @@ const Blog = () => {
         description="Expert insights on Amazon PPC, Walmart advertising, Shopify development, and e-commerce growth strategies. Stay updated with the latest digital marketing trends."
         keywords="amazon advertising blog, amazon ppc tips, walmart advertising insights, shopify development blog, e-commerce marketing strategies"
         canonical={window.location.href}
+        robots="noindex, follow"
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <Header />

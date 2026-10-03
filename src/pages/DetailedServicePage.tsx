@@ -266,59 +266,93 @@ const DetailedServicePage = () => {
     );
   }
 
+  const organizationProvider = {
+    "@type": "Organization",
+    "@id": "https://www.amzadscout.com/#organization",
+    "name": "AMZ AD SCOUT",
+    "url": "https://www.amzadscout.com/"
+  };
+
   const serviceSchemas: Record<string, any> = {
     'amazon-advertising': {
       "@context": "https://schema.org",
       "@type": "Service",
-      "serviceType": "Amazon Advertising Management",
-      "provider": {
-        "@type": "Organization",
-        "name": "Digital Growth Agency"
-      },
+      "@id": "https://www.amzadscout.com/services/amazon-advertising#service",
+      "name": "Amazon Advertising (PPC) Management",
+      "serviceType": "Amazon PPC management",
+      "url": "https://www.amzadscout.com/services/amazon-advertising",
+      "provider": organizationProvider,
       "areaServed": "Worldwide",
       "description": "Amazon Advertising Agency - Amazon PPC Management Service, Amazon Ads Expert, Amazon DSP Agency"
     },
     'walmart-advertising': {
       "@context": "https://schema.org",
       "@type": "Service",
-      "serviceType": "Walmart Advertising Management",
-      "provider": {
-        "@type": "Organization",
-        "name": "Digital Growth Agency"
-      },
+      "@id": "https://www.amzadscout.com/services/walmart-advertising#service",
+      "name": "Walmart Advertising Management",
+      "serviceType": "Walmart Connect advertising management",
+      "url": "https://www.amzadscout.com/services/walmart-advertising",
+      "provider": organizationProvider,
       "areaServed": "Worldwide",
       "description": "Walmart Advertising Agency - Walmart Connect Partner, Walmart Sponsored Products Expert"
+    },
+    'google-advertising': {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "@id": "https://www.amzadscout.com/services/google-advertising#service",
+      "name": "Google Ads Management",
+      "serviceType": "Google Ads management",
+      "url": "https://www.amzadscout.com/services/google-advertising",
+      "provider": organizationProvider
+    },
+    'meta-advertising': {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "@id": "https://www.amzadscout.com/services/meta-advertising#service",
+      "name": "Meta (Facebook & Instagram) Advertising Management",
+      "serviceType": "Meta ads management",
+      "url": "https://www.amzadscout.com/services/meta-advertising",
+      "provider": organizationProvider
     },
     'shopify-development': {
       "@context": "https://schema.org",
       "@type": "Service",
-      "serviceType": "Shopify Development",
-      "provider": {
-        "@type": "Organization",
-        "name": "Digital Growth Agency"
-      },
+      "@id": "https://www.amzadscout.com/services/shopify-development#service",
+      "name": "Shopify Store Development",
+      "serviceType": "Shopify development",
+      "url": "https://www.amzadscout.com/services/shopify-development",
+      "provider": organizationProvider,
       "areaServed": "Worldwide",
       "description": "Shopify Development Partner - Custom Shopify Theme Development, Shopify Plus Development"
     },
     'shopify-integration': {
       "@context": "https://schema.org",
       "@type": "Service",
-      "serviceType": "Multi-Marketplace Integration",
-      "provider": {
-        "@type": "Organization",
-        "name": "Digital Growth Agency"
-      },
+      "@id": "https://www.amzadscout.com/services/shopify-integration#service",
+      "name": "Shopify Multi-Marketplace Integration",
+      "serviceType": "Multi-marketplace integration",
+      "url": "https://www.amzadscout.com/services/shopify-integration",
+      "provider": organizationProvider,
       "areaServed": "Worldwide",
       "description": "Multi-Marketplace Integration Agency - Integrate Shopify with Amazon FBA"
+    },
+    'account-management': {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "@id": "https://www.amzadscout.com/services/account-management#service",
+      "name": "Complete Marketplace Account Management",
+      "serviceType": "Marketplace account management",
+      "url": "https://www.amzadscout.com/services/account-management",
+      "provider": organizationProvider
     },
     'amazon-integration': {
       "@context": "https://schema.org",
       "@type": "Service",
-      "serviceType": "Amazon Integration & Automation",
-      "provider": {
-        "@type": "Organization",
-        "name": "Digital Growth Agency"
-      },
+      "@id": "https://www.amzadscout.com/services/amazon-integration#service",
+      "name": "Amazon Integration & Automation",
+      "serviceType": "Amazon automation",
+      "url": "https://www.amzadscout.com/services/amazon-integration",
+      "provider": organizationProvider,
       "areaServed": "Worldwide",
       "description": "Amazon Integration & Automation Services - Cataloging, Listing Optimization, Repricing, Inventory Management, Ads Automation"
     }

@@ -14,10 +14,15 @@ const ProductCatalogingPage = () => {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "serviceType": "E-commerce Product Cataloging",
+    "@id": "https://www.amzadscout.com/services/product-cataloging#service",
+    "name": "E-commerce Product Cataloging",
+    "serviceType": "Product cataloging",
+    "url": "https://www.amzadscout.com/services/product-cataloging",
     "provider": {
       "@type": "Organization",
-      "name": "Digital Growth Agency"
+      "@id": "https://www.amzadscout.com/#organization",
+      "name": "AMZ AD SCOUT",
+      "url": "https://www.amzadscout.com/"
     },
     "areaServed": "Worldwide",
     "description": "E-commerce Product Cataloging Services, Multi-channel Product Catalog Management, Product Data Management Agency, Product Information Management (PIM) Service"
