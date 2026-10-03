@@ -1,8 +1,43 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/about", "destination": "/index.html" },
+    { "source": "/services", "destination": "/index.html" },
+    { "source": "/services/website-development", "destination": "/index.html" },
+    { "source": "/services/listing-optimization", "destination": "/index.html" },
+    { "source": "/services/product-cataloging", "destination": "/index.html" },
+    { "source": "/services/amazon-advertising", "destination": "/index.html" },
+    { "source": "/services/google-advertising", "destination": "/index.html" },
+    { "source": "/services/meta-advertising", "destination": "/index.html" },
+    { "source": "/services/walmart-advertising", "destination": "/index.html" },
+    { "source": "/services/shopify-development", "destination": "/index.html" },
+    { "source": "/services/shopify-integration", "destination": "/index.html" },
+    { "source": "/services/account-management", "destination": "/index.html" },
+    { "source": "/services/amazon-integration", "destination": "/index.html" },
+    { "source": "/services/:serviceType", "destination": "/index.html" },
+    { "source": "/amazon-tools-alternative", "destination": "/index.html" },
+    { "source": "/helium-10-alternative", "destination": "/index.html" },
+    { "source": "/jungle-scout-alternative", "destination": "/index.html" },
+    { "source": "/case-studies", "destination": "/index.html" },
+    { "source": "/amazon-case-studies", "destination": "/index.html" },
+    { "source": "/meta-case-studies", "destination": "/index.html" },
+    { "source": "/walmart-case-studies", "destination": "/index.html" },
+    { "source": "/pricing", "destination": "/index.html" },
+    { "source": "/blog", "destination": "/index.html" },
+    { "source": "/contact", "destination": "/index.html" },
+    { "source": "/free-audit", "destination": "/index.html" },
+    { "source": "/contact-us", "destination": "/index.html" },
+    { "source": "/privacy", "destination": "/index.html" },
+    { "source": "/terms", "destination": "/index.html" },
+    { "source": "/refund-policy", "destination": "/index.html" },
+    { "source": "/amazon-ads-partner", "destination": "/index.html" },
+    { "source": "/eula", "destination": "/index.html" },
+    { "source": "/amz-copilot-privacy", "destination": "/index.html" },
+    { "source": "/verify-certificate", "destination": "/index.html" },
+    { "source": "/ad-landing", "destination": "/spa.html" },
+    { "source": "/blog/:slug", "destination": "/spa.html" },
+    { "source": "/dashboard", "destination": "/spa.html" },
+    { "source": "/dashboard/:path*", "destination": "/spa.html" }
   ]
 }

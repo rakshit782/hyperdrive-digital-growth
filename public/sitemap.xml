@@ -1,145 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
   <url>
-    <loc>https://amzadscout.com/</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://www.amzadscout.com/</loc>
+    <lastmod>2025-12-16</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/about</loc>
+    <lastmod>2025-12-14</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/amazon-advertising</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/services</loc>
+    <lastmod>2025-12-18</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/google-advertising</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/services/website-development</loc>
+    <lastmod>2025-11-18</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/meta-advertising</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/services/listing-optimization</loc>
+    <lastmod>2025-11-18</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/walmart-advertising</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/services/product-cataloging</loc>
+    <lastmod>2025-11-18</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/shopify-development</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/amazon-tools-alternative</loc>
+    <lastmod>2025-11-18</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/shopify-integration</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/helium-10-alternative</loc>
+    <lastmod>2025-11-18</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/website-development</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/jungle-scout-alternative</loc>
+    <lastmod>2025-11-18</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/listing-optimization</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/case-studies</loc>
+    <lastmod>2025-11-17</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/product-cataloging</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/amazon-case-studies</loc>
+    <lastmod>2025-11-18</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/services/account-management</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.amzadscout.com/meta-case-studies</loc>
+    <lastmod>2025-11-18</lastmod>
   </url>
-
-  <!-- Amazon Tools Alternatives -->
   <url>
-    <loc>https://amzadscout.com/amazon-tools-alternative</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <loc>https://www.amzadscout.com/walmart-case-studies</loc>
+    <lastmod>2025-11-18</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/helium-10-alternative</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <loc>https://www.amzadscout.com/pricing</loc>
+    <lastmod>2025-12-04</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/jungle-scout-alternative</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <loc>https://www.amzadscout.com/blog</loc>
+    <lastmod>2025-12-04</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/about</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.amzadscout.com/contact</loc>
+    <lastmod>2025-11-17</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/contact</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.amzadscout.com/free-audit</loc>
+    <lastmod>2025-11-17</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/pricing</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.amzadscout.com/contact-us</loc>
+    <lastmod>2025-11-17</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/case-studies</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.amzadscout.com/privacy</loc>
+    <lastmod>2025-12-04</lastmod>
   </url>
-
   <url>
-    <loc>https://amzadscout.com/blog</loc>
-    <lastmod>2025-01-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.amzadscout.com/terms</loc>
+    <lastmod>2025-12-04</lastmod>
   </url>
-
+  <url>
+    <loc>https://www.amzadscout.com/refund-policy</loc>
+    <lastmod>2025-12-04</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/amazon-ads-partner</loc>
+    <lastmod>2025-12-14</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/eula</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/amz-copilot-privacy</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/services/amazon-advertising</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/services/google-advertising</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/services/meta-advertising</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/services/walmart-advertising</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/services/shopify-development</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/services/shopify-integration</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/services/account-management</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+  <url>
+    <loc>https://www.amzadscout.com/services/amazon-integration</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
 </urlset>
