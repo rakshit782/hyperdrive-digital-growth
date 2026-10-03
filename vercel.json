@@ -37,9 +37,9 @@
     { "source": "/eula", "destination": "/index.html" },
     { "source": "/amz-copilot-privacy", "destination": "/index.html" },
     { "source": "/verify-certificate", "destination": "/index.html" },
-    { "source": "/ad-landing", "destination": "/spa.html" },
-    { "source": "/blog/:slug", "destination": "/spa.html" },
-    { "source": "/dashboard", "destination": "/spa.html" },
-    { "source": "/dashboard/:path*", "destination": "/spa.html" }
+    { "source": "/ad-landing", "destination": "/index.html" },
+    { "source": "/blog/:slug", "destination": "/index.html" },
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/dashboard/:path*", "destination": "/index.html" }
   ]
 }
