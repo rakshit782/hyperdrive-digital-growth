@@ -14,6 +14,9 @@ const serviceConfigs: Record<string, {
   title: string;
   subtitle: string;
   description: string;
+  seoTitle?: string;
+  metaDescription?: string;
+  crossLink?: { before: string; anchor: string; href: string; after: string };
   features: string[];
   benefits: string[];
   gradient: string;
@@ -22,6 +25,8 @@ const serviceConfigs: Record<string, {
     title: 'Amazon Advertising Agency - Expert PPC Management Service',
     subtitle: 'Amazon Ads Expert | Amazon DSP Agency | Amazon Sponsored Products Management',
     description: 'Leading Amazon Advertising Agency specializing in Amazon PPC Management Service, Amazon DSP campaigns, and Amazon Sponsored Products Management. Our Amazon Ads Experts deliver proven PPC audit and optimization strategies that drive 350% average sales growth.',
+    seoTitle: "Amazon PPC & Advertising Management Agency | AMZ AD SCOUT",
+    metaDescription: "Get Amazon PPC managed end to end: Sponsored Products, Sponsored Brands and DSP campaigns, keyword research and ongoing bid optimization. Request a free audit.",
     features: [
       'Amazon PPC Management Service - Campaign setup and optimization',
       'Amazon Ads Expert - Advanced keyword research and competitive analysis',
@@ -46,6 +51,8 @@ const serviceConfigs: Record<string, {
     title: 'Google Advertising Management',
     subtitle: 'Drive Targeted Traffic & Conversions with Google Ads',
     description: 'Maximize your ROI with strategic Google Ads campaigns designed to drive qualified traffic and conversions. Our certified Google Ads specialists manage every aspect of your campaigns to ensure optimal performance and continuous growth.',
+    seoTitle: "Google Ads Management for E-commerce | AMZ AD SCOUT",
+    metaDescription: "Reach shoppers with Google Search, Shopping, Display and YouTube campaigns, backed by conversion tracking and ongoing optimization. Request a free audit today.",
     features: [
       'Google Search Ads campaign management',
       'Shopping Ads optimization for e-commerce',
@@ -70,6 +77,8 @@ const serviceConfigs: Record<string, {
     title: 'Meta Advertising (Facebook & Instagram)',
     subtitle: 'Scale Your Business with Social Media Advertising',
     description: 'Leverage the power of Facebook and Instagram advertising to reach your ideal customers. Our Meta advertising experts create campaigns that drive engagement, conversions, and measurable business growth through strategic targeting and creative optimization.',
+    seoTitle: "Meta Ads Management: Facebook & Instagram | AMZ AD SCOUT",
+    metaDescription: "Grow sales with Facebook and Instagram ads: audience targeting, creative testing, catalog and retargeting campaigns run by one team. Let's discuss your goals.",
     features: [
       'Facebook and Instagram Ads campaign management',
       'Advanced audience targeting and lookalike audiences',
@@ -94,6 +103,8 @@ const serviceConfigs: Record<string, {
     title: 'Walmart Advertising Agency - Walmart Connect Partner',
     subtitle: 'Walmart Sponsored Products Expert | Walmart Performance Ads Management',
     description: 'Certified Walmart Advertising Agency and Walmart Connect Partner specializing in Walmart Sponsored Products, Walmart Performance Ads Management, and comprehensive Walmart Advertising Strategy. Expert Walmart Marketplace Ad Agency services.',
+    seoTitle: "Walmart Advertising Management Agency | AMZ AD SCOUT",
+    metaDescription: "Grow on Walmart Marketplace with Sponsored Products campaigns, keyword and bid optimization, and listing fixes that support your ads. Get a free Walmart audit.",
     features: [
       'Walmart Connect Partner - Official advertising campaign management',
       'Walmart Sponsored Products Expert - Optimization and scaling',
@@ -142,6 +153,14 @@ const serviceConfigs: Record<string, {
     title: 'Shopify Development Partner - Professional Shopify Developers',
     subtitle: 'Custom Shopify Theme Development | Shopify Plus Development Experts',
     description: 'Certified Shopify Development Partner with Professional Shopify Developers specializing in Custom Shopify Theme Development Agency services, Shopify E-commerce Store Development, Shopify Store Migration Services, and Shopify Plus Development for enterprise brands.',
+    seoTitle: "Shopify Store Development & Custom Themes | AMZ AD SCOUT",
+    metaDescription: "Build or upgrade your Shopify store with custom theme development, store setup, Shopify Plus builds and migrations from other platforms. Start your project now.",
+    crossLink: {
+      before: "Need a website that is not built on Shopify? Explore our ",
+      anchor: "custom website development",
+      href: "/services/website-development",
+      after: " services.",
+    },
     features: [
       'Custom Shopify Theme Development Agency - Unique designs',
       'Shopify Plus Development Experts - Enterprise solutions',
@@ -166,6 +185,8 @@ const serviceConfigs: Record<string, {
     title: 'Multi-Marketplace Integration Agency',
     subtitle: 'Integrate Shopify with Amazon FBA | Multi-Channel E-commerce Integration',
     description: 'Leading Multi-Marketplace Integration Agency offering comprehensive Multi-Channel E-commerce Integration Service. Expert in Integrate Shopify with Amazon FBA, Walmart to Shopify Product Sync Solution, and Best Multi-Marketplace Sync Software for E-commerce Channel Management Solutions.',
+    seoTitle: "Shopify to Amazon & Walmart Integration | AMZ AD SCOUT",
+    metaDescription: "Connect your Shopify store with Amazon and Walmart to keep inventory, orders and product data in sync across channels with less manual work. Book a free call.",
     features: [
       'Multi-Marketplace Integration Agency - Amazon, Walmart, eBay',
       'Integrate Shopify with Amazon FBA - Real-time inventory sync',
@@ -192,6 +213,8 @@ const serviceConfigs: Record<string, {
     title: 'Dedicated Account Management',
     subtitle: 'Expert Management for Sustained Business Growth',
     description: 'Get a dedicated account manager who acts as an extension of your team. Our account management services ensure consistent growth, strategic optimization, and proactive support across all your marketing channels.',
+    seoTitle: "Dedicated E-commerce Account Management | AMZ AD SCOUT",
+    metaDescription: "Get a dedicated account manager who coordinates your campaigns across channels, with weekly strategy calls and clear reporting. Let's talk about your goals.",
     features: [
       'Dedicated senior account manager',
       'Weekly strategy calls and performance reviews',
@@ -216,6 +239,8 @@ const serviceConfigs: Record<string, {
     title: 'Amazon Integration & Automation Services',
     subtitle: 'Streamline Operations & Scale Your Amazon Business',
     description: 'Comprehensive Amazon automation solutions that save time and maximize profits. From product cataloging to repricing automation, we help brands streamline operations and scale efficiently on Amazon marketplace.',
+    seoTitle: "Amazon Integration & Automation Services | AMZ AD SCOUT",
+    metaDescription: "Automate Amazon operations: catalog setup, listing optimization, repricing, inventory alerts and ads automation, all handled by one team. Book a consultation.",
     features: [
       'Amazon Product Cataloging - Complete catalog setup and management',
       'Listing Optimization - SEO-focused titles, bullets, and descriptions',
@@ -370,8 +395,8 @@ const DetailedServicePage = () => {
   return (
     <>
       <SEOHead 
-        title={`${config.title} | Expert E-commerce Digital Marketing Services`}
-        description={config.description}
+        title={config.seoTitle ?? `${config.title} | Expert E-commerce Digital Marketing Services`}
+        description={config.metaDescription ?? config.description}
         keywords={serviceKeywords[serviceType || ''] || `${config.title}, ${config.subtitle}, E-commerce Digital Marketing Agency`}
         canonical={typeof window !== 'undefined' ? window.location.href : ''}
         schema={serviceSchemas[serviceType || '']}
@@ -465,6 +490,15 @@ const DetailedServicePage = () => {
                 </Card>
               ))}
             </div>
+            {config.crossLink && (
+              <p className="text-center text-slate-600 mt-12 text-lg">
+                {config.crossLink.before}
+                <Link to={config.crossLink.href} className="text-blue-700 underline hover:text-blue-900">
+                  {config.crossLink.anchor}
+                </Link>
+                {config.crossLink.after}
+              </p>
+            )}
           </div>
         </section>
 

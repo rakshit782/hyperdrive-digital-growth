@@ -7,8 +7,8 @@ const AMZCoPilotPrivacy = () => {
   return (
     <>
       <SEOHead 
-        title="Privacy Policy - AMZ CoPilot | AMZ AD SCOUT"
-        description="Privacy Policy for AMZ CoPilot - Learn how we collect, use, and protect your data when using our Amazon seller management app."
+        title="AMZ CoPilot Privacy Policy for Amazon Sellers | AMZ AD SCOUT"
+        description="See how AMZ CoPilot collects, uses and protects Amazon seller data, including SP-API access, data retention and your privacy rights. Questions? Contact us."
         keywords="privacy policy, AMZ CoPilot, Amazon seller app, data protection, data privacy"
         canonical={window.location.href}
       />

@@ -7,8 +7,8 @@ const EULA = () => {
   return (
     <>
       <SEOHead 
-        title="End User License Agreement - AMZ CoPilot | AMZ AD SCOUT"
-        description="End User License Agreement (EULA) for AMZ CoPilot - Amazon seller management app for listings, orders, inventory, and performance."
+        title="AMZ CoPilot End User License Agreement | AMZ AD SCOUT"
+        description="Read the license agreement for AMZ CoPilot, our app that helps Amazon sellers manage listings, orders, inventory and performance. Review it before you install."
         keywords="EULA, end user license agreement, AMZ CoPilot, Amazon seller app, terms of use"
         canonical={window.location.href}
       />

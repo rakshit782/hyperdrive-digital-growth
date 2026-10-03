@@ -115,8 +115,8 @@ const Index = () => {
   return (
     <>
       <SEOHead 
-        title="E-commerce Growth Specialists | Advertising Management for Amazon, Walmart & Meta Sellers"
-        description="Independent e-commerce growth specialists helping brands advertise on Amazon, Walmart, and Meta platforms. Data-driven advertising management with proven results. We are not affiliated with or endorsed by Amazon."
+        title="E-commerce Growth Agency for Amazon & Walmart | AMZ AD SCOUT"
+        description="AMZ AD SCOUT manages Amazon, Walmart, Meta and Google ads for e-commerce brands, plus listings, catalogs and Shopify stores. Book a free strategy call today."
         keywords="advertising management, e-commerce growth, marketplace advertising, advertising for amazon sellers, walmart advertising management, meta advertising, ppc management, sponsored products management, e-commerce agency, advertising management services, marketplace optimization, listing optimization, keyword research, product launch, e-commerce consulting, conversion rate optimization, roi optimization, campaign management, multi-channel ecommerce, performance marketing, growth strategies, ecommerce growth specialists, online retail marketing, advertising campaign optimization, ppc advertising, brand advertising"
         canonical={window.location.href}
         schema={schema}

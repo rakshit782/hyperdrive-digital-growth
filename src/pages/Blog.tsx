@@ -61,8 +61,8 @@ const Blog = () => {
   return (
     <>
       <SEOHead 
-        title="E-commerce Marketing Blog | Amazon, Walmart & Shopify Growth Strategies"
-        description="Expert insights on Amazon PPC, Walmart advertising, Shopify development, and e-commerce growth strategies. Stay updated with the latest digital marketing trends."
+        title="E-commerce Marketing Blog & Seller Insights | AMZ AD SCOUT"
+        description="Practical guides on Amazon PPC, Walmart ads, listing optimization and Shopify growth from the AMZ AD SCOUT team. New articles are on the way, so check back."
         keywords="amazon advertising blog, amazon ppc tips, walmart advertising insights, shopify development blog, e-commerce marketing strategies"
         canonical={window.location.href}
         robots="noindex, follow"
