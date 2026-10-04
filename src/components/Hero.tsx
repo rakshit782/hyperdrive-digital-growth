@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { HomepageReviewsBadge } from "@/components/ReviewsBadge";
 import { ArrowRight, Play, Sparkles, TrendingUp, CheckCircle, Users, Award, Zap, Target, BarChart3, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -137,7 +138,7 @@ const Hero = () => {
               </div>
 
               {/* Trust Indicators */}
-              <div className="flex flex-wrap gap-6 justify-center lg:justify-start pt-4">
+              <div className="flex flex-wrap items-center gap-6 justify-center lg:justify-start pt-4">
                 <div className="flex items-center gap-2 text-gray-600">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   <span className="text-sm font-medium">Free Audit</span>
@@ -150,6 +151,7 @@ const Hero = () => {
                   <Zap className="w-5 h-5 text-yellow-500" />
                   <span className="text-sm font-medium">24hr Setup</span>
                 </div>
+                <HomepageReviewsBadge className="max-sm:my-0 max-sm:w-full max-sm:justify-center" />
               </div>
             </div>
 
