@@ -8,6 +8,7 @@ import { LeadsSection } from '@/components/dashboard/LeadsSection';
 import { NewsletterSection } from '@/components/dashboard/NewsletterSection';
 import { SecuritySection } from '@/components/dashboard/SecuritySection';
 import { SettingsSection } from '@/components/dashboard/SettingsSection';
+import { HeaderSettingsSection } from '@/components/dashboard/HeaderSettingsSection';
 import { LegalPagesSection } from '@/components/dashboard/LegalPagesSection';
 import { PricingSection } from '@/components/dashboard/PricingSection';
 import { TrackingSection } from '@/components/dashboard/TrackingSection';
@@ -149,6 +150,8 @@ const Dashboard = () => {
         return <TrackingSection />;
       case 'settings':
         return <SettingsSection />;
+      case 'header-settings':
+        return <HeaderSettingsSection />;
       case 'certificates':
         return <CertificatesSection />;
       case 'legal':

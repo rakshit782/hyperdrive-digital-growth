@@ -23,6 +23,7 @@ const menuItems = [
   { title: "Tracking Scripts", icon: Code, section: "tracking" },
   { title: "Certificates", icon: Award, section: "certificates" },
   { title: "Legal Pages", icon: FileText, section: "legal" },
+  { title: "Header / Menu", icon: LayoutDashboard, section: "header-settings" },
   { title: "Pricing", icon: DollarSign, section: "pricing-management" },
   { title: "Settings", icon: Settings, section: "settings" },
 ];
