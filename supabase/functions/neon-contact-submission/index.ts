@@ -21,7 +21,7 @@ serve(async (req: Request) => {
     await client.connect();
 
     try {
-      const result = await client.queryObject(
+      const result = await client.queryObject<{ id: string }>(
         `INSERT INTO contact_submissions (name, email, phone, company, message, form_type, created_at)
          VALUES ($1, $2, $3, $4, $5, $6, NOW())
          RETURNING id`,

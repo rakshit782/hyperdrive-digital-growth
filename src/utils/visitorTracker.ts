@@ -6,8 +6,9 @@ async function getClientIP(): Promise<string> {
     const response = await fetch('https://api.ipify.org?format=json');
     const data = await response.json();
     return data.ip;
-  } catch (error) {
-    console.error('Error getting IP:', error);
+  } catch {
+    // The IP service can be blocked by the browser or network. Visitor logging
+    // continues without an address, so this is not an app error.
     return 'unknown';
   }
 }

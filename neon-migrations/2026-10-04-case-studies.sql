@@ -1,5 +1,5 @@
 -- Case studies (admin-managed). Safe to run more than once.
-CREATE TABLE IF NOT EXISTS public.case_studies (
+CREATE TABLE IF NOT EXISTS amz_app.case_studies (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   slug text NOT NULL UNIQUE,
   brand_name text NOT NULL,
@@ -34,4 +34,4 @@ CREATE TABLE IF NOT EXISTS public.case_studies (
 );
 
 CREATE INDEX IF NOT EXISTS idx_case_studies_published_sort
-  ON public.case_studies (published, sort_order);
+  ON amz_app.case_studies (published, sort_order);

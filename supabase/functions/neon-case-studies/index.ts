@@ -109,7 +109,7 @@ async function allocateSlug(db: SqlClient, base: string, reserved: Set<string>):
     const candidate = n === 1 ? root : `${root}-${n}`;
     if (reserved.has(candidate)) continue;
     const existing = await db.queryObject(
-      "SELECT 1 FROM public.case_studies WHERE slug = $1",
+      "SELECT 1 FROM amz_app.case_studies WHERE slug = $1",
       [candidate],
     );
     if (existing.rows.length === 0) {
@@ -129,7 +129,7 @@ async function insertRow(
     const slug = await allocateSlug(db, slugify(row.brand_name), reserved);
     try {
       const result = await db.queryObject<Record<string, unknown>>(
-        `INSERT INTO public.case_studies (
+        `INSERT INTO amz_app.case_studies (
            slug, brand_name, channel, category, logo_url, challenge, solution,
            results, time_period, testimonial_quote, testimonial_author, published, sort_order
          ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11,$12,$13)
@@ -181,7 +181,7 @@ async function listPublic(client: SqlClient, slug: string | null): Promise<Respo
   const cache = { "Cache-Control": "public, max-age=60" };
   if (slug !== null) {
     const result = await client.queryObject(
-      `SELECT * FROM public.case_studies
+      `SELECT * FROM amz_app.case_studies
        WHERE published = true AND slug = $1`,
       [slug],
     );
@@ -189,7 +189,7 @@ async function listPublic(client: SqlClient, slug: string | null): Promise<Respo
     return json({ item: normalizeRow(result.rows[0] as Record<string, unknown>) }, 200, cache);
   }
   const result = await client.queryObject(
-    `SELECT * FROM public.case_studies
+    `SELECT * FROM amz_app.case_studies
      WHERE published = true
      ORDER BY sort_order ASC, created_at DESC`,
   );
@@ -202,7 +202,7 @@ async function listPublic(client: SqlClient, slug: string | null): Promise<Respo
 
 async function listAdmin(client: SqlClient): Promise<Response> {
   const result = await client.queryObject(
-    `SELECT * FROM public.case_studies
+    `SELECT * FROM amz_app.case_studies
      ORDER BY sort_order ASC, created_at DESC`,
   );
   return json(
@@ -220,7 +220,7 @@ async function createOne(client: SqlClient, row: CaseStudyWrite): Promise<Respon
 
 async function updateOne(client: SqlClient, id: string, patch: CaseStudyPatch): Promise<Response> {
   const existing = await client.queryObject<{ published: boolean }>(
-    "SELECT published FROM public.case_studies WHERE id = $1",
+    "SELECT published FROM amz_app.case_studies WHERE id = $1",
     [id],
   );
   if (existing.rows.length === 0) return json({ error: "Case study not found" }, 404);
@@ -228,7 +228,7 @@ async function updateOne(client: SqlClient, id: string, patch: CaseStudyPatch): 
 
   if (patch.slug) {
     const clash = await client.queryObject(
-      "SELECT 1 FROM public.case_studies WHERE slug = $1 AND id <> $2",
+      "SELECT 1 FROM amz_app.case_studies WHERE slug = $1 AND id <> $2",
       [patch.slug, id],
     );
     if (clash.rows.length > 0) return json({ error: "Slug is already in use" }, 400);
@@ -258,7 +258,7 @@ async function updateOne(client: SqlClient, id: string, patch: CaseStudyPatch): 
   values.push(id);
 
   const result = await client.queryObject<Record<string, unknown>>(
-    `UPDATE public.case_studies SET ${assignments.join(", ")} WHERE id = $${values.length} RETURNING *`,
+    `UPDATE amz_app.case_studies SET ${assignments.join(", ")} WHERE id = $${values.length} RETURNING *`,
     values,
   );
   if (result.rows.length === 0) return json({ error: "Case study not found" }, 404);
@@ -269,7 +269,7 @@ async function updateOne(client: SqlClient, id: string, patch: CaseStudyPatch): 
 
 async function deleteOne(client: SqlClient, id: string): Promise<Response> {
   const result = await client.queryObject<{ published: boolean }>(
-    "DELETE FROM public.case_studies WHERE id = $1 RETURNING published",
+    "DELETE FROM amz_app.case_studies WHERE id = $1 RETURNING published",
     [id],
   );
   if (result.rows.length === 0) return json({ error: "Case study not found" }, 404);

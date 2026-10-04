@@ -30,12 +30,12 @@ interface SettingsInput {
 
 const SELECT_SQL = `
   SELECT rating_value, review_count, review_source_url, rating_visible, updated_at
-  FROM site_settings
+  FROM amz_app.site_settings
   WHERE id = 1
 `;
 
 const UPSERT_SQL = `
-  INSERT INTO site_settings (
+  INSERT INTO amz_app.site_settings (
     id, rating_value, review_count, review_source_url, rating_visible, updated_at
   )
   VALUES (1, $1, $2, $3, $4, now())

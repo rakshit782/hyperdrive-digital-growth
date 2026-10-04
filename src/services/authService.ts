@@ -103,9 +103,49 @@ class AuthService {
     }
   }
 
-  async verifyToken(retry = true): Promise<{ data: User | null; error: string | null }> {
+  /** Reads the `exp` claim (ms since epoch) from a JWT, or null when unreadable. */
+  private tokenExpiry(token: string): number | null {
+    try {
+      const payload = token.split('.')[1];
+      if (!payload) return null;
+      const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const decoded = JSON.parse(atob(normalized));
+      return typeof decoded.exp === 'number' ? decoded.exp * 1000 : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** True when the token is already expired, or expires inside the safety window. */
+  private isTokenExpired(token: string, safetyMs = 30_000): boolean {
+    const exp = this.tokenExpiry(token);
+    return exp !== null && exp <= Date.now() + safetyMs;
+  }
+
+  /**
+   * Returns an access token that is still valid, refreshing it first when needed.
+   * An expired token is never sent to an edge function.
+   */
+  async getValidAccessToken(): Promise<string | null> {
+    if (!this.session?.accessToken) return null;
+    if (!this.isTokenExpired(this.session.accessToken)) return this.session.accessToken;
+    if (!this.session.refreshToken || this.isTokenExpired(this.session.refreshToken)) {
+      this.logout();
+      return null;
+    }
+    const refreshed = await this.refreshToken();
+    return refreshed.data ? this.session?.accessToken ?? null : null;
+  }
+
+  async verifyToken(): Promise<{ data: User | null; error: string | null }> {
     if (!this.session?.accessToken) {
       return { data: null, error: 'No session' };
+    }
+
+    // Refresh proactively so an expired token never reaches the server.
+    const token = await this.getValidAccessToken();
+    if (!token) {
+      return { data: null, error: 'Session expired. Please sign in again.' };
     }
 
     try {
@@ -113,7 +153,7 @@ class AuthService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.session.accessToken}`,
+          'Authorization': `Bearer ${token}`,
           'apikey': SUPABASE_ANON_KEY,
         },
       });
@@ -121,14 +161,7 @@ class AuthService {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        // Access token expired -> try a single refresh, then give up cleanly
         if (response.status === 401) {
-          if (retry && this.session?.refreshToken) {
-            const refreshResult = await this.refreshToken();
-            if (refreshResult.data) {
-              return await this.verifyToken(false);
-            }
-          }
           this.logout();
           return { data: null, error: 'Session expired. Please sign in again.' };
         }
@@ -147,10 +180,15 @@ class AuthService {
     }
   }
 
-
   async refreshToken() {
     if (!this.session?.refreshToken) {
       return { data: null, error: 'No refresh token' };
+    }
+
+    // The refresh token itself has expired — end the session without calling the server.
+    if (this.isTokenExpired(this.session.refreshToken)) {
+      this.logout();
+      return { data: null, error: 'Session expired. Please sign in again.' };
     }
 
     try {
