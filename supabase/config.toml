@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.neon-certificates]
 verify_jwt = false
+
+[functions.neon-site-settings]
+verify_jwt = false
