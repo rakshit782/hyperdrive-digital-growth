@@ -31,7 +31,7 @@ async function call(body: Record<string, unknown>, withAdmin = false) {
       apikey: SUPABASE_ANON_KEY,
     };
     if (withAdmin) {
-      const token = authService.getAccessToken();
+      const token = await authService.getValidAccessToken();
       if (!token) throw new Error("Session expired. Please sign in again.");
       headers["x-admin-token"] = token;
     }

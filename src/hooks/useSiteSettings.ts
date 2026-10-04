@@ -179,11 +179,7 @@ export async function saveSiteSettings(
       body: JSON.stringify(payload),
     });
 
-  let token = authService.getAccessToken();
-  if (!token) {
-    const refreshed = await authService.refreshToken();
-    token = refreshed.data ? authService.getAccessToken() : null;
-  }
+  const token = await authService.getValidAccessToken();
   if (!token) {
     throw new SiteSettingsRequestError(401, "Your session has expired. Please sign in again.");
   }
