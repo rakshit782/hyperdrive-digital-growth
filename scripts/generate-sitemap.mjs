@@ -30,11 +30,11 @@
  *
  * This script fails the build if a sitemap URL other than "/" has no rewrite.
  *
- * Published case studies are fetched at the end and appended only when the
- * request returns at least one item. /case-studies is already emitted from
- * App.tsx; each study adds /case-studies/<slug>. /case-studies/:slug must
- * stay in vercel.json as a rewrite to /spa.html. A failed or empty fetch
- * must not fail the build and must not add those extra URLs.
+ * Published case studies are fetched at the end. When at least one item
+ * comes back, /case-studies stays (lastmod = newest updated_at) and each
+ * study adds /case-studies/<slug>. A failed or empty fetch removes the
+ * /case-studies URL emitted from App.tsx and must not fail the build.
+ * /case-studies/:slug must stay in vercel.json as a rewrite to /spa.html.
  */
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -254,18 +254,20 @@ function caseStudyLastmod(value) {
 function appendCaseStudies(entries, items) {
   const seen = new Set(entries.map((entry) => entry.loc));
   const indexLoc = `${SITE}/case-studies`;
-  if (!seen.has(indexLoc)) {
-    const dates = items
-      .map((item) => caseStudyLastmod(item && item.updated_at))
-      .filter(Boolean)
-      .sort();
-    const lastmod = dates[dates.length - 1];
-    if (lastmod) {
+  const dates = items
+    .map((item) => caseStudyLastmod(item && item.updated_at))
+    .filter(Boolean)
+    .sort();
+  const lastmod = dates[dates.length - 1];
+  const existing = entries.find((entry) => entry.loc === indexLoc);
+  if (lastmod) {
+    if (existing) existing.lastmod = lastmod;
+    else {
       entries.push({ loc: indexLoc, lastmod, file: "case-studies" });
       seen.add(indexLoc);
-    } else {
-      console.warn("Skipping /case-studies sitemap URL: published rows have no updated_at");
     }
+  } else {
+    console.warn("Skipping /case-studies sitemap URL: published rows have no updated_at");
   }
 
   for (const item of items) {
@@ -322,7 +324,16 @@ async function fetchPublishedCaseStudies() {
 async function main() {
   const entries = buildEntries();
   const caseStudies = await fetchPublishedCaseStudies();
-  if (caseStudies && caseStudies.length > 0) appendCaseStudies(entries, caseStudies);
+  if (caseStudies && caseStudies.length > 0) {
+    appendCaseStudies(entries, caseStudies);
+  } else {
+    const indexLoc = `${SITE}/case-studies`;
+    const index = entries.findIndex((entry) => entry.loc === indexLoc);
+    if (index !== -1) {
+      entries.splice(index, 1);
+      console.warn("Removing /case-studies from the sitemap: no published case studies were returned");
+    }
+  }
   assertRewritten(entries);
   const xml = render(entries);
 
