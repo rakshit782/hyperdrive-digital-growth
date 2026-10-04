@@ -20,8 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useLogoData } from "@/hooks/useLogoData";
 import { useHeaderSettings } from "@/hooks/useHeaderSettings";
-import amazonAdsPartnerDark from "@/assets/amazon-ads-partner-dark.svg";
-import amazonSpnPartnerDark from "@/assets/amazon-spn-partner-dark.svg";
+import amazonLogoSvg from "@/assets/amazon-logo.svg";
 
 // Custom SVG Icons for Social Media
 function LinkedInIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -104,37 +103,44 @@ export default function Header() {
               <span>{settings.topBarText}</span>
             </Link>
 
-            <span className="text-slate-600 hidden sm:inline">|</span>
+            {/* Amazon Ads Partner & SPN Partner Badges */}
+            <div className="flex items-center gap-2">
+              {/* Amazon Ads Partner */}
+              {settings.showAmazonAdsPartner && (
+                <Link 
+                  to={settings.amazonAdsPartnerLink || "/amazon-ads-partner"}
+                  className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded bg-white/10 hover:bg-white/15 border border-white/15 hover:border-orange-400/50 transition-all text-white group"
+                  title="Amazon Ads Partner"
+                >
+                  <img 
+                    src={amazonLogoSvg} 
+                    alt="Amazon" 
+                    className="h-3 w-auto object-contain brightness-0 invert" 
+                  />
+                  <span className="text-[10px] font-bold tracking-tight text-slate-100 group-hover:text-orange-400">
+                    Ads Partner
+                  </span>
+                </Link>
+              )}
 
-            {/* Amazon Ads Partner Badge */}
-            {settings.showAmazonAdsPartner && (
-              <Link 
-                to={settings.amazonAdsPartnerLink || "/amazon-ads-partner"}
-                className="inline-flex items-center h-6 px-2 rounded bg-white/5 border border-white/10 hover:border-orange-400/50 hover:bg-white/10 transition-all group"
-                title="Amazon Ads Verified Partner"
-              >
-                <img 
-                  src={amazonAdsPartnerDark} 
-                  alt="Amazon Ads Verified Partner" 
-                  className="h-3.5 w-auto object-contain"
-                />
-              </Link>
-            )}
-
-            {/* Amazon SPN Partner Badge */}
-            {settings.showAmazonSpnPartner && (
-              <Link 
-                to={settings.amazonSpnPartnerLink || "/services/amazon-advertising"}
-                className="inline-flex items-center h-6 px-2 rounded bg-white/5 border border-white/10 hover:border-orange-400/50 hover:bg-white/10 transition-all group"
-                title="Amazon Service Provider Network Partner"
-              >
-                <img 
-                  src={amazonSpnPartnerDark} 
-                  alt="Amazon SPN Partner" 
-                  className="h-3.5 w-auto object-contain"
-                />
-              </Link>
-            )}
+              {/* Amazon SPN Partner */}
+              {settings.showAmazonSpnPartner && (
+                <Link 
+                  to={settings.amazonSpnPartnerLink || "/services/amazon-advertising"}
+                  className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded bg-white/10 hover:bg-white/15 border border-white/15 hover:border-orange-400/50 transition-all text-white group"
+                  title="Amazon SPN Partner"
+                >
+                  <img 
+                    src={amazonLogoSvg} 
+                    alt="Amazon" 
+                    className="h-3 w-auto object-contain brightness-0 invert" 
+                  />
+                  <span className="text-[10px] font-bold tracking-tight text-slate-100 group-hover:text-orange-400">
+                    SPN Partner
+                  </span>
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Right: Email & Social Icons (No Phone Number, Only LinkedIn, FB, IG) */}
