@@ -337,7 +337,7 @@ function ReviewsSettingsCard() {
       reviewSourceUrl,
       ratingVisible,
     });
-    if (!parsed.ok) {
+    if (parsed.ok === false) {
       setFormError(parsed.error);
       return;
     }
