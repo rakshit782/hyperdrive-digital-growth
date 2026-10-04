@@ -138,7 +138,7 @@ const Hero = () => {
               </div>
 
               {/* Trust Indicators */}
-              <div className="relative flex flex-wrap items-center gap-6 justify-center lg:justify-start pt-4">
+              <div className="flex flex-wrap items-center gap-6 justify-center lg:justify-start pt-4">
                 <div className="flex items-center gap-2 text-gray-600">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   <span className="text-sm font-medium">Free Audit</span>
@@ -151,7 +151,7 @@ const Hero = () => {
                   <Zap className="w-5 h-5 text-yellow-500" />
                   <span className="text-sm font-medium">24hr Setup</span>
                 </div>
-                <HomepageReviewsBadge className="max-sm:absolute max-sm:left-1/2 max-sm:top-[calc(100%+0.25rem)] max-sm:z-10 max-sm:my-0 max-sm:-translate-x-1/2" />
+                <HomepageReviewsBadge className="max-sm:my-0 max-sm:w-full max-sm:justify-center" />
               </div>
             </div>
 
