@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS user_roles (
 
 -- Case studies managed from the admin dashboard.
 -- Idempotent copy: neon-migrations/2026-10-04-case-studies.sql
-CREATE TABLE IF NOT EXISTS public.case_studies (
+CREATE TABLE IF NOT EXISTS amz_app.case_studies (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   slug text NOT NULL UNIQUE,
   brand_name text NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS public.case_studies (
 );
 
 CREATE INDEX IF NOT EXISTS idx_case_studies_published_sort
-  ON public.case_studies (published, sort_order);
+  ON amz_app.case_studies (published, sort_order);
 
 -- Create pricing_plans table
 CREATE TABLE IF NOT EXISTS pricing_plans (
@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS internship_certificates (
 );
 
 -- Singleton site settings for the public rating badge. Safe to re-run.
-CREATE TABLE IF NOT EXISTS site_settings (
+CREATE TABLE IF NOT EXISTS amz_app.site_settings (
   id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
   rating_value NUMERIC(2,1) NOT NULL DEFAULT 0 CHECK (rating_value >= 0 AND rating_value <= 5),
   review_count INTEGER NOT NULL DEFAULT 0 CHECK (review_count >= 0),
@@ -184,4 +184,4 @@ CREATE TABLE IF NOT EXISTS site_settings (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-INSERT INTO site_settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
+INSERT INTO amz_app.site_settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
