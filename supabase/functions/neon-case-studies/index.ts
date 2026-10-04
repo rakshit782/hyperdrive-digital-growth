@@ -4,7 +4,9 @@ import { verify } from "https://deno.land/x/djwt@v2.8/mod.ts";
 import {
   parseCaseStudyImport,
   slugify,
+  UUID_RE,
   validateCreateBody,
+  validateReorderBody,
   validateUpdateBody,
   type CaseStudyPatch,
   type CaseStudyWrite,
@@ -17,7 +19,6 @@ const corsHeaders = {
 };
 
 const MAX_BODY_BYTES = 1_048_576;
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type SqlClient = {
   queryObject<T = Record<string, unknown>>(
@@ -322,6 +323,66 @@ async function importCsv(client: Client, body: unknown): Promise<Response> {
   return json({ inserted: items.length, items });
 }
 
+async function reorderCaseStudies(client: Client, body: unknown): Promise<Response> {
+  const parsed = validateReorderBody(body);
+  if (!parsed.ok) return json({ error: parsed.error }, 400);
+
+  const tx = client.createTransaction("reorder_case_studies");
+  await tx.begin();
+  let publishedChanged = false;
+  try {
+    const ids = parsed.order.map((item) => item.id);
+    const locked = await tx.queryObject<{ id: string; sort_order: number; published: boolean }>(
+      "SELECT id, sort_order, published FROM amz_app.case_studies WHERE id = ANY($1::uuid[]) FOR UPDATE",
+      [ids],
+    );
+
+    const byId = new Map(locked.rows.map((row) => [String(row.id).toLowerCase(), row]));
+    const missing = ids.filter((id) => !byId.has(id.toLowerCase()));
+    if (missing.length > 0) {
+      try {
+        await tx.rollback();
+      } catch (rollbackError) {
+        console.error("reorder rollback failed:", rollbackError);
+      }
+      return json({ error: "Unknown case study ids", missing }, 400);
+    }
+
+    const changeIds: string[] = [];
+    const changeOrders: number[] = [];
+    for (const item of parsed.order) {
+      const row = byId.get(item.id.toLowerCase());
+      if (!row) continue;
+      if (Number(row.sort_order) === item.sort_order) continue;
+      changeIds.push(item.id);
+      changeOrders.push(item.sort_order);
+      if (row.published === true) publishedChanged = true;
+    }
+
+    if (changeIds.length > 0) {
+      await tx.queryObject(
+        `UPDATE amz_app.case_studies AS c
+         SET sort_order = v.sort_order, updated_at = now()
+         FROM (SELECT unnest($1::uuid[]) AS id, unnest($2::int[]) AS sort_order) v
+         WHERE c.id = v.id AND c.sort_order IS DISTINCT FROM v.sort_order`,
+        [changeIds, changeOrders],
+      );
+    }
+
+    await tx.commit();
+  } catch (error) {
+    try {
+      await tx.rollback();
+    } catch (rollbackError) {
+      console.error("reorder rollback failed:", rollbackError);
+    }
+    throw error;
+  }
+
+  if (publishedChanged) await triggerVercelDeploy();
+  return await listAdmin(client);
+}
+
 function idFromUrl(url: URL): { ok: true; id: string } | { ok: false; response: Response } {
   const id = url.searchParams.get("id")?.trim() ?? "";
   if (!id || !UUID_RE.test(id)) {
@@ -358,11 +419,11 @@ async function handle(req: Request, client: Client): Promise<Response> {
   const body = await readBody(req);
   if (!body.ok) return body.response;
 
-  if (req.method === "POST" && url.searchParams.get("action") === "import") {
-    return await importCsv(client, body.value);
-  }
-
   if (req.method === "POST") {
+    const action = url.searchParams.get("action");
+    if (action === "import") return await importCsv(client, body.value);
+    if (action === "reorder") return await reorderCaseStudies(client, body.value);
+    if (action !== null) return json({ error: "Unknown action" }, 400);
     const created = validateCreateBody(body.value);
     if (!created.ok) return json({ error: created.error }, 400);
     return await createOne(client, created.value);

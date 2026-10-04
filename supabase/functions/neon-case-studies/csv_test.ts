@@ -5,6 +5,7 @@ import {
   parseCsv,
   parseMetricNumber,
   validateCreateBody,
+  validateReorderBody,
 } from "./validate.ts";
 
 const HEADER = [
@@ -158,3 +159,79 @@ Deno.test("create validation allows six metrics and rejects a seventh", () => {
 function parsedColumns(errors: { column: string }[]): string[] {
   return errors.map((error) => error.column);
 }
+
+const REORDER_A = "11111111-1111-4111-8111-111111111111";
+const REORDER_B = "22222222-2222-4222-8222-222222222222";
+
+Deno.test("reorder body accepts ids and integer sort orders", () => {
+  const result = validateReorderBody({
+    order: [
+      { id: REORDER_A, sort_order: 0 },
+      { id: REORDER_B, sort_order: 1000000 },
+    ],
+  });
+  assertEquals(result, {
+    ok: true,
+    order: [
+      { id: REORDER_A, sort_order: 0 },
+      { id: REORDER_B, sort_order: 1000000 },
+    ],
+  });
+});
+
+Deno.test("reorder body rejects an empty order array", () => {
+  assertEquals(validateReorderBody({ order: [] }), {
+    ok: false,
+    error: "order must be a non-empty array",
+  });
+});
+
+Deno.test("reorder body rejects more than 500 items", () => {
+  const order = Array.from({ length: 501 }, (_, index) => ({
+    id: `00000000-0000-4000-8000-${String(index).padStart(12, "0")}`,
+    sort_order: index,
+  }));
+  assertEquals(validateReorderBody({ order }), {
+    ok: false,
+    error: "order must contain at most 500 items",
+  });
+});
+
+Deno.test("reorder body rejects a bad uuid", () => {
+  assertEquals(validateReorderBody({ order: [{ id: "not-a-uuid", sort_order: 1 }] }), {
+    ok: false,
+    error: "Each order item must have a valid UUID id",
+  });
+});
+
+Deno.test("reorder body rejects a non-integer or negative sort_order", () => {
+  assertEquals(validateReorderBody({ order: [{ id: REORDER_A, sort_order: 1.5 }] }), {
+    ok: false,
+    error: "sort_order must be an integer between 0 and 1000000",
+  });
+  assertEquals(validateReorderBody({ order: [{ id: REORDER_A, sort_order: -1 }] }), {
+    ok: false,
+    error: "sort_order must be an integer between 0 and 1000000",
+  });
+});
+
+Deno.test("reorder body rejects duplicate ids", () => {
+  assertEquals(validateReorderBody({
+    order: [
+      { id: REORDER_A, sort_order: 1 },
+      { id: REORDER_A, sort_order: 2 },
+    ],
+  }), {
+    ok: false,
+    error: "order contains duplicate ids",
+  });
+  assertEquals(validateReorderBody({
+    order: [
+      { id: REORDER_A, sort_order: 1 },
+      { id: REORDER_A.toUpperCase(), sort_order: 2 },
+    ],
+  }), {
+    ok: false,
+    error: "order contains duplicate ids",
+  });
+});
