@@ -87,6 +87,7 @@ export default function Maintenance() {
       <SEOHead
         title="We're Upgrading | AMZ AD SCOUT"
         description="We are currently upgrading our platform with high-speed performance and enhanced growth tools. Back shortly."
+        image="https://www.amzadscout.com/logo.png"
         canonical="https://www.amzadscout.com/"
       />
       <div className="relative min-h-screen flex flex-col justify-between bg-slate-950 text-slate-50 overflow-hidden selection:bg-orange-500 selection:text-white">

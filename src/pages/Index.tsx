@@ -118,6 +118,7 @@ const Index = () => {
         title="E-commerce Growth Agency for Amazon & Walmart | AMZ AD SCOUT"
         description="AMZ AD SCOUT manages Amazon, Walmart, Meta and Google ads for e-commerce brands, plus listings, catalogs and Shopify stores. Book a free strategy call today."
         keywords="advertising management, e-commerce growth, marketplace advertising, advertising for amazon sellers, walmart advertising management, meta advertising, ppc management, sponsored products management, e-commerce agency, advertising management services, marketplace optimization, listing optimization, keyword research, product launch, e-commerce consulting, conversion rate optimization, roi optimization, campaign management, multi-channel ecommerce, performance marketing, growth strategies, ecommerce growth specialists, online retail marketing, advertising campaign optimization, ppc advertising, brand advertising"
+        image="https://www.amzadscout.com/logo.png"
         canonical={window.location.href}
         schema={schema}
       />

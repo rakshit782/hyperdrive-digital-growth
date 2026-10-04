@@ -3,100 +3,198 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex" />
-    <title>Page not found | AMZ AD SCOUT</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <title>404 - Page Not Found | AMZ AD SCOUT</title>
     <meta
       name="description"
-      content="The page you're looking for doesn't exist or has been moved to a different location."
+      content="The page you're looking for doesn't exist or has been relocated."
     />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <style>
       :root {
-        color-scheme: light;
-        font-family: Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+        color-scheme: dark;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
         min-height: 100vh;
-        background: linear-gradient(to bottom right, #f8fafc, #ffffff, #eff6ff);
-        color: #0f172a;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: #020617;
+        color: #f8fafc;
+        position: relative;
+        overflow-x: hidden;
+      }
+      .glow-1 {
+        position: absolute;
+        top: -150px;
+        left: -150px;
+        width: 450px;
+        height: 450px;
+        border-radius: 50%;
+        background: rgba(249, 115, 22, 0.12);
+        filter: blur(120px);
+        pointer-events: none;
+      }
+      .glow-2 {
+        position: absolute;
+        bottom: -150px;
+        right: -150px;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, 0.12);
+        filter: blur(140px);
+        pointer-events: none;
       }
       header {
+        position: relative;
+        z-index: 10;
         max-width: 72rem;
+        width: 100%;
         margin: 0 auto;
-        padding: 1.5rem 1.5rem 0;
+        padding: 2rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
-      header a {
-        color: #0f172a;
-        font-weight: 700;
-        letter-spacing: 0.04em;
+      .brand {
+        display: flex;
+        flex-direction: column;
         text-decoration: none;
       }
+      .brand img {
+        height: 44px;
+        width: auto;
+        filter: brightness(0) invert(1);
+      }
+      .brand span {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        color: #94a3b8;
+        margin-top: 4px;
+      }
       main {
-        max-width: 42rem;
+        position: relative;
+        z-index: 10;
+        max-width: 38rem;
+        width: 100%;
         margin: 0 auto;
-        padding: 6rem 1.5rem 5rem;
+        padding: 3rem 1.5rem;
         text-align: center;
       }
+      .badge {
+        display: inline-block;
+        padding: 0.35rem 0.9rem;
+        border-radius: 9999px;
+        background: rgba(249, 115, 22, 0.1);
+        border: 1px solid rgba(249, 115, 22, 0.2);
+        color: #fb923c;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+      }
       h1 {
-        margin: 0 0 1rem;
-        font-size: clamp(5rem, 12vw, 8rem);
+        margin: 0 0 0.5rem;
+        font-size: clamp(6rem, 15vw, 8.5rem);
         line-height: 1;
-        color: #e2e8f0;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        background: linear-gradient(180deg, #f8fafc 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
       h2 {
-        margin: 0 0 1.5rem;
-        font-size: clamp(1.875rem, 4vw, 2.25rem);
+        margin: 0 0 0.75rem;
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        font-weight: 700;
+        color: #ffffff;
       }
       p {
-        margin: 0 0 2rem;
-        color: #475569;
-        font-size: 1.25rem;
+        margin: 0 auto 2rem;
+        max-width: 28rem;
+        color: #94a3b8;
+        font-size: 0.95rem;
         line-height: 1.6;
       }
       .actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 1rem;
+        gap: 0.75rem;
         justify-content: center;
       }
       a.button, button.button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: 3.25rem;
-        padding: 0.75rem 2rem;
+        min-height: 2.75rem;
+        padding: 0.65rem 1.5rem;
         border-radius: 0.75rem;
         font: inherit;
-        font-size: 1.125rem;
+        font-size: 0.875rem;
         font-weight: 600;
         text-decoration: none;
         cursor: pointer;
+        transition: all 0.2s;
       }
       a.primary {
-        color: #fff;
-        background: linear-gradient(to right, #2563eb, #9333ea);
-        box-shadow: 0 10px 15px -3px rgb(15 23 42 / 0.15);
+        color: #ffffff;
+        background: linear-gradient(to right, #f97316, #ea580c);
+        box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.2);
+        border: none;
+      }
+      a.primary:hover {
+        background: linear-gradient(to right, #ea580c, #c2410c);
       }
       button.secondary {
-        color: #1e293b;
-        background: rgb(255 255 255 / 0.8);
-        border: 2px solid #cbd5e1;
+        color: #cbd5e1;
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid #1e293b;
+      }
+      button.secondary:hover {
+        color: #ffffff;
+        background: #1e293b;
+      }
+      footer {
+        position: relative;
+        z-index: 10;
+        max-width: 72rem;
+        width: 100%;
+        margin: 0 auto;
+        padding: 1.5rem;
+        text-align: center;
+        font-size: 0.75rem;
+        color: #475569;
+        border-top: 1px solid #0f172a;
       }
     </style>
   </head>
   <body>
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
     <header>
-      <a href="/">AMZ AD SCOUT</a>
+      <a href="/" class="brand">
+        <img src="/logo.png" alt="AMZ AD SCOUT" />
+        <span>AN AMAZON SPN AGENCY</span>
+      </a>
     </header>
     <main>
+      <div class="badge">404 Error</div>
       <h1>404</h1>
       <h2>Oops! Page not found</h2>
-      <p>The page you're looking for doesn't exist or has been moved to a different location.</p>
+      <p>The page you're looking for doesn't exist, was moved, or is undergoing scheduled upgrades.</p>
       <div class="actions">
         <a class="button primary" href="/">Return to Home</a>
         <button class="button secondary" type="button" onclick="history.back()">Go Back</button>
       </div>
     </main>
+    <footer>
+      <p>© 2026 AMZ AD SCOUT. All rights reserved.</p>
+    </footer>
   </body>
 </html>
