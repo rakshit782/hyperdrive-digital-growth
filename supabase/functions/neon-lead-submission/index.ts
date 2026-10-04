@@ -24,7 +24,7 @@ serve(async (req: Request) => {
       // Generate lead number
       const leadNumber = `LEAD-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
       
-      const result = await client.queryObject(
+      const result = await client.queryObject<{ id: string; lead_number: string }>(
         `INSERT INTO leads (
           name, email, phone, company, brand_name, website_url, amazon_store_url, walmart_store_url,
           source, status, notes, lead_number, audit_type, current_spend, goals, lead_data, 
