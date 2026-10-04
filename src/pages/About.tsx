@@ -87,8 +87,8 @@ const About = () => {
   return (
     <>
       <SEOHead 
-        title="About Us - E-commerce Growth Specialists | 10+ Years Proven Results"
-        description="Independent e-commerce advertising specialists with 10+ years expertise helping brands succeed on Amazon, Walmart & Shopify. 500+ brands scaled profitably. We are not affiliated with or endorsed by Amazon."
+        title="About Us: How We Grow E-commerce Brands | AMZ AD SCOUT"
+        description="Meet AMZ AD SCOUT, the e-commerce growth agency that runs Amazon, Walmart, Meta and Google ads alongside listing, catalog and Shopify work. See how we can help."
         keywords="e-commerce advertising specialists, advertising for amazon sellers, walmart marketplace optimization, shopify development, digital marketing services, ppc management services, e-commerce optimization, multi-channel marketing, online marketplace advertising, seller solutions, performance marketing, roi-focused marketing, data-driven e-commerce, marketplace management, listing optimization, product catalog management, e-commerce growth, online retail marketing"
         canonical={window.location.href}
       />

@@ -14,8 +14,8 @@ const Pricing = () => {
   return (
     <>
       <SEOHead
-        title="À La Carte Pricing Menu | AMZ AD SCOUT Services"
-        description="Flexible & scalable service options for every stage of growth. Amazon PPC, Walmart Ads, Shopify development, listing optimization, and marketplace automation services."
+        title="Pricing for E-commerce Ads & Growth Services | AMZ AD SCOUT"
+        description="Compare our monthly plans for Amazon, Walmart, Meta and Google PPC management, plus listing work, Shopify builds and add-ons. Find the right fit for your brand."
         keywords="amazon ppc pricing, walmart ads pricing, shopify development pricing, listing optimization cost, marketplace automation, ecommerce marketing pricing"
         canonical={window.location.href}
       />

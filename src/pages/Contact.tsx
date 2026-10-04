@@ -84,8 +84,8 @@ const Contact = () => {
   return (
     <>
       <SEOHead 
-        title="Contact Us - Free E-commerce Audit | Amazon & Walmart Advertising Agency"
-        description="Get your free e-commerce audit from certified advertising experts. Contact our Amazon PPC agency for professional consultation on Amazon advertising, Walmart ads, Shopify development, and multi-marketplace growth strategies."
+        title="Contact Us for a Free E-commerce Ads Audit | AMZ AD SCOUT"
+        description="Tell us about your brand and goals, and our team will review your Amazon, Walmart or Shopify setup and suggest clear next steps. Request your free audit today."
         keywords="contact amazon advertising agency, free e-commerce audit, amazon ppc consultation, walmart advertising contact, shopify development inquiry, e-commerce agency contact, professional amazon consultation, free amazon audit, walmart marketplace audit, multi-channel consultation, amazon seller consultation, vendor central help, sponsored ads consultation, ppc management inquiry, listing optimization audit, conversion rate audit, roi analysis, marketing strategy consultation, advertising budget planning, campaign optimization review, account health review, suspension help, product launch consultation, seasonal campaign planning, q4 strategy consultation, international expansion inquiry, marketplace integration consultation, fulfillment strategy review, inventory optimization consultation"
         canonical={window.location.href}
       />

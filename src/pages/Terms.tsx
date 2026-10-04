@@ -7,8 +7,8 @@ const Terms = () => {
   return (
     <>
       <SEOHead 
-        title="Terms & Conditions | AMZ AD SCOUT"
-        description="Terms & Conditions for AMZ AD SCOUT - Review our service terms and user obligations."
+        title="Terms & Conditions for Our Services | AMZ AD SCOUT"
+        description="Read the terms that govern AMZ AD SCOUT services, including service scope, payment terms, confidentiality and termination. Questions about them? Contact us."
         keywords="terms and conditions, service agreement, user terms, terms of service"
         canonical={window.location.href}
       />
