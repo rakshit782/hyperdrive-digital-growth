@@ -95,10 +95,15 @@ const WebsiteDevelopment = () => {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "serviceType": "Shopify Development",
+    "@id": "https://www.amzadscout.com/services/website-development#service",
+    "name": "Website Development",
+    "serviceType": "Website development",
+    "url": "https://www.amzadscout.com/services/website-development",
     "provider": {
       "@type": "Organization",
-      "name": "Digital Growth Agency"
+      "@id": "https://www.amzadscout.com/#organization",
+      "name": "AMZ AD SCOUT",
+      "url": "https://www.amzadscout.com/"
     },
     "areaServed": "Worldwide",
     "description": "Professional Shopify Development Partner offering Custom Shopify Theme Development, Shopify Plus Development, Shopify E-commerce Store Development, and Shopify Store Migration Services."

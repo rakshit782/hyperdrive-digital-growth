@@ -20,7 +20,8 @@ const Index = () => {
   const schema = {
     "@context": "https://schema.org",
     "@type": ["Organization", "LocalBusiness", "ProfessionalService"],
-    "name": "AMZ Ad Scout - E-commerce Growth Specialists",
+    "@id": "https://www.amzadscout.com/#organization",
+    "name": "AMZ AD SCOUT",
     "alternateName": [
       "E-commerce Growth Agency", 
       "Digital Marketing Agency", 
@@ -29,18 +30,10 @@ const Index = () => {
       "E-commerce Marketing Agency"
     ],
     "description": "Independent e-commerce growth specialists helping brands advertise on Amazon, Walmart, and Meta platforms. Data-driven advertising management, marketplace optimization, and proven growth strategies for online sellers. We are not affiliated with or endorsed by Amazon.",
-    "url": window.location.origin,
+    "url": "https://www.amzadscout.com/",
     "logo": `${window.location.origin}/logo.png`,
     "image": `${window.location.origin}/logo.png`,
-    "telephone": "+1-XXX-XXX-XXXX",
     "priceRange": "$$",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "500",
-      "bestRating": "5",
-      "worstRating": "1"
-    },
     "areaServed": {
       "@type": "GeoCircle",
       "geoMidpoint": {
@@ -75,7 +68,9 @@ const Index = () => {
             "description": "Full-service advertising management helping brands succeed on Amazon through expert PPC management, listing optimization, and data-driven campaign strategies. Independent service provider - not affiliated with Amazon.",
             "provider": {
               "@type": "Organization",
-              "name": "AMZ Ad Scout"
+              "@id": "https://www.amzadscout.com/#organization",
+              "name": "AMZ AD SCOUT",
+              "url": "https://www.amzadscout.com/"
             },
             "serviceType": "Advertising Management"
           }
@@ -88,7 +83,9 @@ const Index = () => {
             "description": "Comprehensive digital marketing specializing in e-commerce advertising, multi-channel campaigns, conversion optimization, and ROI-focused strategies for online retailers.",
             "provider": {
               "@type": "Organization",
-              "name": "AMZ Ad Scout"
+              "@id": "https://www.amzadscout.com/#organization",
+              "name": "AMZ AD SCOUT",
+              "url": "https://www.amzadscout.com/"
             },
             "serviceType": "Digital Marketing"
           }
@@ -101,7 +98,9 @@ const Index = () => {
             "description": "Expert consulting for sellers seeking professional guidance on marketplace advertising. Data-driven strategies, market analysis, and hands-on execution for sustainable growth.",
             "provider": {
               "@type": "Organization",
-              "name": "AMZ Ad Scout"
+              "@id": "https://www.amzadscout.com/#organization",
+              "name": "AMZ AD SCOUT",
+              "url": "https://www.amzadscout.com/"
             },
             "serviceType": "Consulting"
           }
@@ -109,9 +108,7 @@ const Index = () => {
       ]
     },
     "sameAs": [
-      "https://www.facebook.com/yourbusiness",
-      "https://www.linkedin.com/company/yourbusiness",
-      "https://twitter.com/yourbusiness"
+      "https://www.linkedin.com/company/amz-adscout/"
     ]
   };
 
