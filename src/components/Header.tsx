@@ -20,8 +20,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useLogoData } from "@/hooks/useLogoData";
 import { useHeaderSettings } from "@/hooks/useHeaderSettings";
-import amazonAdsPartnerLogo from "@/assets/amazon-ads-partner-logo.png";
-import amazonSpnLogo from "@/assets/amazon-spn-certified.png";
+import amazonAdsPartnerDark from "@/assets/amazon-ads-partner-dark.svg";
+import amazonSpnPartnerDark from "@/assets/amazon-spn-partner-dark.svg";
 
 // Custom SVG Icons for Social Media
 function LinkedInIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -90,37 +90,34 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.04)]">
-      {/* 1. TOP BAR */}
-      <div className="w-full bg-slate-50/80 border-b border-slate-100 text-xs text-slate-600">
+      {/* 1. TOP BAR - DARK ROYAL NAVY BLUE */}
+      <div className="w-full bg-[#071329] border-b border-blue-950/60 text-xs text-slate-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-y-2">
           
           {/* Left: Partner Badges & Tagline */}
           <div className="flex items-center flex-wrap gap-2.5 sm:gap-4">
             <Link 
               to={settings.topBarTextLink || "/services"} 
-              className="inline-flex items-center gap-1.5 font-medium text-slate-700 hover:text-orange-600 transition-colors"
+              className="inline-flex items-center gap-1.5 font-medium text-slate-200 hover:text-orange-400 transition-colors"
             >
-              <TrendingUp className="w-3.5 h-3.5 text-orange-500" />
+              <TrendingUp className="w-3.5 h-3.5 text-orange-400" />
               <span>{settings.topBarText}</span>
             </Link>
 
-            <span className="text-slate-300 hidden sm:inline">|</span>
+            <span className="text-slate-600 hidden sm:inline">|</span>
 
             {/* Amazon Ads Partner Badge */}
             {settings.showAmazonAdsPartner && (
               <Link 
                 to={settings.amazonAdsPartnerLink || "/amazon-ads-partner"}
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white border border-slate-200/80 hover:border-orange-300 transition-all shadow-2xs group"
+                className="inline-flex items-center h-6 px-2 rounded bg-white/5 border border-white/10 hover:border-orange-400/50 hover:bg-white/10 transition-all group"
                 title="Amazon Ads Verified Partner"
               >
                 <img 
-                  src={amazonAdsPartnerLogo} 
+                  src={amazonAdsPartnerDark} 
                   alt="Amazon Ads Verified Partner" 
                   className="h-3.5 w-auto object-contain"
                 />
-                <span className="text-[10px] font-semibold text-slate-700 group-hover:text-orange-600">
-                  Verified Partner
-                </span>
               </Link>
             )}
 
@@ -128,17 +125,14 @@ export default function Header() {
             {settings.showAmazonSpnPartner && (
               <Link 
                 to={settings.amazonSpnPartnerLink || "/services/amazon-advertising"}
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white border border-slate-200/80 hover:border-orange-300 transition-all shadow-2xs group"
-                title="Amazon Service Provider Network"
+                className="inline-flex items-center h-6 px-2 rounded bg-white/5 border border-white/10 hover:border-orange-400/50 hover:bg-white/10 transition-all group"
+                title="Amazon Service Provider Network Partner"
               >
                 <img 
-                  src={amazonSpnLogo} 
+                  src={amazonSpnPartnerDark} 
                   alt="Amazon SPN Partner" 
                   className="h-3.5 w-auto object-contain"
                 />
-                <span className="text-[10px] font-semibold text-slate-700 group-hover:text-orange-600">
-                  SPN Partner
-                </span>
               </Link>
             )}
           </div>
@@ -148,22 +142,22 @@ export default function Header() {
             {/* Email link */}
             <a 
               href={settings.emailLink || `mailto:${settings.email}`} 
-              className="inline-flex items-center gap-1.5 text-slate-600 hover:text-orange-600 transition-colors font-medium text-xs"
+              className="inline-flex items-center gap-1.5 text-slate-300 hover:text-orange-400 transition-colors font-medium text-xs"
             >
-              <Mail className="w-3.5 h-3.5 text-orange-500" />
+              <Mail className="w-3.5 h-3.5 text-orange-400" />
               <span>{settings.email}</span>
             </a>
 
-            <span className="text-slate-300 hidden sm:inline">|</span>
+            <span className="text-slate-700 hidden sm:inline">|</span>
 
             {/* Social Icons */}
-            <div className="flex items-center gap-3 text-slate-500">
+            <div className="flex items-center gap-3 text-slate-400">
               {settings.linkedinUrl && (
                 <a 
                   href={settings.linkedinUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="hover:text-[#0A66C2] transition-colors"
+                  className="hover:text-white transition-colors"
                   aria-label="LinkedIn"
                 >
                   <LinkedInIcon className="w-3.5 h-3.5" />
@@ -174,7 +168,7 @@ export default function Header() {
                   href={settings.facebookUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="hover:text-[#1877F2] transition-colors"
+                  className="hover:text-white transition-colors"
                   aria-label="Facebook"
                 >
                   <FacebookIcon className="w-3.5 h-3.5" />
@@ -185,7 +179,7 @@ export default function Header() {
                   href={settings.instagramUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="hover:text-[#E4405F] transition-colors"
+                  className="hover:text-white transition-colors"
                   aria-label="Instagram"
                 >
                   <InstagramIcon className="w-3.5 h-3.5" />
@@ -198,23 +192,22 @@ export default function Header() {
 
       {/* 2. MAIN NAVBAR */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between min-h-[96px] py-3">
           
-          {/* Brand Logo */}
-          <Link to="/" className="flex flex-col items-start select-none">
+          {/* Brand Logo with generous padding */}
+          <Link to="/" className="flex flex-col items-start select-none py-2 my-auto group">
             {logoData.imageUrl ? (
               <img 
                 src={logoData.imageUrl} 
                 alt={logoData.text} 
-                style={{ height: `${logoData.size || 58}px` }}
-                className="w-auto object-contain" 
+                className="h-14 sm:h-16 w-auto object-contain transition-opacity group-hover:opacity-90" 
               />
             ) : (
               <span className="text-2xl font-black tracking-tight text-slate-900">
                 {logoData.text}
               </span>
             )}
-            <span className="text-[9px] font-bold tracking-[0.2em] text-slate-500 mt-0.5 ml-0.5">
+            <span className="text-[10px] font-bold tracking-[0.2em] text-slate-500 mt-1.5 ml-0.5">
               AN AMAZON SPN AGENCY
             </span>
           </Link>
