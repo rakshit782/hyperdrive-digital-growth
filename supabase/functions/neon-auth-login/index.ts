@@ -107,7 +107,7 @@ serve(async (req: Request) => {
       }
 
       // Get user role
-      const roleResult = await client.queryObject(
+      const roleResult = await client.queryObject<{ role: string }>(
         "SELECT role FROM user_roles WHERE user_id = $1",
         [user.id]
       );
