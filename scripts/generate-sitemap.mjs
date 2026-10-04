@@ -29,6 +29,12 @@
  *   public/404.html (HTTP 404).
  *
  * This script fails the build if a sitemap URL other than "/" has no rewrite.
+ *
+ * Published case studies are fetched at the end and appended only when the
+ * request returns at least one item. /case-studies is already emitted from
+ * App.tsx; each study adds /case-studies/<slug>. /case-studies/:slug must
+ * stay in vercel.json as a rewrite to /spa.html. A failed or empty fetch
+ * must not fail the build and must not add those extra URLs.
  */
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -211,17 +217,128 @@ function render(entries) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
 }
 
-const entries = buildEntries();
-assertRewritten(entries);
-const xml = render(entries);
-
-const publicPath = path.join(root, "public", "sitemap.xml");
-fs.writeFileSync(publicPath, xml);
-
-const distDir = path.join(root, "dist");
-if (fs.existsSync(distDir)) {
-  fs.writeFileSync(path.join(distDir, "sitemap.xml"), xml);
-  console.log(`Wrote ${entries.length} URLs to public/sitemap.xml and dist/sitemap.xml`);
-} else {
-  console.log(`Wrote ${entries.length} URLs to public/sitemap.xml (dist/ not present yet)`);
+function readPublishableKey() {
+  const fromProcess = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (typeof fromProcess === "string" && fromProcess.trim()) {
+    return fromProcess.trim().replace(/^["']|["']$/g, "");
+  }
+  try {
+    const text = fs.readFileSync(path.join(root, ".env"), "utf8");
+    for (const line of text.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const eq = trimmed.indexOf("=");
+      if (eq < 0 || trimmed.slice(0, eq).trim() !== "VITE_SUPABASE_PUBLISHABLE_KEY") continue;
+      let value = trimmed.slice(eq + 1).trim();
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
+        value = value.slice(1, -1);
+      }
+      return value;
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`Could not read .env for VITE_SUPABASE_PUBLISHABLE_KEY: ${message}`);
+  }
+  return "";
 }
+
+function caseStudyLastmod(value) {
+  if (typeof value !== "string") return null;
+  const match = /^(\d{4}-\d{2}-\d{2})/.exec(value.trim());
+  return match ? match[1] : null;
+}
+
+function appendCaseStudies(entries, items) {
+  const seen = new Set(entries.map((entry) => entry.loc));
+  const indexLoc = `${SITE}/case-studies`;
+  if (!seen.has(indexLoc)) {
+    const dates = items
+      .map((item) => caseStudyLastmod(item && item.updated_at))
+      .filter(Boolean)
+      .sort();
+    const lastmod = dates[dates.length - 1];
+    if (lastmod) {
+      entries.push({ loc: indexLoc, lastmod, file: "case-studies" });
+      seen.add(indexLoc);
+    } else {
+      console.warn("Skipping /case-studies sitemap URL: published rows have no updated_at");
+    }
+  }
+
+  for (const item of items) {
+    const slug = item && typeof item.slug === "string" ? item.slug : "";
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+      console.warn(`Skipping case study sitemap URL with unexpected slug: ${slug}`);
+      continue;
+    }
+    const loc = `${SITE}/case-studies/${slug}`;
+    if (seen.has(loc)) continue;
+    const lastmod = caseStudyLastmod(item.updated_at);
+    if (!lastmod) {
+      console.warn(`Skipping case study sitemap URL ${loc}: missing updated_at`);
+      continue;
+    }
+    entries.push({ loc, lastmod, file: "case-studies" });
+    seen.add(loc);
+  }
+}
+
+async function fetchPublishedCaseStudies() {
+  const key = readPublishableKey();
+  if (!key) {
+    console.warn("Skipping case study sitemap URLs: VITE_SUPABASE_PUBLISHABLE_KEY is not set");
+    return null;
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 5000);
+  try {
+    const response = await fetch(
+      "https://hznbshxhmhtenxcuffhx.supabase.co/functions/v1/neon-case-studies",
+      {
+        headers: { apikey: key },
+        signal: controller.signal,
+      },
+    );
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    const items = Array.isArray(data?.items) ? data.items : null;
+    if (!items || items.length === 0) {
+      console.warn("No published case studies returned; not adding case study URLs");
+      return null;
+    }
+    return items;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`Case study sitemap fetch failed (${message}); not adding case study URLs`);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function main() {
+  const entries = buildEntries();
+  const caseStudies = await fetchPublishedCaseStudies();
+  if (caseStudies && caseStudies.length > 0) appendCaseStudies(entries, caseStudies);
+  assertRewritten(entries);
+  const xml = render(entries);
+
+  const publicPath = path.join(root, "public", "sitemap.xml");
+  fs.writeFileSync(publicPath, xml);
+
+  const distDir = path.join(root, "dist");
+  if (fs.existsSync(distDir)) {
+    fs.writeFileSync(path.join(distDir, "sitemap.xml"), xml);
+    console.log(`Wrote ${entries.length} URLs to public/sitemap.xml and dist/sitemap.xml`);
+  } else {
+    console.log(`Wrote ${entries.length} URLs to public/sitemap.xml (dist/ not present yet)`);
+  }
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
