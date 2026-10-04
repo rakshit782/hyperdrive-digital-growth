@@ -1,5 +1,6 @@
 
 import { ShoppingCart, Store, Facebook, TrendingUp, Users, Award, Settings, Monitor } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const ModernServices = () => {
@@ -132,11 +133,13 @@ const ModernServices = () => {
 
                   {/* CTA */}
                   <Button 
+                    asChild
                     variant="outline" 
                     className="w-full border-slate-200 hover:border-slate-300 text-slate-700 hover:bg-slate-50 transition-all duration-300 group-hover:shadow-md mt-auto"
-                    onClick={() => window.location.href = service.link}
                   >
-                    Learn More
+                    <Link to={service.link} aria-label={`Learn more about ${service.title}`}>
+                      Learn More
+                    </Link>
                   </Button>
                 </div>
               </div>

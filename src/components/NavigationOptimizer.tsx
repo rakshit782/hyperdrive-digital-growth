@@ -72,7 +72,7 @@ const NavigationOptimizer = () => {
 
     // Prefetch next likely pages
     const prefetchRoutes = () => {
-      const commonRoutes = ['/about', '/pricing', '/contact', '/free-audit'];
+      const commonRoutes = ['/about', '/pricing', '/contact'];
       const currentPath = location.pathname;
       
       commonRoutes

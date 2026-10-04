@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles, TrendingUp, CheckCircle, Users, Award, Zap, Target, BarChart3, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface CTAButtons {
   primaryText?: string;
@@ -16,7 +16,6 @@ interface StatBlock {
 }
 
 const Hero = () => {
-  const navigate = useNavigate();
   const [ctaButtons, setCTAButtons] = useState<CTAButtons>({
     primaryText: "Get Free Strategy Call",
     secondaryText: "Watch Case Study"
@@ -75,14 +74,6 @@ const Hero = () => {
     };
   }, []);
 
-  const handlePrimaryButtonClick = () => {
-    navigate('/contact');
-  };
-
-  const handleSecondaryButtonClick = () => {
-    window.location.href = '/case-studies';
-  };
-
   return (
     <section className="relative flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden py-12 md:py-16 lg:py-20">
       {/* Enhanced Background Elements */}
@@ -122,22 +113,26 @@ const Hero = () => {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center animate-scale-in">
                 <Button 
+                  asChild
                   size="lg" 
                   className="group btn-primary text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300"
-                  onClick={handlePrimaryButtonClick}
                 >
-                  {ctaButtons.primaryText}
-                  <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  <Link to="/contact" aria-label={`${ctaButtons.primaryText} — Contact`}>
+                    {ctaButtons.primaryText}
+                    <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Link>
                 </Button>
                 
                 <Button 
+                  asChild
                   variant="outline" 
                   size="lg" 
                   className="group btn-secondary text-lg px-10 py-6 h-auto min-w-64 transform hover:scale-105 transition-all duration-300"
-                  onClick={handleSecondaryButtonClick}
                 >
-                  <Play className="mr-3 w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-                  {ctaButtons.secondaryText}
+                  <Link to="/case-studies" aria-label={`${ctaButtons.secondaryText} — Case Studies`}>
+                    <Play className="mr-3 w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                    {ctaButtons.secondaryText}
+                  </Link>
                 </Button>
               </div>
 

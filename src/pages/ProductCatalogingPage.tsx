@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowRight, CheckCircle, Database, Package, BarChart, FileText } from 'lucide-react';
 
 const ProductCatalogingPage = () => {
-  const navigate = useNavigate();
 
   const schema = {
     "@context": "https://schema.org",
@@ -90,20 +89,24 @@ const ProductCatalogingPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
                 <Button 
+                  asChild
                   size="lg" 
                   className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-4 text-lg"
-                  onClick={() => navigate('/contact')}
                 >
-                  Get Started Today
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <Link to="/contact" aria-label="Get Started Today — Product Cataloging">
+                    Get Started Today
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Link>
                 </Button>
                 <Button 
+                  asChild
                   size="lg" 
                   variant="outline" 
                   className="px-8 py-4 text-lg"
-                  onClick={() => navigate('/contact')}
                 >
-                  Free Catalog Audit
+                  <Link to="/contact" aria-label="Free Catalog Audit — Contact">
+                    Free Catalog Audit
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -173,12 +176,14 @@ const ProductCatalogingPage = () => {
               Partner with our Product Data Management Agency for professional cataloging services
             </p>
             <Button 
+              asChild
               size="lg" 
               className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-4 text-lg"
-              onClick={() => navigate('/contact')}
             >
-              Start Your Free Consultation
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <Link to="/contact" aria-label="Start Your Free Consultation — Product Cataloging">
+                Start Your Free Consultation
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
             </Button>
           </div>
         </section>

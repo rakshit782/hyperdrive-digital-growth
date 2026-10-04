@@ -1,4 +1,5 @@
 
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
@@ -21,12 +22,14 @@ const ServiceCTA = ({ title, description, buttonText, serviceType }: ServiceCTAP
         </p>
         
         <Button 
+          asChild
           size="lg"
           className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-          onClick={() => window.location.href = '/contact'}
         >
-          {buttonText}
-          <ArrowRight className="ml-2 w-5 h-5" />
+          <Link to="/contact" aria-label={`${buttonText} — Contact`}>
+            {buttonText}
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </Link>
         </Button>
       </div>
     </section>

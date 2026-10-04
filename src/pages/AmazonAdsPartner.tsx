@@ -91,16 +91,12 @@ const AmazonAdsPartner = () => {
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link to="/contact">
-                    <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold px-8 w-full sm:w-auto">
-                      Get Free Consultation
-                    </Button>
-                  </Link>
-                  <Link to="/case-studies">
-                    <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 w-full sm:w-auto">
-                      View Success Stories
-                    </Button>
-                  </Link>
+                  <Button asChild size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold px-8 w-full sm:w-auto">
+                    <Link to="/contact" aria-label="Get Free Consultation — Contact">Get Free Consultation</Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 w-full sm:w-auto">
+                    <Link to="/case-studies">View Success Stories</Link>
+                  </Button>
                 </div>
               </div>
               
@@ -229,16 +225,12 @@ const AmazonAdsPartner = () => {
                   how our expertise can drive better results for your brand.
                 </p>
                 <div className="space-y-4">
-                  <Link to="/contact" className="block">
-                    <Button size="lg" className="bg-white text-amber-600 hover:bg-slate-100 font-semibold w-full">
-                      Request Free Consultation
-                    </Button>
-                  </Link>
-                  <Link to="/services/amazon-advertising" className="block">
-                    <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 w-full">
-                      Explore Our Services
-                    </Button>
-                  </Link>
+                  <Button asChild size="lg" className="bg-white text-amber-600 hover:bg-slate-100 font-semibold w-full">
+                    <Link to="/contact" aria-label="Request Free Consultation — Contact">Request Free Consultation</Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 w-full">
+                    <Link to="/services/amazon-advertising">Explore Our Services</Link>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -262,16 +254,12 @@ const AmazonAdsPartner = () => {
               We are not affiliated with or endorsed by Amazon.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/contact">
-                <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold px-8">
-                  Request a Free Consultation
-                </Button>
-              </Link>
-              <Link to="/services/amazon-advertising">
-                <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
-                  Explore Our Services
-                </Button>
-              </Link>
+              <Button asChild size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold px-8">
+                <Link to="/contact" aria-label="Request a Free Consultation — Contact">Request a Free Consultation</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                <Link to="/services/amazon-advertising">Explore Our Services</Link>
+              </Button>
             </div>
           </div>
         </section>

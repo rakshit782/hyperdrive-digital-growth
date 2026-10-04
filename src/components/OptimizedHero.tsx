@@ -1,5 +1,6 @@
 
 import React, { memo } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play, CheckCircle, Star } from 'lucide-react';
 
@@ -56,12 +57,14 @@ const OptimizedHero = memo(() => {
             {/* CTA buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in delay-500">
               <Button 
+                asChild
                 size="lg" 
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                onClick={() => window.location.href = '/contact'}
               >
-                Get Free Audit
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <Link to="/contact" aria-label="Get Free Audit — Contact">
+                  Get Free Audit
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
               </Button>
               
               <Button 

@@ -4,10 +4,9 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Button } from '@/components/ui/button';
 import { Check, X, ArrowRight, TrendingUp, Users, Target, Zap } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const ToolAlternativesPage: React.FC = () => {
-  const navigate = useNavigate();
 
   const schema = {
     "@context": "https://schema.org",
@@ -54,12 +53,14 @@ const ToolAlternativesPage: React.FC = () => {
                 Tools like Helium 10, Jungle Scout, AMZ Scout, and Smart Scout are great for data. But what if you need an expert <strong>Amazon advertising agency</strong> to execute winning strategies?
               </p>
               <Button 
+                asChild
                 size="lg"
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg"
-                onClick={() => navigate('/contact')}
               >
-                Get Free Amazon Audit
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <Link to="/contact" aria-label="Get Free Amazon Audit — Contact">
+                  Get Free Amazon Audit
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
               </Button>
             </div>
           </div>
@@ -217,20 +218,22 @@ const ToolAlternativesPage: React.FC = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
+                asChild
                 size="lg"
                 className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-6 text-lg font-semibold"
-                onClick={() => navigate('/contact')}
               >
-                Get Free Strategy Call
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <Link to="/contact" aria-label="Get Free Strategy Call — Contact">
+                  Get Free Strategy Call
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
               </Button>
               <Button 
+                asChild
                 size="lg"
                 variant="outline"
                 className="border-2 border-white text-white hover:bg-white/10 px-8 py-6 text-lg font-semibold"
-                onClick={() => navigate('/case-studies')}
               >
-                View Success Stories
+                <Link to="/case-studies">View Success Stories</Link>
               </Button>
             </div>
           </div>

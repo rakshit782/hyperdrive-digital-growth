@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SEOHead from '@/components/SEOHead';
@@ -269,7 +269,6 @@ export const detailedServiceSlugs = Object.keys(serviceConfigs);
 
 const DetailedServicePage = () => {
   const { serviceType } = useParams<{ serviceType: string }>();
-  const navigate = useNavigate();
   const config = serviceConfigs[serviceType || ''];
   const { stats } = useServiceData(serviceType || '');
   const caseStudies = realBrandCaseStudies[serviceType || ''] || [];
@@ -281,9 +280,9 @@ const DetailedServicePage = () => {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-4xl font-bold mb-4">Service Not Found</h1>
-            <Link to="/services">
-              <Button>View All Services</Button>
-            </Link>
+            <Button asChild>
+              <Link to="/services">View All Services</Link>
+            </Button>
           </div>
         </div>
         <Footer />
@@ -422,20 +421,24 @@ const DetailedServicePage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
                 <Button 
+                  asChild
                   size="lg" 
                   className={`bg-gradient-to-r ${config.gradient} text-white px-8 py-4 text-lg`}
-                  onClick={() => navigate('/contact')}
                 >
-                  Get Started Today
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <Link to="/contact" aria-label={`Get Started Today — ${config.title}`}>
+                    Get Started Today
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Link>
                 </Button>
                 <Button 
+                  asChild
                   size="lg" 
                   variant="outline" 
                   className="px-8 py-4 text-lg"
-                  onClick={() => navigate('/contact')}
                 >
-                  Schedule Consultation
+                  <Link to="/contact" aria-label={`Schedule Consultation — ${config.title}`}>
+                    Schedule Consultation
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -603,22 +606,26 @@ const DetailedServicePage = () => {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button
+                      asChild
                       variant="outline"
                       size="lg"
                       className="gap-2"
-                      onClick={() => navigate('/eula')}
                     >
-                      <FileText className="w-5 h-5" />
-                      End User License Agreement
+                      <Link to="/eula">
+                        <FileText className="w-5 h-5" />
+                        End User License Agreement
+                      </Link>
                     </Button>
                     <Button
+                      asChild
                       variant="outline"
                       size="lg"
                       className="gap-2"
-                      onClick={() => navigate('/amz-copilot-privacy')}
                     >
-                      <Shield className="w-5 h-5" />
-                      Privacy Policy
+                      <Link to="/amz-copilot-privacy">
+                        <Shield className="w-5 h-5" />
+                        Privacy Policy
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -640,19 +647,23 @@ const DetailedServicePage = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button 
+                    asChild
                     size="lg"
                     className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 text-lg font-semibold"
-                    onClick={() => navigate('/contact')}
                   >
-                    Get Free Consultation
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <Link to="/contact" aria-label={`Get Free Consultation — ${config.title}`}>
+                      Get Free Consultation
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Link>
                   </Button>
                   <Button 
+                    asChild
                     size="lg"
                     className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg font-semibold backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
-                    onClick={() => navigate('/contact')}
                   >
-                    Schedule Strategy Call
+                    <Link to="/contact" aria-label={`Schedule Strategy Call — ${config.title}`}>
+                      Schedule Strategy Call
+                    </Link>
                   </Button>
                 </div>
               </CardContent>

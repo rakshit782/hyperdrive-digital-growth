@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, TrendingUp, Target } from "lucide-react";
+import { canonicalAppPath } from "@/lib/canonicalAppPath";
 
 interface CTAData {
   title: string;
@@ -123,24 +125,37 @@ const CTA = () => {
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Button 
+              asChild
               size="lg" 
               className="group bg-gradient-to-r from-blue-500 via-blue-600 to-purple-500 hover:from-blue-600 hover:via-blue-700 hover:to-purple-600 text-white px-10 py-6 text-xl font-semibold rounded-2xl shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/40 transition-all duration-500 hover:scale-110 hover:-translate-y-2 border border-blue-400/30"
-              onClick={() => window.location.href = '/contact'}
             >
-              <Target className="mr-3 w-6 h-6" />
-              {ctaData.primaryButtonText}
-              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+              <Link to="/contact" aria-label={`${ctaData.primaryButtonText} — Contact`}>
+                <Target className="mr-3 w-6 h-6" />
+                {ctaData.primaryButtonText}
+                <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+              </Link>
             </Button>
             
-            {ctaData.showSecondaryButton && (
-              <Button 
-                size="lg" 
-                className="group border-2 border-cyan-400/50 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900 hover:border-white px-10 py-6 text-xl font-semibold rounded-2xl transition-all duration-500 hover:scale-110 hover:-translate-y-2 hover:shadow-xl"
-                onClick={() => window.location.href = ctaData.secondaryButtonLink}
-              >
-                {ctaData.secondaryButtonText}
+            {ctaData.showSecondaryButton && (() => {
+              const secondaryHref = canonicalAppPath(ctaData.secondaryButtonLink);
+              const secondaryClass = "group border-2 border-cyan-400/50 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900 hover:border-white px-10 py-6 text-xl font-semibold rounded-2xl transition-all duration-500 hover:scale-110 hover:-translate-y-2 hover:shadow-xl";
+              const secondaryLabel = secondaryHref === "/case-studies"
+                ? `${ctaData.secondaryButtonText} — Case Studies`
+                : `${ctaData.secondaryButtonText} — ${secondaryHref}`;
+              return (
+              <Button asChild size="lg" className={secondaryClass}>
+                {secondaryHref.startsWith("/") && !secondaryHref.startsWith("//") ? (
+                  <Link to={secondaryHref} aria-label={secondaryLabel}>
+                    {ctaData.secondaryButtonText}
+                  </Link>
+                ) : (
+                  <a href={secondaryHref} aria-label={secondaryLabel}>
+                    {ctaData.secondaryButtonText}
+                  </a>
+                )}
               </Button>
-            )}
+              );
+            })()}
           </div>
 
           {/* Trust Indicators */}

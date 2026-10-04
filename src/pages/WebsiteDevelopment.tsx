@@ -142,12 +142,14 @@ const WebsiteDevelopment = () => {
                 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button 
+                    asChild
                     size="lg" 
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                    onClick={() => window.location.href = '/contact'}
                   >
-                    Get Free Consultation
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <Link to="/contact" aria-label="Get Free Consultation — Website Development">
+                      Get Free Consultation
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Link>
                   </Button>
                   
                   <Button 
@@ -340,21 +342,25 @@ const WebsiteDevelopment = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
+                asChild
                 size="lg"
                 className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-12 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
-                onClick={() => window.location.href = '/contact'}
               >
-                Start Your Project
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <Link to="/contact" aria-label="Start Your Project — Website Development">
+                  Start Your Project
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
               </Button>
               
               <Button 
+                asChild
                 variant="outline"
                 size="lg"
                 className="border-2 border-emerald-300 bg-white/80 backdrop-blur-sm hover:bg-white text-emerald-800 px-12 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-                onClick={() => window.location.href = '/contact'}
               >
-                Get Quote
+                <Link to="/contact" aria-label="Get Quote — Contact">
+                  Get Quote
+                </Link>
               </Button>
             </div>
           </div>

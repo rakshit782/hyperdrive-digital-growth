@@ -6,10 +6,9 @@ import SEOHead from "@/components/SEOHead";
 import Services from "@/components/Services";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const ServicesPage: React.FC = () => {
-  const navigate = useNavigate();
 
   return (
     <>
@@ -50,20 +49,22 @@ const ServicesPage: React.FC = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
+                asChild
                 size="lg" 
                 className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-blue-500/25"
-                onClick={() => navigate('/contact')}
               >
-                Get Free Consultation
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <Link to="/contact" aria-label="Get Free Consultation — Contact">
+                  Get Free Consultation
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
               </Button>
               <Button 
+                asChild
                 size="lg" 
                 variant="outline" 
                 className="border-white/30 bg-white/5 text-white hover:bg-white/15 px-8 py-6 text-lg rounded-xl backdrop-blur-sm"
-                onClick={() => navigate('/case-studies')}
               >
-                View Case Studies
+                <Link to="/case-studies">View Case Studies</Link>
               </Button>
             </div>
           </div>
@@ -123,12 +124,14 @@ const ServicesPage: React.FC = () => {
               Get a free audit of your current advertising strategy and discover opportunities for growth
             </p>
             <Button 
+              asChild
               size="lg" 
               className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-10 py-6 text-lg rounded-xl shadow-lg shadow-blue-500/25"
-              onClick={() => navigate('/contact')}
             >
-              Start Your Free Audit
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <Link to="/contact" aria-label="Start Your Free Audit — Contact">
+                Start Your Free Audit
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
             </Button>
           </div>
         </section>

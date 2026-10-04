@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight, TrendingUp, Zap, Globe, BarChart3 } from "lucide-react";
 
 const About = () => {
-  const navigate = useNavigate();
   const [aboutData, setAboutData] = useState({
     heroTitle: 'Your E-commerce Growth Partner',
     heroSubtitle: '900+ Happy Clients Served',
@@ -123,19 +122,21 @@ const About = () => {
 
               <div className="flex flex-wrap justify-center gap-4">
                 <Button 
+                  asChild
                   size="lg" 
-                  onClick={() => navigate('/contact')}
                   className="group"
                 >
-                  Get Free Consultation
-                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <Link to="/contact" aria-label="Get Free Consultation — Contact">
+                    Get Free Consultation
+                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
                 </Button>
                 <Button 
+                  asChild
                   size="lg" 
                   variant="outline"
-                  onClick={() => navigate('/case-studies')}
                 >
-                  View Case Studies
+                  <Link to="/case-studies">View Case Studies</Link>
                 </Button>
               </div>
             </div>
@@ -332,19 +333,21 @@ const About = () => {
                     
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                       <Button 
+                        asChild
                         size="lg"
-                        onClick={() => navigate('/contact')}
                         className="group"
                       >
-                        Get Free Strategy Session
-                        <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        <Link to="/contact" aria-label="Get Free Strategy Session — Contact">
+                          Get Free Strategy Session
+                          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </Link>
                       </Button>
                       <Button 
+                        asChild
                         size="lg"
                         variant="outline"
-                        onClick={() => navigate('/case-studies')}
                       >
-                        Explore Success Stories
+                        <Link to="/case-studies">Explore Success Stories</Link>
                       </Button>
                     </div>
                   </div>
