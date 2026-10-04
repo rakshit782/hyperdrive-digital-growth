@@ -44,6 +44,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://www.amzadscout.com";
 const SITEMAP_EXCLUDE = new Set([
+  "/home",
   "/blog",
   "/free-audit",
   "/contact-us",

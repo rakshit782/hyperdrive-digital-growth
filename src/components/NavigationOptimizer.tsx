@@ -13,7 +13,7 @@ const NavigationOptimizer = () => {
     const preloadCriticalResources = () => {
       const criticalResources = [
         '/placeholder.svg',
-        '/lovable-uploads/62efba66-13c2-4df1-98b5-809501c81cb6.png'
+        '/logo.png'
       ];
 
       criticalResources.forEach(resource => {

@@ -12,6 +12,7 @@ import TrackingScriptInjector from "./components/TrackingScriptInjector";
 import { VisitorTracker } from "./components/VisitorTracker";
 import GlobalTracking from "./components/GlobalTracking";
 import Index from "./pages/Index";
+import Maintenance from "./pages/Maintenance";
 
 // Direct imports for instant loading - no lazy loading
 import About from "./pages/About";
@@ -88,8 +89,9 @@ export function AppContent() {
       <TrackingScriptInjector />
       <VisitorTracker />
       <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/about" element={<About />} />
+        <Route path="/" element={<Maintenance />} />
+        <Route path="/home" element={<Index />} />
+        <Route path="/about" element={<About />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/services/website-development" element={<WebsiteDevelopment />} />
                 <Route path="/services/listing-optimization" element={<ListingOptimizationPage />} />
