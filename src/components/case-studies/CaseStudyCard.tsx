@@ -13,11 +13,19 @@ import {
   metricFromText,
 } from "@/content/caseStudiesCopy";
 
-function Logo({ study }: { study: CaseStudy }) {
+export function CaseStudyLogo({
+  study,
+  className = "max-h-10 max-w-16 object-contain",
+  fallbackClassName = "max-w-16 truncate text-sm font-semibold text-slate-800",
+}: {
+  study: CaseStudy;
+  className?: string;
+  fallbackClassName?: string;
+}) {
   const [failed, setFailed] = useState(false);
   if (!study.logo_url || failed) {
     return (
-      <span className="max-w-16 truncate text-sm font-semibold text-slate-800">
+      <span className={fallbackClassName} data-testid="case-study-logo-fallback">
         {study.brand_name}
       </span>
     );
@@ -26,10 +34,9 @@ function Logo({ study }: { study: CaseStudy }) {
     <img
       src={study.logo_url}
       alt={study.brand_name}
-      className="max-h-10 max-w-16 object-contain"
-      width={64}
-      height={40}
+      className={className}
       onError={() => setFailed(true)}
+      data-testid="case-study-logo"
     />
   );
 }
@@ -73,7 +80,7 @@ export function CaseStudyCard({ study, preview = false }: { study: CaseStudy; pr
       ) : null}
       <div className="flex items-center justify-between gap-3" aria-hidden="true">
         <div className="flex h-10 w-16 shrink-0 items-center">
-          <Logo study={study} />
+          <CaseStudyLogo study={study} />
         </div>
         {study.channel ? (
           <Badge variant="outline" className={channelClass(study.channel)}>

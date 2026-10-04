@@ -24,7 +24,8 @@ const CaseStudies = () => {
     () => CHANNELS.filter((item) => rows.some((study) => study.channel === item)),
     [rows],
   );
-  const visible = channel === "all" ? rows : rows.filter((study) => study.channel === channel);
+  const showChannelFilters = available.length >= 2;
+  const visible = !showChannelFilters || channel === "all" ? rows : rows.filter((study) => study.channel === channel);
   const empty = rows.length === 0;
   const showSkeleton = !fromBuild && isPending;
 
@@ -52,16 +53,18 @@ const CaseStudies = () => {
               <CaseStudiesEmptyPanel />
             ) : (
               <>
-                <div className="mb-8 flex flex-wrap justify-center gap-2" role="group" aria-label={caseStudiesFilterLabel}>
-                  <FilterChip pressed={channel === "all"} onClick={() => setChannel("all")}>
-                    {caseStudiesFilterAll}
-                  </FilterChip>
-                  {available.map((item) => (
-                    <FilterChip key={item} pressed={channel === item} onClick={() => setChannel(item)}>
-                      {channelLabel(item)}
+                {showChannelFilters ? (
+                  <div className="mb-8 flex flex-wrap justify-center gap-2" role="group" aria-label={caseStudiesFilterLabel}>
+                    <FilterChip pressed={channel === "all"} onClick={() => setChannel("all")}>
+                      {caseStudiesFilterAll}
                     </FilterChip>
-                  ))}
-                </div>
+                    {available.map((item) => (
+                      <FilterChip key={item} pressed={channel === item} onClick={() => setChannel(item)}>
+                        {channelLabel(item)}
+                      </FilterChip>
+                    ))}
+                  </div>
+                ) : null}
                 <CaseStudyGrid studies={visible} />
                 <div className="mt-16">
                   <CaseStudiesCtaBand />

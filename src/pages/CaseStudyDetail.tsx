@@ -6,6 +6,7 @@ import NotFound from "@/pages/NotFound";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePublishedCaseStudies, fetchCaseStudyBySlug, type CaseStudy } from "@/hooks/useCaseStudies";
+import { CaseStudyLogo } from "@/components/case-studies/CaseStudyCard";
 import { CaseStudyGrid } from "@/components/case-studies/CaseStudyGrid";
 import { CaseStudiesCtaBand } from "@/components/case-studies/CaseStudiesBlocks";
 import { moreCaseStudies } from "@/lib/caseStudyFormat";
@@ -191,17 +192,11 @@ function DetailHeader({ study }: { study: CaseStudy }) {
   return (
     <header className="flex flex-col gap-4">
       <div className="flex h-10 items-center">
-        {study.logo_url ? (
-          <img
-            src={study.logo_url}
-            alt={study.brand_name}
-            className="max-h-10 max-w-[160px] object-contain"
-            width={160}
-            height={40}
-          />
-        ) : (
-          <p className="text-sm font-semibold text-slate-800">{study.brand_name}</p>
-        )}
+        <CaseStudyLogo
+          study={study}
+          className="max-h-10 max-w-[160px] object-contain"
+          fallbackClassName="truncate text-sm font-semibold text-slate-800"
+        />
       </div>
       <h1 className="text-3xl font-bold text-slate-900 md:text-5xl">{detailPageH1(study.brand_name, study.channel)}</h1>
       <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">

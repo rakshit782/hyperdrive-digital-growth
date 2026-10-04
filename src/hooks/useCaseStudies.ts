@@ -54,11 +54,26 @@ export interface ImportPreview {
 
 export class CaseStudiesApiError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  /** True when the JSON body included a `missing` field (a real reorder rejection). */
+  hasMissing: boolean;
+  constructor(status: number, message: string, options?: { hasMissing?: boolean }) {
     super(message);
     this.name = "CaseStudiesApiError";
     this.status = status;
+    this.hasMissing = Boolean(options?.hasMissing);
   }
+}
+
+/**
+ * Per-row PUT fallback is only for an endpoint that does not implement reorder yet:
+ * 404, or a 400 whose body has no `missing` field (today's API treats the action as a create).
+ * A 400 that includes `missing` is a real reorder error.
+ */
+export function shouldFallbackReorder(error: unknown): boolean {
+  if (!(error instanceof CaseStudiesApiError)) return false;
+  if (error.status === 404) return true;
+  if (error.status === 400 && !error.hasMissing) return true;
+  return false;
 }
 
 export const PUBLIC_CASE_STUDIES_KEY = ["case-studies", "published"] as const;
@@ -233,6 +248,21 @@ export async function updateCaseStudy(id: string, body: Partial<CaseStudyWrite>)
 
 export async function deleteCaseStudy(id: string): Promise<void> {
   await adminJson({ id }, { method: "DELETE" });
+}
+
+export async function reorderCaseStudies(order: { id: string; sort_order: number }[]): Promise<CaseStudy[]> {
+  const response = await adminFetch(
+    { action: "reorder" },
+    { method: "POST", body: JSON.stringify({ order }) },
+  );
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    const record = asRecord(data);
+    const message = record && typeof record.error === "string" ? record.error : `Request failed (${response.status})`;
+    const hasMissing = !!record && Object.prototype.hasOwnProperty.call(record, "missing");
+    throw new CaseStudiesApiError(response.status, message, { hasMissing });
+  }
+  return parseCaseStudyList(data);
 }
 
 function emptyStudy(): CaseStudy {

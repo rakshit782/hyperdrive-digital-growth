@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowDown, ArrowUp, GripVertical, MoreHorizontal, Plus } from "lucide-react";
@@ -29,6 +29,9 @@ import {
   CaseStudiesApiError,
   compareCaseStudies,
   deleteCaseStudy,
+  fetchAllCaseStudies,
+  reorderCaseStudies,
+  shouldFallbackReorder,
   updateCaseStudy,
   useAdminCaseStudies,
   type CaseStudy,
@@ -48,6 +51,25 @@ import {
 } from "@/components/dashboard/case-studies/form";
 
 type StatusTab = "all" | "published" | "drafts";
+type MoveDirection = "up" | "down";
+
+function visibleMoveButton(id: string, direction: MoveDirection): HTMLButtonElement | undefined {
+  return Array.from(
+    document.querySelectorAll<HTMLButtonElement>(
+      `button[data-move="${direction}"][data-study-id="${CSS.escape(id)}"]`,
+    ),
+  ).find((button) => button.getClientRects().length > 0);
+}
+
+function focusMoveButton(id: string, direction: MoveDirection) {
+  const preferred = visibleMoveButton(id, direction);
+  if (preferred && !preferred.disabled) {
+    preferred.focus();
+    return;
+  }
+  const other = visibleMoveButton(id, direction === "up" ? "down" : "up");
+  if (other && !other.disabled) other.focus();
+}
 
 export function CaseStudiesSection() {
   const navigate = useNavigate();
@@ -65,6 +87,14 @@ export function CaseStudiesSection() {
   const [adminAlert, setAdminAlert] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<CaseStudy | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [reorderStatus, setReorderStatus] = useState("");
+  const focusIntent = useRef<{ id: string; direction: MoveDirection } | null>(null);
+
+  useEffect(() => {
+    const intent = focusIntent.current;
+    if (!intent) return;
+    focusMoveButton(intent.id, intent.direction);
+  }, [studies]);
 
   const publishedCount = studies.filter((study) => study.published).length;
   const draftCount = studies.length - publishedCount;
@@ -134,23 +164,65 @@ export function CaseStudiesSection() {
     }
   };
 
-  const persistOrder = async (next: CaseStudy[], previous: CaseStudy[]) => {
-    const changed = next.filter((study) => {
-      const before = previous.find((item) => item.id === study.id);
-      return before && before.sort_order !== study.sort_order;
-    });
-    queryClient.setQueryData(ADMIN_CASE_STUDIES_KEY, next);
+  const releaseMoveFocus = () => {
+    setTimeout(() => {
+      focusIntent.current = null;
+    }, 0);
+  };
+
+  const refetchAdminList = async () => {
     try {
-      await Promise.all(changed.map((study) => updateCaseStudy(study.id, { brand_name: study.brand_name, sort_order: study.sort_order })));
+      const server = await fetchAllCaseStudies();
+      queryClient.setQueryData(ADMIN_CASE_STUDIES_KEY, server);
     } catch (error) {
-      queryClient.setQueryData(ADMIN_CASE_STUDIES_KEY, previous);
-      toast.error("Couldn't save the new order. The list was restored.");
-      if (error instanceof CaseStudiesApiError && error.status === 401) handleAuth();
+      if (error instanceof CaseStudiesApiError && error.status === 401) {
+        handleAuth();
+        return;
+      }
       if (error instanceof CaseStudiesApiError && error.status === 403) handleForbidden();
     }
   };
 
-  const moveVisible = (id: string, toIndex: number) => {
+  const reportOrderFailure = async (error: unknown) => {
+    if (error instanceof CaseStudiesApiError && error.status === 401) {
+      handleAuth();
+      return;
+    }
+    if (error instanceof CaseStudiesApiError && error.status === 403) handleForbidden();
+    toast.error(error instanceof Error ? error.message : "Couldn't save the new order.");
+    await refetchAdminList();
+  };
+
+  const persistOrder = async (next: CaseStudy[], previous: CaseStudy[]) => {
+    queryClient.setQueryData(ADMIN_CASE_STUDIES_KEY, next);
+    const order = next.map((study) => ({ id: study.id, sort_order: study.sort_order }));
+    try {
+      const saved = await reorderCaseStudies(order);
+      queryClient.setQueryData(ADMIN_CASE_STUDIES_KEY, saved);
+    } catch (error) {
+      if (!shouldFallbackReorder(error)) {
+        await reportOrderFailure(error);
+        return;
+      }
+      const changed = next.filter((study) => {
+        const before = previous.find((item) => item.id === study.id);
+        return before && before.sort_order !== study.sort_order;
+      });
+      try {
+        await Promise.all(
+          changed.map((study) =>
+            updateCaseStudy(study.id, { brand_name: study.brand_name, sort_order: study.sort_order }),
+          ),
+        );
+      } catch (fallbackError) {
+        await reportOrderFailure(fallbackError);
+      }
+    } finally {
+      releaseMoveFocus();
+    }
+  };
+
+  const moveVisible = (id: string, toIndex: number, direction?: MoveDirection) => {
     const fromIndex = visible.findIndex((study) => study.id === id);
     if (fromIndex < 0 || toIndex < 0 || toIndex >= visible.length || fromIndex === toIndex) return;
     const previous = studies;
@@ -162,6 +234,10 @@ export function CaseStudiesSection() {
     if (fromIndex < toIndex) insertAt += 1;
     sorted.splice(insertAt, 0, moving);
     const next = sorted.map((study, index) => ({ ...study, sort_order: index }));
+    if (direction) {
+      focusIntent.current = { id, direction };
+      setReorderStatus(`Moved ${moving.brand_name} to position ${toIndex + 1}`);
+    }
     void persistOrder(next, previous);
   };
 
@@ -201,6 +277,9 @@ export function CaseStudiesSection() {
 
   return (
     <div className="space-y-6" data-testid="case-studies-section">
+      <p className="sr-only" aria-live="polite" data-testid="reorder-status">
+        {reorderStatus}
+      </p>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Case Studies</h2>
@@ -328,10 +407,10 @@ export function CaseStudiesSection() {
                         >
                           <GripVertical className="h-4 w-4" aria-hidden="true" />
                         </button>
-                        <button type="button" className="inline-flex min-h-11 min-w-11 items-center justify-center" aria-label={`Move ${study.brand_name} up`} data-testid="move-up" disabled={index === 0} onClick={() => moveVisible(study.id, index - 1)}>
+                        <button type="button" className="inline-flex min-h-11 min-w-11 items-center justify-center" aria-label={`Move ${study.brand_name} up`} data-testid="move-up" data-move="up" data-study-id={study.id} disabled={index === 0} onClick={() => moveVisible(study.id, index - 1, "up")}>
                           <ArrowUp className="h-4 w-4" aria-hidden="true" />
                         </button>
-                        <button type="button" className="inline-flex min-h-11 min-w-11 items-center justify-center" aria-label={`Move ${study.brand_name} down`} data-testid="move-down" disabled={index === visible.length - 1} onClick={() => moveVisible(study.id, index + 1)}>
+                        <button type="button" className="inline-flex min-h-11 min-w-11 items-center justify-center" aria-label={`Move ${study.brand_name} down`} data-testid="move-down" data-move="down" data-study-id={study.id} disabled={index === visible.length - 1} onClick={() => moveVisible(study.id, index + 1, "down")}>
                           <ArrowDown className="h-4 w-4" aria-hidden="true" />
                         </button>
                       </div>
@@ -393,10 +472,10 @@ export function CaseStudiesSection() {
                     {study.published ? "Published" : "Draft"}
                   </label>
                   <div className="flex">
-                    <button type="button" className="inline-flex min-h-11 min-w-11 items-center justify-center" aria-label={`Move ${study.brand_name} up`} disabled={index === 0} onClick={() => moveVisible(study.id, index - 1)}>
+                    <button type="button" className="inline-flex min-h-11 min-w-11 items-center justify-center" aria-label={`Move ${study.brand_name} up`} data-testid="move-up" data-move="up" data-study-id={study.id} disabled={index === 0} onClick={() => moveVisible(study.id, index - 1, "up")}>
                       <ArrowUp className="h-4 w-4" aria-hidden="true" />
                     </button>
-                    <button type="button" className="inline-flex min-h-11 min-w-11 items-center justify-center" aria-label={`Move ${study.brand_name} down`} disabled={index === visible.length - 1} onClick={() => moveVisible(study.id, index + 1)}>
+                    <button type="button" className="inline-flex min-h-11 min-w-11 items-center justify-center" aria-label={`Move ${study.brand_name} down`} data-testid="move-down" data-move="down" data-study-id={study.id} disabled={index === visible.length - 1} onClick={() => moveVisible(study.id, index + 1, "down")}>
                       <ArrowDown className="h-4 w-4" aria-hidden="true" />
                     </button>
                   </div>
