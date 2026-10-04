@@ -74,7 +74,8 @@ const VerifyCertificate = () => {
       <SEOHead
         title="Verify Internship Certificate | AMZ AD SCOUT"
         description="Verify the authenticity of an AMZ AD SCOUT internship certificate using the certificate ID."
-        canonical="https://amzadscout.com/verify-certificate"
+        canonical="https://www.amzadscout.com/verify-certificate"
+        robots="noindex, follow"
       />
       <div className="print:hidden">
         <Header />

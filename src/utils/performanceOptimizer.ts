@@ -3,6 +3,8 @@
 export class PerformanceOptimizer {
   private static instance: PerformanceOptimizer;
   private observers: Map<string, PerformanceObserver> = new Map();
+  private started = false;
+  private serviceWorkerRegistered = false;
 
   static getInstance(): PerformanceOptimizer {
     if (!PerformanceOptimizer.instance) {
@@ -128,23 +130,29 @@ export class PerformanceOptimizer {
     });
   }
 
-  // Initialize all optimizations
-  init() {
+  // Initialize all optimizations.
+  // skipImageMutations: prerendered HTML is already in #root; changing img
+  // attributes before hydration would mismatch, and the previous SPA called
+  // this before React painted any images.
+  init(options?: { skipImageMutations?: boolean }) {
+    if (this.started || typeof document === 'undefined') return;
+    this.started = true;
+    const skipImageMutations = options?.skipImageMutations === true;
     // Run immediately
     this.addResourceHints();
     this.preloadCriticalResources();
 
+    const runDomPasses = () => {
+      this.setupLazyLoading();
+      if (!skipImageMutations) this.optimizeImages();
+      this.monitorWebVitals();
+    };
+
     // Run after DOM is ready
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        this.setupLazyLoading();
-        this.optimizeImages();
-        this.monitorWebVitals();
-      });
+      document.addEventListener('DOMContentLoaded', runDomPasses);
     } else {
-      this.setupLazyLoading();
-      this.optimizeImages();
-      this.monitorWebVitals();
+      runDomPasses();
     }
 
     // Cleanup observers on page unload
@@ -156,7 +164,9 @@ export class PerformanceOptimizer {
 
   // Service Worker registration for caching
   registerServiceWorker() {
-    if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    if (this.serviceWorkerRegistered) return;
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && import.meta.env.PROD) {
+      this.serviceWorkerRegistered = true;
       window.addEventListener('load', () => {
         // Unregister existing service workers first to ensure clean state
         navigator.serviceWorker.getRegistrations().then(registrations => {

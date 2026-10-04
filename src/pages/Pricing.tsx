@@ -68,10 +68,10 @@ const Pricing = () => {
                         {pricingData.ppcManagement.tiers.map((tier, idx) => (
                           <TableRow key={idx}>
                             <TableCell className="font-medium">{tier.skuRange}</TableCell>
-                            <TableCell className="text-center">${tier.oneMonth}/mo</TableCell>
-                            <TableCell className="text-center">${tier.threeMonth}/mo</TableCell>
-                            <TableCell className="text-center">${tier.sixMonth}/mo</TableCell>
-                            <TableCell className="text-center font-semibold text-primary">${tier.twelveMonth}/mo</TableCell>
+                            <TableCell className="text-center">{`$${tier.oneMonth}/mo`}</TableCell>
+                            <TableCell className="text-center">{`$${tier.threeMonth}/mo`}</TableCell>
+                            <TableCell className="text-center">{`$${tier.sixMonth}/mo`}</TableCell>
+                            <TableCell className="text-center font-semibold text-primary">{`$${tier.twelveMonth}/mo`}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

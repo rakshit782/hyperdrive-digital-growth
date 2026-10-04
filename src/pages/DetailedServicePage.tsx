@@ -238,6 +238,10 @@ const serviceConfigs: Record<string, {
   }
 };
 
+// Slug list shared with the prerender route table. Constant export is intentional.
+// eslint-disable-next-line react-refresh/only-export-components
+export const detailedServiceSlugs = Object.keys(serviceConfigs);
+
 const DetailedServicePage = () => {
   const { serviceType } = useParams<{ serviceType: string }>();
   const navigate = useNavigate();

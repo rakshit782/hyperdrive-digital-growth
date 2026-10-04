@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,17 +50,21 @@ import AdLanding from "./pages/AdLanding";
 import ToolAlternativesPage from "./pages/ToolAlternativesPage";
 import VerifyCertificate from "./pages/VerifyCertificate";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 2,
-      refetchOnWindowFocus: false,
-      staleTime: 30000,
+function createQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 2,
+        refetchOnWindowFocus: false,
+        staleTime: 30000,
+      },
     },
-  },
-});
+  });
+}
 
-function App() {
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(createQueryClient);
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -67,12 +72,22 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          <GlobalTracking />
-          <TrackingScriptInjector />
-          <VisitorTracker />
-          <Routes>
+            {children}
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+}
+
+export function AppContent() {
+  return (
+    <>
+      <ScrollToTop />
+      <GlobalTracking />
+      <TrackingScriptInjector />
+      <VisitorTracker />
+      <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/services" element={<Services />} />
@@ -106,11 +121,17 @@ function App() {
                 <Route path="/verify-certificate" element={<VerifyCertificate />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AppProviders>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </AppProviders>
   );
 }
 

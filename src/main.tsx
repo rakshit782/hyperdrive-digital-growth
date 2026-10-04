@@ -1,15 +1,11 @@
 
 import React from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App.tsx';
 import './index.css';
 import { performanceOptimizer } from './utils/performanceOptimizer';
 import { logMigrationStatus } from './utils/migrationStatus';
-
-// Initialize performance optimizations
-performanceOptimizer.init();
-performanceOptimizer.registerServiceWorker();
 
 // Log migration status
 logMigrationStatus();
@@ -35,16 +31,27 @@ if (!container) {
   throw new Error('Failed to find the root element');
 }
 
-const root = createRoot(container);
+const prerendered = container.hasChildNodes();
 
-// Use concurrent features for better performance
-root.render(
+// Same startup path as before. Skip image mutations when the server already
+// rendered the body, so hydration sees the original markup.
+performanceOptimizer.init({ skipImageMutations: prerendered });
+performanceOptimizer.registerServiceWorker();
+
+const app = (
   <React.StrictMode>
     <HelmetProvider>
       <App />
     </HelmetProvider>
   </React.StrictMode>
 );
+
+// Prerendered routes ship markup inside #root. Client-only routes use an empty shell.
+if (prerendered) {
+  hydrateRoot(container, app);
+} else {
+  createRoot(container).render(app);
+}
 
 // Report web vitals in development
 if (import.meta.env.DEV) {
