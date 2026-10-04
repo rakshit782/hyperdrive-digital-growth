@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, CheckCircle, Database, Package, BarChart, FileText } from 'lucide-react';
+import { ServiceCaseStudiesBlock } from '@/components/case-studies/CaseStudiesBlocks';
 
 const ProductCatalogingPage = () => {
 
@@ -165,6 +166,8 @@ const ProductCatalogingPage = () => {
             </div>
           </div>
         </section>
+
+        <ServiceCaseStudiesBlock serviceSlug="product-cataloging" />
 
         {/* CTA Section */}
         <section className="py-20">

@@ -3,8 +3,9 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft, Compass, Search, HelpCircle } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
+import { caseStudiesBrowseAll } from "@/content/caseStudiesCopy";
 
-const NotFound = () => {
+const NotFound = ({ browseCaseStudies = false }: { browseCaseStudies?: boolean }) => {
   const location = useLocation();
 
   useEffect(() => {
@@ -13,12 +14,14 @@ const NotFound = () => {
 
   return (
     <>
-      <SEOHead
-        title="404 - Page Not Found | AMZ AD SCOUT"
-        description="The page you are looking for doesn't exist or has been relocated."
-        robots="noindex, nofollow"
-        image="https://www.amzadscout.com/logo.png"
-      />
+      {browseCaseStudies ? null : (
+        <SEOHead
+          title="404 - Page Not Found | AMZ AD SCOUT"
+          description="The page you are looking for doesn't exist or has been relocated."
+          robots="noindex, nofollow"
+          image="https://www.amzadscout.com/logo.png"
+        />
+      )}
       <div className="relative min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100 overflow-hidden selection:bg-orange-500 selection:text-white">
         {/* Glow gradients */}
         <div className="absolute top-[-20%] left-[-10%] w-[550px] h-[550px] rounded-full bg-orange-500/10 blur-[130px] pointer-events-none" />
@@ -94,6 +97,17 @@ const NotFound = () => {
                 Go Back
               </Button>
             </div>
+            {browseCaseStudies ? (
+              <div className="mt-3 flex justify-center">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full sm:w-auto h-11 px-6 border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white font-medium text-sm rounded-xl backdrop-blur-sm transition-all duration-200"
+                >
+                  <Link to="/case-studies">{caseStudiesBrowseAll}</Link>
+                </Button>
+              </div>
+            ) : null}
 
             {/* Help / Assistance */}
             <div className="mt-12 pt-6 border-t border-slate-900 flex items-center justify-center gap-2 text-xs text-slate-500">

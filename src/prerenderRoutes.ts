@@ -21,6 +21,7 @@ export const publicRoutes: string[] = [
   '/services',
   ...new Set([...staticServiceRoutes, ...detailedServiceRoutes]),
   '/case-studies',
+  // /case-studies/:slug is appended in scripts/prerender.mjs from the build-time fetch.
   '/amazon-case-studies',
   '/meta-case-studies',
   '/walmart-case-studies',

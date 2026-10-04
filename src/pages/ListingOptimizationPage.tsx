@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, CheckCircle, TrendingUp, Target, Eye, Image } from 'lucide-react';
+import { ServiceCaseStudiesBlock } from '@/components/case-studies/CaseStudiesBlocks';
 
 const ListingOptimizationPage = () => {
 
@@ -165,6 +166,8 @@ const ListingOptimizationPage = () => {
             </div>
           </div>
         </section>
+
+        <ServiceCaseStudiesBlock serviceSlug="listing-optimization" />
 
         {/* CTA Section */}
         <section className="py-20">

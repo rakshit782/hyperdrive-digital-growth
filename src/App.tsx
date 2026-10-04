@@ -18,6 +18,7 @@ import Maintenance from "./pages/Maintenance";
 import About from "./pages/About";
 import Services from "./pages/ServicesPage";
 import CaseStudies from "./pages/CaseStudies";
+import CaseStudyDetail from "./pages/CaseStudyDetail";
 import Pricing from "./pages/Pricing";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -100,6 +101,7 @@ export function AppContent() {
                 <Route path="/helium-10-alternative" element={<ToolAlternativesPage />} />
                 <Route path="/jungle-scout-alternative" element={<ToolAlternativesPage />} />
                 <Route path="/case-studies" element={<CaseStudies />} />
+                <Route path="/case-studies/:slug" element={<CaseStudyDetail />} />
                 <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
                 <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
                 <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, CheckCircle, TrendingUp, Award, Users, Target, FileText, Shield } from 'lucide-react';
 import { useServiceData } from '@/hooks/useServiceData';
-import { realBrandCaseStudies } from '@/data/realBrandCaseStudies';
+import { ServiceCaseStudiesBlock } from '@/components/case-studies/CaseStudiesBlocks';
 
 const serviceConfigs: Record<string, {
   title: string;
@@ -271,7 +271,6 @@ const DetailedServicePage = () => {
   const { serviceType } = useParams<{ serviceType: string }>();
   const config = serviceConfigs[serviceType || ''];
   const { stats } = useServiceData(serviceType || '');
-  const caseStudies = realBrandCaseStudies[serviceType || ''] || [];
 
   if (!config) {
     return (
@@ -537,62 +536,7 @@ const DetailedServicePage = () => {
           </div>
         </section>
 
-        {/* Case Studies Section */}
-        {caseStudies.length > 0 && (
-          <section className="py-16">
-            <div className="max-w-6xl mx-auto px-6">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                  Success Stories
-                </h2>
-                <p className="text-xl text-slate-600">
-                  Real results from real brands we've worked with
-                </p>
-              </div>
-              <div className="grid md:grid-cols-2 gap-8">
-                {caseStudies.map((study) => (
-                  <Card key={study.id} className="bg-white/80 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                    {study.image_url && (
-                      <div className="h-48 overflow-hidden">
-                        <img 
-                          src={study.image_url} 
-                          alt={study.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Badge variant="secondary">{study.industry}</Badge>
-                        <Badge className={`bg-gradient-to-r ${config.gradient} text-white border-0`}>
-                          {study.client_name}
-                        </Badge>
-                      </div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-3">
-                        {study.title}
-                      </h3>
-                      <p className="text-slate-600 mb-4">
-                        {study.description}
-                      </p>
-                      <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-                        {Object.entries(study.results).slice(0, 3).map(([key, value]) => (
-                          <div key={key} className="text-center">
-                            <div className={`text-xl font-bold bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}>
-                              {value}
-                            </div>
-                            <div className="text-xs text-slate-500 capitalize">
-                              {key.replace(/_/g, ' ')}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        <ServiceCaseStudiesBlock serviceSlug={serviceType} />
 
         {/* AMZ CoPilot Legal Links - Only for amazon-integration */}
         {serviceType === 'amazon-integration' && (
