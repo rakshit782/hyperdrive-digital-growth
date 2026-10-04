@@ -3,6 +3,9 @@ project_id = "hznbshxhmhtenxcuffhx"
 [functions.neon-contact-submission]
 verify_jwt = false
 
+[functions.neon-case-studies]
+verify_jwt = false
+
 [functions.neon-lead-submission]
 verify_jwt = false
 

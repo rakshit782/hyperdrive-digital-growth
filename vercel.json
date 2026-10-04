@@ -39,6 +39,7 @@
     { "source": "/verify-certificate", "destination": "/index.html" },
     { "source": "/ad-landing", "destination": "/spa.html" },
     { "source": "/blog/:slug", "destination": "/spa.html" },
+    { "source": "/case-studies/:slug", "destination": "/spa.html" },
     { "source": "/dashboard", "destination": "/spa.html" },
     { "source": "/dashboard/:path*", "destination": "/spa.html" }
   ]
