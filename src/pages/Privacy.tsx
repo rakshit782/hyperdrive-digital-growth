@@ -7,8 +7,8 @@ const Privacy = () => {
   return (
     <>
       <SEOHead 
-        title="Privacy Policy | AMZ AD SCOUT"
-        description="Privacy Policy for AMZ AD SCOUT - Learn how we collect, use, and protect your personal information."
+        title="Privacy Policy: How We Use Your Data | AMZ AD SCOUT"
+        description="Learn what personal information AMZ AD SCOUT collects through this website, how we use and protect it, and the choices you have. Questions? Contact our team."
         keywords="privacy policy, data protection, user privacy, personal information"
         canonical={window.location.href}
       />

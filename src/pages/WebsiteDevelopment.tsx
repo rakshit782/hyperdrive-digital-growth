@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -95,20 +96,25 @@ const WebsiteDevelopment = () => {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "serviceType": "Shopify Development",
+    "@id": "https://www.amzadscout.com/services/website-development#service",
+    "name": "Website Development",
+    "serviceType": "Website development",
+    "url": "https://www.amzadscout.com/services/website-development",
     "provider": {
       "@type": "Organization",
-      "name": "Digital Growth Agency"
+      "@id": "https://www.amzadscout.com/#organization",
+      "name": "AMZ AD SCOUT",
+      "url": "https://www.amzadscout.com/"
     },
     "areaServed": "Worldwide",
-    "description": "Professional Shopify Development Partner offering Custom Shopify Theme Development, Shopify Plus Development, Shopify E-commerce Store Development, and Shopify Store Migration Services."
+    "description": "Custom website design and development with React, Next.js and TypeScript: responsive, fast-loading, SEO-ready websites."
   };
 
   return (
     <>
       <SEOHead 
-        title="Shopify Development Partner | Custom Shopify Theme Development & Shopify Plus Experts"
-        description="Professional Shopify Developers offering Custom Shopify Theme Development, Shopify E-commerce Store Development, Shopify Plus Development, and Shopify Store Migration Services. Expert Shopify Development Partner."
+        title="Custom Website Design & Development | AMZ AD SCOUT"
+        description="Get a custom website built with React, Next.js and TypeScript: mobile-first, fast-loading and SEO-ready from launch day. Tell us about your project for a quote."
         keywords="Shopify Development Partner, Custom Shopify Theme Development Agency, Shopify E-commerce Store Development, Shopify Store Migration Services, Professional Shopify Developers, Shopify Plus Development Experts, shopify development, shopify developer, shopify theme development, shopify store design, shopify ecommerce, shopify plus, shopify migration, shopify customization, shopify app development, shopify integration, shopify website design, shopify expert, shopify consultant, shopify agency, shopify partner, shopify certified developer, custom shopify store, shopify theme customization, shopify liquid development, shopify template development, shopify responsive design, shopify mobile optimization, shopify speed optimization, shopify seo, shopify conversion optimization, shopify checkout optimization, shopify payment integration, shopify shipping integration, shopify inventory management, shopify product management, shopify collection setup, shopify navigation optimization, shopify homepage design, shopify product page design, shopify landing page, shopify blog setup, shopify content management, shopify multivendor marketplace, shopify b2b store, shopify wholesale, shopify subscription, shopify membership, shopify dropshipping store, shopify print on demand, shopify custom functionality, shopify custom app, shopify private app, shopify public app, shopify app integration, third party integration shopify, api integration shopify, erp integration, crm integration shopify, email marketing integration, social media integration, analytics integration, shipping carrier integration, payment gateway setup, shopify payments, stripe integration, paypal integration, shopify pos, omnichannel retail, shopify abandoned cart, shopify email automation, shopify marketing automation, shopify analytics setup, google analytics shopify, facebook pixel shopify, conversion tracking, shopify store maintenance, shopify support, shopify training, shopify consulting, shopify audit, shopify optimization, shopify performance, shopify security, shopify backup, shopify recovery, shopify troubleshooting"
         canonical={typeof window !== 'undefined' ? window.location.href : ''}
         schema={schema}
@@ -122,16 +128,16 @@ const WebsiteDevelopment = () => {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-full border border-emerald-200/50 mb-6">
-                  <span className="text-sm font-medium text-emerald-700">Certified Shopify Development Partner</span>
+                  <span className="text-sm font-medium text-emerald-700">Custom Website Development</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-                  Professional Shopify Development Services
+                  Custom Website Design & Development Services
                 </h1>
                 <h2 className="text-xl md:text-2xl text-slate-700 font-medium mb-4">
-                  Custom Shopify Theme Development & Shopify Plus Experts
+                  Fast, Mobile-First Websites Built with React & Next.js
                 </h2>
                 <p className="text-xl text-slate-600 leading-relaxed mb-8">
-                  Expert Shopify Development Partner delivering Custom Shopify E-commerce Store Development, Shopify Plus Solutions, and Professional Shopify Store Migration Services. Transform your online store with our proven Shopify development expertise.
+                  We design and build custom websites with React, Next.js and TypeScript that load fast, work on every device and are ready for search from day one.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
@@ -312,6 +318,13 @@ const WebsiteDevelopment = () => {
                 );
               })}
             </div>
+            <p className="text-center text-slate-600 mt-12 text-lg">
+              Selling on Shopify? See our{" "}
+              <Link to="/services/shopify-development" className="text-emerald-700 underline hover:text-emerald-900">
+                Shopify development services
+              </Link>
+              {" "}for custom themes, store setup and migrations.
+            </p>
           </div>
         </section>
 
