@@ -33,7 +33,7 @@ const Footer = () => {
                 <span className="text-xl font-bold">{logoData.text}</span>
               )}
               <p className="text-slate-300 text-sm leading-relaxed">
-                The Growth Agency specializing in Amazon advertising, digital marketing, and e-commerce solutions.
+                E-commerce growth agency managing Amazon, Walmart, Meta and Google ads for brands since 2015.
               </p>
               
               {/* E-commerce Expertise Badge */}
@@ -138,25 +138,7 @@ const Footer = () => {
                   <div className="flex items-start space-x-3">
                     <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
                     <div className="text-slate-300 text-sm" id="footer-address">
-                      New York, NY 10001
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                    <div className="text-slate-300 text-sm">
-                      London, United Kingdom
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                    <div className="text-slate-300 text-sm">
-                      Gurgaon, India
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                    <div className="text-slate-300 text-sm">
-                      Delhi, India
+                      WeWork 5th Floor, 18 W 18th St, New York, NY 10011
                     </div>
                   </div>
                 </div>

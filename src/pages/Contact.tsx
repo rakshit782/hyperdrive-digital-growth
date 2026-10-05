@@ -88,14 +88,22 @@ const Contact = () => {
         description="Tell us about your brand and goals, and our team will review your Amazon, Walmart or Shopify setup and suggest clear next steps. Request your free audit today."
         keywords="contact amazon advertising agency, free e-commerce audit, amazon ppc consultation, walmart advertising contact, shopify development inquiry, e-commerce agency contact, professional amazon consultation, free amazon audit, walmart marketplace audit, multi-channel consultation, amazon seller consultation, vendor central help, sponsored ads consultation, ppc management inquiry, listing optimization audit, conversion rate audit, roi analysis, marketing strategy consultation, advertising budget planning, campaign optimization review, account health review, suspension help, product launch consultation, seasonal campaign planning, q4 strategy consultation, international expansion inquiry, marketplace integration consultation, fulfillment strategy review, inventory optimization consultation"
         canonical={window.location.href}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "@id": "https://www.amzadscout.com/contact#webpage",
+          "url": "https://www.amzadscout.com/contact",
+          "name": "Contact Us for a Free E-commerce Ads Audit | AMZ AD SCOUT",
+          "about": { "@id": "https://www.amzadscout.com/#organization" }
+        }}
       />
       <Header />
       <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-foreground mb-4">Get Started Today</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-4">Contact AMZ AD SCOUT for a Free Ads Audit</h1>
             <p className="text-lg text-muted-foreground">
-              Fill out the form below and we'll get back to you shortly.
+              Tell us about your brand and where you sell. We'll review your Amazon, Walmart, Meta or Google ads and show you where spend is being wasted and what we'd change first.
             </p>
           </div>
 

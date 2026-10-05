@@ -10,9 +10,9 @@ import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight, TrendingUp
 
 const About = () => {
   const [aboutData, setAboutData] = useState({
-    heroTitle: 'Your E-commerce Growth Partner',
-    heroSubtitle: '900+ Happy Clients Served',
-    heroDescription: "Premier agency with 9+ years expertise in Amazon advertising, Walmart optimization, and Shopify development. Our data-driven approach delivers measurable ROI across all major marketplaces.",
+    heroTitle: 'About AMZ AD SCOUT: E-commerce Growth Agency Since 2015',
+    heroSubtitle: 'Amazon, Walmart, Meta & Google Ads, Managed from New York',
+    heroDescription: "Founded in 2015 and headquartered in New York, AMZ AD SCOUT manages advertising for e-commerce brands on Amazon, Walmart, Meta and Google, plus listing optimization, product cataloging and Shopify development. Our performance target: 5% ACoS or 20x ROAS.",
     missionText: 'To revolutionize e-commerce success through cutting-edge advertising strategies and marketplace optimization. We combine advanced analytics, AI-driven insights, and proven methodologies to maximize revenue and dominate categories.',
     visionText: 'To become the global leader in e-commerce growth solutions, transforming brands through innovative strategies and scalable systems. We envision every business having access to enterprise-level expertise to compete and win.'
   });
@@ -47,25 +47,25 @@ const About = () => {
   ];
 
   const services = [
-    "Advertising Management for Amazon Sellers - PPC Management",
-    "Listing Optimization Services - A+ Content Creation", 
-    "Walmart Advertising Management - Marketplace Specialists",
-    "E-commerce Product Cataloging Services",
-    "Shopify Development - Custom Theme Development",
-    "Multi-Marketplace Integration Services",
-    "Professional Shopify Developers - Store Experts",
-    "Marketplace Advertising Management - Sponsored Products",
-    "E-commerce Channel Management Solutions"
+    { name: "Amazon Advertising (PPC) Management", to: "/services/amazon-advertising" },
+    { name: "Walmart Advertising Management", to: "/services/walmart-advertising" },
+    { name: "Meta Advertising (Facebook & Instagram)", to: "/services/meta-advertising" },
+    { name: "Google Ads Management", to: "/services/google-advertising" },
+    { name: "Amazon Listing Optimization & A+ Content", to: "/services/listing-optimization" },
+    { name: "E-commerce Product Cataloging", to: "/services/product-cataloging" },
+    { name: "Shopify Store Development", to: "/services/shopify-development" },
+    { name: "Shopify Multi-Marketplace Integration", to: "/services/shopify-integration" },
+    { name: "E-commerce Account Management", to: "/services/account-management" }
   ];
 
   const whyChooseUs = [
     {
-      title: "Proven Track Record",
-      description: "500+ brands scaled profitably with 50K+ successful campaigns achieving an average ROAS of 10x across all marketplaces"
+      title: "One Clear Performance Target",
+      description: "Every account we manage works toward the same goal: 5% ACoS or 20x ROAS, so you always know what we are aiming for"
     },
     {
-      title: "Experienced Team",
-      description: "Industry specialists with 50+ years combined experience in e-commerce advertising and marketplace management"
+      title: "Realistic Timelines",
+      description: "Existing accounts typically see results in 2-3 months. New accounts take 6-7 months to build data and momentum"
     },
     {
       title: "Advanced Data Analytics",
@@ -78,17 +78,49 @@ const About = () => {
   ];
 
   const stats = [
-    { value: "500+", label: "Brands Scaled", icon: Users },
-    { value: "10x", label: "Average ROAS", icon: TrendingUp },
-    { value: "9+", label: "Years Experience", icon: Award },
-    { value: "$50M+", label: "Ad Spend Managed", icon: BarChart3 }
+    { value: "2015", label: "Founded", icon: Award },
+    { value: "5% ACoS", label: "or 20x ROAS target", icon: TrendingUp },
+    { value: "4", label: "Ad Channels Managed", icon: BarChart3 },
+    { value: "NYC", label: "Headquarters", icon: Globe }
   ];
+
+  const aboutSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://www.amzadscout.com/#organization",
+        "name": "AMZ AD SCOUT",
+        "url": "https://www.amzadscout.com/",
+        "logo": "https://www.amzadscout.com/logo.png",
+        "description": "E-commerce growth agency managing Amazon, Walmart, Meta and Google ads for brands.",
+        "foundingDate": "2015",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "WeWork 5th Floor, 18 W 18th St",
+          "addressLocality": "New York",
+          "addressRegion": "NY",
+          "postalCode": "10011",
+          "addressCountry": "US"
+        },
+        "sameAs": ["https://www.linkedin.com/company/amz-adscout/"]
+      },
+      {
+        "@type": "AboutPage",
+        "@id": "https://www.amzadscout.com/about#webpage",
+        "url": "https://www.amzadscout.com/about",
+        "name": "About Us: E-commerce Growth Agency Since 2015 | AMZ AD SCOUT",
+        "about": { "@id": "https://www.amzadscout.com/#organization" }
+      }
+    ]
+  };
 
   return (
     <>
       <SEOHead 
-        title="About Us: How We Grow E-commerce Brands | AMZ AD SCOUT"
-        description="Meet AMZ AD SCOUT, the e-commerce growth agency that runs Amazon, Walmart, Meta and Google ads alongside listing, catalog and Shopify work. See how we can help."
+        title="About Us: E-commerce Growth Agency Since 2015 | AMZ AD SCOUT"
+        description="Founded in 2015 and based in New York, AMZ AD SCOUT manages Amazon, Walmart, Meta and Google ads for e-commerce brands. See how we work and get a free audit."
+        schema={aboutSchema}
         keywords="e-commerce advertising specialists, advertising for amazon sellers, walmart marketplace optimization, shopify development, digital marketing services, ppc management services, e-commerce optimization, multi-channel marketing, online marketplace advertising, seller solutions, performance marketing, roi-focused marketing, data-driven e-commerce, marketplace management, listing optimization, product catalog management, e-commerce growth, online retail marketing"
         canonical={window.location.href}
       />
@@ -103,7 +135,7 @@ const About = () => {
             <div className="text-center max-w-4xl mx-auto">
               <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm font-semibold">
                 <Star className="w-4 h-4 mr-2 inline-block" />
-                Award-Winning Agency
+                Since 2015
               </Badge>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
@@ -266,7 +298,7 @@ const About = () => {
                       <div className="mt-1">
                         <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 group-hover:scale-110 transition-transform" />
                       </div>
-                      <span className="text-foreground font-medium text-sm leading-relaxed">{service}</span>
+                      <Link to={service.to} className="text-foreground font-medium text-sm leading-relaxed hover:text-primary">{service.name}</Link>
                     </div>
                   ))}
                 </div>
@@ -283,7 +315,7 @@ const About = () => {
                 The Agency Advantage
               </Badge>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                Why Leading Brands Choose Us
+                Why E-commerce Brands Choose AMZ AD SCOUT
               </h2>
               <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                 Experience the difference that true e-commerce expertise makes
@@ -328,7 +360,7 @@ const About = () => {
                     </h2>
                     
                     <p className="text-base md:text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-                      Join 900+ successful clients and start achieving breakthrough results with our proven strategies
+                      Get a free audit of your Amazon, Walmart, Meta or Google ads. We'll show you where spend is being wasted and what we'd change first.
                     </p>
                     
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">

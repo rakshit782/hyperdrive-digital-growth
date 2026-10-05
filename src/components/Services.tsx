@@ -17,7 +17,7 @@ const Services = () => {
       gradient: 'from-orange-500 to-red-500',
       bgGlow: 'bg-orange-500/10',
       features: ['Sponsored Products', 'Sponsored Brands', 'Keyword Research', 'Performance Analytics'],
-      stats: '+340% Avg. Revenue Growth'
+      stats: 'Target: 5% ACoS or 20x ROAS'
     },
     {
       title: 'Walmart Advertising',
@@ -27,7 +27,7 @@ const Services = () => {
       gradient: 'from-blue-500 to-cyan-500',
       bgGlow: 'bg-blue-500/10',
       features: ['Search Ads', 'Display Campaigns', 'Video Advertising', 'Performance Analytics'],
-      stats: '+280% Avg. Sales Increase'
+      stats: 'Walmart Connect Campaigns'
     },
     {
       title: 'Google Advertising',
@@ -37,7 +37,7 @@ const Services = () => {
       gradient: 'from-green-500 to-emerald-500',
       bgGlow: 'bg-green-500/10',
       features: ['Search Campaigns', 'Display Network', 'Shopping Ads', 'Performance Max'],
-      stats: '+45% Lower CPA'
+      stats: 'Search, Shopping & PMax'
     },
     {
       title: 'Meta Advertising',
@@ -47,17 +47,17 @@ const Services = () => {
       gradient: 'from-purple-500 to-pink-500',
       bgGlow: 'bg-purple-500/10',
       features: ['Facebook Ads', 'Instagram Campaigns', 'Audience Targeting', 'Creative Optimization'],
-      stats: '+3.2x ROAS Average'
+      stats: 'Facebook & Instagram Ads'
     },
     {
       title: 'Account Management',
-      description: 'Full-service account management with dedicated specialists monitoring and optimizing your campaigns 24/7.',
+      description: 'Full-service account management with dedicated specialists monitoring and optimizing your campaigns.',
       icon: Settings,
       link: '/services/account-management',
       gradient: 'from-indigo-500 to-violet-500',
       bgGlow: 'bg-indigo-500/10',
-      features: ['24/7 Monitoring', 'Performance Reports', 'Strategy Optimization', 'Dedicated Manager'],
-      stats: '500+ Brands Managed'
+      features: ['Campaign Monitoring', 'Performance Reports', 'Strategy Optimization', 'Dedicated Manager'],
+      stats: 'Ongoing Account Management'
     },
     {
       title: 'Website Development',
@@ -67,7 +67,7 @@ const Services = () => {
       gradient: 'from-cyan-500 to-blue-500',
       bgGlow: 'bg-cyan-500/10',
       features: ['Custom Design', 'Mobile Optimization', 'SEO Integration', 'Performance Optimization'],
-      stats: '+65% Conversion Rate'
+      stats: 'Custom Website Builds'
     },
     {
       title: 'Shopify Development',
@@ -77,7 +77,7 @@ const Services = () => {
       gradient: 'from-emerald-500 to-teal-500',
       bgGlow: 'bg-emerald-500/10',
       features: ['Custom Themes', 'App Integration', 'Mobile Optimization', 'Speed Enhancement'],
-      stats: '200+ Stores Built'
+      stats: 'Custom Shopify Stores'
     },
     {
       title: 'Shopify Integration',
@@ -87,7 +87,7 @@ const Services = () => {
       gradient: 'from-teal-500 to-cyan-500',
       bgGlow: 'bg-teal-500/10',
       features: ['Inventory Sync', 'Order Management', 'Product Listing', 'Multi-channel Setup'],
-      stats: '99.9% Sync Accuracy'
+      stats: 'Inventory & Order Sync'
     },
     {
       title: 'Amazon Integration & Automation',
@@ -97,7 +97,7 @@ const Services = () => {
       gradient: 'from-orange-500 to-amber-500',
       bgGlow: 'bg-orange-500/10',
       features: ['Cataloging', 'Repricing', 'Inventory Alerts', 'Ads Automation'],
-      stats: '85% Time Saved'
+      stats: 'Catalog, Repricing & Alerts'
     },
     {
       title: 'Listing Optimization',
@@ -129,7 +129,7 @@ const Services = () => {
             Our Services
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
-            Comprehensive Solutions for
+            Comprehensive Solutions for{" "}
             <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               E-commerce Growth
             </span>
