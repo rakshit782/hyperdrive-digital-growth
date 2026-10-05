@@ -1,12 +1,12 @@
 # Case studies API
 
-Admin-managed case studies live in Neon table `public.case_studies`. The edge function verifies the dashboard JWT itself (`JWT_SECRET`) and checks `user_roles.role = 'admin'`. Public reads do not need a token.
+Admin-managed case studies live in Neon table `amz_app.case_studies`. The edge function verifies the dashboard JWT itself (`JWT_SECRET`) and checks `user_roles.role = 'admin'`. Public reads do not need a token.
 
 Base URL:
 
 `https://hznbshxhmhtenxcuffhx.supabase.co/functions/v1/neon-case-studies`
 
-Send `Authorization: Bearer <accessToken>` from `neon-auth-login` on every admin call. Missing, invalid, or expired tokens return `401`. A valid user who is not an admin returns `403`. Validation failures return `400` with `{ "error": "..." }`. Import row failures also include an `errors` array.
+Send `Authorization: Bearer <accessToken>` from `neon-auth-login` on every admin call. Missing, invalid, or expired tokens return `401`. A valid user who is not an admin returns `403`. Validation failures return `400` with `{ "error": "..." }`. Import row failures also include an `errors` array. A reorder that names ids that are not in the table also includes a `missing` array. Any `POST ?action=` other than `import` or `reorder` returns `400 { "error": "Unknown action" }`.
 
 ## Endpoints
 
@@ -19,6 +19,7 @@ Send `Authorization: Bearer <accessToken>` from `neon-auth-login` on every admin
 | `PUT ?id=<uuid>` | Admin | Partial update. Sets `updated_at` to now. `{ "item": ... }`, or `404`. |
 | `DELETE ?id=<uuid>` | Admin | `{ "ok": true }`, or `404`. |
 | `POST ?action=import` | Admin | CSV import. See below. |
+| `POST ?action=reorder` | Admin | Set `sort_order` for existing rows. `200 { "items": [...] }` is the full admin list. `Cache-Control: no-store`. |
 
 `channel` is one of `amazon`, `walmart`, `meta`, `google`, `shopify`. `results` is `0` to `6` objects: `{ "label": string, "before": number \| null, "after": number, "unit": string }`. `logo_url`, when set, must be an `https` URL.
 
@@ -40,9 +41,23 @@ CSV metrics are `metric1_*` through `metric4_*` only. Metrics 5 and 6 are edited
 
 Imports do not trigger a site rebuild. They are drafts.
 
+## Reorder
+
+`POST ?action=reorder` is admin only. The body limit is the same 1 MB cap as other writes.
+
+Body: `{ "order": [{ "id": "<uuid>", "sort_order": 0 }] }`.
+
+`order` must be a non-empty array of at most 500 items. Each `id` must match a UUID. Each `sort_order` must be an integer from 0 through 1000000. The same id cannot appear twice. Any of those failures is `400 { "error": "..." }` and nothing is saved.
+
+The write runs in one transaction. The function locks the named rows with `SELECT id, sort_order, published FROM amz_app.case_studies WHERE id = ANY($1::uuid[]) FOR UPDATE`. If any id is missing, it rolls back and returns `400 { "error": "Unknown case study ids", "missing": ["..."] }`. Otherwise it updates `sort_order` and `updated_at` only for rows whose `sort_order` actually changes, in one `UPDATE ... FROM (SELECT unnest($1::uuid[]) AS id, unnest($2::int[]) AS sort_order)`. Then it commits. A database error rolls back and becomes `500`.
+
+The response is `200 { "items": [...] }`, the same full admin list as `GET ?all=1` (`sort_order` ascending, then `created_at` descending), with `Cache-Control: no-store`.
+
+This action does not need a schema change.
+
 ## Rebuild hook
 
-When `VERCEL_DEPLOY_HOOK_URL` is set, the function POSTs to it after a change that affects the public site: a create or update whose row is published before or after the change, or a delete of a published row. The call is awaited with a 3 second timeout. Failures are logged and do not change the API response. If the secret is unset, the hook is skipped.
+When `VERCEL_DEPLOY_HOOK_URL` is set, the function POSTs to it after a change that affects the public site: a create or update whose row is published before or after the change, a delete of a published row, or a reorder that changes `sort_order` on at least one published row. A reorder calls the hook once for the whole request, not once per row, and skips it when nothing changed or only drafts moved. The call is awaited with a 3 second timeout. Failures are logged and do not change the API response. If the secret is unset, the hook is skipped.
 
 ## Deploy
 
