@@ -14,6 +14,7 @@ import { PricingSection } from '@/components/dashboard/PricingSection';
 import { TrackingSection } from '@/components/dashboard/TrackingSection';
 import { VisitorLogsSection } from '@/components/dashboard/VisitorLogsSection';
 import { CertificatesSection } from '@/components/dashboard/CertificatesSection';
+import { CaseStudiesSection } from '@/components/dashboard/CaseStudiesSection';
 import { databaseService } from '@/services/databaseService';
 import { getVisitorLogs } from '@/utils/visitorTracker';
 import { toast } from 'sonner';
@@ -154,6 +155,8 @@ const Dashboard = () => {
         return <HeaderSettingsSection />;
       case 'certificates':
         return <CertificatesSection />;
+      case 'case-studies':
+        return <CaseStudiesSection />;
       case 'legal':
         return <LegalPagesSection />;
       case 'pricing-management':

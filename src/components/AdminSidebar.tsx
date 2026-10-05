@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Mail, MessageSquare, Shield, Settings, LogOut, FileText, DollarSign, Code, Eye, Award } from "lucide-react";
+import { LayoutDashboard, Users, Mail, MessageSquare, Shield, Settings, LogOut, FileText, DollarSign, Code, Eye, Award, BookOpen } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -22,6 +22,7 @@ const menuItems = [
   { title: "Visitor Logs", icon: Eye, section: "visitor-logs" },
   { title: "Tracking Scripts", icon: Code, section: "tracking" },
   { title: "Certificates", icon: Award, section: "certificates" },
+  { title: "Case Studies", icon: BookOpen, section: "case-studies" },
   { title: "Legal Pages", icon: FileText, section: "legal" },
   { title: "Header / Menu", icon: LayoutDashboard, section: "header-settings" },
   { title: "Pricing", icon: DollarSign, section: "pricing-management" },

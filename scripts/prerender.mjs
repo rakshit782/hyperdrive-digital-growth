@@ -125,8 +125,64 @@ const template = fs.readFileSync(shellPath, 'utf8');
 // server vs client mode when the module loads; a pre-existing window makes it
 // skip the Helmet context we read the title and meta tags from.
 const serverEntry = pathToFileURL(path.join(ROOT, '.ssr', 'entry-server.js')).href;
-const { render, publicRoutes } = await import(serverEntry);
+const { render, publicRoutes, CASE_STUDIES_API_URL, caseStudiesHeaders, parseCaseStudyList } = await import(serverEntry);
 const win = installDom(`${ORIGIN}/`);
+
+async function fetchPublishedCaseStudies() {
+  if (process.env.CASE_STUDIES_FIXTURE) {
+    const raw = JSON.parse(fs.readFileSync(process.env.CASE_STUDIES_FIXTURE, 'utf8'));
+    const rows = parseCaseStudyList(raw).filter((row) => row.published !== false);
+    console.warn(`CASE_STUDIES_FIXTURE: prerendering ${rows.length} case studies from a local file.`);
+    return rows;
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10000);
+  try {
+    const url = new URL(CASE_STUDIES_API_URL, ORIGIN);
+    const response = await fetch(url, {
+      headers: caseStudiesHeaders(),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      console.warn(
+        `Case studies fetch returned ${response.status}; prerendering /case-studies as the empty state.`,
+      );
+      return [];
+    }
+    const rows = parseCaseStudyList(await response.json()).filter((row) => row.published !== false);
+    if (rows.length === 0) {
+      console.warn('No published case studies returned; prerendering /case-studies as the empty state.');
+    } else {
+      console.log(`Fetched ${rows.length} published case studies for prerender.`);
+    }
+    return rows;
+  } catch (error) {
+    console.warn(
+      `Case studies fetch failed (${error && error.message ? error.message : error}); prerendering /case-studies as the empty state.`,
+    );
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+const caseStudies = await fetchPublishedCaseStudies();
+const snapshotJson = JSON.stringify(caseStudies)
+  .replace(/</g, '\\u003c')
+  .replace(/\u2028/g, '\\u2028')
+  .replace(/\u2029/g, '\\u2029');
+const snapshotScript = `<script>window.__CASE_STUDIES__=${snapshotJson}</script>`;
+
+const routes = [...publicRoutes];
+for (const study of caseStudies) {
+  if (typeof study.slug === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(study.slug)) {
+    const route = `/case-studies/${study.slug}`;
+    if (!routes.includes(route)) routes.push(route);
+  } else if (study.slug) {
+    console.warn(`Skipping prerender for case study slug "${study.slug}"`);
+  }
+}
 
 if (!Array.isArray(publicRoutes) || publicRoutes.length === 0) {
   console.error('No public routes exported from the server bundle.');
@@ -135,11 +191,11 @@ if (!Array.isArray(publicRoutes) || publicRoutes.length === 0) {
 
 const written = [];
 
-for (const route of publicRoutes) {
+for (const route of routes) {
   setUrl(win, route);
   let rendered;
   try {
-    rendered = render(route);
+    rendered = render(route, caseStudies);
   } catch (error) {
     console.error(`Failed to render ${route}`);
     console.error(error);
@@ -180,7 +236,7 @@ for (const route of publicRoutes) {
       : path.join(DIST, ...route.split('/').filter(Boolean), 'index.html');
 
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, inject(template, head, html));
+  fs.writeFileSync(file, inject(template, `${snapshotScript}\n${head}`, html));
   written.push(path.relative(DIST, file));
   console.log(`prerendered ${route} -> ${path.relative(DIST, file)}`);
 }
@@ -211,6 +267,41 @@ assert(spaHtml.includes('<meta name="robots" content="noindex">'), 'spa.html rob
 assert(spaHtml.includes('<div id="root"></div>'), 'spa.html should boot from an empty root');
 assert(!fs.existsSync(path.join(DIST, 'dashboard', 'index.html')), 'dashboard was prerendered');
 assert(!fs.existsSync(path.join(DIST, 'ad-landing', 'index.html')), 'ad-landing was prerendered');
+
+const caseStudiesHtml = fs.readFileSync(path.join(DIST, 'case-studies', 'index.html'), 'utf8');
+if (caseStudies.length === 0) {
+  assert(caseStudiesHtml.includes('noindex, follow'), '/case-studies empty state should be noindex, follow');
+  assert(!home.includes('Client Results'), 'homepage should hide the case study block when none are published');
+  assert(!home.includes('View all case studies'), 'homepage should not link to the case study index when none are published');
+} else {
+  assert(caseStudiesHtml.includes('index, follow'), '/case-studies should be index, follow when rows exist');
+  assert(caseStudiesHtml.includes('https://www.amzadscout.com/case-studies"') || caseStudiesHtml.includes('https://www.amzadscout.com/case-studies"'), '/case-studies canonical');
+  assert(home.includes('Client Results'), 'homepage should show the case study block');
+  for (const study of caseStudies) {
+    assert(caseStudiesHtml.includes(study.brand_name), `/case-studies is missing ${study.brand_name}`);
+    const detailPath = path.join(DIST, 'case-studies', study.slug, 'index.html');
+    assert(fs.existsSync(detailPath), `missing prerendered detail page for ${study.slug}`);
+    if (fs.existsSync(detailPath)) {
+      const detail = fs.readFileSync(detailPath, 'utf8');
+      assert(
+        detail.includes(`https://www.amzadscout.com/case-studies/${study.slug}`),
+        `canonical for /case-studies/${study.slug}`,
+      );
+    }
+  }
+  const amazon = caseStudies.filter((study) => study.channel === 'amazon');
+  const other = caseStudies.find((study) => study.channel !== 'amazon');
+  const amazonPage = fs.readFileSync(path.join(DIST, 'services', 'amazon-advertising', 'index.html'), 'utf8');
+  // Every prerendered page embeds the full published list for hydration.
+  // Channel filtering is in the rendered body, not in that snapshot.
+  const amazonBody = amazonPage.replace(/<script>window\.__CASE_STUDIES__=[\s\S]*?<\/script>/, '');
+  if (amazon.length === 0) {
+    assert(!amazonBody.includes('Amazon Ads Case Studies'), 'amazon service page should hide an empty case study block');
+  } else {
+    assert(amazonBody.includes(amazon[0].brand_name), 'amazon service page should show its channel case study');
+    if (other) assert(!amazonBody.includes(other.brand_name), 'amazon service page should not show other channels');
+  }
+}
 
 console.log('\nGenerated files:');
 for (const file of written) console.log(`  dist/${file}`);

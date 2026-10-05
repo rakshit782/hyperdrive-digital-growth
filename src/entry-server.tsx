@@ -4,10 +4,16 @@ import { StaticRouter } from 'react-router-dom/server';
 import { HelmetProvider, type HelmetServerState } from 'react-helmet-async';
 import { AppContent, AppProviders } from './App';
 import { publicRoutes } from './prerenderRoutes';
+import { setServerCaseStudies } from './lib/caseStudiesSnapshot';
+import type { CaseStudy } from './hooks/useCaseStudies';
 
 export { publicRoutes };
+export { CASE_STUDIES_API_URL, caseStudiesHeaders } from './lib/api';
+export { parseCaseStudyList } from './hooks/useCaseStudies';
+export { detailPageTitle, detailPageDescription } from './content/caseStudiesCopy';
 
-export function render(url: string) {
+export function render(url: string, caseStudies: CaseStudy[] = []) {
+  setServerCaseStudies(caseStudies);
   const helmetContext: { helmet?: HelmetServerState } = {};
 
   const html = renderToString(

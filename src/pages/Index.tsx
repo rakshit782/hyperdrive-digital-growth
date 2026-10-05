@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import Stats from "@/components/Stats";
-import CaseStudies from "@/components/CaseStudies";
+import { HomeCaseStudies } from "@/components/case-studies/CaseStudiesBlocks";
 import CTA from "@/components/CTA";
 import SEOHead from "@/components/SEOHead";
 import { useEffect } from "react";
@@ -127,7 +127,7 @@ const Index = () => {
         <Hero />
         <Services />
         <Stats />
-        <CaseStudies />
+        <HomeCaseStudies />
         <CTA />
         <Footer />
       </div>
