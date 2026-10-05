@@ -33,18 +33,18 @@ const ServicesPage: React.FC = () => {
           <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8">
               <Sparkles className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-blue-200">Trusted by 500+ E-commerce Brands</span>
+              <span className="text-sm text-blue-200">E-commerce Growth Agency Since 2015</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-              E-commerce Marketing
+              E-commerce Marketing{" "}
               <span className="block bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
                 Services
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-10">
-              Expert Amazon Advertising, Walmart Marketing, Shopify Development & Multi-Marketplace Integration Solutions designed to scale your online business
+              AMZ AD SCOUT manages Amazon, Walmart, Meta and Google ads for e-commerce brands, with listing optimization, product cataloging, Shopify development and marketplace integrations from the same team.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -88,11 +88,11 @@ const ServicesPage: React.FC = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 { number: '01', title: 'Data-Driven Strategy', description: 'Every campaign is backed by comprehensive analytics and market research to maximize your ROI.' },
-                { number: '02', title: 'Dedicated Account Managers', description: 'Get personalized attention from certified experts who understand your business goals.' },
+                { number: '02', title: 'Dedicated Account Managers', description: 'Get personalized attention from specialists who understand your business goals.' },
                 { number: '03', title: 'Real-Time Reporting', description: 'Access detailed dashboards showing campaign performance, spend, and conversions.' },
                 { number: '04', title: 'Multi-Platform Expertise', description: 'Seamlessly manage campaigns across Amazon, Walmart, Google, and Meta from one team.' },
-                { number: '05', title: 'Proven Track Record', description: 'Join 500+ brands that have achieved sustainable growth with our strategies.' },
-                { number: '06', title: '24/7 Support', description: 'Round-the-clock monitoring and support to ensure your campaigns never miss an opportunity.' },
+                { number: '05', title: 'Clear Target, Realistic Timelines', description: 'We work toward 5% ACoS or 20x ROAS. Existing accounts typically see results in 2-3 months, new accounts in 6-7 months.' },
+                { number: '06', title: 'WhatsApp & Email Support', description: 'Reach us on WhatsApp or by email whenever you have a question about your campaigns.' },
               ].map((feature, index) => (
                 <div 
                   key={index}
