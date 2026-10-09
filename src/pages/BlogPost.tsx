@@ -6,22 +6,23 @@ import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Calendar, Clock, ArrowLeft, Share2, Loader2 } from "lucide-react";
-import { useBlogPost, useBlogPosts } from "@/hooks/useBlogPosts";
+import { Calendar, Clock, ArrowLeft, Share2 } from "lucide-react";
+import { getBlogPostBySlug, publishedBlogPosts } from "@/content/blogPosts";
 import { toast } from "sonner";
 import { format } from "date-fns";
+
+const SITE_ORIGIN = "https://www.amzadscout.com";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { post, loading, error } = useBlogPost(slug || '');
-  const { posts: allPosts } = useBlogPosts();
+  const post = slug ? getBlogPostBySlug(slug) : undefined;
 
   useEffect(() => {
-    if (!loading && !post && !error) {
+    if (!post) {
       navigate("/blog");
     }
-  }, [post, loading, error, navigate]);
+  }, [post, navigate]);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -42,7 +43,9 @@ const BlogPost = () => {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '';
-    return format(new Date(dateString), 'MMM d, yyyy');
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateString);
+    if (!match) return '';
+    return format(new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])), 'MMM d, yyyy');
   };
 
   const estimateReadTime = (content: string | null) => {
@@ -52,43 +55,50 @@ const BlogPost = () => {
     return `${minutes} min read`;
   };
 
-  const getDefaultImage = (index: number) => {
-    const images = [
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400&fit=crop',
-    ];
-    return images[index % images.length];
-  };
-
-  // Get related posts with similar tags
-  const relatedPosts = allPosts
-    .filter(p => p.id !== post?.id && p.tags?.some(tag => post?.tags?.includes(tag)))
-    .slice(0, 3);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-accent/5">
-        <Header />
-        <div className="flex items-center justify-center py-40">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <span className="ml-2 text-lg text-slate-600">Loading article...</span>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  const relatedPosts = post
+    ? publishedBlogPosts
+        .filter((related) => related.id !== post.id && related.tags?.some((tag) => post.tags?.includes(tag)))
+        .slice(0, 3)
+    : [];
 
   if (!post) {
     return null;
   }
 
+  const canonical = `${SITE_ORIGIN}/blog/${post.slug}`;
+  const description = post.meta_description || post.excerpt || '';
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description,
+    datePublished: post.published_at,
+    dateModified: post.updated_at,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonical,
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'AMZ AD SCOUT',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'AMZ AD SCOUT',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_ORIGIN}/logo.png`,
+      },
+    },
+  };
+
   return (
     <>
       <SEOHead 
-        title={post.meta_title || `${post.title} | Blog`}
-        description={post.meta_description || post.excerpt || ''}
-        keywords={post.tags?.join(', ') || ''}
+        title={post.meta_title || post.title}
+        description={description}
+        canonical={canonical}
+        schema={schema}
       />
       <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-accent/5">
         <Header />
@@ -139,14 +149,15 @@ const BlogPost = () => {
               </Button>
             </div>
 
-            {/* Featured Image */}
-            <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src={post.featured_image || getDefaultImage(0)}
-                alt={post.title}
-                className="w-full h-[400px] object-cover"
-              />
-            </div>
+            {post.featured_image ? (
+              <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl">
+                <img
+                  src={post.featured_image}
+                  alt={post.title}
+                  className="w-full h-[400px] object-cover"
+                />
+              </div>
+            ) : null}
 
             {/* Article Content */}
             <div className="prose prose-lg max-w-none mb-16">
@@ -184,18 +195,20 @@ const BlogPost = () => {
                   Related Articles
                 </h2>
                 <div className="grid md:grid-cols-3 gap-6">
-                  {relatedPosts.map((relatedPost, index) => (
+                  {relatedPosts.map((relatedPost) => (
                     <Link
                       key={relatedPost.id}
                       to={`/blog/${relatedPost.slug}`}
                       className="group"
                     >
                       <Card className="overflow-hidden h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                        <img
-                          src={relatedPost.featured_image || getDefaultImage(index)}
-                          alt={relatedPost.title}
-                          className="w-full h-40 object-cover"
-                        />
+                        {relatedPost.featured_image ? (
+                          <img
+                            src={relatedPost.featured_image}
+                            alt={relatedPost.title}
+                            className="w-full h-40 object-cover"
+                          />
+                        ) : null}
                         <div className="p-4">
                           {relatedPost.tags?.[0] && (
                             <Badge variant="outline" className="mb-2 text-xs">

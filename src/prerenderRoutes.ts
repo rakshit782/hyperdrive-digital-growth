@@ -1,3 +1,4 @@
+import { blogPostPaths } from './content/blogPosts';
 import { detailedServiceSlugs } from './pages/DetailedServicePage';
 
 /**
@@ -32,6 +33,7 @@ export const publicRoutes: string[] = [
   '/free-audit',
   '/pricing',
   '/blog',
+  ...blogPostPaths,
   '/privacy',
   '/terms',
   '/refund-policy',
