@@ -7,10 +7,12 @@
  *
  * Included: every concrete public route, plus service slugs from
  * DetailedServicePage's serviceConfigs (so /services/amazon-integration is
- * listed even though it only matches /services/:serviceType).
- * Excluded: /blog (noindex; PR #3), /free-audit and /contact-us (308 to
- * /contact), /verify-certificate, client-only routes (/ad-landing, /dashboard
- * and children, /blog/:slug), and the "*" not-found route.
+ * listed even though it only matches /services/:serviceType). /blog is
+ * included. Each published post in src/content/blogPosts.ts adds
+ * /blog/<slug> with lastmod set to that post's updated_at date.
+ * Excluded: /free-audit and /contact-us (308 to /contact),
+ * /verify-certificate, client-only routes (/ad-landing, /dashboard and
+ * children, /blog/:slug), and the "*" not-found route.
  *
  * Hosting for those URLs lives in vercel.json (valid JSON, so the notes are
  * here). Vercel serves a real file before any rewrite, and trailingSlash is
@@ -45,7 +47,6 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://www.amzadscout.com";
 const SITEMAP_EXCLUDE = new Set([
   "/home",
-  "/blog",
   "/free-audit",
   "/contact-us",
   "/verify-certificate",
@@ -322,6 +323,39 @@ async function fetchPublishedCaseStudies() {
   }
 }
 
+function staticBlogPosts() {
+  const src = read("src/content/blogPosts.ts");
+  const posts = [];
+  for (const block of src.split(/\n\s*\{/).slice(1)) {
+    const slug = /^\s*slug:\s*"([a-z0-9-]+)"/m.exec(block);
+    const updated = /^\s*updated_at:\s*"(\d{4}-\d{2}-\d{2})/m.exec(block);
+    const status = /^\s*status:\s*"([^"]+)"/m.exec(block);
+    if (!slug || !updated) continue;
+    if (status && status[1] !== "published") continue;
+    posts.push({ slug: slug[1], lastmod: updated[1] });
+  }
+  if (posts.length === 0) {
+    throw new Error("No published static blog posts found in src/content/blogPosts.ts");
+  }
+  return posts;
+}
+
+function appendStaticBlogPosts(entries) {
+  const seen = new Set(entries.map((entry) => entry.loc));
+  for (const post of staticBlogPosts()) {
+    const loc = `${SITE}/blog/${post.slug}`;
+    if (!/^https:\/\/www\.amzadscout\.com\/(?:[a-z0-9-]+(?:\/[a-z0-9-]+)*)?$/.test(loc)) {
+      throw new Error(`Refusing non-canonical sitemap URL: ${loc}`);
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(post.lastmod)) {
+      throw new Error(`Invalid lastmod ${post.lastmod} for ${loc}`);
+    }
+    if (seen.has(loc)) continue;
+    entries.push({ loc, lastmod: post.lastmod, file: "src/content/blogPosts.ts" });
+    seen.add(loc);
+  }
+}
+
 async function main() {
   const entries = buildEntries();
   const caseStudies = await fetchPublishedCaseStudies();
@@ -335,6 +369,7 @@ async function main() {
       console.warn("Removing /case-studies from the sitemap: no published case studies were returned");
     }
   }
+  appendStaticBlogPosts(entries);
   assertRewritten(entries);
   const xml = render(entries);
 

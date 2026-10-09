@@ -6,12 +6,12 @@ import SEOHead from "@/components/SEOHead";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, ArrowRight, Loader2 } from "lucide-react";
-import { useBlogPosts } from "@/hooks/useBlogPosts";
+import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { publishedBlogPosts } from "@/content/blogPosts";
 import { format } from "date-fns";
 
 const Blog = () => {
-  const { posts, loading, error } = useBlogPosts();
+  const posts = publishedBlogPosts;
   const [selectedTag, setSelectedTag] = useState<string>("All");
 
   // Extract unique tags from all posts
@@ -32,7 +32,9 @@ const Blog = () => {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '';
-    return format(new Date(dateString), 'MMM d, yyyy');
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateString);
+    if (!match) return '';
+    return format(new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])), 'MMM d, yyyy');
   };
 
   const estimateReadTime = (content: string | null) => {
@@ -42,25 +44,13 @@ const Blog = () => {
     return `${minutes} min read`;
   };
 
-  const getDefaultImage = (index: number) => {
-    const images = [
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1432888622747-4eb9a8f2c2b2?w=800&h=400&fit=crop',
-    ];
-    return images[index % images.length];
-  };
-
   return (
     <>
       <SEOHead 
         title="E-commerce Marketing Blog & Seller Insights | AMZ AD SCOUT"
         description="Practical guides on Amazon PPC, Walmart ads, listing optimization and Shopify growth from the AMZ AD SCOUT team. New articles are on the way, so check back."
         keywords="amazon advertising blog, amazon ppc tips, walmart advertising insights, shopify development blog, e-commerce marketing strategies"
-        canonical={window.location.href}
-        robots="noindex, follow"
+        canonical="https://www.amzadscout.com/blog"
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <Header />
@@ -93,40 +83,27 @@ const Blog = () => {
               </div>
             )}
 
-            {/* Loading State */}
-            {loading && (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                <span className="ml-2 text-lg text-slate-600">Loading articles...</span>
-              </div>
-            )}
-
-            {/* Error State */}
-            {error && (
-              <div className="text-center py-20">
-                <p className="text-red-500">Failed to load blog posts. Please try again later.</p>
-              </div>
-            )}
-
             {/* Empty State */}
-            {!loading && !error && posts.length === 0 && (
+            {posts.length === 0 && (
               <div className="text-center py-20">
                 <p className="text-xl text-slate-600">No blog posts yet. Check back soon!</p>
               </div>
             )}
 
             {/* Featured Post */}
-            {!loading && featuredPost && (
+            {featuredPost && (
               <Card className="mb-12 overflow-hidden bg-white/80 backdrop-blur-sm shadow-xl border-0">
                 <div className="md:flex">
-                  <div className="md:w-1/2">
-                    <img 
-                      src={featuredPost.featured_image || getDefaultImage(0)} 
-                      alt={featuredPost.title}
-                      className="w-full h-64 md:h-full object-cover"
-                    />
-                  </div>
-                  <div className="md:w-1/2 p-8">
+                  {featuredPost.featured_image ? (
+                    <div className="md:w-1/2">
+                      <img 
+                        src={featuredPost.featured_image} 
+                        alt={featuredPost.title}
+                        className="w-full h-64 md:h-full object-cover"
+                      />
+                    </div>
+                  ) : null}
+                  <div className={featuredPost.featured_image ? "md:w-1/2 p-8" : "p-8"}>
                     <div className="flex items-center gap-2 mb-4 flex-wrap">
                       <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
                         Latest
@@ -165,22 +142,30 @@ const Blog = () => {
             )}
 
             {/* Blog Posts Grid */}
-            {!loading && regularPosts.length > 0 && (
+            {regularPosts.length > 0 && (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {regularPosts.map((post, index) => (
+                {regularPosts.map((post) => (
                   <Card key={post.id} className="overflow-hidden bg-white/80 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                    <div className="relative">
-                      <img 
-                        src={post.featured_image || getDefaultImage(index + 1)} 
-                        alt={post.title}
-                        className="w-full h-48 object-cover"
-                      />
-                      {post.tags?.[0] && (
-                        <Badge className="absolute top-4 left-4 bg-white/90 text-slate-800 hover:bg-white">
+                    {post.featured_image ? (
+                      <div className="relative">
+                        <img 
+                          src={post.featured_image} 
+                          alt={post.title}
+                          className="w-full h-48 object-cover"
+                        />
+                        {post.tags?.[0] && (
+                          <Badge className="absolute top-4 left-4 bg-white/90 text-slate-800 hover:bg-white">
+                            {post.tags[0]}
+                          </Badge>
+                        )}
+                      </div>
+                    ) : post.tags?.[0] ? (
+                      <div className="px-6 pt-6">
+                        <Badge className="bg-white/90 text-slate-800 hover:bg-white">
                           {post.tags[0]}
                         </Badge>
-                      )}
-                    </div>
+                      </div>
+                    ) : null}
                     <CardContent className="p-6">
                       <h3 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2">
                         {post.title}
