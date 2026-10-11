@@ -14,6 +14,7 @@ import { TrackingSection } from '@/components/dashboard/TrackingSection';
 import { VisitorLogsSection } from '@/components/dashboard/VisitorLogsSection';
 import { CertificatesSection } from '@/components/dashboard/CertificatesSection';
 import { BulkCaseStudiesSection } from '@/components/dashboard/BulkCaseStudiesSection';
+import { SystemStatusSection } from '@/components/dashboard/SystemStatusSection';
 import { databaseService } from '@/services/databaseService';
 import { getVisitorLogs } from '@/utils/visitorTracker';
 import { toast } from 'sonner';
@@ -53,13 +54,14 @@ const Dashboard = () => {
       const [contactsData, leadsData, newslettersData, logsData, visitorLogsData] = await Promise.all([
         databaseService.getContactSubmissions(100, forceRefresh).catch(() => []),
         databaseService.getLeads(100, forceRefresh).catch(() => []),
+        databaseService.getNewsletters(100).catch(() => []),
         databaseService.getSecurityLogs(100, forceRefresh).catch(() => []),
-        databaseService.getSecurityLogs(50, forceRefresh).catch(() => []),
         getVisitorLogs(100).catch(() => []),
       ]);
 
       const safeContacts = Array.isArray(contactsData) ? contactsData : [];
       const safeLeads = Array.isArray(leadsData) ? leadsData : [];
+      const safeNewsletters = Array.isArray(newslettersData) ? newslettersData : [];
       const safeLogs = Array.isArray(logsData) ? logsData : [];
       const safeVisitorLogs = Array.isArray(visitorLogsData) ? visitorLogsData : [];
 
@@ -69,9 +71,9 @@ const Dashboard = () => {
       setLeads(safeLeads.sort((a: any, b: any) => 
         new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
       ));
-      
-      // Note: newsletters need a separate endpoint - for now using empty array
-      setNewsletters([]);
+      setNewsletters(safeNewsletters.sort((a: any, b: any) => 
+        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      ));
       setSecurityLogs(safeLogs.sort((a: any, b: any) => 
         new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
       ));
@@ -89,8 +91,14 @@ const Dashboard = () => {
   const handleRefresh = () => loadAllData(true);
 
   const deleteContact = async (id: string) => {
-    // Implement delete via API
-    toast.info('Delete functionality coming soon');
+    try {
+      await databaseService.deleteContact(id);
+      setContacts((prev) => prev.filter((c) => c.id !== id));
+      toast.success('Contact submission deleted from database');
+    } catch (error) {
+      console.error('Failed to delete contact:', error);
+      toast.error('Failed to delete contact submission');
+    }
   };
 
   const deleteLead = async (id: string) => {
@@ -116,8 +124,14 @@ const Dashboard = () => {
   };
 
   const deleteNewsletter = async (id: string) => {
-    // Implement delete via API
-    toast.info('Delete functionality coming soon');
+    try {
+      await databaseService.deleteNewsletter(id);
+      setNewsletters((prev) => prev.filter((item) => item.id !== id));
+      toast.success('Subscriber deleted from database');
+    } catch (error) {
+      console.error('Failed to delete subscriber:', error);
+      toast.error('Failed to delete subscriber');
+    }
   };
 
   const handleLogout = () => {
@@ -190,6 +204,8 @@ const Dashboard = () => {
         return <VisitorLogsSection logs={visitorLogs} onRefresh={handleRefresh} />;
       case 'tracking':
         return <TrackingSection />;
+      case 'status':
+        return <SystemStatusSection />;
       case 'header-settings':
         return <HeaderSettingsSection />;
       case 'certificates':

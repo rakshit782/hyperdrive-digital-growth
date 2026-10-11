@@ -382,6 +382,89 @@ class DatabaseService {
     }
   }
 
+  async deleteContact(id: string): Promise<boolean> {
+    try {
+      const sql = getNeonSql();
+      await sql`
+        DELETE FROM public.contact_submissions
+        WHERE id = ${id}::uuid OR id = ${id}::text;
+      `;
+      this.clearContactsCache();
+      return true;
+    } catch (error) {
+      console.error('Database error - delete contact:', error);
+      throw error;
+    }
+  }
+
+  async getNewsletters(limit: number = 100): Promise<any[]> {
+    try {
+      const sql = getNeonSql();
+      const rows = await sql`
+        SELECT id, email, name, status, created_at, updated_at
+        FROM public.newsletter_emails
+        ORDER BY created_at DESC
+        LIMIT ${limit};
+      `;
+      return (rows || []) as any[];
+    } catch (error) {
+      console.error('Database error - get newsletters:', error);
+      return [];
+    }
+  }
+
+  async deleteNewsletter(id: string): Promise<boolean> {
+    try {
+      const sql = getNeonSql();
+      await sql`
+        DELETE FROM public.newsletter_emails
+        WHERE id = ${id}::uuid OR id = ${id}::text;
+      `;
+      return true;
+    } catch (error) {
+      console.error('Database error - delete newsletter:', error);
+      throw error;
+    }
+  }
+
+  async pingNeon(): Promise<{
+    ok: boolean;
+    latencyMs: number;
+    db?: string;
+    version?: string;
+    serverTime?: string;
+    tablesCount?: number;
+    error?: string;
+  }> {
+    const t0 = performance.now();
+    try {
+      const sql = getNeonSql();
+      const rows = await sql`
+        SELECT 
+          current_database() as database,
+          version() as version,
+          NOW() as timestamp,
+          (SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public') as tables_count
+      `;
+      const latencyMs = Math.round(performance.now() - t0);
+      const row = rows[0] || {};
+      return {
+        ok: true,
+        latencyMs,
+        db: row.database || 'website',
+        version: row.version || '',
+        serverTime: row.timestamp || new Date().toISOString(),
+        tablesCount: Number(row.tables_count || 0)
+      };
+    } catch (err: any) {
+      return {
+        ok: false,
+        latencyMs: Math.round(performance.now() - t0),
+        error: err?.message || 'Failed to ping Neon database'
+      };
+    }
+  }
+
   async getWebsiteSettings(): Promise<WebsiteSetting[]> {
     try {
       const response = await fetch(`${this.apiUrl}/website-settings`);

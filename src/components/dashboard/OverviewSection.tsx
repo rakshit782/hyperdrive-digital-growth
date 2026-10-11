@@ -213,17 +213,31 @@ export function OverviewSection({ stats, leads = [], contacts = [], onNavigate, 
                 <Eye className="h-3.5 w-3.5 text-primary" />
                 Google Analytics & Pixel Tags
               </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => onNavigate?.("status")}
+                className="w-full justify-start text-xs h-9 gap-2"
+              >
+                <Database className="h-3.5 w-3.5 text-emerald-500" />
+                Neon, Vercel & Render Status
+              </Button>
             </CardContent>
           </Card>
 
-          <Card className="bg-muted/30 border shadow-xs">
+          <Card 
+            onClick={() => onNavigate?.("status")}
+            className="bg-muted/30 border shadow-xs hover:border-emerald-500/50 cursor-pointer transition-all"
+          >
             <CardContent className="p-4 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                Database Health: Optimal
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Live Platform Health
+                </div>
+                <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground" />
               </div>
               <p className="text-xs text-muted-foreground">
-                Direct pooled connection to Neon AWS us-east-1 running with zero edge proxy delays.
+                Neon Postgres, Vercel Edge, and Render Cloud live telemetry & latency monitoring.
               </p>
             </CardContent>
           </Card>

@@ -1,7 +1,7 @@
 import { 
   LayoutDashboard, Users, Mail, MessageSquare, Shield, Settings, LogOut, 
   FileText, Code, Eye, Award, FileSpreadsheet, ChevronDown, Sliders, Star,
-  ExternalLink, Sparkles, Database
+  ExternalLink, Sparkles, Database, Activity
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -42,6 +42,7 @@ const contentNavItems: MenuItem[] = [
 ];
 
 const systemNavItems: MenuItem[] = [
+  { title: "System Status", icon: Activity, section: "status", badge: "Live" },
   { title: "Visitor Logs", icon: Eye, section: "visitor-logs" },
   { title: "Security Events", icon: Shield, section: "security" },
   { title: "Tracking & Analytics", icon: Code, section: "tracking" },
