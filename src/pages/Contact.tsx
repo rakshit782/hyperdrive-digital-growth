@@ -133,7 +133,7 @@ const Contact = () => {
         title="Contact Us for a Free E-commerce Ads Audit | AMZ AD SCOUT"
         description="Claim your free 8-pillar advertising audit for Amazon, Walmart, or Meta/Google. Meet our senior directors and scale your revenue with precision PPC."
         keywords="contact amazon advertising agency, free e-commerce audit, amazon ppc consultation, walmart advertising contact, shopify development inquiry, e-commerce agency contact, professional amazon consultation, free amazon audit, walmart marketplace audit, multi-channel consultation"
-        canonical="https://www.amzadscout.com/contact"
+        canonical={typeof window !== 'undefined' ? window.location.href : 'https://www.amzadscout.com/contact'}
       />
       <Header />
       
