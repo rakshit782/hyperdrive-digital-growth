@@ -59,6 +59,7 @@ export default function AdLanding() {
 
   const { submitLead, isSubmitting } = useLeadSubmission();
   const [isSuccess, setIsSuccess] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
 
   const form = useForm<AdLeadFormValues>({
     resolver: zodResolver(adLeadSchema),
@@ -105,6 +106,7 @@ export default function AdLanding() {
       primaryPlatform: data.primaryPlatform,
       notes: data.message ? `[${utmSource.toUpperCase()} / ${utmCampaign}] ${data.message}` : `[${utmSource.toUpperCase()} / ${utmCampaign}]`,
       source: `${utmSource}-${utmMedium}-landing`,
+      honeypot,
     });
 
     if (result.success) {
@@ -341,6 +343,18 @@ export default function AdLanding() {
                     <Form {...form}>
                       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         
+                        {/* Anti-spam Bot Honeypot */}
+                        <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
+                          <input
+                            type="text"
+                            name="website_url_check"
+                            value={honeypot}
+                            onChange={(e) => setHoneypot(e.target.value)}
+                            tabIndex={-1}
+                            autoComplete="off"
+                          />
+                        </div>
+
                         {/* Name Field */}
                         <FormField
                           control={form.control}

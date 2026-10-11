@@ -43,6 +43,7 @@ export const ContactFormDialog = ({
   const { submitLead, isSubmitting } = useLeadSubmission();
   const { toast } = useToast();
   const [isSuccess, setIsSuccess] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
@@ -72,6 +73,7 @@ export const ContactFormDialog = ({
       notes: data.issues,
       source: formType,
       status: 'new',
+      honeypot,
     });
 
     if (result.success) {
@@ -111,6 +113,18 @@ export const ContactFormDialog = ({
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* Anti-spam Bot Honeypot */}
+              <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
+                <input
+                  type="text"
+                  name="website_url_check"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}

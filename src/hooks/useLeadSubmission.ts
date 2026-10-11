@@ -22,12 +22,19 @@ export interface LeadSubmissionData {
   monthlyAdSpend?: string;
   primaryPlatform?: string;
   currentChallenges?: string;
+  honeypot?: string;
   uploadedFiles?: {
     businessSalesReport?: string | null;
     searchTermReport?: string | null;
     advertisedProductReport?: string | null;
   };
 }
+
+const RATE_LIMIT_KEY = 'amz_lead_submit_throttle';
+const DISPOSABLE_DOMAINS = new Set([
+  'mailinator.com', 'tempmail.com', 'guerrillamail.com', '10minutemail.com',
+  'throwawaymail.com', 'trashmail.com', 'sharklasers.com', 'yopmail.com'
+]);
 
 export const useLeadSubmission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,11 +44,35 @@ export const useLeadSubmission = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('Starting lead submission with data:', data);
+      // 1. Honeypot check (Bots fill hidden fields)
+      if (data.honeypot && data.honeypot.trim() !== '') {
+        console.warn('Bot detected via honeypot trap, suppressing lead.');
+        return { success: true, leadId: 'filtered' };
+      }
 
-      // Validate required fields
+      // 2. Validate required fields
       if (!data.email || !data.name) {
         throw new Error('Name and email are required');
+      }
+
+      const emailClean = data.email.trim().toLowerCase();
+      const emailDomain = emailClean.split('@')[1];
+
+      // 3. Reject known disposable/burner spam domains
+      if (emailDomain && DISPOSABLE_DOMAINS.has(emailDomain)) {
+        throw new Error('Please enter a valid work or personal email address (disposable domains not accepted).');
+      }
+
+      // 4. Client-side rapid submission throttle (prevents automated click flooding)
+      try {
+        const lastSubmit = localStorage.getItem(RATE_LIMIT_KEY);
+        const now = Date.now();
+        if (lastSubmit && now - parseInt(lastSubmit, 10) < 5000) {
+          throw new Error('Please wait a few seconds before submitting again.');
+        }
+        localStorage.setItem(RATE_LIMIT_KEY, now.toString());
+      } catch (throttleErr: any) {
+        if (throttleErr.message?.includes('wait')) throw throttleErr;
       }
 
       // Prepare lead data for Neon database

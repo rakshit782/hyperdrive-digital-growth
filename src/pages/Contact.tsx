@@ -31,6 +31,7 @@ const Contact = () => {
   const { submitLead, isSubmitting } = useLeadSubmission();
   const { toast } = useToast();
   const [isSuccess, setIsSuccess] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
@@ -60,6 +61,7 @@ const Contact = () => {
       notes: data.issues,
       source: 'contact-page',
       status: 'new',
+      honeypot,
     });
 
     if (result.success) {
@@ -109,6 +111,18 @@ const Contact = () => {
             <div className="bg-card rounded-lg shadow-lg p-8">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  {/* Anti-spam Bot Honeypot */}
+                  <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
+                    <input
+                      type="text"
+                      name="website_url_check"
+                      value={honeypot}
+                      onChange={(e) => setHoneypot(e.target.value)}
+                      tabIndex={-1}
+                      autoComplete="off"
+                    />
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
