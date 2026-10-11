@@ -152,8 +152,13 @@ async function readJson(response: Response): Promise<unknown> {
 }
 
 function errorMessage(data: unknown, fallback: string): string {
-  if (data && typeof data === "object" && typeof (data as { error?: unknown }).error === "string") {
-    return (data as { error: string }).error;
+  if (data && typeof data === "object") {
+    const obj = data as Record<string, unknown>;
+    if (typeof obj.message === "string") return obj.message;
+    if (typeof obj.error === "string") return obj.error;
+    if (obj.error && typeof obj.error === "object" && typeof (obj.error as any).message === "string") {
+      return (obj.error as any).message;
+    }
   }
   return fallback;
 }
