@@ -57,12 +57,36 @@ async function call(body: Record<string, unknown>, withAdmin = false) {
   return data;
 }
 
+import { getNeonSql } from "@/services/neonClient";
+
 export const certificateService = {
-  verify: (certificate_id: string) =>
-    call({ action: "verify", certificate_id }) as Promise<{
-      found: boolean;
-      certificate?: Certificate;
-    }>,
+  verify: async (certificate_id: string): Promise<{
+    found: boolean;
+    certificate?: Certificate;
+  }> => {
+    try {
+      const sql = getNeonSql();
+      const rows = await sql`
+        SELECT 
+          id, certificate_id, student_name, email, role, department,
+          city, start_date, end_date, issue_date, mentor_name,
+          performance, status, notes, created_at
+        FROM amz_app.internship_certificates
+        WHERE LOWER(TRIM(certificate_id)) = LOWER(TRIM(${certificate_id}))
+        LIMIT 1;
+      `;
+      if (rows && rows.length > 0) {
+        return { found: true, certificate: rows[0] as Certificate };
+      }
+      return { found: false };
+    } catch (neonErr) {
+      console.warn("Direct Neon certificate verify fallback:", neonErr);
+      return call({ action: "verify", certificate_id }) as Promise<{
+        found: boolean;
+        certificate?: Certificate;
+      }>;
+    }
+  },
   list: () => call({ action: "list" }, true) as Promise<{ certificates: Certificate[] }>,
   create: (certificate: Partial<Certificate>) =>
     call({ action: "create", certificate }, true) as Promise<{ certificate: Certificate }>,
