@@ -23,19 +23,25 @@ export interface SiteSettings {
   email_notifications_enabled?: boolean;
   email_subject_template?: string | null;
   email_html_template?: string | null;
+  footer_email?: string | null;
+  footer_address?: string | null;
+  logo_settings?: any;
   updated_at: string | null;
 }
 
 export interface SiteSettingsInput {
-  rating_value: number;
-  review_count: number;
-  review_source_url: string | null;
-  rating_visible: boolean;
+  rating_value?: number;
+  review_count?: number;
+  review_source_url?: string | null;
+  rating_visible?: boolean;
   resend_api_key?: string | null;
   notification_email?: string | null;
   email_notifications_enabled?: boolean;
   email_subject_template?: string | null;
   email_html_template?: string | null;
+  footer_email?: string | null;
+  footer_address?: string | null;
+  logo_settings?: any;
 }
 
 export class SiteSettingsRequestError extends Error {
@@ -154,7 +160,7 @@ function errorMessage(data: unknown, fallback: string): string {
 
 import { getNeonSql } from "@/services/neonClient";
 
-export async function fetchSiteSettings(url: string = SITE_SETTINGS_API_URL): Promise<SiteSettings> {
+export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
   // Directly query Neon database
   try {
     const sql = getNeonSql();
@@ -162,7 +168,8 @@ export async function fetchSiteSettings(url: string = SITE_SETTINGS_API_URL): Pr
       SELECT 
         rating_value, review_count, review_source_url, rating_visible,
         resend_api_key, notification_email, email_notifications_enabled,
-        email_subject_template, email_html_template, updated_at
+        email_subject_template, email_html_template, footer_email, footer_address,
+        logo_settings, updated_at
       FROM public.site_settings
       WHERE id = 1;
     `;
@@ -183,47 +190,47 @@ export async function fetchSiteSettings(url: string = SITE_SETTINGS_API_URL): Pr
         email_notifications_enabled: r.email_notifications_enabled === true,
         email_subject_template: r.email_subject_template ?? null,
         email_html_template: r.email_html_template ?? null,
+        footer_email: r.footer_email ?? null,
+        footer_address: r.footer_address ?? null,
+        logo_settings: r.logo_settings ?? null,
         updated_at: r.updated_at ? new Date(r.updated_at).toISOString() : null,
       };
     }
   } catch (neonErr) {
-    console.warn("Direct Neon fetch fallback:", neonErr);
+    console.warn("Direct Neon fetch error:", neonErr);
   }
 
-  let response: Response;
-  try {
-    response = await fetch(url, {
-      method: "GET",
-      headers: requestHeaders(url),
-    });
-  } catch {
-    throw new SiteSettingsRequestError(0, "Couldn't load review settings");
-  }
-
-  let data: unknown;
-  try {
-    data = await readJson(response);
-  } catch {
-    data = undefined;
-  }
-
-  if (!response.ok || data === undefined || !isSiteSettings(data)) {
-    throw new SiteSettingsRequestError(response.status, errorMessage(data, "Couldn't load review settings"));
-  }
-  return data;
+  return {
+    rating_value: 0,
+    review_count: 0,
+    review_source_url: null,
+    rating_visible: false,
+    resend_api_key: null,
+    has_resend_api_key: false,
+    notification_email: null,
+    email_notifications_enabled: false,
+    email_subject_template: null,
+    email_html_template: null,
+    footer_email: null,
+    footer_address: null,
+    logo_settings: null,
+    updated_at: null,
+  };
 }
 
 export async function saveSiteSettings(
   payload: SiteSettingsInput,
-  url: string = SITE_SETTINGS_API_URL,
+  _url?: string,
 ): Promise<SiteSettings> {
   // Directly save to Neon database
   try {
     const sql = getNeonSql();
     
-    // Check existing row to preserve API key if not re-entered
+    // Check existing row to preserve API key and other fields if not re-entered
     const existing = await sql`
-      SELECT resend_api_key, notification_email, email_subject_template, email_html_template 
+      SELECT 
+        resend_api_key, notification_email, email_subject_template, 
+        email_html_template, footer_email, footer_address, logo_settings
       FROM public.site_settings 
       WHERE id = 1;
     `;
@@ -238,7 +245,8 @@ export async function saveSiteSettings(
       INSERT INTO public.site_settings (
         id, rating_value, review_count, review_source_url, rating_visible,
         resend_api_key, notification_email, email_notifications_enabled,
-        email_subject_template, email_html_template, updated_at
+        email_subject_template, email_html_template, footer_email, footer_address,
+        logo_settings, updated_at
       )
       VALUES (
         1,
@@ -247,10 +255,13 @@ export async function saveSiteSettings(
         ${payload.review_source_url ?? null},
         ${payload.rating_visible ?? false},
         ${finalApiKey ?? null},
-        ${payload.notification_email ?? null},
+        ${payload.notification_email !== undefined ? payload.notification_email : (existingRow?.notification_email ?? null)},
         ${payload.email_notifications_enabled ?? false},
-        ${payload.email_subject_template ?? null},
-        ${payload.email_html_template ?? null},
+        ${payload.email_subject_template !== undefined ? payload.email_subject_template : (existingRow?.email_subject_template ?? null)},
+        ${payload.email_html_template !== undefined ? payload.email_html_template : (existingRow?.email_html_template ?? null)},
+        ${payload.footer_email !== undefined ? payload.footer_email : (existingRow?.footer_email ?? null)},
+        ${payload.footer_address !== undefined ? payload.footer_address : (existingRow?.footer_address ?? null)},
+        ${payload.logo_settings !== undefined ? JSON.stringify(payload.logo_settings) : (existingRow?.logo_settings ?? null)}::jsonb,
         now()
       )
       ON CONFLICT (id) DO UPDATE SET
@@ -258,11 +269,14 @@ export async function saveSiteSettings(
         review_count = EXCLUDED.review_count,
         review_source_url = EXCLUDED.review_source_url,
         rating_visible = EXCLUDED.rating_visible,
-        resend_api_key = EXCLUDED.resend_api_key,
-        notification_email = EXCLUDED.notification_email,
+        resend_api_key = COALESCE(EXCLUDED.resend_api_key, public.site_settings.resend_api_key),
+        notification_email = COALESCE(EXCLUDED.notification_email, public.site_settings.notification_email),
         email_notifications_enabled = EXCLUDED.email_notifications_enabled,
-        email_subject_template = EXCLUDED.email_subject_template,
-        email_html_template = EXCLUDED.email_html_template,
+        email_subject_template = COALESCE(EXCLUDED.email_subject_template, public.site_settings.email_subject_template),
+        email_html_template = COALESCE(EXCLUDED.email_html_template, public.site_settings.email_html_template),
+        footer_email = COALESCE(EXCLUDED.footer_email, public.site_settings.footer_email),
+        footer_address = COALESCE(EXCLUDED.footer_address, public.site_settings.footer_address),
+        logo_settings = COALESCE(EXCLUDED.logo_settings, public.site_settings.logo_settings),
         updated_at = now()
       RETURNING *;
     `;
@@ -284,6 +298,9 @@ export async function saveSiteSettings(
       email_notifications_enabled: row.email_notifications_enabled === true,
       email_subject_template: row.email_subject_template ?? null,
       email_html_template: row.email_html_template ?? null,
+      footer_email: row.footer_email ?? null,
+      footer_address: row.footer_address ?? null,
+      logo_settings: row.logo_settings ?? null,
       updated_at: row.updated_at ? new Date(row.updated_at).toISOString() : null,
     };
   } catch (neonErr: any) {

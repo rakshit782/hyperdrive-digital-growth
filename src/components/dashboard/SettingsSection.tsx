@@ -46,22 +46,56 @@ export function SettingsSection({ activeSubSection = "general", onSubSectionChan
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const saveFooter = () => {
-    localStorage.setItem("footer_email", footerData.email);
-    localStorage.setItem("footer_address", footerData.address);
-    toast.success("Footer settings saved");
+  useEffect(() => {
+    fetchSiteSettings().then((data) => {
+      if (data.footer_email || data.footer_address) {
+        setFooterData({
+          email: data.footer_email || "info@amzadscout.com",
+          address: data.footer_address || "New York, NY 10001",
+        });
+      }
+      if (data.logo_settings) {
+        setLogoData({
+          text: data.logo_settings.text || "AMZ AD SCOUT",
+          imageUrl: data.logo_settings.imageUrl || "/logo.png",
+          faviconUrl: data.logo_settings.faviconUrl || "/favicon.ico",
+          size: data.logo_settings.size || 70,
+        });
+      }
+    }).catch(console.warn);
+  }, []);
+
+  const saveFooter = async () => {
+    try {
+      await saveSiteSettings({
+        footer_email: footerData.email,
+        footer_address: footerData.address,
+      });
+      localStorage.setItem("footer_email", footerData.email);
+      localStorage.setItem("footer_address", footerData.address);
+      toast.success("Footer settings saved directly to Neon database");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save footer settings");
+    }
   };
 
-  const saveLogoSize = () => {
+  const saveLogoSize = async () => {
     const updatedData = {
       ...logoData,
       text: logoData.text || 'AMZ AD SCOUT',
       imageUrl: logoData.imageUrl || '/logo.png',
       faviconUrl: logoData.faviconUrl || '/favicon.png',
     };
-    localStorage.setItem('logo_data', JSON.stringify(updatedData));
-    window.dispatchEvent(new Event("logo-updated"));
-    toast.success("Logo size updated successfully");
+    try {
+      await saveSiteSettings({
+        logo_settings: updatedData,
+      });
+      localStorage.setItem('logo_data', JSON.stringify(updatedData));
+      window.dispatchEvent(new Event("logo-updated"));
+      toast.success("Logo settings saved directly to Neon database");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save logo settings");
+    }
   };
 
   const applyCrop = () => {
