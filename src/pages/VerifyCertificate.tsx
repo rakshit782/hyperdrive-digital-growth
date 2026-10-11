@@ -331,39 +331,39 @@ const VerifyCertificate = () => {
                 </p>
 
                 {/* 4-Column Structured Credential Metadata Grid */}
-                <div className="mt-12 pt-8 border-t border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-left">
-                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold flex items-center gap-1">
-                      <Calendar className="h-3 w-3 text-primary" /> Issue Date
+                <div className="mt-12 pt-8 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+                  <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <p className="text-[11px] uppercase tracking-wider text-slate-500 font-bold flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5 text-primary" /> Issue Date
                     </p>
-                    <p className="mt-1 font-semibold text-slate-900 text-xs sm:text-sm">
+                    <p className="mt-1.5 font-semibold text-slate-900 text-sm">
                       {formatDate(cert.issue_date)}
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold flex items-center gap-1">
-                      <UserCheck className="h-3 w-3 text-primary" /> Lead Mentor
+                  <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <p className="text-[11px] uppercase tracking-wider text-slate-500 font-bold flex items-center gap-1.5">
+                      <UserCheck className="h-3.5 w-3.5 text-primary" /> Lead Mentor
                     </p>
-                    <p className="mt-1 font-semibold text-slate-900 text-xs sm:text-sm truncate">
+                    <p className="mt-1.5 font-semibold text-slate-900 text-sm break-words">
                       {cert.mentor_name || "Operations Team"}
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold flex items-center gap-1">
-                      <ShieldCheck className="h-3 w-3 text-primary" /> Certificate ID
+                  <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <p className="text-[11px] uppercase tracking-wider text-slate-500 font-bold flex items-center gap-1.5">
+                      <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Certificate ID
                     </p>
-                    <p className="mt-1 font-mono font-bold text-slate-900 text-[11px] truncate" title={cert.certificate_id}>
+                    <p className="mt-1.5 font-mono font-bold text-slate-900 text-xs sm:text-[13px] break-all leading-snug select-all" title={cert.certificate_id}>
                       {cert.certificate_id}
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
-                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold flex items-center gap-1">
-                      <Building className="h-3 w-3 text-primary" /> Department
+                  <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <p className="text-[11px] uppercase tracking-wider text-slate-500 font-bold flex items-center gap-1.5">
+                      <Building className="h-3.5 w-3.5 text-primary" /> Department
                     </p>
-                    <p className="mt-1 font-semibold text-slate-900 text-xs sm:text-sm truncate">
+                    <p className="mt-1.5 font-semibold text-slate-900 text-sm break-words">
                       {cert.department || "Operations"}
                     </p>
                   </div>
