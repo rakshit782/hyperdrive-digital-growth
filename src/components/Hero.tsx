@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { HomepageReviewsBadge } from "@/components/ReviewsBadge";
 import { 
   ArrowRight, 
   Play, 
@@ -165,7 +164,6 @@ const Hero = () => {
                   <Zap className="w-5 h-5 text-yellow-500" />
                   <span className="text-sm font-medium">24hr Setup</span>
                 </div>
-                <HomepageReviewsBadge className="max-sm:my-0 max-sm:w-full max-sm:justify-center" />
               </div>
             </div>
 

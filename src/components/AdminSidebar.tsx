@@ -52,7 +52,6 @@ const systemNavItems: MenuItem[] = [
     subItems: [
       { title: "General & Branding", section: "settings-general", icon: Sliders },
       { title: "Email & Resend Leads", section: "settings-email", icon: Mail },
-      { title: "Reviews Badge", section: "settings-reviews", icon: Star },
     ]
   },
 ];

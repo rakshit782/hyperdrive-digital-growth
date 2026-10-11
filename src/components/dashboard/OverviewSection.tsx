@@ -191,11 +191,11 @@ export function OverviewSection({ stats, leads = [], contacts = [], onNavigate, 
               </Button>
               <Button 
                 variant="outline" 
-                onClick={() => onNavigate?.("settings-reviews")}
+                onClick={() => onNavigate?.("leads")}
                 className="w-full justify-start text-xs h-9 gap-2"
               >
-                <TrendingUp className="h-3.5 w-3.5 text-primary" />
-                Update Customer Reviews Score
+                <Users className="h-3.5 w-3.5 text-primary" />
+                Review & Export Leads
               </Button>
               <Button 
                 variant="outline" 
