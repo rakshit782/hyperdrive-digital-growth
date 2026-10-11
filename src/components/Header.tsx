@@ -484,7 +484,7 @@ export default function Header() {
             >
               <Link to="/copilot-login" title="Login to AMZ CoPilot">
                 <LogIn className="w-4 h-4 text-blue-600" />
-                <span>Login</span>
+                <span>CoPilot Login</span>
               </Link>
             </Button>
 
