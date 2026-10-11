@@ -165,10 +165,10 @@ const VerifyCertificate = () => {
       </section>
 
       {/* Main Content Area */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 -mt-12 mb-20 relative z-20">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 mb-20 relative z-20">
         {/* Certificate Not Found State */}
         {result && !result.found && (
-          <Card className="border-rose-500/30 bg-card/95 backdrop-blur shadow-2xl rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <Card className="border-rose-500/30 bg-card shadow-xl rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <CardContent className="p-8 sm:p-12 text-center space-y-4">
               <div className="h-16 w-16 mx-auto rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center">
                 <XCircle className="h-8 w-8" />
@@ -200,10 +200,10 @@ const VerifyCertificate = () => {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
             {/* Verification Status Header Banner */}
             <div
-              className={`rounded-2xl p-5 sm:p-6 border shadow-lg backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+              className={`rounded-2xl p-5 sm:p-6 border shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
                 isValid
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-100"
-                  : "bg-rose-500/10 border-rose-500/30 text-rose-950 dark:text-rose-100"
+                  ? "bg-white dark:bg-slate-900 border-emerald-500/40 text-slate-900 dark:text-slate-100"
+                  : "bg-white dark:bg-slate-900 border-rose-500/40 text-slate-900 dark:text-slate-100"
               }`}
             >
               <div className="flex items-center gap-4">
