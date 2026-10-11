@@ -159,7 +159,15 @@ const Dashboard = () => {
 
     switch (activeSection) {
       case 'overview':
-        return <OverviewSection stats={stats} />;
+        return (
+          <OverviewSection 
+            stats={stats} 
+            leads={leads}
+            contacts={contacts}
+            onNavigate={setActiveSection}
+            onRefresh={handleRefresh}
+          />
+        );
       case 'contacts':
         return (
           <ContactsSection
@@ -213,14 +221,48 @@ const Dashboard = () => {
         />
 
         <div className="flex-1 flex flex-col">
-          <header className="h-16 border-b bg-card flex items-center px-6 gap-4">
-            <SidebarTrigger />
-            <h1 className="text-xl font-semibold">Admin Dashboard</h1>
-            {user && (
-              <div className="ml-auto text-sm text-muted-foreground">
-                {user.email}
+          <header className="h-16 border-b border-border/60 bg-card/70 backdrop-blur-md sticky top-0 z-10 flex items-center justify-between px-6 gap-4">
+            <div className="flex items-center gap-3">
+              <SidebarTrigger />
+              <div className="h-4 w-px bg-border/80 hidden sm:block" />
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden sm:inline">
+                  Admin
+                </span>
+                <span className="text-muted-foreground/40 hidden sm:inline">/</span>
+                <h1 className="text-sm sm:text-base font-bold capitalize text-foreground">
+                  {activeSection.replace('settings-', 'Settings: ').replace('-', ' ')}
+                </h1>
               </div>
-            )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleRefresh}
+                title="Refresh Database Data"
+                className="h-8 px-2.5 rounded-lg border border-border/80 bg-background hover:bg-accent text-xs font-medium text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="hidden sm:inline">Neon Sync</span>
+              </button>
+
+              {user && (
+                <div className="flex items-center gap-2 pl-2 border-l border-border/60">
+                  <div className="h-7 w-7 rounded-full bg-primary/10 text-primary font-semibold text-xs flex items-center justify-center border border-primary/20">
+                    {user.email?.charAt(0).toUpperCase() || 'A'}
+                  </div>
+                  <div className="hidden md:block text-left">
+                    <p className="text-xs font-medium text-foreground leading-tight truncate max-w-[140px]">
+                      {user.email}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground leading-tight capitalize">
+                      {user.role || 'Super Admin'}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </header>
 
           <main className="flex-1 overflow-auto">

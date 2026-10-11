@@ -143,6 +143,24 @@ class DatabaseService {
       }
     }
 
+    // Direct Neon Database query
+    try {
+      const sql = getNeonSql();
+      const rows = await sql`
+        SELECT 
+          id, form_type, ip_address, user_agent, recaptcha_score, 
+          honeypot_triggered, csrf_valid, submission_data, created_at
+        FROM public.security_logs
+        ORDER BY created_at DESC
+        LIMIT ${limit};
+      `;
+      const logs = (rows || []) as SecurityLog[];
+      this.setCache(CACHE_KEYS.SECURITY_LOGS, CACHE_KEYS.SECURITY_LOGS_TIMESTAMP, logs);
+      return logs;
+    } catch (neonErr) {
+      console.warn('Direct Neon fetch security logs fallback:', neonErr);
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('neon-security-logs', {
         body: {
@@ -323,6 +341,24 @@ class DatabaseService {
         console.log('Returning cached contacts');
         return cached;
       }
+    }
+
+    // Direct Neon Database query
+    try {
+      const sql = getNeonSql();
+      const rows = await sql`
+        SELECT 
+          id, name, email, phone, company, message, 
+          form_type, created_at, updated_at
+        FROM public.contact_submissions
+        ORDER BY created_at DESC
+        LIMIT ${limit};
+      `;
+      const contacts = (rows || []) as any[];
+      this.setCache(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP, contacts);
+      return contacts;
+    } catch (neonErr) {
+      console.warn('Direct Neon fetch contacts fallback:', neonErr);
     }
 
     try {
