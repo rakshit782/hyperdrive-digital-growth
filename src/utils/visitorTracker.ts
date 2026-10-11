@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { getNeonSql } from '@/services/neonClient';
 
 export type VisitorLogEnvironment = 'frontend' | 'backend' | 'localhost';
 
@@ -91,17 +91,24 @@ export async function trackVisitor() {
       ? '[Localhost Client Dev]' 
       : '[Direct Frontend Visitor]';
 
-    await supabase.functions.invoke('neon-visitor-logs', {
-      body: {
-        action: 'insert',
-        logData: {
-          ip_address: ip,
-          user_agent: userAgent,
-          page_url: pageUrl,
-          referrer: enrichedReferrer,
-        },
-      },
-    });
+    // Direct Neon Database insert
+    try {
+      const sql = getNeonSql();
+      await sql`
+        INSERT INTO public.visitor_logs (
+          ip_address, user_agent, page_url, referrer, created_at
+        )
+        VALUES (
+          ${ip},
+          ${userAgent},
+          ${pageUrl},
+          ${enrichedReferrer},
+          NOW()
+        );
+      `;
+    } catch (neonErr) {
+      console.warn('Neon direct visitor log insert notice:', neonErr);
+    }
 
     // Also persist local record for instant offline/dev viewing
     saveLocalVisitorLog({
@@ -124,21 +131,28 @@ export async function trackBackendApiCall(endpoint: string, metadata?: Record<st
   try {
     const userAgent = typeof navigator !== 'undefined' ? `${navigator.userAgent} [Backend API]` : 'System/EdgeFunction';
     const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://hznbshxhmhtenxcuffhx.supabase.co';
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://www.amzadscout.com';
     const pageUrl = `${baseUrl}/api/${endpoint.replace(/^\//, '')}`;
     const referrer = isLocal ? '[Localhost Backend Call]' : '[Production Backend Service]';
+    const finalReferrer = `${referrer} ${metadata ? JSON.stringify(metadata) : ''}`.trim();
 
-    await supabase.functions.invoke('neon-visitor-logs', {
-      body: {
-        action: 'insert',
-        logData: {
-          ip_address: isLocal ? '127.0.0.1' : 'Server',
-          user_agent: userAgent,
-          page_url: pageUrl,
-          referrer: `${referrer} ${metadata ? JSON.stringify(metadata) : ''}`.trim(),
-        },
-      },
-    });
+    try {
+      const sql = getNeonSql();
+      await sql`
+        INSERT INTO public.visitor_logs (
+          ip_address, user_agent, page_url, referrer, created_at
+        )
+        VALUES (
+          ${isLocal ? '127.0.0.1' : 'Server'},
+          ${userAgent},
+          ${pageUrl},
+          ${finalReferrer},
+          NOW()
+        );
+      `;
+    } catch (neonErr) {
+      console.warn('Neon direct backend log insert notice:', neonErr);
+    }
 
     saveLocalVisitorLog({
       ip_address: isLocal ? '127.0.0.1' : 'Server',
@@ -158,18 +172,15 @@ export async function trackBackendApiCall(endpoint: string, metadata?: Record<st
  */
 export async function getVisitorLogs(limit: number = 200): Promise<VisitorLog[]> {
   try {
-    const { data, error } = await supabase.functions.invoke('neon-visitor-logs', {
-      body: {
-        action: 'list',
-        limit,
-      },
-    });
+    const sql = getNeonSql();
+    const rows = await sql`
+      SELECT id, ip_address, user_agent, page_url, referrer, country, city, region, created_at
+      FROM public.visitor_logs
+      ORDER BY created_at DESC
+      LIMIT ${limit};
+    `;
 
-    if (error) {
-      throw error;
-    }
-
-    const neonLogs: VisitorLog[] = (data?.logs || []).map((raw: any) => {
+    const neonLogs: VisitorLog[] = (rows || []).map((raw: any) => {
       const env = classifyVisitorEnvironment(raw);
       const isLocal = env === 'localhost';
       const isBackend = env === 'backend' || raw.page_url?.includes('/api/') || raw.referrer?.includes('Backend');

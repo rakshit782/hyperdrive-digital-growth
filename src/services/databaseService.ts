@@ -114,21 +114,27 @@ class DatabaseService {
 
   async insertSecurityLog(logData: Omit<SecurityLog, 'id' | 'created_at'>): Promise<void> {
     try {
-      const { error } = await supabase.functions.invoke('neon-security-logs', {
-        body: {
-          action: 'insert',
-          logData
-        }
-      });
-
-      if (error) {
-        throw error;
-      }
-      
+      const sql = getNeonSql();
+      await sql`
+        INSERT INTO public.security_logs (
+          form_type, ip_address, user_agent, recaptcha_score,
+          honeypot_triggered, csrf_valid, submission_data, created_at
+        )
+        VALUES (
+          ${logData.form_type},
+          ${logData.ip_address},
+          ${logData.user_agent},
+          ${logData.recaptcha_score},
+          ${logData.honeypot_triggered},
+          ${logData.csrf_valid},
+          ${logData.submission_data ? JSON.stringify(logData.submission_data) : null}::jsonb,
+          NOW()
+        );
+      `;
       // Clear cache after insert
       this.clearSecurityLogsCache();
     } catch (error) {
-      console.error('Database error - security log:', error);
+      console.warn('Neon database warning - insert security log:', error);
       // Don't throw error to prevent form submission from failing
     }
   }

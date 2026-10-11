@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { getNeonSql } from '@/services/neonClient';
 
 export interface NewsletterEmail {
   id?: string;
@@ -22,17 +21,15 @@ export const useNewsletterEmails = () => {
   const fetchEmails = async () => {
     try {
       setLoading(true);
-      console.log('Fetching newsletter emails from Neon database...');
-      const { data, error } = await supabase.functions.invoke('neon-newsletter', {
-        body: { action: 'list' }
-      });
-      
-      if (error) throw error;
-      
-      setEmails(data?.emails || []);
-      console.log('Newsletter emails fetched:', data?.emails);
+      const sql = getNeonSql();
+      const rows = await sql`
+        SELECT id, email, name, status, created_at, updated_at
+        FROM public.newsletter_emails
+        ORDER BY created_at DESC;
+      `;
+      setEmails((rows || []) as NewsletterEmail[]);
     } catch (error) {
-      console.error('Error fetching newsletter emails:', error);
+      console.error('Error fetching newsletter emails from Neon:', error);
       toast({
         title: "Error",
         description: "Failed to load newsletter emails",
@@ -45,46 +42,60 @@ export const useNewsletterEmails = () => {
 
   const addEmail = async (emailData: Omit<NewsletterEmail, 'id' | 'created_at' | 'updated_at' | 'status'> & { status?: 'subscribed' | 'unsubscribed' }) => {
     try {
-      console.log('Adding newsletter email:', emailData);
-      
-      const { data, error } = await supabase.functions.invoke('neon-newsletter', {
-        body: {
-          action: 'subscribe',
-          email: emailData.email,
-          name: emailData.name
-        }
-      });
+      const sql = getNeonSql();
+      const normalizedEmail = emailData.email.trim().toLowerCase();
 
-      if (error) throw error;
+      // Check if email already exists
+      const existing = await sql`
+        SELECT id, status FROM public.newsletter_emails WHERE email = ${normalizedEmail};
+      `;
 
-      if (!data?.success) {
-        if (data?.error === 'Email already subscribed') {
+      if (existing && existing.length > 0) {
+        if (existing[0].status === 'subscribed') {
           toast({
             title: "Already Subscribed",
             description: "This email is already subscribed to our newsletter",
             variant: "destructive",
           });
           return { success: false, error: 'Email already subscribed' };
+        } else {
+          // Reactivate subscription
+          await sql`
+            UPDATE public.newsletter_emails 
+            SET status = 'subscribed', updated_at = NOW() 
+            WHERE id = ${existing[0].id};
+          `;
+          toast({
+            title: "Welcome Back!",
+            description: "Email subscription reactivated successfully",
+          });
+          await fetchEmails();
+          return { success: true };
         }
-        throw new Error(data?.error || 'Failed to subscribe');
       }
 
-      if (data?.reactivated) {
-        toast({
-          title: "Welcome Back!",
-          description: "Email subscription reactivated successfully",
-        });
-      } else {
-        toast({
-          title: "Success",
-          description: "Email added to newsletter successfully",
-        });
-      }
+      await sql`
+        INSERT INTO public.newsletter_emails (
+          email, name, status, created_at, updated_at
+        )
+        VALUES (
+          ${normalizedEmail},
+          ${emailData.name || null},
+          'subscribed',
+          NOW(),
+          NOW()
+        );
+      `;
+
+      toast({
+        title: "Success",
+        description: "Email added to newsletter successfully",
+      });
 
       await fetchEmails();
       return { success: true };
     } catch (error) {
-      console.error('Error adding newsletter email:', error);
+      console.error('Error adding newsletter email to Neon:', error);
       toast({
         title: "Error",
         description: "Failed to add email to newsletter",
@@ -96,21 +107,20 @@ export const useNewsletterEmails = () => {
 
   const updateEmailStatus = async (id: string, status: 'subscribed' | 'unsubscribed') => {
     try {
-      const { error } = await supabase.functions.invoke('neon-newsletter', {
-        body: {
-          action: 'update',
-          id,
-          status
-        }
-      });
+      const sql = getNeonSql();
+      await sql`
+        UPDATE public.newsletter_emails
+        SET status = ${status}, updated_at = NOW()
+        WHERE id = ${id}::uuid OR id = ${id}::text;
+      `;
 
-      if (error) throw error;
-      
       toast({
-        title: "Success",
+        title: "Status Updated",
         description: `Email ${status} successfully`,
       });
+
       await fetchEmails();
+      return { success: true };
     } catch (error) {
       console.error('Error updating email status:', error);
       toast({
@@ -124,22 +134,19 @@ export const useNewsletterEmails = () => {
 
   const deleteEmail = async (id: string) => {
     try {
-      const { error } = await supabase.functions.invoke('neon-newsletter', {
-        body: {
-          action: 'delete',
-          id
-        }
-      });
+      const sql = getNeonSql();
+      await sql`
+        DELETE FROM public.newsletter_emails
+        WHERE id = ${id}::uuid OR id = ${id}::text;
+      `;
 
-      if (error) throw error;
-      
       toast({
         title: "Success",
         description: "Email deleted successfully",
       });
       await fetchEmails();
     } catch (error) {
-      console.error('Error deleting email:', error);
+      console.error('Error deleting email from Neon:', error);
       toast({
         title: "Error",
         description: "Failed to delete email",

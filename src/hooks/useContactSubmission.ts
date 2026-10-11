@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { getNeonSql } from '@/services/neonClient';
 
 export interface ContactSubmissionData {
   name: string;
@@ -18,7 +18,7 @@ export const useContactSubmission = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('Submitting contact with data:', data);
+      console.log('Submitting contact directly to Neon database:', data);
 
       const contactData = {
         name: data.name,
@@ -29,35 +29,71 @@ export const useContactSubmission = () => {
         form_type: data.formType || 'contact'
       };
 
-      // Store in Neon database via edge function
-      const { data: result, error } = await supabase.functions.invoke('neon-contact-submission', {
-        body: contactData
-      });
+      const sql = getNeonSql();
+      const rows = await sql`
+        INSERT INTO public.contact_submissions (
+          name, email, phone, company, message, form_type, created_at
+        )
+        VALUES (
+          ${contactData.name},
+          ${contactData.email},
+          ${contactData.phone},
+          ${contactData.company},
+          ${contactData.message},
+          ${contactData.form_type},
+          NOW()
+        )
+        RETURNING id;
+      `;
 
-      if (error) {
-        console.error('Failed to store contact submission:', error);
-        return { success: false, error: 'Failed to store contact submission' };
-      }
+      const contactId = rows && rows[0] ? rows[0].id : null;
+      console.log('Contact submission stored directly in Neon, ID:', contactId);
 
-      console.log('Contact submission stored successfully');
-
-      // Send email notification
+      // Send email notification via Resend if configured
       try {
-        const { error: emailError } = await supabase.functions.invoke('send-contact-notification', {
-          body: data
-        });
-        
-        if (emailError) {
-          console.error('Failed to send email notification:', emailError);
+        const settings = await sql`
+          SELECT resend_api_key, notification_email, email_notifications_enabled
+          FROM public.site_settings
+          WHERE id = 1;
+        `;
+        const s = settings[0];
+        if (s && s.email_notifications_enabled && s.resend_api_key && s.notification_email) {
+          const recipients = s.notification_email.split(',').map((e: string) => e.trim()).filter(Boolean);
+          if (recipients.length > 0) {
+            await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${s.resend_api_key}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                from: 'AMZ Leads <onboarding@resend.dev>',
+                to: recipients,
+                subject: `New Contact Submission: ${contactData.name}`,
+                html: `
+                  <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <h2>📬 New Contact Message: ${contactData.name}</h2>
+                    <p><strong>Email:</strong> ${contactData.email}</p>
+                    <p><strong>Phone:</strong> ${contactData.phone || 'N/A'}</p>
+                    <p><strong>Company:</strong> ${contactData.company || 'N/A'}</p>
+                    <p><strong>Message:</strong></p>
+                    <blockquote style="background: #f8fafc; padding: 12px; border-left: 4px solid #0284c7; margin: 12px 0;">
+                      ${contactData.message || 'No message provided'}
+                    </blockquote>
+                  </div>
+                `,
+              }),
+            });
+          }
         }
       } catch (emailErr) {
-        console.error('Email notification error:', emailErr);
+        console.warn('Contact email notification error:', emailErr);
       }
 
-      return { success: true, contactId: result?.id };
-    } catch (error) {
+      return { success: true, contactId };
+    } catch (error: any) {
       console.error('Contact submission error:', error);
-      return { success: false, error: 'Failed to store contact submission' };
+      return { success: false, error: error?.message || 'Failed to store contact submission' };
     } finally {
       setIsSubmitting(false);
     }
