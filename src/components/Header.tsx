@@ -476,16 +476,19 @@ export default function Header() {
               <Search className="w-4 h-4" />
             </Link>
 
-            {/* CoPilot Login Button */}
+            {/* CoPilot Login Button - Direct Redirect */}
             <Button
               asChild
               variant="outline"
               className="border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold px-4 h-11 rounded-xl text-sm gap-1.5 transition-colors shadow-2xs hover:bg-blue-50/50"
             >
-              <Link to="/copilot-login" title="Login to AMZ CoPilot">
+              <a 
+                href="https://copilot.amzadscout.com" 
+                title="Login to AMZ CoPilot"
+              >
                 <LogIn className="w-4 h-4 text-blue-600" />
                 <span>CoPilot Login</span>
-              </Link>
+              </a>
             </Button>
 
             <Button
@@ -551,10 +554,10 @@ export default function Header() {
 
           <div className="pt-4 flex flex-col gap-2">
             <Button asChild variant="outline" className="w-full border-slate-300 text-slate-800 font-semibold gap-2">
-              <Link to="/copilot-login">
+              <a href="https://copilot.amzadscout.com">
                 <LogIn className="w-4 h-4 text-blue-600" />
                 <span>CoPilot Login</span>
-              </Link>
+              </a>
             </Button>
             <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
               <Link to={settings.ctaLink || "/contact"}>
