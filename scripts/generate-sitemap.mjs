@@ -45,6 +45,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://www.amzadscout.com";
 const SITEMAP_EXCLUDE = new Set([
   "/home",
+  "/maintenance",
   "/free-audit",
   "/contact-us",
   "/verify-certificate",

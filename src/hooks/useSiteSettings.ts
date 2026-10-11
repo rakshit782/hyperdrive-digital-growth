@@ -26,6 +26,7 @@ export interface SiteSettings {
   footer_email?: string | null;
   footer_address?: string | null;
   logo_settings?: any;
+  maintenance_mode?: boolean;
   updated_at: string | null;
 }
 
@@ -42,6 +43,7 @@ export interface SiteSettingsInput {
   footer_email?: string | null;
   footer_address?: string | null;
   logo_settings?: any;
+  maintenance_mode?: boolean;
 }
 
 export class SiteSettingsRequestError extends Error {
@@ -174,7 +176,7 @@ export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
         rating_value, review_count, review_source_url, rating_visible,
         resend_api_key, notification_email, email_notifications_enabled,
         email_subject_template, email_html_template, footer_email, footer_address,
-        logo_settings, updated_at
+        logo_settings, maintenance_mode, updated_at
       FROM public.site_settings
       WHERE id = 1;
     `;
@@ -198,6 +200,7 @@ export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
         footer_email: r.footer_email ?? null,
         footer_address: r.footer_address ?? null,
         logo_settings: r.logo_settings ?? null,
+        maintenance_mode: r.maintenance_mode === true,
         updated_at: r.updated_at ? new Date(r.updated_at).toISOString() : null,
       };
     }
@@ -219,6 +222,7 @@ export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
     footer_email: null,
     footer_address: null,
     logo_settings: null,
+    maintenance_mode: false,
     updated_at: null,
   };
 }
@@ -235,7 +239,7 @@ export async function saveSiteSettings(
     const existing = await sql`
       SELECT 
         resend_api_key, notification_email, email_subject_template, 
-        email_html_template, footer_email, footer_address, logo_settings
+        email_html_template, footer_email, footer_address, logo_settings, maintenance_mode
       FROM public.site_settings 
       WHERE id = 1;
     `;
@@ -251,7 +255,7 @@ export async function saveSiteSettings(
         id, rating_value, review_count, review_source_url, rating_visible,
         resend_api_key, notification_email, email_notifications_enabled,
         email_subject_template, email_html_template, footer_email, footer_address,
-        logo_settings, updated_at
+        logo_settings, maintenance_mode, updated_at
       )
       VALUES (
         1,
@@ -267,6 +271,7 @@ export async function saveSiteSettings(
         ${payload.footer_email !== undefined ? payload.footer_email : (existingRow?.footer_email ?? null)},
         ${payload.footer_address !== undefined ? payload.footer_address : (existingRow?.footer_address ?? null)},
         ${payload.logo_settings !== undefined ? JSON.stringify(payload.logo_settings) : (existingRow?.logo_settings ?? null)}::jsonb,
+        ${payload.maintenance_mode !== undefined ? payload.maintenance_mode : (existingRow?.maintenance_mode ?? false)},
         now()
       )
       ON CONFLICT (id) DO UPDATE SET
@@ -282,6 +287,7 @@ export async function saveSiteSettings(
         footer_email = COALESCE(EXCLUDED.footer_email, public.site_settings.footer_email),
         footer_address = COALESCE(EXCLUDED.footer_address, public.site_settings.footer_address),
         logo_settings = COALESCE(EXCLUDED.logo_settings, public.site_settings.logo_settings),
+        maintenance_mode = EXCLUDED.maintenance_mode,
         updated_at = now()
       RETURNING *;
     `;

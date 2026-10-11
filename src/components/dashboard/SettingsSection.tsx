@@ -46,8 +46,12 @@ export function SettingsSection({ activeSubSection = "general", onSubSectionChan
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  const [maintenanceMode, setMaintenanceMode] = useState<boolean>(false);
+  const [isSavingMaintenance, setIsSavingMaintenance] = useState<boolean>(false);
+
   useEffect(() => {
     fetchSiteSettings().then((data) => {
+      setMaintenanceMode(data.maintenance_mode === true);
       if (data.footer_email || data.footer_address) {
         setFooterData({
           email: data.footer_email || "info@amzadscout.com",
@@ -64,6 +68,28 @@ export function SettingsSection({ activeSubSection = "general", onSubSectionChan
       }
     }).catch(console.warn);
   }, []);
+
+  const handleToggleMaintenance = async (checked: boolean) => {
+    setMaintenanceMode(checked);
+    setIsSavingMaintenance(true);
+    try {
+      await saveSiteSettings({
+        maintenance_mode: checked,
+      });
+      localStorage.setItem("maintenance_mode", checked ? "true" : "false");
+      window.dispatchEvent(new Event("maintenance-mode-updated"));
+      toast.success(
+        checked 
+          ? "Maintenance mode activated. Visitors will now see the upgrade/maintenance page." 
+          : "Website is now LIVE! Visitors can browse the full agency homepage and all features."
+      );
+    } catch (err: any) {
+      setMaintenanceMode(!checked);
+      toast.error(err.message || "Failed to update maintenance mode status");
+    } finally {
+      setIsSavingMaintenance(false);
+    }
+  };
 
   const saveFooter = async () => {
     try {
@@ -182,6 +208,49 @@ export function SettingsSection({ activeSubSection = "general", onSubSectionChan
         </TabsList>
 
         <TabsContent value="general" className="space-y-6">
+          {/* Website Status & Maintenance Mode Card */}
+          <Card className="border-2 border-primary/20 bg-card/60 backdrop-blur shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-lg">Website Live & Maintenance Status</CardTitle>
+                    <span 
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                        maintenanceMode 
+                          ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700" 
+                          : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700"
+                      }`}
+                    >
+                      {maintenanceMode ? "🚧 Maintenance Page Active" : "🟢 Website is LIVE"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Control whether visitors see the full agency website or the brief upgrade/maintenance placeholder.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Switch
+                    id="maintenance-toggle"
+                    checked={maintenanceMode}
+                    onCheckedChange={handleToggleMaintenance}
+                    disabled={isSavingMaintenance}
+                  />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="p-3.5 rounded-xl bg-muted/40 border text-xs space-y-1.5 text-muted-foreground">
+                <p>
+                  <strong>When switched OFF (Default):</strong> The full public website is accessible to all visitors at <code className="text-foreground font-mono">https://www.amzadscout.com/</code>.
+                </p>
+                <p>
+                  <strong>When switched ON:</strong> Visitors visiting the homepage will see the branded maintenance/upgrade screen with quick email collection and director login.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>

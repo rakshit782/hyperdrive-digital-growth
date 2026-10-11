@@ -12,6 +12,7 @@ import { VisitorTracker } from "./components/VisitorTracker";
 import GlobalTracking from "./components/GlobalTracking";
 import Index from "./pages/Index";
 import Maintenance from "./pages/Maintenance";
+import HomeOrMaintenance from "./pages/HomeOrMaintenance";
 
 // Direct imports for instant loading - no lazy loading
 import About from "./pages/About";
@@ -86,8 +87,9 @@ export function AppContent() {
       <GlobalTracking />
       <VisitorTracker />
       <Routes>
-        <Route path="/" element={<Maintenance />} />
+        <Route path="/" element={<HomeOrMaintenance />} />
         <Route path="/home" element={<Index />} />
+        <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/about" element={<About />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/services/website-development" element={<WebsiteDevelopment />} />
