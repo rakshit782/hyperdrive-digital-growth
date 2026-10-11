@@ -210,10 +210,10 @@ export default function Header() {
 
       {/* 2. MAIN NAVBAR */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between min-h-[96px] py-3">
+        <div className="flex items-center justify-between lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center min-h-[96px] py-3">
           
           {/* Brand Logo with generous padding */}
-          <Link to="/" className="flex flex-col items-start select-none py-2 my-auto group">
+          <Link to="/" className="flex flex-col items-start select-none py-2 my-auto group shrink-0">
             {logoData.imageUrl ? (
               <img 
                 src={logoData.imageUrl} 
@@ -230,8 +230,8 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Desktop Navigation Menu */}
-          <nav className="hidden lg:flex items-center space-x-1 font-medium text-slate-700 text-sm">
+          {/* Desktop Navigation Menu - Symmetrically Centered */}
+          <nav className="hidden lg:flex items-center justify-center space-x-1.5 font-medium text-slate-700 text-sm px-4">
             <Link 
               to="/" 
               className={`px-3.5 py-2 rounded-lg transition-colors hover:text-blue-600 ${
@@ -466,7 +466,7 @@ export default function Header() {
           </nav>
 
           {/* Right Action: Search Icon + CoPilot Login + CTA Button */}
-          <div className="hidden lg:flex items-center gap-2.5">
+          <div className="hidden lg:flex items-center justify-end gap-2.5 shrink-0">
             <Link
               to="/services"
               className="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition-colors"
