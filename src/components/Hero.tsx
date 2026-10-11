@@ -1,6 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { HomepageReviewsBadge } from "@/components/ReviewsBadge";
-import { ArrowRight, Play, Sparkles, TrendingUp, CheckCircle, Users, Award, Zap, Target, BarChart3, Shield } from "lucide-react";
+import { 
+  ArrowRight, 
+  Play, 
+  Sparkles, 
+  TrendingUp, 
+  CheckCircle, 
+  Users, 
+  Zap, 
+  BarChart3, 
+  Shield, 
+  ShoppingCart, 
+  CircleDollarSign, 
+  Check 
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -25,7 +38,7 @@ const Hero = () => {
   const [statsBlocks, setStatsBlocks] = useState<StatBlock[]>([
     { id: "campaigns", number: "50K+", label: "Campaigns Managed", color: "from-blue-400 to-cyan-400" },
     { id: "adspend", number: "$50M+", label: "Ad Spend Managed", color: "from-cyan-400 to-purple-400" },
-    { id: "roi", number: "300%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
+    { id: "roi", number: "~150%", label: "Avg ROI Increase", color: "from-purple-400 to-pink-400" },
     { id: "revenue", number: "$250M+", label: "Revenue Generated", color: "from-pink-400 to-blue-400" }
   ]);
 
@@ -49,7 +62,8 @@ const Hero = () => {
       try {
         const parsedData = JSON.parse(savedStats);
         if (Array.isArray(parsedData)) {
-          setStatsBlocks(parsedData);
+          const updated = parsedData.map(stat => stat.id === 'roi' && stat.number === '300%' ? { ...stat, number: '~150%' } : stat);
+          setStatsBlocks(updated);
         }
       } catch (error) {
         console.log("Failed to parse stats data:", error);
@@ -155,89 +169,222 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Right Graphics */}
+            {/* Right Graphics - Performance Dashboard Mockup matching Image 1 */}
             <div className="relative">
-              {/* Main Visual Element */}
-              <div className="relative bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 shadow-2xl border border-gray-200/50 backdrop-blur-sm">
-                {/* Dashboard Mockup */}
-                <div className="space-y-6">
-                  {/* Header */}
-                  <div className="flex items-center justify-between pb-4 border-b border-gray-200">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg"></div>
-                      <span className="font-semibold text-gray-900">Performance Dashboard</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                      <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                    </div>
-                  </div>
+              {/* Background ambient glows & decorative elements */}
+              <div className="absolute -top-12 -right-12 w-96 h-96 bg-blue-400/15 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-10 -left-10 w-80 h-80 bg-purple-400/15 rounded-full blur-3xl pointer-events-none" />
 
-                  {/* Metrics Cards */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <BarChart3 className="w-4 h-4 text-blue-600" />
-                        <span className="text-sm font-medium text-blue-900">ROAS</span>
-                      </div>
-                      <div className="text-2xl font-bold text-blue-900">4.2x</div>
-                      <div className="text-xs text-blue-600">+127% vs last month</div>
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Target className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-900">Revenue</span>
-                      </div>
-                      <div className="text-2xl font-bold text-green-900">$89K</div>
-                      <div className="text-xs text-green-600">+89% growth</div>
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Users className="w-4 h-4 text-purple-600" />
-                        <span className="text-sm font-medium text-purple-900">Conversions</span>
-                      </div>
-                      <div className="text-2xl font-bold text-purple-900">2.4K</div>
-                      <div className="text-xs text-purple-600">+156% increase</div>
-                    </div>
-                    
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Award className="w-4 h-4 text-orange-600" />
-                        <span className="text-sm font-medium text-orange-900">AOV</span>
-                      </div>
-                      <div className="text-2xl font-bold text-orange-900">$156</div>
-                      <div className="text-xs text-orange-600">+23% higher</div>
-                    </div>
-                  </div>
-
-                  {/* Success Indicator */}
-                  <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-4 rounded-xl text-white">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-6 h-6" />
-                      <div>
-                        <div className="font-semibold">Campaign Optimized</div>
-                        <div className="text-sm opacity-90">Your ads are performing 300% better</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Elements */}
-                <div className="absolute -top-4 -right-4 w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                
-                <div className="absolute -bottom-4 -left-4 w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center shadow-lg" style={{ animation: 'pulse 2s infinite' }}>
-                  <TrendingUp className="w-5 h-5 text-white" />
-                </div>
+              {/* Ambient Dot Matrix patterns */}
+              <div className="absolute -left-6 top-1/4 hidden sm:grid grid-cols-4 gap-2 opacity-30 pointer-events-none" aria-hidden="true">
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                ))}
+              </div>
+              <div className="absolute -right-6 bottom-1/4 hidden sm:grid grid-cols-4 gap-2 opacity-30 pointer-events-none" aria-hidden="true">
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                ))}
               </div>
 
-              {/* Background decorative elements */}
-              <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-60 blur-xl"></div>
-              <div className="absolute -bottom-8 -right-8 w-20 h-20 bg-gradient-to-r from-purple-200 to-pink-200 rounded-full opacity-60 blur-xl"></div>
+              {/* Top-Right Ambient Connected Line with Node */}
+              <svg 
+                className="absolute -top-8 -right-6 w-44 h-44 pointer-events-none text-blue-400/35 overflow-visible hidden sm:block" 
+                viewBox="0 0 150 150" 
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M 0 110 Q 60 70 115 35 T 160 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="115" cy="35" r="9" fill="#93c5fd" fillOpacity="0.35" />
+                <circle cx="115" cy="35" r="5" fill="#3b82f6" />
+              </svg>
+
+              {/* Main Visual Element: Clean White Dashboard Card */}
+              <div className="relative bg-white rounded-[28px] sm:rounded-[32px] p-6 sm:p-8 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.03)] border border-slate-100/90 backdrop-blur-sm z-10">
+                
+                {/* Header */}
+                <div className="flex items-center justify-between pb-6">
+                  <div className="flex items-center gap-3.5">
+                    {/* Rounded App Icon */}
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-md shadow-blue-500/25 shrink-0">
+                      <div className="flex items-end gap-1 h-5">
+                        <div className="w-1.5 h-2.5 bg-white rounded-full opacity-80" />
+                        <div className="w-1.5 h-4 bg-white rounded-full" />
+                        <div className="w-1.5 h-5 bg-white rounded-full" />
+                      </div>
+                    </div>
+                    <h3 className="font-bold text-slate-800 text-lg sm:text-xl tracking-tight">
+                      Performance Dashboard
+                    </h3>
+                  </div>
+
+                  {/* Window Control Dots: Blue, Purple, Teal/Mint */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-indigo-600" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-purple-400" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-300" />
+                  </div>
+                </div>
+
+                {/* 2x2 Metrics Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                  
+                  {/* 1. ROAS Card */}
+                  <div className="bg-slate-50/50 hover:bg-slate-50 border border-slate-100/90 rounded-2xl p-4 sm:p-5 flex items-center justify-between transition-colors">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-blue-100/70 flex items-center justify-center shrink-0">
+                        <BarChart3 className="w-6 h-6 text-blue-600 stroke-[2]" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-medium text-slate-500 tracking-wide mb-0.5">ROAS</div>
+                        <div className="text-2xl sm:text-[26px] font-bold text-slate-800 tracking-tight leading-none mb-1">6.5x</div>
+                        <div className="text-[11px] sm:text-xs font-medium text-emerald-600 flex items-center gap-1">
+                          <span>↗</span>
+                          <span>+127%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="shrink-0 pl-2">
+                      <svg viewBox="0 0 100 48" className="w-20 sm:w-24 h-11 overflow-visible" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="roasGradHero" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.32" />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+                        <path d="M 0 38 Q 20 42 35 30 T 68 20 T 96 8 L 96 48 L 0 48 Z" fill="url(#roasGradHero)" />
+                        <path d="M 0 38 Q 20 42 35 30 T 68 20 T 96 8" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" />
+                        <circle cx="96" cy="8" r="3.5" fill="#2563eb" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* 2. Revenue Card */}
+                  <div className="bg-slate-50/50 hover:bg-slate-50 border border-slate-100/90 rounded-2xl p-4 sm:p-5 flex items-center justify-between transition-colors">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-100/70 flex items-center justify-center shrink-0">
+                        <CircleDollarSign className="w-6 h-6 text-emerald-600 stroke-[2]" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-medium text-slate-500 tracking-wide mb-0.5">Revenue</div>
+                        <div className="text-2xl sm:text-[26px] font-bold text-slate-800 tracking-tight leading-none mb-1">$250K</div>
+                        <div className="text-[11px] sm:text-xs font-medium text-emerald-600 flex items-center gap-1">
+                          <span>↗</span>
+                          <span>+89%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="shrink-0 pl-2">
+                      <svg viewBox="0 0 100 48" className="w-20 sm:w-24 h-11 overflow-visible" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="revGradHero" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#10b981" stopOpacity="0.32" />
+                            <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+                        <path d="M 0 42 Q 18 36 34 28 T 68 18 T 96 8 L 96 48 L 0 48 Z" fill="url(#revGradHero)" />
+                        <path d="M 0 42 Q 18 36 34 28 T 68 18 T 96 8" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" />
+                        <circle cx="96" cy="8" r="3.5" fill="#059669" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* 3. CVR Card */}
+                  <div className="bg-slate-50/50 hover:bg-slate-50 border border-slate-100/90 rounded-2xl p-4 sm:p-5 flex items-center justify-between transition-colors">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-purple-100/70 flex items-center justify-center shrink-0">
+                        <Users className="w-6 h-6 text-purple-600 stroke-[2]" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-medium text-slate-500 tracking-wide mb-0.5">CVR</div>
+                        <div className="text-2xl sm:text-[26px] font-bold text-slate-800 tracking-tight leading-none mb-1">18%</div>
+                        <div className="text-[11px] sm:text-xs font-medium text-emerald-600 flex items-center gap-1">
+                          <span>↗</span>
+                          <span>+156%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="shrink-0 pl-2">
+                      <svg viewBox="0 0 100 48" className="w-20 sm:w-24 h-11 overflow-visible" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="convGradHero" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.32" />
+                            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+                        <path d="M 0 38 Q 20 44 38 32 T 70 24 T 96 10 L 96 48 L 0 48 Z" fill="url(#convGradHero)" />
+                        <path d="M 0 38 Q 20 44 38 32 T 70 24 T 96 10" fill="none" stroke="#8b5cf6" strokeWidth="2.5" strokeLinecap="round" />
+                        <circle cx="96" cy="10" r="3.5" fill="#7c3aed" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* 4. AOV Card */}
+                  <div className="bg-slate-50/50 hover:bg-slate-50 border border-slate-100/90 rounded-2xl p-4 sm:p-5 flex items-center justify-between transition-colors">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-100/70 flex items-center justify-center shrink-0">
+                        <ShoppingCart className="w-6 h-6 text-amber-600 stroke-[2]" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-medium text-slate-500 tracking-wide mb-0.5">AOV</div>
+                        <div className="text-2xl sm:text-[26px] font-bold text-slate-800 tracking-tight leading-none mb-1">$225</div>
+                        <div className="text-[11px] sm:text-xs font-medium text-emerald-600 flex items-center gap-1">
+                          <span>↗</span>
+                          <span>+23%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="shrink-0 pl-2">
+                      <svg viewBox="0 0 100 48" className="w-20 sm:w-24 h-11 overflow-visible" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="aovGradHero" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.32" />
+                            <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+                        <path d="M 0 42 Q 22 40 38 30 T 72 20 T 96 10 L 96 48 L 0 48 Z" fill="url(#aovGradHero)" />
+                        <path d="M 0 42 Q 22 40 38 30 T 72 20 T 96 10" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+                        <circle cx="96" cy="10" r="3.5" fill="#d97706" />
+                      </svg>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Bottom Banner: Campaign Optimized */}
+                <div className="bg-gradient-to-r from-emerald-50/90 via-emerald-50/60 to-teal-50/40 border border-emerald-100/90 rounded-2xl p-4 sm:p-5 flex items-center justify-between relative overflow-hidden">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/25 shrink-0">
+                      <Check className="w-6 h-6 stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-slate-800 text-base tracking-tight">
+                        Campaign Optimized
+                      </div>
+                      <div className="text-xs sm:text-sm text-slate-600">
+                        Active campaigns optimized for peak performance.
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mint Graphic Bars */}
+                  <div className="flex items-end gap-1.5 h-8 pr-2 opacity-50 shrink-0" aria-hidden="true">
+                    <div className="w-2 h-3.5 bg-emerald-400 rounded-sm" />
+                    <div className="w-2 h-5 bg-emerald-400 rounded-sm" />
+                    <div className="w-2 h-7 bg-emerald-400 rounded-sm" />
+                    <div className="w-2 h-8 bg-emerald-500 rounded-sm" />
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Floating Bottom-Left 3D Squircle Badge */}
+              <div 
+                className="absolute -bottom-5 -left-5 sm:-bottom-6 sm:-left-6 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 via-indigo-400 to-purple-400 shadow-xl shadow-indigo-500/30 rotate-[-12deg] flex items-center justify-center z-20"
+                aria-hidden="true"
+              >
+                <TrendingUp className="w-7 h-7 sm:w-8 sm:h-8 text-white stroke-[2.5]" />
+              </div>
             </div>
           </div>
           

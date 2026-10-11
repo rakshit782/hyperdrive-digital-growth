@@ -192,16 +192,12 @@ fs.writeFileSync(path.join(DIST, 'spa.html'), spa);
 written.push('spa.html');
 console.log('wrote dist/spa.html');
 
-const pricing = fs.readFileSync(path.join(DIST, 'pricing', 'index.html'), 'utf8');
 const home = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8');
 const listing = fs.readFileSync(path.join(DIST, 'services', 'listing-optimization', 'index.html'), 'utf8');
 const verify = fs.readFileSync(path.join(DIST, 'verify-certificate', 'index.html'), 'utf8');
 const spaHtml = fs.readFileSync(path.join(DIST, 'spa.html'), 'utf8');
 
-assert(pricing.includes('$499'), '/pricing HTML does not contain $499');
-assert(pricing.includes('https://www.amzadscout.com/pricing'), '/pricing is missing the www canonical');
-assert(/<title[^>]*>[^<]*Pricing[^<]*<\/title>/i.test(pricing), '/pricing title is not pricing-specific');
-assert(!pricing.includes('name="keywords"') && !home.includes('name="keywords"'), 'meta keywords was emitted');
+assert(!home.includes('name="keywords"'), 'meta keywords was emitted');
 assert(home.includes('https://www.amzadscout.com/'), '/ is missing the www canonical');
 assert(listing.includes('https://www.amzadscout.com/services/listing-optimization'), 'listing page canonical');
 assert(listing.includes('<h1'), 'listing page H1');

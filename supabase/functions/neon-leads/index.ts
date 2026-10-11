@@ -12,9 +12,10 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { action, limit = 100 } = await req.json();
+    const body = await req.json();
+    const { action, limit = 100, id } = body;
 
-    console.log("Leads operation:", { action, limit });
+    console.log("Leads operation:", { action, limit, id });
 
     // Connect to Neon
     const client = new Client(Deno.env.get("NEON_DATABASE_URL")!);
@@ -40,6 +41,36 @@ serve(async (req: Request) => {
 
         return new Response(
           JSON.stringify({ leads: result.rows }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      } else if (action === "delete") {
+        const idsToDelete: string[] = Array.isArray(body.ids)
+          ? body.ids
+          : id
+          ? [id]
+          : [];
+
+        if (idsToDelete.length === 0) {
+          await client.end();
+          return new Response(
+            JSON.stringify({ error: "Lead ID or IDs array is required for deletion" }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        await client.queryArray(
+          `DELETE FROM leads WHERE id = ANY($1::uuid[])`,
+          [idsToDelete]
+        );
+
+        await client.end();
+
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            deletedCount: idsToDelete.length,
+            message: `${idsToDelete.length} lead(s) deleted successfully` 
+          }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       } else {

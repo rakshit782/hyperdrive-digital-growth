@@ -1,361 +1,339 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { AlertCircle, CheckCircle } from 'lucide-react';
-
-interface TrackingScript {
-  id: string;
-  name: string;
-  description: string;
-  enabled: boolean;
-  trackingId: string;
-  scriptTemplate: string;
-}
-
-const defaultTrackingScripts: TrackingScript[] = [
-  {
-    id: 'ga4',
-    name: 'Google Analytics 4 (GA4)',
-    description: 'Track website traffic and user behavior',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{TRACKING_ID}}"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', '{{TRACKING_ID}}');
-</script>`
-  },
-  {
-    id: 'gtm',
-    name: 'Google Tag Manager (GTM)',
-    description: 'Manage all your website tags in one place',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','{{TRACKING_ID}}');</script>`
-  },
-  {
-    id: 'clarity',
-    name: 'Microsoft Clarity',
-    description: 'Session recordings and heatmaps',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- Microsoft Clarity -->
-<script type="text/javascript">
-(function(c,l,a,r,i,t,y){
-    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-})(window, document, "clarity", "script", "{{TRACKING_ID}}");
-</script>`
-  },
-  {
-    id: 'hotjar',
-    name: 'Hotjar',
-    description: 'Behavior analytics and user feedback',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- Hotjar Tracking Code -->
-<script>
-(function(h,o,t,j,a,r){
-    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-    h._hjSettings={hjid:{{TRACKING_ID}},hjsv:6};
-    a=o.getElementsByTagName('head')[0];
-    r=o.createElement('script');r.async=1;
-    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-    a.appendChild(r);
-})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-</script>`
-  },
-  {
-    id: 'google-ads',
-    name: 'Google Ads Conversion',
-    description: 'Track conversions from Google Ads',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- Google Ads Conversion -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{TRACKING_ID}}"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', '{{TRACKING_ID}}');
-</script>`
-  },
-  {
-    id: 'meta-pixel',
-    name: 'Meta Pixel (Facebook)',
-    description: 'Track conversions from Facebook ads',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '{{TRACKING_ID}}');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id={{TRACKING_ID}}&ev=PageView&noscript=1"
-/></noscript>`
-  },
-  {
-    id: 'linkedin',
-    name: 'LinkedIn Insight Tag',
-    description: 'Track conversions from LinkedIn ads',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- LinkedIn Insight Tag -->
-<script type="text/javascript">
-_linkedin_partner_id = "{{TRACKING_ID}}";
-window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
-window._linkedin_data_partner_ids.push(_linkedin_partner_id);
-</script><script type="text/javascript">
-(function(l) {
-if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
-window.lintrk.q=[]}
-var s = document.getElementsByTagName("script")[0];
-var b = document.createElement("script");
-b.type = "text/javascript";b.async = true;
-b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
-s.parentNode.insertBefore(b, s);})(window.lintrk);
-</script>
-<noscript>
-<img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid={{TRACKING_ID}}&fmt=gif" />
-</noscript>`
-  },
-  {
-    id: 'twitter-pixel',
-    name: 'Twitter/X Pixel',
-    description: 'Track conversions from Twitter ads',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- Twitter Pixel -->
-<script>
-!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
-},s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='https://static.ads-twitter.com/uwt.js',
-a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
-twq('config','{{TRACKING_ID}}');
-</script>`
-  },
-  {
-    id: 'pinterest',
-    name: 'Pinterest Tag',
-    description: 'Track conversions from Pinterest ads',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- Pinterest Tag -->
-<script>
-!function(e){if(!window.pintrk){window.pintrk = function () {
-window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var
-  n=window.pintrk;n.queue=[],n.version="3.0";var
-  t=document.createElement("script");t.async=!0,t.src=e;var
-  r=document.getElementsByTagName("script")[0];
-  r.parentNode.insertBefore(t,r)}}("https://s.pinimg.com/ct/core.js");
-pintrk('load', '{{TRACKING_ID}}', {em: '<user_email_address>'});
-pintrk('page');
-</script>
-<noscript>
-<img height="1" width="1" style="display:none;" alt=""
-  src="https://ct.pinterest.com/v3/?event=init&tid={{TRACKING_ID}}&pd[em]=<hashed_email_address>&noscript=1" />
-</noscript>`
-  },
-  {
-    id: 'tiktok',
-    name: 'TikTok Pixel',
-    description: 'Track conversions from TikTok ads',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- TikTok Pixel Code -->
-<script>
-!function (w, d, t) {
-  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
-  ttq.load('{{TRACKING_ID}}');
-  ttq.page();
-}(window, document, 'ttq');
-</script>`
-  },
-  {
-    id: 'snapchat',
-    name: 'Snapchat Pixel',
-    description: 'Track conversions from Snapchat ads',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- Snap Pixel Code -->
-<script type='text/javascript'>
-(function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
-{a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
-a.queue=[];var s='script';r=t.createElement(s);r.async=!0;
-r.src=n;var u=t.getElementsByTagName(s)[0];
-u.parentNode.insertBefore(r,u);})(window,document,
-'https://sc-static.net/scevent.min.js');
-snaptr('init', '{{TRACKING_ID}}', {
-'user_email': '__INSERT_USER_EMAIL__'
-});
-snaptr('track', 'PAGE_VIEW');
-</script>`
-  },
-  {
-    id: 'hubspot',
-    name: 'HubSpot Tracking Code',
-    description: 'Track visitors and form submissions',
-    enabled: false,
-    trackingId: '',
-    scriptTemplate: `<!-- HubSpot Tracking Code -->
-<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/{{TRACKING_ID}}.js"></script>`
-  }
-];
+import { 
+  CheckCircle, 
+  AlertCircle, 
+  Download, 
+  RefreshCw, 
+  FileText, 
+  Globe, 
+  ExternalLink,
+  Code,
+  ShieldCheck,
+  Network
+} from 'lucide-react';
+import { trackingManager, TrackerSetting } from '@/services/trackingManager';
+import { parseSitemapXml, buildSitemapHierarchy, SitemapNode } from '@/utils/sitemapParser';
+import { SitemapFlowChart } from './SitemapFlowChart';
 
 export function TrackingSection() {
-  const [trackingScripts, setTrackingScripts] = useState<TrackingScript[]>([]);
+  const [trackers, setTrackers] = useState<TrackerSetting[]>(() => trackingManager.getTrackers());
+  const [sitemapXml, setSitemapXml] = useState<string>('');
+  const [robotsTxt, setRobotsTxt] = useState<string>('');
+  const [sitemapLoading, setSitemapLoading] = useState<boolean>(true);
+  const [parsedUrls, setParsedUrls] = useState<{ url: string; lastmod?: string }[]>([]);
+  const [sitemapTree, setSitemapTree] = useState<SitemapNode | null>(null);
+
+  // Load sitemap and robots from public folder
+  const loadSeoFiles = async () => {
+    setSitemapLoading(true);
+    try {
+      const [sitemapRes, robotsRes] = await Promise.all([
+        fetch('/sitemap.xml?t=' + Date.now()),
+        fetch('/robots.txt?t=' + Date.now()),
+      ]);
+
+      if (sitemapRes.ok) {
+        const text = await sitemapRes.text();
+        setSitemapXml(text);
+        const parsed = parseSitemapXml(text);
+        setParsedUrls(parsed);
+        setSitemapTree(buildSitemapHierarchy(parsed));
+      }
+
+      if (robotsRes.ok) {
+        const rText = await robotsRes.text();
+        setRobotsTxt(rText);
+      }
+    } catch (err) {
+      console.warn('Could not fetch live sitemap or robots:', err);
+    } finally {
+      setSitemapLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Load saved tracking scripts from localStorage
-    const saved = localStorage.getItem('trackingScripts');
-    if (saved) {
-      try {
-        setTrackingScripts(JSON.parse(saved));
-      } catch (error) {
-        console.error('Error loading tracking scripts:', error);
-        setTrackingScripts(defaultTrackingScripts);
-      }
-    } else {
-      setTrackingScripts(defaultTrackingScripts);
-    }
+    loadSeoFiles();
   }, []);
 
-  const saveTrackingScripts = (scripts: TrackingScript[]) => {
-    localStorage.setItem('trackingScripts', JSON.stringify(scripts));
-    setTrackingScripts(scripts);
-    
-    // Dispatch custom event to notify TrackingScriptInjector
-    window.dispatchEvent(new CustomEvent('trackingScriptsUpdated', { detail: scripts }));
-    
-    toast.success('Tracking scripts updated successfully');
-  };
-
   const handleToggle = (id: string, enabled: boolean) => {
-    const updated = trackingScripts.map(script =>
-      script.id === id ? { ...script, enabled } : script
-    );
-    saveTrackingScripts(updated);
+    const updated = trackers.map((t) => (t.id === id ? { ...t, enabled } : t));
+    setTrackers(updated);
+    trackingManager.saveTrackers(updated);
+    toast.success(`${enabled ? 'Enabled' : 'Disabled'} tracker`);
   };
 
-  const handleTrackingIdChange = (id: string, trackingId: string) => {
-    const updated = trackingScripts.map(script =>
-      script.id === id ? { ...script, trackingId } : script
-    );
-    setTrackingScripts(updated);
+  const handleIdChange = (id: string, trackingId: string) => {
+    const updated = trackers.map((t) => (t.id === id ? { ...t, trackingId } : t));
+    setTrackers(updated);
   };
 
-  const handleSave = () => {
-    // Process scripts and inject them into the page
-    const activeScripts = trackingScripts
-      .filter(script => script.enabled && script.trackingId)
-      .map(script => ({
-        id: script.id,
-        name: script.name,
-        script: script.scriptTemplate.replace(/{{TRACKING_ID}}/g, script.trackingId),
-        location: 'head' as const,
-        pages: 'all' as const,
-        selectedPages: [],
-        isActive: true
-      }));
+  const handleSaveTrackers = () => {
+    trackingManager.saveTrackers(trackers);
+    toast.success('All tracker IDs and configurations saved successfully!');
+  };
 
-    localStorage.setItem('activeTrackingScripts', JSON.stringify(activeScripts));
-    saveTrackingScripts(trackingScripts);
+  // Download Sitemap file
+  const downloadSitemap = () => {
+    if (!sitemapXml) {
+      toast.error('Sitemap content not loaded');
+      return;
+    }
+    const blob = new Blob([sitemapXml], { type: 'application/xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sitemap.xml';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Downloaded sitemap.xml');
+  };
+
+  // Download Robots.txt file
+  const downloadRobots = () => {
+    if (!robotsTxt) {
+      toast.error('Robots.txt content not loaded');
+      return;
+    }
+    const blob = new Blob([robotsTxt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'robots.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Downloaded robots.txt');
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">Tracking Scripts</h2>
-        <p className="text-muted-foreground">
-          Manage all your tracking and analytics scripts. Scripts are loaded asynchronously to maintain optimal performance.
+        <h2 className="text-3xl font-bold tracking-tight text-foreground mb-1">
+          Tracking & Search Console Management
+        </h2>
+        <p className="text-muted-foreground text-sm">
+          Enable or disable conversion pixels and tracking IDs in real-time, view your live sitemap flowchart, and download sitemap.xml and robots.txt.
         </p>
       </div>
 
-      <div className="grid gap-4">
-        {trackingScripts.map((script) => (
-          <Card key={script.id}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="flex items-center gap-2">
-                    {script.name}
-                    {script.enabled && script.trackingId && (
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                    )}
-                    {script.enabled && !script.trackingId && (
-                      <AlertCircle className="h-4 w-4 text-yellow-500" />
-                    )}
-                  </CardTitle>
-                  <CardDescription>{script.description}</CardDescription>
+      <Tabs defaultValue="trackers" className="w-full">
+        <TabsList className="grid grid-cols-3 max-w-lg">
+          <TabsTrigger value="trackers" className="flex items-center gap-2">
+            <Code className="h-4 w-4" />
+            <span>Trackers & Pixels</span>
+          </TabsTrigger>
+          <TabsTrigger value="sitemap" className="flex items-center gap-2">
+            <Network className="h-4 w-4" />
+            <span>Sitemap Flow Chart</span>
+          </TabsTrigger>
+          <TabsTrigger value="search-console" className="flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            <span>GSC & Robots.txt</span>
+          </TabsTrigger>
+        </TabsList>
+
+        {/* TAB 1: TRACKERS & PIXELS */}
+        <TabsContent value="trackers" className="space-y-6 mt-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            {trackers.map((script) => (
+              <Card 
+                key={script.id} 
+                className={`transition-all border ${
+                  script.enabled ? 'border-blue-200/90 shadow-xs bg-white' : 'border-slate-200 bg-slate-50/50 opacity-80'
+                }`}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <CardTitle className="text-base font-semibold">{script.name}</CardTitle>
+                        {script.enabled && script.trackingId ? (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[11px] gap-1">
+                            <CheckCircle className="h-3 w-3" /> Active
+                          </Badge>
+                        ) : script.enabled && !script.trackingId ? (
+                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[11px] gap-1">
+                            <AlertCircle className="h-3 w-3" /> ID Required
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-slate-100 text-slate-500 text-[11px]">
+                            Disabled
+                          </Badge>
+                        )}
+                      </div>
+                      <CardDescription className="text-xs line-clamp-2">
+                        {script.description}
+                      </CardDescription>
+                    </div>
+                    <Switch
+                      checked={script.enabled}
+                      onCheckedChange={(checked) => handleToggle(script.id, checked)}
+                    />
+                  </div>
+                </CardHeader>
+
+                <CardContent className="pt-0">
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`tracking-${script.id}`} className="text-xs text-slate-600 font-medium">
+                      Tracking / Measurement ID
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id={`tracking-${script.id}`}
+                        placeholder={script.defaultId ? `Default: ${script.defaultId}` : 'Enter ID (e.g. AW-123456)'}
+                        value={script.trackingId}
+                        onChange={(e) => handleIdChange(script.id, e.target.value)}
+                        disabled={!script.enabled}
+                        className="text-xs h-9 font-mono"
+                      />
+                      {script.defaultId && script.trackingId !== script.defaultId && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs h-9 text-slate-500"
+                          onClick={() => handleIdChange(script.id, script.defaultId)}
+                        >
+                          Reset
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-blue-50/60 rounded-xl border border-blue-100">
+            <div className="flex items-center gap-2 text-xs text-blue-900">
+              <ShieldCheck className="h-4 w-4 text-blue-600 shrink-0" />
+              <span>Trackers apply dynamically across all front-end pages and automatically update SPA routes.</span>
+            </div>
+            <Button onClick={handleSaveTrackers} className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
+              Save All Changes
+            </Button>
+          </div>
+        </TabsContent>
+
+        {/* TAB 2: SITEMAP FLOW CHART */}
+        <TabsContent value="sitemap" className="space-y-6 mt-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white border border-slate-200 rounded-xl shadow-xs">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <Network className="h-5 w-5 text-blue-600" />
+                Live Architecture Sitemap Tree
+              </h3>
+              <p className="text-xs text-slate-500">
+                Visualizing all {parsedUrls.length} canonical URLs recognized by Google Search Console.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={loadSeoFiles} className="gap-1.5 text-xs">
+                <RefreshCw className={`h-3.5 w-3.5 ${sitemapLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button size="sm" onClick={downloadSitemap} className="gap-1.5 text-xs bg-slate-900 text-white">
+                <Download className="h-3.5 w-3.5" />
+                Download sitemap.xml
+              </Button>
+            </div>
+          </div>
+
+          {sitemapTree ? (
+            <SitemapFlowChart rootNode={sitemapTree} totalUrls={parsedUrls.length} />
+          ) : (
+            <div className="p-12 text-center text-slate-400">Loading sitemap architecture...</div>
+          )}
+        </TabsContent>
+
+        {/* TAB 3: SEARCH CONSOLE & ROBOTS.TXT */}
+        <TabsContent value="search-console" className="space-y-6 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Sitemap Card */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <CardTitle className="text-base">Google Search Console Sitemap</CardTitle>
+                      <CardDescription className="text-xs">
+                        {parsedUrls.length} URLs generated automatically
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={downloadSitemap} className="gap-1 text-xs">
+                    <Download className="h-3.5 w-3.5" /> XML
+                  </Button>
                 </div>
-                <Switch
-                  checked={script.enabled}
-                  onCheckedChange={(checked) => handleToggle(script.id, checked)}
-                />
-              </div>
-            </CardHeader>
-            {script.enabled && (
-              <CardContent>
-                <div className="space-y-2">
-                  <Label htmlFor={`tracking-${script.id}`}>
-                    Tracking ID / Measurement ID
-                  </Label>
-                  <Input
-                    id={`tracking-${script.id}`}
-                    placeholder={`Enter your ${script.name} ID`}
-                    value={script.trackingId}
-                    onChange={(e) => handleTrackingIdChange(script.id, e.target.value)}
-                  />
-                  {script.enabled && !script.trackingId && (
-                    <p className="text-sm text-yellow-600">
-                      Please enter a tracking ID to activate this script
-                    </p>
-                  )}
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 text-xs font-mono break-all flex items-center justify-between">
+                  <span>https://www.amzadscout.com/sitemap.xml</span>
+                  <a 
+                    href="/sitemap.xml" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="text-blue-600 hover:text-blue-800 ml-2"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Whenever new services or pages are registered, the sitemap is rebuilt and updated to keep Google Search Console synchronized.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Robots.txt Card */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-emerald-600" />
+                    <div>
+                      <CardTitle className="text-base">Crawler Instructions (robots.txt)</CardTitle>
+                      <CardDescription className="text-xs">
+                        Directs Googlebot and AI crawlers
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={downloadRobots} className="gap-1 text-xs">
+                    <Download className="h-3.5 w-3.5" /> TXT
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 text-xs font-mono max-h-36 overflow-y-auto whitespace-pre">
+                  {robotsTxt || 'User-agent: *\nAllow: /\nDisallow: /dashboard\nSitemap: https://www.amzadscout.com/sitemap.xml'}
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Direct link: /robots.txt</span>
+                  <a 
+                    href="/robots.txt" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                  >
+                    Open <ExternalLink className="h-3 w-3" />
+                  </a>
                 </div>
               </CardContent>
-            )}
-          </Card>
-        ))}
-      </div>
-
-      <div className="flex justify-end">
-        <Button onClick={handleSave} size="lg">
-          Save All Changes
-        </Button>
-      </div>
-
-      <Card className="bg-muted/50">
-        <CardHeader>
-          <CardTitle className="text-lg">Performance Note</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            All tracking scripts are loaded asynchronously and optimized to minimize impact on your website's loading speed.
-            Scripts are injected after the main content loads to ensure the best user experience.
-          </p>
-        </CardContent>
-      </Card>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
+export default TrackingSection;

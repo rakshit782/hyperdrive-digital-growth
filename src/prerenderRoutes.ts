@@ -30,7 +30,6 @@ export const publicRoutes: string[] = [
   '/contact',
   '/contact-us',
   '/free-audit',
-  '/pricing',
   '/blog',
   '/privacy',
   '/terms',

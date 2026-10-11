@@ -1,55 +1,33 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, TrendingUp, Sparkles } from "lucide-react";
 import CaseStudyPopup from "./CaseStudyPopup";
+import { allBulkCaseStudies, FormattedCaseStudy } from "@/data/bulkCaseStudiesAdapter";
 
 const CaseStudies = () => {
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<any>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const caseStudies = [
-    {
-      id: "1",
-      title: "E-commerce Growth Strategy",
-      client_name: "TechStore Inc.",
-      description: "Increased online sales by 300% through strategic digital marketing campaigns and conversion optimization.",
-      results: {
-        "sales_increase": "300%",
-        "conversion_rate": "45%",
-        "roi": "250%"
-      },
-      industry: "E-commerce"
-    },
-    {
-      id: "2",
-      title: "Brand Awareness Campaign",
-      client_name: "Fashion Forward",
-      description: "Built brand recognition and customer engagement across multiple channels with targeted social media strategy.",
-      results: {
-        "brand_reach": "250%",
-        "engagement_rate": "180%",
-        "followers": "500K+"
-      },
-      industry: "Fashion"
-    },
-    {
-      id: "3",
-      title: "Local Business Optimization",
-      client_name: "Downtown Café",
-      description: "Transformed local presence and increased foot traffic through targeted local SEO and marketing campaigns.",
-      results: {
-        "foot_traffic": "180%",
-        "local_searches": "220%",
-        "revenue": "165%"
-      },
-      industry: "Food & Beverage"
-    }
-  ];
+  // Take top 6 representative case studies from the uploaded dataset
+  const displayStudies = allBulkCaseStudies.slice(0, 6);
 
-  const handleCaseStudyClick = (caseStudy: any) => {
-    setSelectedCaseStudy(caseStudy);
+  const handleCaseStudyClick = (study: FormattedCaseStudy) => {
+    setSelectedCaseStudy({
+      id: study.id,
+      title: study.title,
+      description: study.description,
+      industry: study.industry,
+      client_name: study.client_name,
+      image_url: study.imageUrl,
+      results: {
+        [study.results.metric1.label]: study.results.metric1.value,
+        [study.results.metric2.label]: study.results.metric2.value,
+        [study.results.metric3.label]: study.results.metric3.value,
+      },
+    });
     setIsPopupOpen(true);
   };
 
@@ -72,33 +50,48 @@ const CaseStudies = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {caseStudies.map((study, index) => (
-              <Card key={study.id} className="group hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl">{study.title}</CardTitle>
-                  <CardDescription className="text-blue-600 font-medium">{study.client_name}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">{study.description}</p>
-                  
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 mb-4 border border-green-100">
-                    <div className="grid grid-cols-1 gap-2">
-                      {Object.entries(study.results).slice(0, 2).map(([key, value]) => (
-                        <div key={key} className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600 capitalize flex items-center gap-1">
-                            <CheckCircle className="w-3 h-3 text-green-500" />
-                            {key.replace(/_/g, ' ')}
-                          </span>
-                          <span className="text-green-600 font-semibold">{String(value)}</span>
-                        </div>
-                      ))}
+            {displayStudies.map((study) => (
+              <Card key={study.id} className="group hover:shadow-xl transition-all border-slate-200/90 overflow-hidden flex flex-col justify-between">
+                  <CardHeader>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">
+                          {study.industry}
+                        </span>
+                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">
+                          {study.client_name}
+                        </span>
+                      </div>
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+                        {study.channel}
+                      </span>
                     </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-sm text-gray-500">{study.industry}</span>
-                  </div>
-                  
+                    <CardTitle className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                      {study.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-slate-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                      {study.challenge}
+                    </p>
+                    
+                    <div className="grid grid-cols-3 gap-2 bg-slate-50 rounded-xl p-3 mb-4 border border-slate-100">
+                      <div className="text-center">
+                        <div className="text-sm font-bold text-blue-600">{study.results.metric1.value}</div>
+                        <div className="text-[10px] text-slate-500 truncate">{study.results.metric1.label}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-sm font-bold text-emerald-600">{study.results.metric2.value}</div>
+                        <div className="text-[10px] text-slate-500 truncate">{study.results.metric2.label}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-sm font-bold text-orange-600">{study.results.metric3.value}</div>
+                        <div className="text-[10px] text-slate-500 truncate">{study.results.metric3.label}</div>
+                      </div>
+                    </div>
+                  </CardContent>
+
+                <div className="p-6 pt-0">
                   <Button 
                     variant="outline" 
                     className="w-full group-hover:bg-blue-600 group-hover:text-white transition-colors"
@@ -107,15 +100,17 @@ const CaseStudies = () => {
                     Read Full Case Study
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>
 
           <div className="text-center mt-12">
-            <Button size="lg">
-              View All Case Studies
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button asChild size="lg" className="bg-slate-900 text-white hover:bg-slate-800 px-8 rounded-xl shadow-lg">
+              <Link to="/case-studies">
+                View All {allBulkCaseStudies.length} Case Studies
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
           </div>
         </div>

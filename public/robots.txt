@@ -1,7 +1,22 @@
+# Robots.txt for https://www.amzadscout.com
 User-agent: *
 Allow: /
 Disallow: /dashboard
 Disallow: /dashboard/*
+Disallow: /copilot-login
+Disallow: /copilot
+Disallow: /ad-landing
 
-# Sitemaps
+# Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+# Sitemap Location
 Sitemap: https://www.amzadscout.com/sitemap.xml
+

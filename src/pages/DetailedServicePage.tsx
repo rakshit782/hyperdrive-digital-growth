@@ -6,9 +6,10 @@ import SEOHead from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, CheckCircle, TrendingUp, Award, Users, Target, FileText, Shield } from 'lucide-react';
+import { ArrowRight, CheckCircle, TrendingUp, Award, Users, Target, FileText, Shield, Sparkles } from 'lucide-react';
 import { useServiceData } from '@/hooks/useServiceData';
-import { realBrandCaseStudies } from '@/data/realBrandCaseStudies';
+import { getCaseStudiesBySlug, FormattedCaseStudy } from '@/data/bulkCaseStudiesAdapter';
+import CaseStudyPopup from '@/components/CaseStudyPopup';
 
 const serviceConfigs: Record<string, {
   title: string;
@@ -271,7 +272,30 @@ const DetailedServicePage = () => {
   const { serviceType } = useParams<{ serviceType: string }>();
   const config = serviceConfigs[serviceType || ''];
   const { stats } = useServiceData(serviceType || '');
-  const caseStudies = realBrandCaseStudies[serviceType || ''] || [];
+  const [selectedCaseStudy, setSelectedCaseStudy] = React.useState<any>(null);
+  const [isPopupOpen, setIsPopupOpen] = React.useState(false);
+
+  // Load bulk case studies uploaded for this service
+  const caseStudies = React.useMemo(() => {
+    return getCaseStudiesBySlug(serviceType || '');
+  }, [serviceType]);
+
+  const handleCaseStudyClick = (study: FormattedCaseStudy) => {
+    setSelectedCaseStudy({
+      id: study.id,
+      title: study.title,
+      description: study.description,
+      industry: study.industry,
+      client_name: study.client_name,
+      image_url: study.imageUrl,
+      results: {
+        [study.results.metric1.label]: study.results.metric1.value,
+        [study.results.metric2.label]: study.results.metric2.value,
+        [study.results.metric3.label]: study.results.metric3.value,
+      },
+    });
+    setIsPopupOpen(true);
+  };
 
   if (!config) {
     return (
@@ -402,101 +426,140 @@ const DetailedServicePage = () => {
       />
       <Header />
       
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        {/* Hero Section */}
-        <section className="py-24 md:py-32">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <Badge className={`mb-4 bg-gradient-to-r ${config.gradient} text-white border-0`}>
-                Premium Service
-              </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-6">
-                {config.title}
-              </h1>
-              <p className="text-2xl font-semibold text-slate-700 mb-4">
-                {config.subtitle}
-              </p>
-              <p className="text-xl text-slate-600 leading-relaxed max-w-4xl mx-auto">
-                {config.description}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                <Button 
-                  asChild
-                  size="lg" 
-                  className={`bg-gradient-to-r ${config.gradient} text-white px-8 py-4 text-lg`}
-                >
-                  <Link to="/contact" aria-label={`Get Started Today — ${config.title}`}>
-                    Get Started Today
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Link>
-                </Button>
-                <Button 
-                  asChild
-                  size="lg" 
-                  variant="outline" 
-                  className="px-8 py-4 text-lg"
-                >
-                  <Link to="/contact" aria-label={`Schedule Consultation — ${config.title}`}>
-                    Schedule Consultation
-                  </Link>
-                </Button>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50/20 to-white text-slate-900 selection:bg-blue-500/20 selection:text-blue-900">
+        
+        {/* HERO SECTION */}
+        <section className="relative pt-20 pb-16 md:pt-28 md:pb-24 overflow-hidden border-b border-slate-200/60 bg-gradient-to-br from-blue-600/[0.04] via-indigo-500/[0.03] to-sky-500/[0.02]">
+          {/* Ambient Lighting Accents */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[850px] h-[450px] bg-gradient-to-tr from-blue-400/20 via-sky-300/15 to-indigo-300/10 blur-[130px] pointer-events-none" />
+          <div className="absolute -top-10 right-10 w-96 h-96 bg-blue-400/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-blue-50 border border-blue-200/80 backdrop-blur-md mb-6 shadow-xs">
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-800">
+                Enterprise Marketplace Services • High-Growth Engineering
+              </span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.12]">
+              {config.title}
+            </h1>
+
+            <p className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 bg-clip-text text-transparent mb-6">
+              {config.subtitle}
+            </p>
+
+            <p className="text-lg text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed font-normal">
+              {config.description}
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button 
+                asChild
+                size="lg" 
+                className={`w-full sm:w-auto bg-gradient-to-r ${config.gradient} hover:opacity-95 text-white font-semibold px-8 py-6 text-base rounded-xl shadow-lg shadow-blue-500/25 transition-all hover:scale-[1.02]`}
+              >
+                <Link to="/contact" aria-label={`Get Started Today — ${config.title}`}>
+                  Get Started Today
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+              <Button 
+                asChild
+                size="lg" 
+                variant="outline" 
+                className="w-full sm:w-auto border-slate-300 bg-white/90 hover:bg-slate-50 text-slate-800 px-8 py-6 text-base rounded-xl backdrop-blur-md shadow-xs transition-all hover:border-slate-400"
+              >
+                <Link to="/contact" aria-label={`Schedule Consultation — ${config.title}`}>
+                  Schedule Free Strategy Call
+                </Link>
+              </Button>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="mt-12 pt-8 border-t border-slate-200/80 flex flex-wrap items-center justify-center gap-8 text-xs font-semibold text-slate-600">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600" />
+                <span>Verified SPN & Ads Certified Partner</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-blue-600" />
+                <span>Dedicated Senior Growth Lead</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600" />
+                <span>Custom Weekly BI Reporting</span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Stats Section */}
+        {/* STATS SECTION */}
         {stats.length > 0 && (
-          <section className="py-16">
-            <div className="max-w-6xl mx-auto px-6">
-              <div className="grid md:grid-cols-4 gap-6">
+          <section className="py-14 border-b border-slate-200/60 bg-white">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
                 {stats.map((stat) => (
-                  <Card key={stat.id} className="bg-white/80 backdrop-blur-sm shadow-xl border-0 text-center">
-                    <CardContent className="pt-6">
-                      <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                        {stat.stat_value}
-                      </div>
-                      <div className="text-sm font-semibold text-slate-700 mb-1">
-                        {stat.stat_label}
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        {stat.stat_description}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div 
+                    key={stat.id} 
+                    className="p-6 rounded-2xl bg-gradient-to-b from-slate-50 to-white border border-slate-200/80 shadow-xs text-center hover:border-blue-400/50 hover:shadow-md transition-all"
+                  >
+                    <div className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 bg-clip-text text-transparent mb-1">
+                      {stat.stat_value}
+                    </div>
+                    <div className="text-sm font-bold text-slate-900 mb-1">
+                      {stat.stat_label}
+                    </div>
+                    <div className="text-xs text-slate-500 leading-snug">
+                      {stat.stat_description}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
           </section>
         )}
 
-        {/* Features Section */}
-        <section className="py-16">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                What's Included
+        {/* FEATURES SECTION (WHAT'S INCLUDED) */}
+        <section className="py-20 md:py-28 bg-slate-50/50">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="inline-block px-3.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider mb-3">
+                Deliverables & Scope
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">
+                What's Included in the Program
               </h2>
-              <p className="text-xl text-slate-600">
-                Comprehensive services designed for maximum impact
+              <p className="text-slate-600 max-w-2xl mx-auto text-base sm:text-lg">
+                Engineered for maximum ROI and sustained multi-channel marketplace dominance.
               </p>
             </div>
+
             <div className="grid md:grid-cols-2 gap-6">
               {config.features.map((feature, index) => (
-                <Card key={index} className="bg-white/80 backdrop-blur-sm shadow-lg border-0">
-                  <CardContent className="pt-6">
-                    <div className="flex items-start space-x-3">
-                      <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 mt-1" />
-                      <span className="text-slate-700 font-medium">{feature}</span>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div 
+                  key={index} 
+                  className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md flex items-start gap-4 hover:border-blue-300 transition-all"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shrink-0 mt-0.5">
+                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-slate-800 font-semibold text-sm sm:text-base leading-relaxed">
+                    {feature}
+                  </span>
+                </div>
               ))}
             </div>
+
             {config.crossLink && (
-              <p className="text-center text-slate-600 mt-12 text-lg">
+              <p className="text-center text-slate-600 mt-12 text-sm sm:text-base">
                 {config.crossLink.before}
-                <Link to={config.crossLink.href} className="text-blue-700 underline hover:text-blue-900">
+                <Link to={config.crossLink.href} className="text-blue-600 underline hover:text-blue-800 font-semibold">
                   {config.crossLink.anchor}
                 </Link>
                 {config.crossLink.after}
@@ -505,173 +568,237 @@ const DetailedServicePage = () => {
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="py-16">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                Why Choose Us
+        {/* BENEFITS SECTION (WHY CHOOSE US) */}
+        <section className="py-20 bg-white border-y border-slate-200/60">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="inline-block px-3.5 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold uppercase tracking-wider mb-3">
+                The Competitive Advantage
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">
+                Why Top Brands Partner with Us
               </h2>
-              <p className="text-xl text-slate-600">
-                Proven results and dedicated support
+              <p className="text-slate-600 max-w-xl mx-auto text-base">
+                Data-driven execution backed by senior practitioners and battle-tested SOPs.
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {config.benefits.map((benefit, index) => {
                 const icons = [TrendingUp, Award, Users, Target, CheckCircle, Award];
                 const Icon = icons[index % icons.length];
                 return (
-                  <Card key={index} className="bg-white/80 backdrop-blur-sm shadow-lg border-0 text-center hover:shadow-xl transition-all duration-300">
-                    <CardHeader>
-                      <div className={`w-14 h-14 bg-gradient-to-r ${config.gradient} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                        <Icon className="w-7 h-7 text-white" />
-                      </div>
-                      <CardTitle className="text-lg text-slate-900">
-                        {benefit}
-                      </CardTitle>
-                    </CardHeader>
-                  </Card>
+                  <div 
+                    key={index} 
+                    className="p-7 rounded-2xl bg-gradient-to-b from-slate-50 to-white border border-slate-200/80 shadow-xs text-center hover:border-blue-400/50 hover:shadow-lg transition-all hover:-translate-y-1"
+                  >
+                    <div className={`w-14 h-14 bg-gradient-to-r ${config.gradient} rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-md`}>
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-base font-bold text-slate-900 leading-relaxed">
+                      {benefit}
+                    </h3>
+                  </div>
                 );
               })}
             </div>
           </div>
         </section>
 
-        {/* Case Studies Section */}
+        {/* CASE STUDIES SECTION */}
         {caseStudies.length > 0 && (
-          <section className="py-16">
-            <div className="max-w-6xl mx-auto px-6">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                  Success Stories
+          <section className="py-20 md:py-28 bg-slate-50/50">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-16">
+                <span className="inline-block px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-3">
+                  Proof of Performance
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">
+                  Real Growth Stories ({caseStudies.length})
                 </h2>
-                <p className="text-xl text-slate-600">
-                  Real results from real brands we've worked with
+                <p className="text-slate-600 max-w-xl mx-auto text-base">
+                  Audited performance metrics from our brand portfolio for {config.title.split('-')[0].trim()}.
                 </p>
               </div>
+
               <div className="grid md:grid-cols-2 gap-8">
-                {caseStudies.map((study) => (
-                  <Card key={study.id} className="bg-white/80 backdrop-blur-sm shadow-xl border-0 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                    {study.image_url && (
-                      <div className="h-48 overflow-hidden">
-                        <img 
-                          src={study.image_url} 
-                          alt={study.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Badge variant="secondary">{study.industry}</Badge>
-                        <Badge className={`bg-gradient-to-r ${config.gradient} text-white border-0`}>
-                          {study.client_name}
-                        </Badge>
-                      </div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-3">
-                        {study.title}
-                      </h3>
-                      <p className="text-slate-600 mb-4">
-                        {study.description}
-                      </p>
-                      <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-                        {Object.entries(study.results).slice(0, 3).map(([key, value]) => (
-                          <div key={key} className="text-center">
-                            <div className={`text-xl font-bold bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}>
-                              {value}
-                            </div>
-                            <div className="text-xs text-slate-500 capitalize">
-                              {key.replace(/_/g, ' ')}
-                            </div>
+                {caseStudies.slice(0, 6).map((study) => (
+                  <div 
+                    key={study.id} 
+                    onClick={() => handleCaseStudyClick(study)}
+                    className="group rounded-3xl bg-white border border-slate-200/90 shadow-sm overflow-hidden hover:border-blue-400/60 hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer flex flex-col justify-between"
+                  >
+                      <div className="p-7">
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                              {study.industry}
+                            </span>
+                            <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-gradient-to-r ${config.gradient} text-white`}>
+                              {study.client_name}
+                            </span>
                           </div>
-                        ))}
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                            {study.channel}
+                          </span>
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                          {study.title}
+                        </h3>
+                        <p className="text-sm text-slate-600 mb-4 leading-relaxed line-clamp-2">
+                          {study.challenge}
+                        </p>
+                        <p className="text-xs text-slate-500 mb-6 leading-relaxed line-clamp-2 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                          <span className="font-semibold text-slate-700">Solution: </span>{study.solution}
+                        </p>
                       </div>
-                    </CardContent>
-                  </Card>
+
+                    <div className="px-7 pb-7">
+                      <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-100 mb-4">
+                        <div className="text-center p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <div className="text-base sm:text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            {study.results.metric1.value}
+                          </div>
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mt-0.5 truncate">
+                            {study.results.metric1.label}
+                          </div>
+                        </div>
+                        <div className="text-center p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <div className="text-base sm:text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                            {study.results.metric2.value}
+                          </div>
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mt-0.5 truncate">
+                            {study.results.metric2.label}
+                          </div>
+                        </div>
+                        <div className="text-center p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <div className="text-base sm:text-lg font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                            {study.results.metric3.value}
+                          </div>
+                          <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mt-0.5 truncate">
+                            {study.results.metric3.label}
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button 
+                        variant="outline"
+                        className="w-full border-slate-200 group-hover:border-blue-400 group-hover:bg-blue-50/50 text-slate-700 group-hover:text-blue-700 font-semibold text-xs py-2 rounded-xl"
+                      >
+                        Read Full Case Study
+                        <ArrowRight className="ml-1.5 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </div>
+                  </div>
                 ))}
               </div>
+
+              {caseStudies.length > 6 && (
+                <div className="text-center mt-12">
+                  <Button asChild size="lg" className="bg-slate-900 text-white hover:bg-slate-800 rounded-xl px-8">
+                    <Link to="/case-studies">
+                      Explore All {caseStudies.length} {config.title.split('-')[0].trim()} Case Studies
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </section>
         )}
 
         {/* AMZ CoPilot Legal Links - Only for amazon-integration */}
         {serviceType === 'amazon-integration' && (
-          <section className="py-12">
+          <section className="py-12 border-t border-slate-200/60 bg-white">
             <div className="max-w-4xl mx-auto px-6">
-              <Card className="bg-white/80 backdrop-blur-sm shadow-lg border-0">
-                <CardContent className="py-8 text-center">
-                  <h3 className="text-2xl font-bold text-slate-900 mb-3">AMZ CoPilot</h3>
-                  <p className="text-slate-600 mb-6">
-                    Review the legal terms and privacy practices for our Amazon seller management app.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="lg"
-                      className="gap-2"
-                    >
-                      <Link to="/eula">
-                        <FileText className="w-5 h-5" />
-                        End User License Agreement
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="lg"
-                      className="gap-2"
-                    >
-                      <Link to="/amz-copilot-privacy">
-                        <Shield className="w-5 h-5" />
-                        Privacy Policy
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200/90 text-center">
+                <h3 className="text-xl font-bold text-slate-900 mb-2">AMZ CoPilot Legal Documentation</h3>
+                <p className="text-slate-600 text-sm mb-6 max-w-xl mx-auto">
+                  Review the official End User License Agreement and Privacy Policy governing AMZ CoPilot software services.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    className="border-slate-300 bg-white text-slate-800 hover:bg-slate-50 gap-2"
+                  >
+                    <Link to="/eula">
+                      <FileText className="w-4 h-4 text-blue-600" />
+                      End User License Agreement
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    className="border-slate-300 bg-white text-slate-800 hover:bg-slate-50 gap-2"
+                  >
+                    <Link to="/amz-copilot-privacy">
+                      <Shield className="w-4 h-4 text-emerald-600" />
+                      CoPilot Privacy Policy
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           </section>
         )}
 
-        {/* CTA Section */}
-        <section className="py-16">
-          <div className="max-w-4xl mx-auto px-6">
-            <Card className={`bg-gradient-to-r ${config.gradient} border-0 text-white`}>
-              <CardContent className="py-12 text-center">
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  Ready to Get Started?
+        {/* HIGH-CONVERSION CTA */}
+        <section className="py-20 pb-28 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-r ${config.gradient} p-8 sm:p-14 text-center shadow-xl shadow-blue-500/10`}>
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/20 via-transparent to-black/10 pointer-events-none" />
+              
+              <div className="relative z-10">
+                <span className="inline-block px-3.5 py-1 rounded-full bg-white/20 text-white font-semibold text-xs tracking-wider uppercase mb-4 backdrop-blur-sm">
+                  Complimentary Opportunity Assessment
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+                  Ready to Accelerate Your Brand's Growth?
                 </h2>
-                <p className="text-xl mb-8 opacity-90">
-                  Let's discuss how we can help you achieve your business goals
+                <p className="text-white/95 text-base sm:text-lg max-w-2xl mx-auto mb-8 leading-relaxed font-light">
+                  Let's dive into your metrics, identify high-intent revenue opportunities, and engineer a customized roadmap for your marketplace channels.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Button 
                     asChild
                     size="lg"
-                    className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 text-lg font-semibold"
+                    className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100 font-bold px-8 py-6 text-base rounded-xl shadow-xl transition-all hover:scale-105"
                   >
-                    <Link to="/contact" aria-label={`Get Free Consultation — ${config.title}`}>
-                      Get Free Consultation
+                    <Link to="/contact">
+                      Claim Your Free Audit
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
                   </Button>
                   <Button 
                     asChild
                     size="lg"
-                    className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg font-semibold backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:scale-105"
+                    variant="outline"
+                    className="w-full sm:w-auto border-white/50 bg-white/10 hover:bg-white/20 text-white hover:text-white font-semibold px-8 py-6 text-base rounded-xl backdrop-blur-md"
                   >
-                    <Link to="/contact" aria-label={`Schedule Strategy Call — ${config.title}`}>
-                      Schedule Strategy Call
+                    <Link to="/contact">
+                      Schedule a Strategy Call
                     </Link>
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </section>
+
       </div>
       
+      <CaseStudyPopup 
+        caseStudy={selectedCaseStudy}
+        isOpen={isPopupOpen}
+        onClose={() => {
+          setIsPopupOpen(false);
+          setSelectedCaseStudy(null);
+        }}
+      />
+
       <Footer />
     </>
   );

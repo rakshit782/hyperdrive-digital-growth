@@ -3,359 +3,486 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Target, Users, Award, CheckCircle, Star, ArrowRight, TrendingUp, Zap, Globe, BarChart3 } from "lucide-react";
+import { 
+  Shield, 
+  Target, 
+  Users, 
+  Award, 
+  CheckCircle2, 
+  Star, 
+  ArrowRight, 
+  TrendingUp, 
+  Zap, 
+  Globe, 
+  BarChart3,
+  Sparkles,
+  Layers,
+  ArrowUpRight,
+  Flame,
+  Check,
+  Building2,
+  Workflow,
+  Compass,
+  Lightbulb
+} from "lucide-react";
 
 const About = () => {
+  const currentYear = new Date().getFullYear();
+  const yearsExperience = `${Math.max(10, currentYear - 2016)}+`;
+
   const [aboutData, setAboutData] = useState({
-    heroTitle: 'Your E-commerce Growth Partner',
-    heroSubtitle: '900+ Happy Clients Served',
-    heroDescription: "Premier agency with 9+ years expertise in Amazon advertising, Walmart optimization, and Shopify development. Our data-driven approach delivers measurable ROI across all major marketplaces.",
-    missionText: 'To revolutionize e-commerce success through cutting-edge advertising strategies and marketplace optimization. We combine advanced analytics, AI-driven insights, and proven methodologies to maximize revenue and dominate categories.',
-    visionText: 'To become the global leader in e-commerce growth solutions, transforming brands through innovative strategies and scalable systems. We envision every business having access to enterprise-level expertise to compete and win.'
+    heroTitle: "Accelerating E-commerce Brands Through Profit-Driven Growth",
+    heroSubtitle: "900+ Global Sellers & Brands Scaled",
+    heroDescription: `AMZ AD SCOUT is a premier marketplace growth agency. With ${yearsExperience} years of specialized expertise across Amazon, Walmart Connect, Meta, and Shopify, we engineer profitable ad strategies, optimize product catalogs, and deliver predictable revenue expansion.`,
+    missionText: "To empower modern brands to dominate digital marketplaces by transforming ad spend from a cost center into a high-yield profit engine, backed by rigorous SKU-level analytics and automated precision.",
+    visionText: "To be the world's most trusted e-commerce acceleration partner—redefining how brands scale globally across multiple channels with transparency, accountability, and unmatched execution."
   });
 
   useEffect(() => {
-    const savedAbout = localStorage.getItem('about_data');
+    const savedAbout = localStorage.getItem("about_data");
     if (savedAbout) {
-      setAboutData(JSON.parse(savedAbout));
+      try {
+        setAboutData((prev) => ({ ...prev, ...JSON.parse(savedAbout) }));
+      } catch (err) {
+        console.error("Failed to parse about_data", err);
+      }
     }
   }, []);
-  const values = [
+
+  const stats = [
+    { value: "900+", label: "Brands & Sellers Scaled", change: "Across 14 Marketplaces", icon: Users },
+    { value: "$50M+", label: "Ad Spend Managed", change: "With Strict P&L Control", icon: BarChart3 },
+    { value: "4.8x", label: "Average ROAS", change: "Top-Tier Account Average", icon: TrendingUp },
+    { value: yearsExperience, label: "Years Experience", change: "Since 2016", icon: Award }
+  ];
+
+  const pillars = [
     {
       icon: Shield,
-      title: "Integrity",
-      description: "We believe in transparent communication and honest reporting. Your success is our success."
+      title: "Radical Transparency & P&L Focus",
+      description: "No vanity metrics. We evaluate performance down to SKU-level profit, true TACoS, and net margins, delivering unvarnished reporting you can trust.",
+      tag: "Accountability"
     },
     {
       icon: Target,
-      title: "Results-Driven",
-      description: "Every strategy we implement is focused on delivering measurable results and ROI."
+      title: "Full-Funnel Advertising Engineering",
+      description: "From Sponsored Products keyword harvesting to Sponsored Brands video and Amazon DSP retargeting, we capture shoppers at every stage of their buying journey.",
+      tag: "Performance"
     },
     {
-      icon: Users,
-      title: "Partnership",
-      description: "We work as an extension of your team, collaborating closely to achieve your goals."
+      icon: Layers,
+      title: "360° Marketplace Management",
+      description: "High-converting listing copy, A+ Content architecture, catalog health monitoring, and brand protection working in unison with paid media.",
+      tag: "Execution"
     },
     {
-      icon: Award,
-      title: "Excellence",
-      description: "We continuously innovate and optimize to stay ahead of industry trends and changes."
+      icon: Zap,
+      title: "Automation & Dayparting Precision",
+      description: "Rule-based bid automation, competitor conquesting, and hour-by-hour budget pacing to eliminate wasted ad spend during low-conversion windows.",
+      tag: "Efficiency"
     }
   ];
 
-  const services = [
-    "Advertising Management for Amazon Sellers - PPC Management",
-    "Listing Optimization Services - A+ Content Creation", 
-    "Walmart Advertising Management - Marketplace Specialists",
-    "E-commerce Product Cataloging Services",
-    "Shopify Development - Custom Theme Development",
-    "Multi-Marketplace Integration Services",
-    "Professional Shopify Developers - Store Experts",
-    "Marketplace Advertising Management - Sponsored Products",
-    "E-commerce Channel Management Solutions"
-  ];
-
-  const whyChooseUs = [
+  const milestones = [
     {
-      title: "Proven Track Record",
-      description: "500+ brands scaled profitably with 50K+ successful campaigns achieving an average ROAS of 10x across all marketplaces"
+      year: "2016",
+      title: "Founded with Single Mission",
+      description: "Started as a dedicated Amazon PPC consultancy helping early-stage brand owners cut through algorithm shifts and rising CPCs."
     },
     {
-      title: "Experienced Team",
-      description: "Industry specialists with 50+ years combined experience in e-commerce advertising and marketplace management"
+      year: "2019",
+      title: "Amazon Ads Verified Partner",
+      description: "Earned official partner standing, managing enterprise catalogs and deploying custom bidding technology."
     },
     {
-      title: "Advanced Data Analytics",
-      description: "Proprietary analytics platform providing real-time insights, predictive modeling, and automated optimization"
+      year: "2021",
+      title: "Multi-Marketplace Expansion",
+      description: "Expanded capabilities to Walmart Connect, Meta Ads, and Shopify DTC integration for omnichannel dominance."
     },
     {
-      title: "White-Glove Service",
-      description: "Dedicated account managers, weekly strategy calls, transparent reporting, and responsive support for all clients"
+      year: "2024+",
+      title: "900+ Brands & Global Reach",
+      description: "Managing international accounts across US, UK, EU, CA, AU, and UAE with continuous profit optimization systems."
     }
   ];
 
-  const stats = [
-    { value: "500+", label: "Brands Scaled", icon: Users },
-    { value: "10x", label: "Average ROAS", icon: TrendingUp },
-    { value: "9+", label: "Years Experience", icon: Award },
-    { value: "$50M+", label: "Ad Spend Managed", icon: BarChart3 }
+  const processSteps = [
+    {
+      step: "01",
+      title: "Deep-Dive Account Audit",
+      desc: "We analyze search term leakage, keyword gaps, catalog health, and SKU margins to pinpoint instant revenue opportunities."
+    },
+    {
+      step: "02",
+      title: "Strategic 12-Month Blueprint",
+      desc: "We map out target TACoS, budget allocation by portfolio, seasonal pushes, and inventory velocity expectations."
+    },
+    {
+      step: "03",
+      title: "Granular Campaign Architecture",
+      desc: "Isolating high-intent exact match keywords, harvesting converting broad search terms, and negating bleeders daily."
+    },
+    {
+      step: "04",
+      title: "Continuous Scale & Optimization",
+      desc: "Weekly cadence reviews, placement multiplier adjustments, dayparting scheduling, and proactive expansion to new channels."
+    }
+  ];
+
+  const marketplaceExpertise = [
+    { name: "Amazon US & Global", detail: "Sponsored Products, SBV, SD & DSP across 10+ regions" },
+    { name: "Walmart Connect", detail: "Early-mover advantage with Sponsored Products & search brand amplifiers" },
+    { name: "Meta & Social Ads", detail: "High-converting Reels, UGC campaigns, and catalog retargeting funnels" },
+    { name: "Shopify & Web Development", detail: "High-speed conversion-optimized custom storefronts and multi-channel sync" },
+    { name: "Listing & A+ Content", detail: "Native keyword indexing, premium infographics, and brand store storytelling" },
+    { name: "Catalog & Account Health", detail: "Suppression fixes, variation restructuring, and policy protection" }
   ];
 
   return (
     <>
       <SEOHead 
         title="About Us: How We Grow E-commerce Brands | AMZ AD SCOUT"
-        description="Meet AMZ AD SCOUT, the e-commerce growth agency that runs Amazon, Walmart, Meta and Google ads alongside listing, catalog and Shopify work. See how we can help."
-        keywords="e-commerce advertising specialists, advertising for amazon sellers, walmart marketplace optimization, shopify development, digital marketing services, ppc management services, e-commerce optimization, multi-channel marketing, online marketplace advertising, seller solutions, performance marketing, roi-focused marketing, data-driven e-commerce, marketplace management, listing optimization, product catalog management, e-commerce growth, online retail marketing"
-        canonical={window.location.href}
+        description="Meet AMZ AD SCOUT, the performance marketplace growth agency engineering profit-driven Amazon, Walmart, Meta, and Shopify solutions for 900+ brands."
+        keywords="about amz ad scout, e-commerce advertising specialists, amazon ppc agency, walmart marketplace management, shopify growth agency, marketplace advertising experts"
+        canonical={typeof window !== "undefined" ? window.location.href : ""}
       />
       <Header />
-      <div className="min-h-screen bg-background">
-        {/* Hero Section */}
-        <section className="relative py-24 md:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
-          <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-          
-          <div className="relative max-w-7xl mx-auto px-6">
-            <div className="text-center max-w-4xl mx-auto">
-              <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm font-semibold">
-                <Star className="w-4 h-4 mr-2 inline-block" />
-                Award-Winning Agency
-              </Badge>
-              
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
-                <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  {aboutData.heroTitle}
-                </span>
-              </h1>
-              
-              <p className="text-xl md:text-2xl font-semibold text-foreground/80 mb-4">
+
+      <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-600 selection:text-white">
+        
+        {/* HERO SECTION */}
+        <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white">
+          {/* Subtle background glow */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-blue-600/15 blur-[120px] rounded-full pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
+
+          <div className="relative max-w-6xl mx-auto px-6 text-center">
+            
+            {/* Badges / Happy Clients Status */}
+            <div className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs sm:text-sm font-medium mb-8 shadow-inner">
+              <span className="flex items-center gap-1.5 text-amber-300">
+                <Star className="w-4 h-4 fill-amber-300" />
                 {aboutData.heroSubtitle}
-              </p>
+              </span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight max-w-4xl mx-auto leading-[1.15] mb-6">
+              {aboutData.heroTitle}
+            </h1>
+
+            <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-10 font-normal">
+              {aboutData.heroDescription}
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button 
+                asChild
+                size="lg" 
+                className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-8 py-6 rounded-xl shadow-lg shadow-blue-600/30 text-base group"
+              >
+                <Link to="/contact">
+                  Get Free Marketplace Audit
+                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+              <Button 
+                asChild
+                size="lg" 
+                variant="outline"
+                className="border-white/20 bg-white/5 hover:bg-white/10 text-white font-semibold px-8 py-6 rounded-xl text-base"
+              >
+                <Link to="/case-studies">
+                  Explore 160+ Case Studies
+                  <ArrowUpRight className="ml-2 w-4 h-4 text-slate-400" />
+                </Link>
+              </Button>
+            </div>
+
+            {/* Stats Bar */}
+            <div className="mt-16 sm:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
+              {stats.map((stat, idx) => {
+                const Icon = stat.icon;
+                return (
+                  <div 
+                    key={idx}
+                    className="p-6 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 text-left hover:border-blue-500/40 transition-all hover:-translate-y-1"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-4">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">{stat.value}</div>
+                    <div className="text-sm font-semibold text-slate-200 mt-1">{stat.label}</div>
+                    <div className="text-xs text-slate-400 mt-0.5">{stat.change}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        </section>
+
+        {/* MISSION & VISION */}
+        <section className="py-20 md:py-28 bg-white border-b border-slate-200">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
               
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
-                {aboutData.heroDescription}
-              </p>
-
-              <div className="flex flex-wrap justify-center gap-4">
-                <Button 
-                  asChild
-                  size="lg" 
-                  className="group"
-                >
-                  <Link to="/contact" aria-label="Get Free Consultation — Contact">
-                    Get Free Consultation
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-                <Button 
-                  asChild
-                  size="lg" 
-                  variant="outline"
-                >
-                  <Link to="/case-studies">View Case Studies</Link>
-                </Button>
-              </div>
-            </div>
-
-            {/* Stats Section */}
-            <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-              {stats.map((stat, index) => {
-                const IconComponent = stat.icon;
-                return (
-                  <div key={index} className="text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border hover:border-primary/50 transition-all hover:shadow-lg group">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4 group-hover:scale-110 transition-transform">
-                      <IconComponent className="w-6 h-6" />
-                    </div>
-                    <div className="text-3xl md:text-4xl font-bold text-foreground mb-2">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground font-medium">{stat.label}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Mission & Vision */}
-        <section className="py-20 bg-muted/30">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid md:grid-cols-2 gap-8">
-              <Card className="border-border hover:border-primary/50 transition-all hover:shadow-xl group">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Target className="w-7 h-7 text-primary" />
-                    </div>
-                    <CardTitle className="text-3xl font-bold text-foreground">
-                      Our Mission
-                    </CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-base text-muted-foreground leading-relaxed">
-                    {aboutData.missionText}
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-border hover:border-primary/50 transition-all hover:shadow-xl group">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Zap className="w-7 h-7 text-secondary" />
-                    </div>
-                    <CardTitle className="text-3xl font-bold text-foreground">
-                      Our Vision
-                    </CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-base text-muted-foreground leading-relaxed">
-                    {aboutData.visionText}
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Core Values */}
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <Badge variant="outline" className="mb-4">
-                Our Foundation
-              </Badge>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                Core Values That Drive Us
-              </h2>
-              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-                The principles that guide everything we do and shape our culture
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {values.map((value, index) => {
-                const IconComponent = value.icon;
-                return (
-                  <Card key={index} className="border-border hover:border-primary/50 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
-                    <CardHeader>
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mx-auto mb-4 group-hover:scale-110 transition-transform">
-                        <IconComponent className="w-8 h-8 text-primary" />
-                      </div>
-                      <CardTitle className="text-lg font-bold text-foreground">
-                        {value.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {value.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Services Overview */}
-        <section className="py-20 bg-muted/30">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <Badge variant="outline" className="mb-4">
-                <Globe className="w-3 h-3 mr-2" />
-                Our Expertise
-              </Badge>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                Comprehensive E-commerce Solutions
-              </h2>
-              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-                Full-service digital marketing to accelerate your online growth
-              </p>
-            </div>
-
-            <Card className="border-border overflow-hidden">
-              <CardContent className="p-8 md:p-12">
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {services.map((service, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors group">
-                      <div className="mt-1">
-                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 group-hover:scale-110 transition-transform" />
-                      </div>
-                      <span className="text-foreground font-medium text-sm leading-relaxed">{service}</span>
-                    </div>
-                  ))}
+              <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-blue-50/80 via-slate-50 to-white border border-blue-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center mb-6 shadow-md shadow-blue-600/20">
+                  <Target className="w-6 h-6" />
                 </div>
-              </CardContent>
-            </Card>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Our Mission</h3>
+                <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+                  {aboutData.missionText}
+                </p>
+                <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-blue-700">
+                  <span>Results-first execution</span>
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+              </div>
+
+              <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-indigo-50/80 via-slate-50 to-white border border-indigo-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-6 shadow-md shadow-indigo-600/20">
+                  <Compass className="w-6 h-6" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">Our Vision</h3>
+                <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+                  {aboutData.visionText}
+                </p>
+                <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-indigo-700">
+                  <span>Global marketplace domination</span>
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+              </div>
+
+            </div>
           </div>
         </section>
 
-        {/* Why Choose Us */}
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <Badge variant="outline" className="mb-4">
-                The Agency Advantage
+        {/* PILLARS / VALUES */}
+        <section className="py-20 md:py-28 bg-slate-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <Badge variant="outline" className="mb-4 bg-white text-blue-700 border-blue-200">
+                Our Operating Principles
               </Badge>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                Why Leading Brands Choose Us
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+                The Four Pillars of How We Operate
               </h2>
-              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-                Experience the difference that true e-commerce expertise makes
+              <p className="text-slate-600 text-base sm:text-lg">
+                We believe true agency partners stand or fall on measurable performance, clean communication, and deep technical mastery.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {whyChooseUs.map((item, index) => (
-                <Card key={index} className="border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl group">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-bold text-foreground flex items-start gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                        <CheckCircle className="w-5 h-5 text-primary" />
+            <div className="grid sm:grid-cols-2 gap-6 lg:gap-8">
+              {pillars.map((pillar, idx) => {
+                const Icon = pillar.icon;
+                return (
+                  <div 
+                    key={idx}
+                    className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-300 transition-all group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-5">
+                        <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                          <Icon className="w-6 h-6" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
+                          {pillar.tag}
+                        </span>
                       </div>
-                      <span className="pt-1">{item.title}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pl-[3.75rem]">
-                    <p className="text-muted-foreground leading-relaxed">
-                      {item.description}
+                      <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
+                        {pillar.title}
+                      </h3>
+                      <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                        {pillar.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* OUR PROVEN 4-STEP METHODOLOGY */}
+        <section className="py-20 md:py-28 bg-slate-900 text-white">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <Badge className="mb-4 bg-blue-500/20 text-blue-300 border-blue-400/30">
+                Engineered for Scale
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 text-white">
+                Our 4-Phase Growth Framework
+              </h2>
+              <p className="text-slate-400 text-base sm:text-lg">
+                A tested, repeatable methodology that turns chaotic PPC accounts into profitable, scalable market leaders.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {processSteps.map((step, idx) => (
+                <div 
+                  key={idx} 
+                  className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-400/50 transition-all hover:-translate-y-1 flex flex-col justify-between"
+                >
+                  <div>
+                    <span className="text-3xl font-black text-blue-400/80 mb-4 block font-mono">
+                      {step.step}
+                    </span>
+                    <h3 className="text-lg font-bold text-white mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-slate-400 text-sm leading-relaxed">
+                      {step.desc}
                     </p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-          <div className="max-w-5xl mx-auto px-6">
-            <Card className="border-2 border-primary/20 shadow-2xl overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5">
-              <CardContent className="p-12 md:p-16">
-                  <div className="text-center">
-                    <Badge variant="secondary" className="mb-6">
-                      <Star className="w-3 h-3 mr-2" />
-                      Start Your Growth Journey
-                    </Badge>
-                    
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-6">
-                      Ready to Scale Your Business?
-                    </h2>
-                    
-                    <p className="text-base md:text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-                      Join 900+ successful clients and start achieving breakthrough results with our proven strategies
+        {/* OUR JOURNEY TIMELINE */}
+        <section className="py-20 md:py-28 bg-white border-b border-slate-200">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <Badge variant="outline" className="mb-4 bg-blue-50 text-blue-700 border-blue-200">
+                Milestones
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+                Our Growth Timeline
+              </h2>
+              <p className="text-slate-600 text-base sm:text-lg">
+                Built from the ground up by e-commerce operators who know marketplace algorithms inside out.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {milestones.map((m, idx) => (
+                <div 
+                  key={idx}
+                  className="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <span className="inline-block px-3 py-1 rounded-full bg-blue-600 text-white font-mono text-xs font-bold mb-4">
+                      {m.year}
+                    </span>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">
+                      {m.title}
+                    </h3>
+                    <p className="text-slate-600 text-sm leading-relaxed">
+                      {m.description}
                     </p>
-                    
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <Button 
-                        asChild
-                        size="lg"
-                        className="group"
-                      >
-                        <Link to="/contact" aria-label="Get Free Strategy Session — Contact">
-                          Get Free Strategy Session
-                          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                      </Button>
-                      <Button 
-                        asChild
-                        size="lg"
-                        variant="outline"
-                      >
-                        <Link to="/case-studies">Explore Success Stories</Link>
-                      </Button>
-                    </div>
                   </div>
-                </CardContent>
-            </Card>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
+
+        {/* FULL SPECTRUM MARKETPLACE SERVICES */}
+        <section className="py-20 md:py-28 bg-slate-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <Badge variant="outline" className="mb-4 bg-white text-blue-700 border-blue-200">
+                Comprehensive Capabilities
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+                Everything Your Brand Needs Under One Roof
+              </h2>
+              <p className="text-slate-600 text-base sm:text-lg">
+                No disjointed agencies. We align listing SEO, creative assets, paid ads, and technical integrations.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {marketplaceExpertise.map((srv, idx) => (
+                <div 
+                  key={idx}
+                  className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-lg transition-all group"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-green-100 text-green-700 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-4 h-4 stroke-[3]" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-base group-hover:text-blue-600 transition-colors mb-1">
+                        {srv.name}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                        {srv.detail}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FINAL HIGH-IMPACT CTA */}
+        <section className="py-20 md:py-24 bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative max-w-4xl mx-auto px-6 text-center">
+            <Badge className="mb-6 bg-white/10 text-blue-200 border-white/20">
+              <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-300" />
+              Take The Next Step
+            </Badge>
+
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-6 tracking-tight">
+              Ready to Accelerate Your E-commerce Growth?
+            </h2>
+
+            <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+              Book a 30-minute discovery call with our marketplace directors. We will dissect your current accounts and show you exactly where wasted spend is hiding.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button 
+                asChild
+                size="lg" 
+                className="bg-blue-500 hover:bg-blue-400 text-white font-bold px-8 py-6 rounded-xl shadow-xl shadow-blue-500/25 text-base w-full sm:w-auto"
+              >
+                <Link to="/contact">
+                  Request Free Account Audit
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </Button>
+              <Button 
+                asChild
+                size="lg" 
+                variant="outline"
+                className="border-white/20 bg-white/5 hover:bg-white/10 text-white font-semibold px-8 py-6 rounded-xl text-base w-full sm:w-auto"
+              >
+                <Link to="/case-studies">
+                  Browse 160+ Case Studies
+                </Link>
+              </Button>
+            </div>
+
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-400" />
+                Verified Amazon Partner
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-400" />
+                No Long-Term Lock-in
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-400" />
+                100% Transparent Reporting
+              </span>
+            </div>
+          </div>
+        </section>
+
       </div>
+
       <Footer />
     </>
   );

@@ -1,214 +1,159 @@
-
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
-import { ArrowRight, ShoppingCart, Store, Users, Settings, Link2, Code, Target, TrendingUp, Cog, FileText, Database } from "lucide-react";
+import { 
+  ShoppingCart, 
+  Target, 
+  Code2, 
+  Link2 
+} from "lucide-react";
 import { Link } from "react-router-dom";
-import { cn } from "@/lib/utils";
 
-const Services = () => {
+interface ServiceItem {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  link: string;
+  gradient: string;
+  iconGradient: string;
+  bgGlow: string;
+  features: { label: string; href: string }[];
+}
 
-  const services = [
-    {
-      title: 'Advertising for Amazon Sellers',
-      description: 'Expert PPC management, keyword optimization, and campaign strategies that maximize your sales and ROI on Amazon.',
-      icon: ShoppingCart,
-      link: '/services/amazon-advertising',
-      gradient: 'from-orange-500 to-red-500',
-      bgGlow: 'bg-orange-500/10',
-      features: ['Sponsored Products', 'Sponsored Brands', 'Keyword Research', 'Performance Analytics'],
-      stats: '+340% Avg. Revenue Growth'
-    },
-    {
-      title: 'Walmart Advertising',
-      description: 'Comprehensive Walmart Connect advertising solutions to boost your visibility and sales on the growing marketplace.',
-      icon: Store,
-      link: '/services/walmart-advertising',
-      gradient: 'from-blue-500 to-cyan-500',
-      bgGlow: 'bg-blue-500/10',
-      features: ['Search Ads', 'Display Campaigns', 'Video Advertising', 'Performance Analytics'],
-      stats: '+280% Avg. Sales Increase'
-    },
-    {
-      title: 'Google Advertising',
-      description: 'Drive targeted traffic and conversions with strategic Google Ads campaigns that deliver measurable results.',
-      icon: Target,
-      link: '/services/google-advertising',
-      gradient: 'from-green-500 to-emerald-500',
-      bgGlow: 'bg-green-500/10',
-      features: ['Search Campaigns', 'Display Network', 'Shopping Ads', 'Performance Max'],
-      stats: '+45% Lower CPA'
-    },
-    {
-      title: 'Meta Advertising',
-      description: 'Facebook and Instagram ad campaigns that drive traffic, generate leads, and increase conversions for your business.',
-      icon: Users,
-      link: '/services/meta-advertising',
-      gradient: 'from-purple-500 to-pink-500',
-      bgGlow: 'bg-purple-500/10',
-      features: ['Facebook Ads', 'Instagram Campaigns', 'Audience Targeting', 'Creative Optimization'],
-      stats: '+3.2x ROAS Average'
-    },
-    {
-      title: 'Account Management',
-      description: 'Full-service account management with dedicated specialists monitoring and optimizing your campaigns 24/7.',
-      icon: Settings,
-      link: '/services/account-management',
-      gradient: 'from-indigo-500 to-violet-500',
-      bgGlow: 'bg-indigo-500/10',
-      features: ['24/7 Monitoring', 'Performance Reports', 'Strategy Optimization', 'Dedicated Manager'],
-      stats: '500+ Brands Managed'
-    },
-    {
-      title: 'Website Development',
-      description: 'Custom website development and design solutions that convert visitors into customers and drive business growth.',
-      icon: Code,
-      link: '/services/website-development',
-      gradient: 'from-cyan-500 to-blue-500',
-      bgGlow: 'bg-cyan-500/10',
-      features: ['Custom Design', 'Mobile Optimization', 'SEO Integration', 'Performance Optimization'],
-      stats: '+65% Conversion Rate'
-    },
-    {
-      title: 'Shopify Development',
-      description: 'Expert Shopify store development and customization to create a powerful e-commerce presence that drives sales.',
-      icon: TrendingUp,
-      link: '/services/shopify-development',
-      gradient: 'from-emerald-500 to-teal-500',
-      bgGlow: 'bg-emerald-500/10',
-      features: ['Custom Themes', 'App Integration', 'Mobile Optimization', 'Speed Enhancement'],
-      stats: '200+ Stores Built'
-    },
-    {
-      title: 'Shopify Integration',
-      description: 'Seamlessly integrate your Shopify store with Amazon and Walmart marketplaces for unified inventory management.',
-      icon: Link2,
-      link: '/services/shopify-integration',
-      gradient: 'from-teal-500 to-cyan-500',
-      bgGlow: 'bg-teal-500/10',
-      features: ['Inventory Sync', 'Order Management', 'Product Listing', 'Multi-channel Setup'],
-      stats: '99.9% Sync Accuracy'
-    },
-    {
-      title: 'Amazon Integration & Automation',
-      description: 'Comprehensive Amazon automation for cataloging, listing optimization, repricing, inventory management, and ads automation.',
-      icon: Cog,
-      link: '/services/amazon-integration',
-      gradient: 'from-orange-500 to-amber-500',
-      bgGlow: 'bg-orange-500/10',
-      features: ['Cataloging', 'Repricing', 'Inventory Alerts', 'Ads Automation'],
-      stats: '85% Time Saved'
-    },
-    {
-      title: 'Listing Optimization',
-      description: 'Professional Amazon SEO for Product Listings with keyword research, title optimization, and bullet point enhancement for maximum visibility.',
-      icon: FileText,
-      link: '/services/listing-optimization',
-      gradient: 'from-orange-500 to-amber-500',
-      bgGlow: 'bg-orange-500/10',
-      features: ['A+ Content', 'Amazon SEO', 'Product Photography', 'Keyword Research'],
-      stats: 'A+ Content Creation'
-    },
-    {
-      title: 'Product Cataloging',
-      description: 'Professional Product Data Management Agency offering comprehensive cataloging solutions for online retailers.',
-      icon: Database,
-      link: '/services/product-cataloging',
-      gradient: 'from-indigo-500 to-purple-500',
-      bgGlow: 'bg-indigo-500/10',
-      features: ['Product Data', 'Multi-channel', 'PIM Service', 'SKU Cataloging'],
-      stats: 'Product Data Management'
-    }
-  ];
+const services: ServiceItem[] = [
+  {
+    title: "Marketplace Services",
+    description: "End-to-end Amazon & Walmart marketplace management. We engineer high-converting PPC campaigns, craft SEO-driven A+ listings, manage product catalogs, and safeguard account health.",
+    icon: ShoppingCart,
+    link: "/services/amazon-advertising",
+    gradient: "from-orange-500 via-amber-500 to-red-500",
+    iconGradient: "from-orange-500 to-amber-600",
+    bgGlow: "bg-orange-500/10",
+    features: [
+      { label: "Amazon Advertising & Account Management", href: "/services/amazon-advertising" },
+      { label: "Walmart Advertising & Account Management", href: "/services/walmart-advertising" },
+      { label: "Listing Optimization", href: "/services/listing-optimization" },
+      { label: "Product Cataloging", href: "/services/product-cataloging" },
+    ],
+  },
+  {
+    title: "Google & Meta Ads",
+    description: "Omni-channel paid acquisition that captures high-intent shoppers and fuels scalable growth across Google Search, Shopping, Performance Max, and targeted Facebook & Instagram ad funnels.",
+    icon: Target,
+    link: "/services/meta-advertising",
+    gradient: "from-blue-600 via-indigo-600 to-pink-500",
+    iconGradient: "from-indigo-600 to-pink-600",
+    bgGlow: "bg-blue-500/10",
+    features: [
+      { label: "Google Search & Shopping", href: "/services/google-advertising" },
+      { label: "Performance Max", href: "/services/google-advertising" },
+      { label: "Meta Ads (FB & IG)", href: "/services/meta-advertising" },
+      { label: "Audience Retargeting", href: "/services/meta-advertising" },
+      { label: "Creative Optimization", href: "/services/google-advertising" },
+    ],
+  },
+  {
+    title: "Shopify & Wordpress",
+    description: "High-performance storefront development and conversion rate optimization. We build lightning-fast Shopify stores, custom WooCommerce sites, mobile-first UX, and tailored theme experiences.",
+    icon: Code2,
+    link: "/services/shopify-development",
+    gradient: "from-emerald-500 via-teal-500 to-cyan-500",
+    iconGradient: "from-emerald-500 to-teal-600",
+    bgGlow: "bg-emerald-500/10",
+    features: [
+      { label: "Shopify Store Builds", href: "/services/shopify-development" },
+      { label: "WordPress & WooCommerce", href: "/services/website-development" },
+      { label: "Custom Themes", href: "/services/shopify-development" },
+      { label: "Speed & UX Optimization", href: "/services/website-development" },
+      { label: "App & Plugin Integration", href: "/services/shopify-development" },
+    ],
+  },
+  {
+    title: "Automation & Integration",
+    description: "Unified multi-channel commerce operations. Automatically synchronize real-time inventory, pricing, and orders across Amazon, Walmart, and Shopify with robust APIs and custom workflows.",
+    icon: Link2,
+    link: "/services/shopify-integration",
+    gradient: "from-teal-500 via-cyan-500 to-indigo-600",
+    iconGradient: "from-teal-500 to-cyan-600",
+    bgGlow: "bg-teal-500/10",
+    features: [
+      { label: "Shopify & Marketplace Sync", href: "/services/shopify-integration" },
+      { label: "Amazon Automation", href: "/services/amazon-integration" },
+      { label: "Inventory & Order Sync", href: "/services/shopify-integration" },
+      { label: "Automated Repricing", href: "/services/amazon-integration" },
+      { label: "Multi-Channel APIs", href: "/services/shopify-integration" },
+    ],
+  },
+];
 
+const Services: React.FC = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-50 via-white to-blue-50/50">
+    <section className="py-20 bg-slate-50/50">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-4">
-            Our Services
+          <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+            Core Service Matrix
           </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
-            Comprehensive Solutions for
-            <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              E-commerce Growth
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4">
+            Unified Marketplace & Growth
+            <span className="block bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 bg-clip-text text-transparent">
+              Engineered for Measurable Scale
             </span>
           </h2>
-          <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-            From advertising to development, we provide end-to-end services to help your business thrive across all major platforms
+          <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto font-normal">
+            We partner as an end-to-end commerce acceleration team, connecting organic ranking, full-funnel paid media, and operational data sync.
           </p>
         </div>
-        
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        {/* 2x2 Services Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {services.map((service) => {
             const IconComponent = service.icon;
             return (
               <Card
-                key={service.link}
-                className="group cursor-pointer relative overflow-hidden bg-white border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 rounded-2xl"
+                key={service.title}
+                className="group relative flex flex-col justify-between overflow-hidden bg-white border border-slate-200/90 hover:border-blue-400/80 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 rounded-3xl p-7 sm:p-9"
               >
-                <Link
-                  to={service.link}
-                  aria-label={`Learn more about ${service.title}`}
-                  className="absolute inset-0 z-20 rounded-2xl"
-                >
-                  <span className="sr-only">Learn more about {service.title}</span>
-                </Link>
-                {/* Top Gradient Line */}
-                <div className={`h-1 bg-gradient-to-r ${service.gradient}`} />
-                
-                {/* Background Glow on Hover */}
-                <div className={`absolute inset-0 ${service.bgGlow} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                
-                <CardHeader className="relative z-10 pointer-events-none pb-2">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent className="w-7 h-7 text-white" />
-                  </div>
-                  <CardTitle className="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300 leading-tight">
-                    {service.title}
-                  </CardTitle>
-                </CardHeader>
-                
-                <CardContent className="relative z-10 pointer-events-none pt-0">
-                  <CardDescription className="text-slate-600 mb-4 text-sm leading-relaxed line-clamp-3">
-                    {service.description}
-                  </CardDescription>
-                  
-                  {/* Stats Badge */}
-                  <div className={`inline-flex items-center px-3 py-1.5 rounded-lg bg-gradient-to-r ${service.gradient} bg-opacity-10 mb-4`}>
-                    <span className="text-xs font-semibold text-slate-700">{service.stats}</span>
-                  </div>
-                  
-                  {/* Features */}
-                  <div className="mb-5">
-                    <div className="flex flex-wrap gap-1.5">
-                      {service.features.slice(0, 2).map((feature, idx) => (
-                        <span 
-                          key={idx}
-                          className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-md"
-                        >
-                          {feature}
-                        </span>
-                      ))}
-                      {service.features.length > 2 && (
-                        <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-md">
-                          +{service.features.length - 2}
-                        </span>
-                      )}
+                {/* Top Accent Gradient Line */}
+                <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${service.gradient}`} />
+
+                <div className="relative z-10 flex flex-col flex-grow">
+                  {/* Icon & Title Header */}
+                  <CardHeader className="p-0 pb-4">
+                    <div className="mb-4">
+                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.iconGradient} flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300`}>
+                        <IconComponent className="w-7 h-7 text-white" />
+                      </div>
                     </div>
-                  </div>
-                  
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      buttonVariants({ variant: "ghost" }),
-                      "w-full justify-between p-0 h-auto font-semibold text-slate-700 group-hover:text-blue-600 transition-all duration-300"
-                    )}
-                  >
-                    Learn More
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
-                  </span>
-                </CardContent>
+
+                    <CardTitle className="text-2xl font-bold text-slate-950 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
+                      <Link to={service.link} className="hover:underline">
+                        {service.title}
+                      </Link>
+                    </CardTitle>
+                  </CardHeader>
+
+                  {/* Description */}
+                  <CardContent className="p-0 flex-grow">
+                    <CardDescription className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 font-normal">
+                      {service.description}
+                    </CardDescription>
+
+                    {/* Feature Chips / Pills */}
+                    <div>
+                      <div className="flex flex-wrap gap-2">
+                        {service.features.map((feature, idx) => (
+                          <Link
+                            key={idx}
+                            to={feature.href}
+                            className="text-xs px-3 py-1.5 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-lg transition-colors font-medium border border-slate-200/60 hover:border-blue-300"
+                          >
+                            {feature.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </div>
               </Card>
             );
           })}

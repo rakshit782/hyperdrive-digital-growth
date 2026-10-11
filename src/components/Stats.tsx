@@ -3,6 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BarChart3, TrendingUp, Users, Award } from "lucide-react";
 
 const Stats = () => {
+  const currentYear = new Date().getFullYear();
+  const startYear = 2016; // Established 2016 -> 10+ years in 2026, automatically increments each year
+  const yearsExperience = `${Math.max(10, currentYear - startYear)}+`;
+
   const stats = [
     {
       icon: Users,
@@ -25,8 +29,8 @@ const Stats = () => {
     {
       icon: BarChart3,
       title: "Years Experience",
-      value: "9+",
-      description: "In digital marketing"
+      value: yearsExperience,
+      description: "Advertising & Performance Marketing"
     }
   ];
 

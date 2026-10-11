@@ -15,12 +15,13 @@ import {
   Store,
   Layers,
   Link2,
-  Sparkles
+  Sparkles,
+  LogIn
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLogoData } from "@/hooks/useLogoData";
 import { useHeaderSettings } from "@/hooks/useHeaderSettings";
-import amazonLogoSvg from "@/assets/amazon-logo.svg";
+import amazonWordmarkWhite from "@/assets/amazon-wordmark-white.svg";
 
 // Custom SVG Icons for Social Media
 function LinkedInIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -52,6 +53,18 @@ export default function Header() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setIsServicesOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsServicesOpen(false);
+    }, 180);
+  };
   
   const { settings } = useHeaderSettings();
 
@@ -83,7 +96,6 @@ export default function Header() {
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Case Studies", href: "/case-studies" },
-    { label: "Pricing", href: "/pricing" },
     { label: "Blog", href: "/blog" },
   ];
 
@@ -109,15 +121,15 @@ export default function Header() {
               {settings.showAmazonAdsPartner && (
                 <Link 
                   to={settings.amazonAdsPartnerLink || "/amazon-ads-partner"}
-                  className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded bg-white/10 hover:bg-white/15 border border-white/15 hover:border-orange-400/50 transition-all text-white group"
+                  className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md bg-white/10 hover:bg-white/15 border border-white/15 hover:border-orange-400/50 transition-all text-white group shadow-2xs"
                   title="Amazon Ads Partner"
                 >
                   <img 
-                    src={amazonLogoSvg} 
-                    alt="Amazon" 
-                    className="h-3 w-auto object-contain brightness-0 invert" 
+                    src={amazonWordmarkWhite} 
+                    alt="amazon" 
+                    className="h-3.5 w-auto object-contain shrink-0" 
                   />
-                  <span className="text-[10px] font-bold tracking-tight text-slate-100 group-hover:text-orange-400">
+                  <span className="text-[11px] font-bold tracking-tight text-orange-400 group-hover:text-orange-300 whitespace-nowrap">
                     Ads Partner
                   </span>
                 </Link>
@@ -127,15 +139,15 @@ export default function Header() {
               {settings.showAmazonSpnPartner && (
                 <Link 
                   to={settings.amazonSpnPartnerLink || "/services/amazon-advertising"}
-                  className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded bg-white/10 hover:bg-white/15 border border-white/15 hover:border-orange-400/50 transition-all text-white group"
+                  className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md bg-white/10 hover:bg-white/15 border border-white/15 hover:border-orange-400/50 transition-all text-white group shadow-2xs"
                   title="Amazon SPN Partner"
                 >
                   <img 
-                    src={amazonLogoSvg} 
-                    alt="Amazon" 
-                    className="h-3 w-auto object-contain brightness-0 invert" 
+                    src={amazonWordmarkWhite} 
+                    alt="amazon" 
+                    className="h-3.5 w-auto object-contain shrink-0" 
                   />
-                  <span className="text-[10px] font-bold tracking-tight text-slate-100 group-hover:text-orange-400">
+                  <span className="text-[11px] font-bold tracking-tight text-blue-400 group-hover:text-blue-300 whitespace-nowrap">
                     SPN Partner
                   </span>
                 </Link>
@@ -242,8 +254,8 @@ export default function Header() {
             <div 
               className="relative" 
               ref={dropdownRef}
-              onMouseEnter={() => setIsServicesOpen(true)}
-              onMouseLeave={() => setIsServicesOpen(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <button 
                 type="button"
@@ -258,11 +270,14 @@ export default function Header() {
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isServicesOpen ? "rotate-180" : ""}`} />
               </button>
 
-              {/* Mega-menu Panel */}
+              {/* Mega-menu Panel with invisible hover bridge wrapper */}
               {isServicesOpen && (
                 <div 
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[760px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 z-50 grid grid-cols-2 gap-6 animate-in fade-in zoom-in-95 duration-150"
+                  className="absolute top-full left-1/2 -translate-x-1/2 pt-2.5 z-50 animate-in fade-in zoom-in-95 duration-150"
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
                 >
+                  <div className="w-[780px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 grid grid-cols-2 gap-6 ring-1 ring-black/5">
                   {/* Column 1: Amazon Services */}
                   <div className="space-y-3">
                     <Link 
@@ -427,6 +442,7 @@ export default function Header() {
                     </div>
                   </div>
                 </div>
+              </div>
               )}
             </div>
 
@@ -440,15 +456,6 @@ export default function Header() {
             </Link>
 
             <Link 
-              to="/pricing" 
-              className={`px-3.5 py-2 rounded-lg transition-colors hover:text-blue-600 ${
-                location.pathname === "/pricing" ? "text-blue-600 font-semibold" : ""
-              }`}
-            >
-              Pricing
-            </Link>
-
-            <Link 
               to="/blog" 
               className={`px-3.5 py-2 rounded-lg transition-colors hover:text-blue-600 ${
                 location.pathname.startsWith("/blog") ? "text-blue-600 font-semibold" : ""
@@ -458,8 +465,8 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* Right Action: Search Icon + CTA Button */}
-          <div className="hidden lg:flex items-center gap-3">
+          {/* Right Action: Search Icon + CoPilot Login + CTA Button */}
+          <div className="hidden lg:flex items-center gap-2.5">
             <Link
               to="/services"
               className="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition-colors"
@@ -468,6 +475,18 @@ export default function Header() {
             >
               <Search className="w-4 h-4" />
             </Link>
+
+            {/* CoPilot Login Button */}
+            <Button
+              asChild
+              variant="outline"
+              className="border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold px-4 h-11 rounded-xl text-sm gap-1.5 transition-colors shadow-2xs hover:bg-blue-50/50"
+            >
+              <Link to="/copilot-login" title="Login to AMZ CoPilot">
+                <LogIn className="w-4 h-4 text-blue-600" />
+                <span>Login</span>
+              </Link>
+            </Button>
 
             <Button
               asChild
@@ -530,7 +549,13 @@ export default function Header() {
             </Link>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-4 flex flex-col gap-2">
+            <Button asChild variant="outline" className="w-full border-slate-300 text-slate-800 font-semibold gap-2">
+              <Link to="/copilot-login">
+                <LogIn className="w-4 h-4 text-blue-600" />
+                <span>CoPilot Login</span>
+              </Link>
+            </Button>
             <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
               <Link to={settings.ctaLink || "/contact"}>
                 {settings.ctaText}

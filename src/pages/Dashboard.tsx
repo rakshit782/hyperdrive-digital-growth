@@ -10,10 +10,10 @@ import { SecuritySection } from '@/components/dashboard/SecuritySection';
 import { SettingsSection } from '@/components/dashboard/SettingsSection';
 import { HeaderSettingsSection } from '@/components/dashboard/HeaderSettingsSection';
 import { LegalPagesSection } from '@/components/dashboard/LegalPagesSection';
-import { PricingSection } from '@/components/dashboard/PricingSection';
 import { TrackingSection } from '@/components/dashboard/TrackingSection';
 import { VisitorLogsSection } from '@/components/dashboard/VisitorLogsSection';
 import { CertificatesSection } from '@/components/dashboard/CertificatesSection';
+import { BulkCaseStudiesSection } from '@/components/dashboard/BulkCaseStudiesSection';
 import { databaseService } from '@/services/databaseService';
 import { getVisitorLogs } from '@/utils/visitorTracker';
 import { toast } from 'sonner';
@@ -51,30 +51,35 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const [contactsData, leadsData, newslettersData, logsData, visitorLogsData] = await Promise.all([
-        databaseService.getContactSubmissions(100, forceRefresh),
-        databaseService.getLeads(100, forceRefresh),
-        databaseService.getSecurityLogs(100, forceRefresh),
-        databaseService.getSecurityLogs(50, forceRefresh),
-        getVisitorLogs(100),
+        databaseService.getContactSubmissions(100, forceRefresh).catch(() => []),
+        databaseService.getLeads(100, forceRefresh).catch(() => []),
+        databaseService.getSecurityLogs(100, forceRefresh).catch(() => []),
+        databaseService.getSecurityLogs(50, forceRefresh).catch(() => []),
+        getVisitorLogs(100).catch(() => []),
       ]);
 
-      setContacts(contactsData.sort((a: any, b: any) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      const safeContacts = Array.isArray(contactsData) ? contactsData : [];
+      const safeLeads = Array.isArray(leadsData) ? leadsData : [];
+      const safeLogs = Array.isArray(logsData) ? logsData : [];
+      const safeVisitorLogs = Array.isArray(visitorLogsData) ? visitorLogsData : [];
+
+      setContacts(safeContacts.sort((a: any, b: any) => 
+        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
       ));
-      setLeads(leadsData.sort((a: any, b: any) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      setLeads(safeLeads.sort((a: any, b: any) => 
+        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
       ));
       
       // Note: newsletters need a separate endpoint - for now using empty array
       setNewsletters([]);
-      setSecurityLogs(logsData.sort((a: any, b: any) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      setSecurityLogs(safeLogs.sort((a: any, b: any) => 
+        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
       ));
-      setVisitorLogs(visitorLogsData.sort((a: any, b: any) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      setVisitorLogs(safeVisitorLogs.sort((a: any, b: any) => 
+        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
       ));
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.warn('Error loading dashboard data:', error);
       toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -89,8 +94,25 @@ const Dashboard = () => {
   };
 
   const deleteLead = async (id: string) => {
-    // Implement delete via API
-    toast.info('Delete functionality coming soon');
+    try {
+      await databaseService.deleteLead(id);
+      setLeads((prev) => prev.filter((lead) => lead.id !== id));
+      toast.success('Lead permanently deleted from database');
+    } catch (error) {
+      console.error('Failed to delete lead:', error);
+      toast.error('Failed to delete lead from database');
+    }
+  };
+
+  const deleteLeadsBulk = async (ids: string[]) => {
+    try {
+      await databaseService.deleteLeadsBulk(ids);
+      setLeads((prev) => prev.filter((lead) => !ids.includes(lead.id)));
+      toast.success(`${ids.length} leads permanently deleted from database`);
+    } catch (error) {
+      console.error('Failed to bulk delete leads:', error);
+      toast.error('Failed to delete selected leads');
+    }
   };
 
   const deleteNewsletter = async (id: string) => {
@@ -119,6 +141,22 @@ const Dashboard = () => {
       );
     }
 
+    if (activeSection === 'leads') {
+      return (
+        <LeadsSection
+          leads={leads}
+          onDelete={deleteLead}
+          onBulkDelete={deleteLeadsBulk}
+          onRefresh={handleRefresh}
+        />
+      );
+    }
+
+    if (activeSection === 'settings' || activeSection.startsWith('settings-')) {
+      const sub = activeSection.startsWith('settings-') ? activeSection.replace('settings-', '') : 'general';
+      return <SettingsSection activeSubSection={sub} onSubSectionChange={(s) => setActiveSection(`settings-${s}`)} />;
+    }
+
     switch (activeSection) {
       case 'overview':
         return <OverviewSection stats={stats} />;
@@ -129,10 +167,6 @@ const Dashboard = () => {
             onDelete={deleteContact}
             onRefresh={handleRefresh}
           />
-        );
-      case 'leads':
-        return (
-          <LeadsSection leads={leads} onDelete={deleteLead} onRefresh={handleRefresh} />
         );
       case 'newsletter':
         return (
@@ -148,16 +182,14 @@ const Dashboard = () => {
         return <VisitorLogsSection logs={visitorLogs} onRefresh={handleRefresh} />;
       case 'tracking':
         return <TrackingSection />;
-      case 'settings':
-        return <SettingsSection />;
       case 'header-settings':
         return <HeaderSettingsSection />;
       case 'certificates':
         return <CertificatesSection />;
+      case 'case-studies':
+        return <BulkCaseStudiesSection />;
       case 'legal':
         return <LegalPagesSection />;
-      case 'pricing-management':
-        return <PricingSection />;
       default:
         return <OverviewSection stats={stats} />;
     }

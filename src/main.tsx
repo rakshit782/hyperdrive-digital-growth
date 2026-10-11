@@ -5,23 +5,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import App from './App.tsx';
 import './index.css';
 import { performanceOptimizer } from './utils/performanceOptimizer';
-import { logMigrationStatus } from './utils/migrationStatus';
-
-// Log migration status
-logMigrationStatus();
-
-// Initialize local database fallback for offline mode
-import('./utils/localStorageDB')
-  .then(({ localDB }) => {
-    return localDB.seedDefaultData();
-  })
-  .then(() => {
-    console.log('Local database initialized as fallback');
-  })
-  .catch(error => {
-    console.error('Failed to initialize local database:', error);
-    // Don't block app loading if local DB fails
-  });
 
 // Optimize rendering
 const container = document.getElementById("root");

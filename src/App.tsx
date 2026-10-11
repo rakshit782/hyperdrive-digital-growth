@@ -8,7 +8,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthContext";
-import TrackingScriptInjector from "./components/TrackingScriptInjector";
 import { VisitorTracker } from "./components/VisitorTracker";
 import GlobalTracking from "./components/GlobalTracking";
 import Index from "./pages/Index";
@@ -18,7 +17,6 @@ import Maintenance from "./pages/Maintenance";
 import About from "./pages/About";
 import Services from "./pages/ServicesPage";
 import CaseStudies from "./pages/CaseStudies";
-import Pricing from "./pages/Pricing";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
@@ -50,6 +48,7 @@ import DetailedServicePage from "./pages/DetailedServicePage";
 import AdLanding from "./pages/AdLanding";
 import ToolAlternativesPage from "./pages/ToolAlternativesPage";
 import VerifyCertificate from "./pages/VerifyCertificate";
+import CopilotLogin from "./pages/CopilotLogin";
 
 function createQueryClient() {
   return new QueryClient({
@@ -86,7 +85,6 @@ export function AppContent() {
     <>
       <ScrollToTop />
       <GlobalTracking />
-      <TrackingScriptInjector />
       <VisitorTracker />
       <Routes>
         <Route path="/" element={<Maintenance />} />
@@ -103,7 +101,6 @@ export function AppContent() {
                 <Route path="/amazon-case-studies" element={<AmazonCaseStudies />} />
                 <Route path="/meta-case-studies" element={<MetaCaseStudies />} />
                 <Route path="/walmart-case-studies" element={<WalmartCaseStudies />} />
-                <Route path="/pricing" element={<Pricing />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/contact" element={<Contact />} />
@@ -121,6 +118,8 @@ export function AppContent() {
                 <Route path="/services/:serviceType" element={<DetailedServicePage />} />
                 <Route path="/ad-landing" element={<AdLanding />} />
                 <Route path="/verify-certificate" element={<VerifyCertificate />} />
+                <Route path="/copilot-login" element={<CopilotLogin />} />
+                <Route path="/copilot" element={<CopilotLogin />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
     </>

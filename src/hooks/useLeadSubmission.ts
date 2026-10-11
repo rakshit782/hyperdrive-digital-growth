@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { getNeonSql } from '@/services/neonClient';
 
 export interface LeadSubmissionData {
   name: string;
@@ -73,7 +74,102 @@ export const useLeadSubmission = () => {
 
       console.log('Submitting lead to Neon database:', leadData);
 
-      // Submit to Neon database via edge function
+      // 1. Try Direct Neon Database insert first
+      try {
+        const sql = getNeonSql();
+        const leadNumber = `LEAD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        
+        const rows = await sql`
+          INSERT INTO public.leads (
+            name, email, phone, company, brand_name, website_url, amazon_store_url, walmart_store_url,
+            source, status, notes, lead_number, audit_type, current_spend, goals, lead_data, form_security,
+            created_at, updated_at
+          )
+          VALUES (
+            ${leadData.name},
+            ${leadData.email},
+            ${leadData.phone || null},
+            ${leadData.company || null},
+            ${leadData.brandName || null},
+            ${leadData.website || null},
+            ${leadData.amazonStoreUrl || null},
+            ${leadData.walmartStoreUrl || null},
+            ${leadData.source || 'website'},
+            ${leadData.status || 'new'},
+            ${leadData.notes || null},
+            ${leadNumber},
+            ${leadData.auditType || null},
+            ${leadData.monthlyAdSpend || null},
+            ${leadData.businessGoals || null},
+            ${JSON.stringify(leadData.uploadedFiles || {})},
+            ${JSON.stringify(leadData.formSecurity || {})},
+            NOW(),
+            NOW()
+          )
+          RETURNING id, lead_number;
+        `;
+
+        if (rows && rows.length > 0) {
+          const leadId = rows[0].id;
+          const assignedNumber = rows[0].lead_number;
+          console.log('Lead saved directly to Neon:', { leadId, assignedNumber });
+
+          // Trigger email notification if configured
+          try {
+            const settingsRows = await sql`
+              SELECT resend_api_key, notification_email, email_notifications_enabled,
+                     email_subject_template, email_html_template
+              FROM public.site_settings
+              WHERE id = 1;
+            `;
+            const s = settingsRows[0];
+            if (s && s.email_notifications_enabled && s.resend_api_key && s.notification_email) {
+              const recipients = s.notification_email.split(',').map((e: string) => e.trim()).filter(Boolean);
+              if (recipients.length > 0) {
+                const subject = (s.email_subject_template || 'New Lead: {name} ({lead_number})')
+                  .replaceAll('{name}', leadData.name)
+                  .replaceAll('{lead_number}', assignedNumber)
+                  .replaceAll('{company}', leadData.company || 'N/A');
+
+                await fetch('https://api.resend.com/emails', {
+                  method: 'POST',
+                  headers: {
+                    Authorization: `Bearer ${s.resend_api_key}`,
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    from: 'AMZ Leads <onboarding@resend.dev>',
+                    to: recipients,
+                    subject,
+                    html: `
+                      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <h2>🎯 New Lead: ${leadData.name}</h2>
+                        <p><strong>Email:</strong> ${leadData.email}</p>
+                        <p><strong>Phone:</strong> ${leadData.phone || 'N/A'}</p>
+                        <p><strong>Company:</strong> ${leadData.company || 'N/A'}</p>
+                        <p><strong>Notes:</strong> ${leadData.notes || 'None'}</p>
+                        <p style="color: #64748b; font-size: 13px;">Lead ID: ${assignedNumber}</p>
+                      </div>
+                    `,
+                  }),
+                });
+              }
+            }
+          } catch (notifErr) {
+            console.warn('Lead notification dispatch warning:', notifErr);
+          }
+
+          window.dispatchEvent(new CustomEvent('leadCreated', {
+            detail: { id: leadId, leadNumber: assignedNumber, ...leadData }
+          }));
+
+          return { success: true, leadId };
+        }
+      } catch (neonErr) {
+        console.warn('Direct Neon lead submission fallback:', neonErr);
+      }
+
+      // 2. Submit to Neon database via edge function fallback
       const { data: result, error } = await supabase.functions.invoke('neon-lead-submission', {
         body: leadData
       });

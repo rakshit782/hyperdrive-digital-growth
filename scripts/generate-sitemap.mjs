@@ -45,7 +45,6 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://www.amzadscout.com";
 const SITEMAP_EXCLUDE = new Set([
   "/home",
-  "/blog",
   "/free-audit",
   "/contact-us",
   "/verify-certificate",
@@ -53,6 +52,8 @@ const SITEMAP_EXCLUDE = new Set([
   "/dashboard",
   "/dashboard/login",
   "/dashboard/signup",
+  "/copilot-login",
+  "/copilot",
 ]);
 
 function read(rel) {
@@ -327,13 +328,6 @@ async function main() {
   const caseStudies = await fetchPublishedCaseStudies();
   if (caseStudies && caseStudies.length > 0) {
     appendCaseStudies(entries, caseStudies);
-  } else {
-    const indexLoc = `${SITE}/case-studies`;
-    const index = entries.findIndex((entry) => entry.loc === indexLoc);
-    if (index !== -1) {
-      entries.splice(index, 1);
-      console.warn("Removing /case-studies from the sitemap: no published case studies were returned");
-    }
   }
   assertRewritten(entries);
   const xml = render(entries);

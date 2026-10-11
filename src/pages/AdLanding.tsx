@@ -1,54 +1,64 @@
-import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import React, { useState } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import SEOHead from '@/components/SEOHead';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLeadSubmission } from '@/hooks/useLeadSubmission';
-import { useToast } from '@/hooks/use-toast';
-import { useLogoData } from '@/hooks/useLogoData';
+import { toast } from 'sonner';
 import { 
   Loader2, 
   CheckCircle2, 
   TrendingUp, 
-  Users, 
   Target, 
-  Award,
-  Shield,
-  BarChart3,
-  Zap,
-  ArrowRight
+  ShieldCheck, 
+  BarChart3, 
+  Zap, 
+  ArrowRight, 
+  Lock, 
+  Star, 
+  Sparkles, 
+  Building2,
+  Mail,
+  User,
+  ShoppingBag,
+  Clock,
+  Layers,
+  ChevronRight,
+  FileText,
+  Tag,
+  Box,
+  DollarSign,
+  Search
 } from 'lucide-react';
 
 const adLeadSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name is too long'),
-  email: z.string().email('Please enter a valid email address').max(255, 'Email is too long'),
-  phone: z.string().min(10, 'Please enter a valid phone number').max(20, 'Phone number is too long'),
-  company: z.string().min(2, 'Company name is required').max(100, 'Company name is too long'),
-  monthlyAdSpend: z.string().optional(),
-  primaryPlatform: z.string().optional(),
+  email: z.string().email('Please enter a valid business email').max(255, 'Email is too long'),
+  phone: z.string().min(10, 'Please enter a valid phone number with area/country code').max(25, 'Phone number is too long'),
+  company: z.string().min(2, 'Company or brand name is required').max(100, 'Company name is too long'),
+  monthlyAdSpend: z.string().min(1, 'Please select your current ad spend range'),
+  primaryPlatform: z.string().min(1, 'Please select your primary advertising channel'),
+  storeUrl: z.string().optional(),
   message: z.string().max(1000, 'Message is too long').optional(),
 });
 
 type AdLeadFormValues = z.infer<typeof adLeadSchema>;
 
-const AdLanding = () => {
+export default function AdLanding() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const utmSource = searchParams.get('utm_source') || 'paid-ads';
+  const utmMedium = searchParams.get('utm_medium') || 'cpc';
+  const utmCampaign = searchParams.get('utm_campaign') || 'lead-generation';
+
   const { submitLead, isSubmitting } = useLeadSubmission();
-  const { toast } = useToast();
   const [isSuccess, setIsSuccess] = useState(false);
-  
-  let logoData;
-  try {
-    logoData = useLogoData();
-  } catch (error) {
-    console.error('Error in AdLanding useLogoData:', error);
-    logoData = { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.ico', size: 70 };
-  }
 
   const form = useForm<AdLeadFormValues>({
     resolver: zodResolver(adLeadSchema),
@@ -58,493 +68,722 @@ const AdLanding = () => {
       phone: '',
       company: '',
       monthlyAdSpend: '',
-      primaryPlatform: '',
+      primaryPlatform: 'amazon',
+      storeUrl: '',
       message: '',
     },
   });
 
   const onSubmit = async (data: AdLeadFormValues) => {
+    // Fire tracking conversions
+    if (typeof window !== 'undefined') {
+      if (window.gtag) {
+        window.gtag('event', 'generate_lead', {
+          event_category: 'Ad Campaign Lead',
+          event_label: data.primaryPlatform,
+          value: data.monthlyAdSpend,
+        });
+      }
+      if (window.fbq) {
+        window.fbq('track', 'Lead', {
+          content_name: 'Ad Landing Form Submission',
+          content_category: data.primaryPlatform,
+          value: 100,
+          currency: 'USD',
+        });
+      }
+    }
+
     const result = await submitLead({
       name: data.name,
       email: data.email,
       phone: data.phone,
       company: data.company,
+      brandName: data.company,
+      website: data.storeUrl,
       monthlyAdSpend: data.monthlyAdSpend,
       primaryPlatform: data.primaryPlatform,
-      notes: data.message,
-      source: 'facebook-ad-landing',
+      notes: data.message ? `[${utmSource.toUpperCase()} / ${utmCampaign}] ${data.message}` : `[${utmSource.toUpperCase()} / ${utmCampaign}]`,
+      source: `${utmSource}-${utmMedium}-landing`,
     });
 
     if (result.success) {
       setIsSuccess(true);
-      toast({
-        title: "Success!",
-        description: "Your request has been submitted. We'll contact you within 24 hours.",
-      });
+      toast.success("Strategy call booked! Our senior director will reach out within 2 hours.");
       form.reset();
     } else {
-      toast({
-        title: "Error",
-        description: result.error || "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
+      toast.error(result.error || "Submission failed. Please try again.");
     }
   };
 
   const platforms = [
     { 
-      name: "Amazon Ads", 
-      color: "from-amber-500 to-orange-500",
-      bgColor: "bg-amber-500/10",
-      borderColor: "border-amber-500/20"
+      name: "Amazon PPC & DSP", 
+      badge: "Verified Ads Partner",
+      badgeColor: "bg-amber-50 text-amber-800 border-amber-200/80",
+      highlight: "Average 7.8x - 11.2x ROAS",
     },
     { 
-      name: "Walmart Ads", 
-      color: "from-blue-500 to-cyan-500",
-      bgColor: "bg-blue-500/10",
-      borderColor: "border-blue-500/20"
+      name: "Walmart Connect", 
+      badge: "Walmart Partner",
+      badgeColor: "bg-blue-50 text-blue-800 border-blue-200/80",
+      highlight: "Average 8.3x - 10.8x ROAS",
     },
     { 
-      name: "Meta Ads", 
-      color: "from-indigo-500 to-purple-500",
-      bgColor: "bg-indigo-500/10",
-      borderColor: "border-indigo-500/20"
+      name: "Meta & Google Ads", 
+      badge: "Full-Funnel DTC",
+      badgeColor: "bg-purple-50 text-purple-800 border-purple-200/80",
+      highlight: "Average 7.4x - 9.8x ROAS",
     }
   ];
 
-  const stats = [
-    { icon: TrendingUp, value: "10x", label: "Average ROAS", color: "text-emerald-400" },
-    { icon: Users, value: "900+", label: "Happy Clients", color: "text-blue-400" },
-    { icon: Target, value: "$50M+", label: "Ad Spend Managed", color: "text-purple-400" },
-    { icon: BarChart3, value: "$250M+", label: "Revenue Generated", color: "text-amber-400" }
+  const caseMetrics = [
+    { metric: "10.4x", label: "Peak Ad ROAS", sub: "Raw Honey Brand, Amazon UK" },
+    { metric: "+263%", label: "Ad Sales Growth", sub: "Bedding Brand, Walmart Connect" },
+    { metric: "36.3%", label: "CPA Reduction", sub: "Cooling Apparel, Meta & Google" },
+    { metric: "$50M+", label: "Managed Ad Spend", sub: "900+ Satisfied Brands" },
   ];
 
-  const benefits = [
-    'Free comprehensive ad account audit',
-    'Custom strategy session with our experts',
-    'Competitor analysis report',
-    'ROI projection for your business',
-    'No-obligation consultation',
-  ];
-
-  const amazonFeatures = [
-    {
-      title: 'Sponsored Products Mastery',
-      description: 'Drive targeted traffic with optimized keyword bidding, negative keyword management, and strategic product targeting.',
-    },
-    {
-      title: 'Sponsored Brands & Display',
-      description: 'Build brand awareness with headline search ads, video ads, and retargeting campaigns that convert browsers into buyers.',
-    },
-    {
-      title: 'Amazon DSP Campaigns',
-      description: 'Reach high-intent shoppers on and off Amazon with programmatic display advertising and audience targeting.',
-    },
-    {
-      title: 'Listing Optimization',
-      description: 'SEO-optimized titles, bullet points, and A+ Content that rank higher and convert better than competitors.',
-    },
-  ];
-
-  const whyChooseUs = [
-    { metric: '50K+', label: 'Campaigns Managed', description: 'Successfully optimized campaigns across all Amazon ad types' },
-    { metric: '300%', label: 'Average ROI Increase', description: 'Our clients see significant returns on their ad spend' },
-    { metric: '24/7', label: 'Campaign Monitoring', description: 'Real-time optimization and bid adjustments for maximum performance' },
-    { metric: '9+', label: 'Years Experience', description: 'Proven track record with Amazon advertising since the beginning' },
+  const auditHighlights = [
+    "Uncover wasted ad spend eating 20%–40% of margins",
+    "Restructure target ACOS with bid curve algorithms",
+    "Conquest high-converting competitor ASIN placements",
+    "Direct weekly 1-on-1 strategy sessions with dedicated director"
   ];
 
   return (
     <>
-      <Helmet>
-        <title>Expert E-commerce Advertising Management | AMZ AD SCOUT</title>
-        <meta name="description" content="Grow your business with expert advertising management for Amazon, Walmart & Meta platforms. Independent specialists helping brands succeed. We are not affiliated with or endorsed by Amazon." />
-      </Helmet>
+      <SEOHead 
+        title="Claim Your Free E-commerce PPC Audit | AMZ AD SCOUT"
+        description="Scale your Amazon, Walmart, and Meta ad sales with proven 7x-11x ROAS. Claim your complimentary comprehensive ad account audit and custom growth blueprint."
+        canonical="https://www.amzadscout.com/ad-landing"
+      />
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        {/* Header */}
-        <header className="py-4 px-6 border-b border-white/10">
+      <div className="min-h-screen bg-[#fbfcfd] text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
+        
+        {/* Subtle Ambient Background Gradients */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+          <div className="absolute -top-40 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-100/60 via-indigo-50/40 to-transparent rounded-full blur-3xl opacity-70" />
+          <div className="absolute top-1/2 -left-40 w-[500px] h-[500px] bg-gradient-to-tr from-sky-100/50 via-blue-50/30 to-transparent rounded-full blur-3xl opacity-60" />
+        </div>
+
+        {/* Top Header with Original Agency Logo */}
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100/80 shadow-[0_1px_10px_-2px_rgba(0,0,0,0.03)] py-3 px-4 sm:px-8">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {logoData.imageUrl ? (
-                <img 
-                  src={logoData.imageUrl} 
-                  alt={logoData.text}
-                  style={{ height: '50px' }}
-                  className="w-auto object-contain brightness-0 invert"
-                />
-              ) : (
-                <span className="text-xl font-bold text-white">{logoData.text}</span>
-              )}
-            </div>
-            <div className="hidden md:flex items-center gap-3">
-              <span className="text-slate-400 text-sm">E-commerce Growth Specialists</span>
+            
+            {/* Original Agency Logo */}
+            <Link to="/" className="flex flex-col items-start select-none group">
+              <img 
+                src="/logo.png" 
+                alt="AMZ AD SCOUT Logo" 
+                className="h-12 sm:h-14 w-auto object-contain transition-opacity group-hover:opacity-90" 
+              />
+              <span className="text-[9px] font-extrabold tracking-[0.22em] text-slate-400 mt-1 ml-0.5">
+                AN AMAZON SPN AGENCY
+              </span>
+            </Link>
+
+            {/* Header Right Badges & CTA Anchor */}
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 border border-slate-200/80 text-slate-700 text-xs font-semibold">
+                <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
+                <span>Verified E-commerce Ads Partner</span>
+              </div>
+              <Button 
+                size="sm" 
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-600/20 px-4 py-2 transition-all hover:shadow-md hover:shadow-blue-600/30"
+                onClick={() => document.getElementById('ad-lead-form')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                Claim Free Audit
+                <ArrowRight className="h-3.5 w-3.5 ml-1" />
+              </Button>
             </div>
           </div>
         </header>
 
         {/* Hero Section */}
-        <section className="relative py-12 lg:py-20 overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-          
-          <div className="max-w-7xl mx-auto px-6 relative z-10">
-            {/* Platform Expertise Badges */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
-              {platforms.map((platform, index) => (
-                <div 
-                  key={index}
-                  className={`inline-flex items-center gap-2 ${platform.bgColor} border ${platform.borderColor} rounded-full px-4 py-2`}
-                >
-                  <Award className={`w-4 h-4 bg-gradient-to-r ${platform.color} bg-clip-text`} style={{ color: platform.color.includes('amber') ? '#f59e0b' : platform.color.includes('blue') ? '#3b82f6' : '#6366f1' }} />
-                  <span className="text-white/90 text-sm font-medium">{platform.name} Specialists</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                Scale Your Business with{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-purple-400 to-cyan-400">
-                  Expert Ad Management
-                </span>
-              </h1>
-              <p className="text-lg md:text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
-                Join hundreds of businesses achieving 300%+ ROAS with our proven advertising strategies 
-                across Amazon, Walmart, and Meta platforms.
-              </p>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-              {stats.map((stat, index) => (
-                <Card key={index} className="bg-white/5 backdrop-blur-lg border-white/10 hover:bg-white/10 transition-colors">
-                  <CardContent className="py-6 text-center">
-                    <stat.icon className={`w-8 h-8 mx-auto mb-3 ${stat.color}`} />
-                    <div className="text-2xl md:text-3xl font-bold text-white mb-1">{stat.value}</div>
-                    <div className="text-slate-400 text-sm">{stat.label}</div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Main Content Grid */}
-            <div className="grid lg:grid-cols-2 gap-12 items-start">
-              {/* Benefits Side */}
-              <div className="text-white space-y-8">
-                <div>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-6">What You'll Get:</h2>
-                  <div className="space-y-4">
-                    {benefits.map((benefit, index) => (
-                      <div key={index} className="flex items-start gap-4 group">
-                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                          <CheckCircle2 className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-lg text-slate-200">{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
+        <section className="relative pt-8 pb-16 lg:pt-14 lg:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+            
+            {/* Left Copy & Performance Authority (6 Cols - Symmetrical Balance) */}
+            <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
+              
+              {/* Badge & Headlines */}
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-800 text-xs font-semibold shadow-xs">
+                  <Sparkles className="h-3.5 w-3.5 text-blue-600" />
+                  <span>$1,500 Full Account Audit — 100% Free This Week</span>
                 </div>
 
-                {/* Platform Expertise */}
-                <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10">
-                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-amber-400" />
-                    Our Platform Expertise
-                  </h3>
-                  <div className="space-y-3">
-                    {platforms.map((platform, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${platform.color}`}></div>
-                        <span className="text-slate-300">{platform.name} Management</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.12]">
+                  Stop Burning Ad Budget. <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600">
+                    Scale to 7x–11x ROAS
+                  </span> With Precision PPC.
+                </h1>
 
-                {/* Limited Time Offer */}
-                <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur-lg rounded-2xl p-6 border border-amber-500/30">
-                  <div className="flex items-start gap-3">
-                    <Zap className="w-6 h-6 text-amber-400 flex-shrink-0" />
+                <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                  We eliminate bleed keywords, conquest competitor placements, and deploy machine-calibrated bid architectures that transform erratic ad accounts into predictable profit engines.
+                </p>
+              </div>
+
+              {/* Supported Platforms Grid - Symmetrical & Clean */}
+              <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                {platforms.map((p) => (
+                  <div 
+                    key={p.name} 
+                    className="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] flex flex-col justify-between transition-all hover:border-blue-300 hover:shadow-md"
+                  >
                     <div>
-                      <p className="font-semibold text-amber-300 mb-1">Limited Time Offer</p>
-                      <p className="text-slate-300 text-sm">
-                        Get your first month of management at 50% off when you book your strategy call today!
-                      </p>
+                      <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold border mb-1.5 ${p.badgeColor}`}>
+                        {p.badge}
+                      </span>
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight">{p.name}</h4>
                     </div>
+                    <p className="text-[11px] sm:text-xs font-semibold text-emerald-600 mt-2">{p.highlight}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Verified Metrics Counter - Sleek High-End Card */}
+              <div className="p-5 sm:p-6 rounded-2xl bg-[#09152e] text-white shadow-xl border border-blue-950/60 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="text-[11px] uppercase tracking-wider font-bold text-blue-300 mb-3.5 flex items-center gap-1.5">
+                    <BarChart3 className="h-4 w-4 text-blue-400" />
+                    <span>Verified 2026 Performance Benchmark</span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 text-center divide-x divide-white/10">
+                    {caseMetrics.map((m) => (
+                      <div key={m.label} className="px-1 first:pl-0 last:pr-0">
+                        <div className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight">{m.metric}</div>
+                        <div className="text-[11px] font-semibold text-blue-200 mt-0.5">{m.label}</div>
+                        <div className="text-[10px] text-slate-400 mt-0.5 truncate">{m.sub}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
 
-              {/* Form Side */}
-              <Card className="bg-white shadow-2xl border-0 overflow-hidden">
-                <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 text-center">
-                  <p className="text-white font-semibold">Limited Spots Available This Week</p>
+              {/* Audit Highlights - Balanced 2x2 Grid */}
+              <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/70">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2.5">
+                  Included In Your Complimentary Audit:
                 </div>
-                <CardContent className="p-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+                  {auditHighlights.map((item) => (
+                    <div key={item} className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <span className="leading-snug">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Verified Client Testimonial - Compact & Polished */}
+              <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-xs">
+                  5.0★
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1 text-amber-400">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-3 w-3 fill-current" />
+                    ))}
+                    <span className="text-[11px] text-slate-500 font-semibold ml-1.5 truncate">Verified Brand Owner Review</span>
+                  </div>
+                  <p className="text-xs text-slate-700 italic leading-snug line-clamp-2 mt-1">
+                    "AMZ AD SCOUT reduced our ACOS from 54% to 19% in under 90 days while scaling revenues past $120k. Unrivaled PPC team."
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Right: Modern & Classic High-Converting Glass Form (6 Cols - Perfectly Aligned) */}
+            <div id="ad-lead-form" className="lg:col-span-6 scroll-mt-20">
+              <div className="bg-white rounded-3xl border border-slate-200/90 shadow-[0_12px_40px_-10px_rgba(15,23,42,0.08)] overflow-hidden transition-all">
+                
+                {/* Form Elegant Top Banner */}
+                <div className="bg-gradient-to-r from-[#09152e] via-[#0f244a] to-[#122e5e] p-6 text-white text-center border-b border-blue-900/40 relative">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-[11px] font-semibold mb-2">
+                    <Sparkles className="h-3 w-3 text-amber-300" />
+                    Complimentary 360° Growth Audit
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                    Request Your Free Blueprint
+                  </h3>
+                  <p className="text-xs text-slate-300 mt-1 max-w-xs mx-auto">
+                    Get an in-depth ACOS reduction & ROAS forecast customized for your catalog.
+                  </p>
+                </div>
+
+                {/* Form Fields Body */}
+                <div className="p-6 sm:p-7 bg-white">
                   {isSuccess ? (
-                    <div className="py-12 text-center">
-                      <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+                    <div className="py-12 text-center space-y-4">
+                      <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
+                        <CheckCircle2 className="h-10 w-10" />
                       </div>
-                      <h3 className="text-2xl font-bold text-slate-900 mb-3">Thank You!</h3>
-                      <p className="text-slate-600 mb-6">
-                        We've received your information and will contact you within 24 hours to schedule your free strategy call.
+                      <h4 className="text-2xl font-black text-slate-900">Audit Request Received!</h4>
+                      <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
+                        Our senior advertising director is reviewing your catalog parameters. We will contact you within 2 hours with initial data points.
                       </p>
-                      <p className="text-sm text-slate-500">
-                        Check your email for confirmation and next steps.
-                      </p>
+                      <Button
+                        onClick={() => setIsSuccess(false)}
+                        variant="outline"
+                        className="text-xs mt-3 rounded-xl border-slate-300"
+                      >
+                        Submit Another Brand
+                      </Button>
                     </div>
                   ) : (
-                    <>
-                      <div className="mb-6 text-center">
-                        <h3 className="text-2xl font-bold text-slate-900 mb-2">Get Your Free Strategy Call</h3>
-                        <p className="text-slate-600">Fill out the form below to get started</p>
-                      </div>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        
+                        {/* Name Field */}
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem className="space-y-1.5">
+                              <FormLabel className="text-xs font-bold text-slate-700 flex items-center gap-1">
+                                <User className="h-3 w-3 text-slate-400" /> Full Name *
+                              </FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="Alex Vance" 
+                                  className="h-11 text-sm rounded-xl border-slate-200 focus-visible:ring-blue-600/20 focus-visible:border-blue-600 bg-slate-50/50 hover:bg-white transition-colors" 
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
 
-                      <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        {/* Email & Phone */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <FormField
                             control={form.control}
-                            name="name"
+                            name="email"
                             render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Full Name *</FormLabel>
+                              <FormItem className="space-y-1.5">
+                                <FormLabel className="text-xs font-bold text-slate-700 flex items-center gap-1">
+                                  <Mail className="h-3 w-3 text-slate-400" /> Business Email *
+                                </FormLabel>
                                 <FormControl>
-                                  <Input placeholder="John Doe" {...field} />
+                                  <Input 
+                                    type="email" 
+                                    placeholder="alex@brand.com" 
+                                    className="h-11 text-sm rounded-xl border-slate-200 focus-visible:ring-blue-600/20 focus-visible:border-blue-600 bg-slate-50/50 hover:bg-white transition-colors" 
+                                    {...field} 
+                                  />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="text-xs" />
                               </FormItem>
                             )}
                           />
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email Address *</FormLabel>
-                                  <FormControl>
-                                    <Input type="email" placeholder="john@company.com" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                          <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                              <FormItem className="space-y-1.5">
+                                <FormLabel className="text-xs font-bold text-slate-700">Phone Number *</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="tel" 
+                                    placeholder="+1 (555) 019-2834" 
+                                    className="h-11 text-sm rounded-xl border-slate-200 focus-visible:ring-blue-600/20 focus-visible:border-blue-600 bg-slate-50/50 hover:bg-white transition-colors" 
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage className="text-xs" />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
 
-                            <FormField
-                              control={form.control}
-                              name="phone"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Phone Number *</FormLabel>
-                                  <FormControl>
-                                    <Input type="tel" placeholder="(555) 123-4567" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
+                        {/* Company & Store URL */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <FormField
                             control={form.control}
                             name="company"
                             render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Company Name *</FormLabel>
+                              <FormItem className="space-y-1.5">
+                                <FormLabel className="text-xs font-bold text-slate-700 flex items-center gap-1">
+                                  <Building2 className="h-3 w-3 text-slate-400" /> Company / Brand *
+                                </FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Your Company Inc." {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="primaryPlatform"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Primary Platform</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select platform" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="amazon">Amazon Ads</SelectItem>
-                                      <SelectItem value="walmart">Walmart Ads</SelectItem>
-                                      <SelectItem value="meta">Meta Ads</SelectItem>
-                                      <SelectItem value="multiple">Multiple Platforms</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name="monthlyAdSpend"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Monthly Ad Spend</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select range" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="0-5000">$0 - $5,000</SelectItem>
-                                      <SelectItem value="5000-15000">$5,000 - $15,000</SelectItem>
-                                      <SelectItem value="15000-50000">$15,000 - $50,000</SelectItem>
-                                      <SelectItem value="50000+">$50,000+</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <FormField
-                            control={form.control}
-                            name="message"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Tell us about your goals (Optional)</FormLabel>
-                                <FormControl>
-                                  <Textarea 
-                                    placeholder="What are your main advertising challenges?" 
-                                    className="min-h-[80px] resize-none"
+                                  <Input 
+                                    placeholder="Vance Essentials" 
+                                    className="h-11 text-sm rounded-xl border-slate-200 focus-visible:ring-blue-600/20 focus-visible:border-blue-600 bg-slate-50/50 hover:bg-white transition-colors" 
                                     {...field} 
                                   />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="text-xs" />
                               </FormItem>
                             )}
                           />
 
-                          <Button 
-                            type="submit" 
-                            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-6 text-lg" 
-                            size="lg" 
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? (
-                              <>
-                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                Submitting...
-                              </>
-                            ) : (
-                              <>
-                                Get My Free Strategy Call
-                                <ArrowRight className="ml-2 h-5 w-5" />
-                              </>
+                          <FormField
+                            control={form.control}
+                            name="storeUrl"
+                            render={({ field }) => (
+                              <FormItem className="space-y-1.5">
+                                <FormLabel className="text-xs font-bold text-slate-700 flex items-center gap-1">
+                                  <ShoppingBag className="h-3 w-3 text-slate-400" /> Store Link / ASIN
+                                </FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    placeholder="amazon.com/dp/..." 
+                                    className="h-11 text-sm rounded-xl border-slate-200 focus-visible:ring-blue-600/20 focus-visible:border-blue-600 bg-slate-50/50 hover:bg-white transition-colors" 
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <FormMessage className="text-xs" />
+                              </FormItem>
                             )}
-                          </Button>
+                          />
+                        </div>
 
-                          <p className="text-xs text-center text-slate-500 mt-4">
-                            By submitting this form, you agree to our Terms of Service and Privacy Policy
-                          </p>
-                        </form>
-                      </Form>
-                    </>
+                        {/* Primary Platform & Ad Spend */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <FormField
+                            control={form.control}
+                            name="primaryPlatform"
+                            render={({ field }) => (
+                              <FormItem className="space-y-1.5">
+                                <FormLabel className="text-xs font-bold text-slate-700">Primary Channel *</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-11 text-sm rounded-xl border-slate-200 bg-slate-50/50">
+                                      <SelectValue placeholder="Select platform" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="rounded-xl shadow-lg border-slate-200">
+                                    <SelectItem value="amazon">Amazon Advertising</SelectItem>
+                                    <SelectItem value="walmart">Walmart Connect</SelectItem>
+                                    <SelectItem value="meta-google">Meta & Google Ads</SelectItem>
+                                    <SelectItem value="multi-channel">Multi-Channel Growth</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage className="text-xs" />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="monthlyAdSpend"
+                            render={({ field }) => (
+                              <FormItem className="space-y-1.5">
+                                <FormLabel className="text-xs font-bold text-slate-700">Monthly Ad Spend *</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-11 text-sm rounded-xl border-slate-200 bg-slate-50/50">
+                                      <SelectValue placeholder="Select spend" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="rounded-xl shadow-lg border-slate-200">
+                                    <SelectItem value="under-5k">Under $5,000 / mo</SelectItem>
+                                    <SelectItem value="5k-15k">$5,000 - $15,000 / mo</SelectItem>
+                                    <SelectItem value="15k-50k">$15,000 - $50,000 / mo</SelectItem>
+                                    <SelectItem value="50k-plus">$50,000+ / mo</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage className="text-xs" />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* Optional Goals / Challenges */}
+                        <FormField
+                          control={form.control}
+                          name="message"
+                          render={({ field }) => (
+                            <FormItem className="space-y-1.5">
+                              <FormLabel className="text-xs font-bold text-slate-700">Current Target or Challenge (Optional)</FormLabel>
+                              <FormControl>
+                                <Textarea 
+                                  placeholder="e.g. Current ACOS is 42%, looking to scale sales while hitting 22% target" 
+                                  className="min-h-[75px] text-xs resize-none rounded-xl border-slate-200 bg-slate-50/50 hover:bg-white transition-colors" 
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Submit Button */}
+                        <Button 
+                          type="submit" 
+                          disabled={isSubmitting}
+                          className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow-md shadow-blue-600/25 transition-all text-sm gap-2 mt-2"
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Analyzing Parameters...
+                            </>
+                          ) : (
+                            <>
+                              Claim 100% Free Strategy Blueprint
+                              <ArrowRight className="h-4 w-4" />
+                            </>
+                          )}
+                        </Button>
+
+                        {/* Trust Micro-copy */}
+                        <div className="flex items-center justify-center gap-3 text-[11px] text-slate-400 pt-1">
+                          <span className="flex items-center gap-1">
+                            <Lock className="h-3 w-3 text-slate-400" /> 100% Confidential
+                          </span>
+                          <span>•</span>
+                          <span>No Credit Card</span>
+                          <span>•</span>
+                          <span>Zero Obligation</span>
+                        </div>
+                      </form>
+                    </Form>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* What Includes in Audit - 8 Comprehensive Pillars */}
+        <section className="py-16 bg-white border-y border-slate-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-14">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200/80">
+                What's Inside Your Audit
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mt-3 tracking-tight">
+                Comprehensive 8-Pillar Account Deep Dive
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 mt-2.5 max-w-2xl mx-auto">
+                We analyze every dimension of your ad performance, listing health, and unit economics to build a clear roadmap for higher sales and profitability.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+              {[
+                {
+                  id: "01",
+                  title: "Account Health Check",
+                  icon: ShieldCheck,
+                  iconBg: "bg-blue-50 text-blue-600 border-blue-200/60",
+                  points: [
+                    "Account performance & policy compliance",
+                    "Suppressed listings and alerts",
+                    "Buy Box & eligibility issues",
+                    "Risk factors and recommendations",
+                  ],
+                },
+                {
+                  id: "02",
+                  title: "Advertising Performance",
+                  icon: BarChart3,
+                  iconBg: "bg-purple-50 text-purple-600 border-purple-200/60",
+                  points: [
+                    "Campaign structure and setup review",
+                    "ACOS, TACOS and profitability analysis",
+                    "Keyword and targeting performance",
+                    "Wasted spend and optimization opportunities",
+                  ],
+                },
+                {
+                  id: "03",
+                  title: "SKU-Level Profitability (P&L)",
+                  icon: DollarSign,
+                  iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+                  points: [
+                    "SKU-level revenue, ad spend and fees",
+                    "True product-level profitability",
+                    "Contribution margin analysis",
+                    "Low-performing and high-potential SKUs",
+                  ],
+                },
+                {
+                  id: "04",
+                  title: "Listing & Content Review",
+                  icon: FileText,
+                  iconBg: "bg-amber-50 text-amber-600 border-amber-200/60",
+                  points: [
+                    "Title, keywords and backend search terms",
+                    "Images, A+ content and brand store",
+                    "Conversion rate and customer reviews",
+                    "Content gaps and optimization suggestions",
+                  ],
+                },
+                {
+                  id: "05",
+                  title: "Keyword & Market Analysis",
+                  icon: Search,
+                  iconBg: "bg-rose-50 text-rose-600 border-rose-200/60",
+                  points: [
+                    "Top performing and growth keywords",
+                    "Search term opportunities",
+                    "Competitor gap analysis",
+                    "Market trends and demand insights",
+                  ],
+                },
+                {
+                  id: "06",
+                  title: "Pricing & Buy Box Analysis",
+                  icon: Tag,
+                  iconBg: "bg-orange-50 text-orange-600 border-orange-200/60",
+                  points: [
+                    "Current pricing vs. competitors",
+                    "Buy Box share and price competitiveness",
+                    "Impact on profitability",
+                    "Recommendations for optimal pricing",
+                  ],
+                },
+                {
+                  id: "07",
+                  title: "Inventory & Supply Chain",
+                  icon: Box,
+                  iconBg: "bg-sky-50 text-sky-600 border-sky-200/60",
+                  points: [
+                    "Stock levels and inventory health",
+                    "FBA/FBM performance review",
+                    "Lost sales due to out of stock",
+                    "Forecasting and replenishment suggestions",
+                  ],
+                },
+                {
+                  id: "08",
+                  title: "12-Month Growth Blueprint",
+                  icon: TrendingUp,
+                  iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+                  points: [
+                    "Sales and profitability projections",
+                    "Advertising budget recommendations",
+                    "Marketplace expansion opportunities",
+                    "Action plan with clear next steps",
+                  ],
+                },
+              ].map((pillar) => {
+                const IconComponent = pillar.icon;
+                return (
+                  <div 
+                    key={pillar.id} 
+                    className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-blue-300 hover:shadow-md transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${pillar.iconBg}`}>
+                          <IconComponent className="h-5 w-5" />
+                        </div>
+                        <span className="text-xs font-mono font-bold text-slate-400">{pillar.id}</span>
+                      </div>
+                      <h3 className="text-base font-bold text-slate-900 mb-4">{pillar.title}</h3>
+                      <ul className="space-y-2.5">
+                        {pillar.points.map((pt, i) => (
+                          <li key={i} className="flex items-start gap-2.5 text-xs text-slate-600 leading-snug">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 shrink-0 mt-0.5" />
+                            <span>{pt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        {/* Amazon Ads Expertise Section */}
-        <section className="py-16 bg-slate-800/50">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 rounded-full text-sm font-medium mb-4">
-                Amazon Advertising Experts
+        {/* Our 5-Step Execution Methodology */}
+        <section className="py-16 bg-slate-50/70 border-b border-slate-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200/80">
+                Our Proven Framework
               </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Why Amazon Sellers Choose Us
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-3">
+                5-Stage PPC Growth Roadmap
               </h2>
-              <p className="text-slate-400 max-w-2xl mx-auto">
-                We've managed over $50M+ in Amazon ad spend and helped 500+ brands scale their businesses with proven strategies.
+              <p className="text-sm text-slate-600 mt-2">
+                From initial account diagnostic to daily aggressive optimization and multi-channel scaling.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 mb-12">
-              {amazonFeatures.map((feature, index) => (
-                <Card key={index} className="bg-white/5 backdrop-blur-lg border-white/10 hover:bg-white/10 transition-all duration-300">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                    <p className="text-slate-400">{feature.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {whyChooseUs.map((item, index) => (
-                <div key={index} className="text-center p-6 rounded-xl bg-gradient-to-b from-white/5 to-transparent border border-white/10">
-                  <div className="text-3xl md:text-4xl font-bold text-amber-400 mb-2">{item.metric}</div>
-                  <div className="text-white font-medium mb-1">{item.label}</div>
-                  <p className="text-slate-500 text-xs">{item.description}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {[
+                { 
+                  step: "01", 
+                  title: "Audit & Analyze", 
+                  desc: "Comprehensive deep-dive into search terms, waste spend, bleed keywords, and historical account performance." 
+                },
+                { 
+                  step: "02", 
+                  title: "Strategize", 
+                  desc: "Building custom bid rules, harvesting pipelines, new campaigns, and high-impact product launch roadmaps." 
+                },
+                { 
+                  step: "03", 
+                  title: "Competitor Conquesting", 
+                  desc: "Target competitor product detail pages and conquest brand keywords to capture ready-to-buy traffic." 
+                },
+                { 
+                  step: "04", 
+                  title: "Assigning Ads Manager", 
+                  desc: "Dedicated senior advertising director assigned directly to your brand for continuous oversight and weekly syncs." 
+                },
+                { 
+                  step: "05", 
+                  title: "Execution", 
+                  desc: "Active day-to-day bid optimization, daily budget pacing, negative matching, and aggressive scaling." 
+                },
+              ].map((item) => (
+                <div key={item.step} className="p-5 rounded-2xl bg-white border border-slate-200/70 hover:border-blue-300 hover:shadow-sm transition-all flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-black text-blue-600 font-mono mb-2">{item.step}</div>
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900 mb-2">{item.title}</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed">{item.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Social Proof Section */}
-        <section className="py-12 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center">
-              <p className="text-slate-300 text-lg mb-6">
-                "Working with AMZ AD SCOUT transformed our Amazon business. Our ROAS increased by 340% in just 3 months, and we've seen consistent month-over-month growth ever since."
-              </p>
-              <p className="text-amber-400 font-semibold">— Sarah M., Health & Wellness Brand Owner</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA Section */}
-        <section className="py-16">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready to Scale Your Amazon Sales?
+        {/* Bottom CTA Banner */}
+        <section className="py-16 bg-[#09152e] text-white text-center px-4 relative overflow-hidden">
+          <div className="max-w-3xl mx-auto space-y-5 relative z-10">
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+              Ready to Accelerate Your Brand's Growth?
             </h2>
-            <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
-              Join 900+ successful brands who trust us with their Amazon advertising. Get your free strategy call today and discover how we can help you achieve 10x ROAS.
+            <p className="text-sm sm:text-base text-blue-200 max-w-xl mx-auto">
+              Join 900+ brands growing profitably across Amazon, Walmart, and Meta.
             </p>
             <Button 
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold px-8 py-6 text-lg"
               size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-8 py-6 rounded-2xl shadow-xl shadow-blue-600/30 text-base"
+              onClick={() => document.getElementById('ad-lead-form')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Get Your Free Strategy Call
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="h-4 w-4 ml-1.5" />
             </Button>
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="py-8 border-t border-white/10">
-          <div className="max-w-7xl mx-auto px-6 text-center space-y-2">
-            <p className="text-slate-400 text-sm">
-              © {new Date().getFullYear()} AMZ AD SCOUT. All rights reserved. | E-commerce Advertising Specialists
-            </p>
-            <p className="text-slate-500 text-xs">
-              We are not affiliated with or endorsed by Amazon, Walmart, or Meta.
-            </p>
+        {/* Clean Disclaimers & Footer */}
+        <footer className="py-8 bg-slate-950 text-slate-400 text-xs text-center border-t border-slate-900 px-4">
+          <div className="max-w-5xl mx-auto space-y-2">
+            <p>© {new Date().getFullYear()} AMZ AD SCOUT. All rights reserved.</p>
           </div>
         </footer>
+
       </div>
     </>
   );
-};
-
-export default AdLanding;
+}

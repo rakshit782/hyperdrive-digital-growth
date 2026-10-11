@@ -37,16 +37,6 @@ const ServiceCaseStudiesGrid = ({ caseStudies }: ServiceCaseStudiesGridProps) =>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {displayCaseStudies.map((study) => (
               <div key={study.id} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
-                {study.image_url && (
-                  <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-500">
-                    <img 
-                      src={study.image_url} 
-                      alt={study.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-3">
                     {study.industry && (

@@ -1,109 +1,34 @@
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, TrendingUp, DollarSign, Target, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import { getCaseStudiesByService, FormattedCaseStudy } from "@/data/bulkCaseStudiesAdapter";
+import CaseStudyPopup from "@/components/CaseStudyPopup";
 
 const WalmartCaseStudies = () => {
-  const caseStudies = [
-    {
-      title: "Grocery Brand Marketplace Expansion",
-      client: "Fresh Foods Co.",
-      challenge: "New to Walmart marketplace with zero visibility",
-      solution: "Comprehensive Walmart Connect campaign with sponsored products and display ads",
+  const caseStudies = getCaseStudiesByService("Walmart Advertising");
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<any>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const handleCaseStudyClick = (study: FormattedCaseStudy) => {
+    setSelectedCaseStudy({
+      id: study.id,
+      title: study.title,
+      description: study.description,
+      industry: study.industry,
+      client_name: study.client_name,
+      image_url: study.imageUrl,
       results: {
-        roasIncrease: "380%",
-        salesGrowth: "$850K",
-        timeline: "5 months"
+        [study.results.metric1.label]: study.results.metric1.value,
+        [study.results.metric2.label]: study.results.metric2.value,
+        [study.results.metric3.label]: study.results.metric3.value,
       },
-      image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop"
-    },
-    {
-      title: "Home Improvement Brand Success",
-      client: "DIY Solutions",
-      challenge: "High competition from established retailers",
-      solution: "Strategic keyword targeting and seasonal campaign optimization",
-      results: {
-        roasIncrease: "420%",
-        salesGrowth: "$1.1M",
-        timeline: "6 months"
-      },
-      image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop"
-    },
-    {
-      title: "Baby Products Brand Growth",
-      client: "Little Angels",
-      challenge: "Struggling to reach target demographic effectively",
-      solution: "Audience-focused campaigns with enhanced brand content",
-      results: {
-        roasIncrease: "350%",
-        salesGrowth: "$680K",
-        timeline: "4 months"
-      },
-      image: "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=400&h=300&fit=crop"
-    },
-    {
-      title: "Automotive Parts Retailer Breakthrough",
-      client: "Auto Express",
-      challenge: "Complex product catalog and targeting challenges",
-      solution: "Category-specific campaigns with advanced product targeting",
-      results: {
-        roasIncrease: "460%",
-        salesGrowth: "$1.3M",
-        timeline: "7 months"
-      },
-      image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop"
-    },
-    {
-      title: "Outdoor Gear Brand Market Entry",
-      client: "Adventure Gear",
-      challenge: "Limited brand recognition on Walmart platform",
-      solution: "Brand amplifier campaigns with video content optimization",
-      results: {
-        roasIncrease: "310%",
-        salesGrowth: "$750K",
-        timeline: "5 months"
-      },
-      image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop"
-    },
-    {
-      title: "Health & Wellness Brand Expansion",
-      client: "Vitality Plus",
-      challenge: "Strict advertising guidelines and compliance issues",
-      solution: "Compliant campaign structure with educational content focus",
-      results: {
-        roasIncrease: "390%",
-        salesGrowth: "$920K",
-        timeline: "6 months"
-      },
-      image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop"
-    },
-    {
-      title: "Electronics Retailer Optimization",
-      client: "TechWorld",
-      challenge: "Poor campaign performance and high costs",
-      solution: "Complete account restructure with automated bidding",
-      results: {
-        roasIncrease: "450%",
-        salesGrowth: "$1.5M",
-        timeline: "5 months"
-      },
-      image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=300&fit=crop"
-    },
-    {
-      title: "Fashion Brand Digital Transformation",
-      client: "Style Maven",
-      challenge: "Traditional retail transitioning to marketplace",
-      solution: "Multi-format campaign strategy with brand storytelling",
-      results: {
-        roasIncrease: "370%",
-        salesGrowth: "$800K",
-        timeline: "6 months"
-      },
-      image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=300&fit=crop"
-    }
-  ];
+    });
+    setIsPopupOpen(true);
+  };
 
   return (
     <>
@@ -140,64 +65,68 @@ const WalmartCaseStudies = () => {
           {/* Case Studies Grid */}
           <section className="pb-20">
             <div className="container mx-auto px-6">
-              <div className="grid lg:grid-cols-2 gap-8 mb-16">
-                {caseStudies.map((study, index) => (
+              <div className="grid md:grid-cols-2 gap-8 mb-16">
+                {caseStudies.map((study) => (
                   <div 
-                    key={index}
-                    className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:border-blue-200 transform hover:-translate-y-2"
+                    key={study.id}
+                    onClick={() => handleCaseStudyClick(study)}
+                    className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200 hover:border-blue-400 transform hover:-translate-y-1.5 cursor-pointer flex flex-col justify-between"
                   >
-                    <div className="flex flex-col h-full">
-                      {/* Image */}
-                      <div className="relative rounded-2xl overflow-hidden mb-6">
-                        <img 
-                          src={study.image} 
-                          alt={study.title}
-                          className="w-full h-48 object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                      </div>
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">
+                              {study.industry}
+                            </span>
+                            <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-medium">
+                              {study.client_name}
+                            </span>
+                          </div>
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                            {study.channel}
+                          </span>
+                        </div>
 
-                      {/* Content */}
-                      <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                        <h3 className="text-xl font-bold text-slate-900 mb-3 hover:text-blue-600 transition-colors">
                           {study.title}
                         </h3>
-                        <p className="text-blue-600 font-medium mb-4">{study.client}</p>
-                        
-                        <div className="space-y-4 mb-6">
-                          <div>
-                            <h4 className="font-semibold text-slate-800 mb-1">Challenge:</h4>
-                            <p className="text-slate-600 text-sm">{study.challenge}</p>
-                          </div>
-                          
-                          <div>
-                            <h4 className="font-semibold text-slate-800 mb-1">Solution:</h4>
-                            <p className="text-slate-600 text-sm">{study.solution}</p>
-                          </div>
-                        </div>
 
-                        {/* Results */}
-                        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
-                          <h4 className="font-semibold text-slate-800 mb-4 flex items-center">
-                            <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
-                            Results Achieved
-                          </h4>
-                          <div className="grid grid-cols-3 gap-4">
-                            <div className="text-center">
-                              <div className="text-2xl font-bold text-blue-600">{study.results.roasIncrease}</div>
-                              <div className="text-xs text-slate-600">ROAS Increase</div>
-                            </div>
-                            <div className="text-center">
-                              <div className="text-2xl font-bold text-purple-600">{study.results.salesGrowth}</div>
-                              <div className="text-xs text-slate-600">Revenue Growth</div>
-                            </div>
-                            <div className="text-center">
-                              <div className="text-2xl font-bold text-cyan-600">{study.results.timeline}</div>
-                              <div className="text-xs text-slate-600">Timeline</div>
-                            </div>
+                        <div className="space-y-3 mb-6">
+                          <div>
+                            <h4 className="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-1">Challenge:</h4>
+                            <p className="text-slate-600 text-sm leading-relaxed">{study.challenge}</p>
+                          </div>
+                          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <h4 className="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-1">Solution:</h4>
+                            <p className="text-slate-600 text-sm leading-relaxed">{study.solution}</p>
                           </div>
                         </div>
                       </div>
+
+                    <div>
+                      {/* Results */}
+                      <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-100 mb-4">
+                        <div className="text-center p-3 rounded-xl bg-blue-50/50 border border-blue-100/60">
+                          <div className="text-lg font-bold text-blue-600">{study.results.metric1.value}</div>
+                          <div className="text-[10px] text-slate-500 font-semibold truncate">{study.results.metric1.label}</div>
+                        </div>
+                        <div className="text-center p-3 rounded-xl bg-emerald-50/50 border border-emerald-100/60">
+                          <div className="text-lg font-bold text-emerald-600">{study.results.metric2.value}</div>
+                          <div className="text-[10px] text-slate-500 font-semibold truncate">{study.results.metric2.label}</div>
+                        </div>
+                        <div className="text-center p-3 rounded-xl bg-indigo-50/50 border border-indigo-100/60">
+                          <div className="text-lg font-bold text-indigo-600">{study.results.metric3.value}</div>
+                          <div className="text-[10px] text-slate-500 font-semibold truncate">{study.results.metric3.label}</div>
+                        </div>
+                      </div>
+
+                      <Button 
+                        variant="outline"
+                        className="w-full border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 text-slate-700 hover:text-blue-700 font-semibold text-xs py-2 rounded-xl"
+                      >
+                        Read Full Case Study
+                        <ArrowRight className="ml-1.5 w-3.5 h-3.5" />
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -205,20 +134,20 @@ const WalmartCaseStudies = () => {
 
               {/* CTA Section */}
               <div className="mt-20">
-                <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50 max-w-3xl mx-auto text-center">
-                  <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                <div className="bg-white rounded-3xl p-10 shadow-lg border border-slate-200 max-w-3xl mx-auto text-center">
+                  <h2 className="text-3xl font-extrabold text-slate-900 mb-4">
                     Ready to Dominate Walmart Marketplace?
                   </h2>
-                  <p className="text-xl text-slate-600 mb-8">
+                  <p className="text-slate-600 mb-8 max-w-xl mx-auto">
                     Get your free Walmart Connect audit and discover how we can replicate these success stories for your brand.
                   </p>
                   <Button 
                     asChild
                     size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-base font-bold rounded-xl shadow-lg transition-all"
                   >
-                    <Link to="/contact" aria-label="Get Free Audit — Contact">
-                      Get Free Audit
+                    <Link to="/contact">
+                      Get Free Walmart Audit
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Link>
                   </Button>
@@ -228,6 +157,16 @@ const WalmartCaseStudies = () => {
           </section>
         </div>
       </div>
+
+      <CaseStudyPopup 
+        caseStudy={selectedCaseStudy}
+        isOpen={isPopupOpen}
+        onClose={() => {
+          setIsPopupOpen(false);
+          setSelectedCaseStudy(null);
+        }}
+      />
+
       <Footer />
     </>
   );

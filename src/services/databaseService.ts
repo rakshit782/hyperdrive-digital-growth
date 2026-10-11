@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { getNeonSql } from '@/services/neonClient';
 
 // Generic database service for SQL operations
 export interface SecurityLog {
@@ -203,6 +204,27 @@ class DatabaseService {
       }
     }
 
+    // Direct Neon Database query
+    try {
+      const sql = getNeonSql();
+      const rows = await sql`
+        SELECT 
+          id, name, email, phone, company, brand_name, 
+          amazon_store_url, walmart_store_url, source, status, 
+          notes, lead_number, audit_type, website_url, 
+          current_spend, goals, lead_data, form_security, 
+          created_at, updated_at
+        FROM public.leads
+        ORDER BY created_at DESC
+        LIMIT ${limit};
+      `;
+      const leads = (rows || []) as Lead[];
+      this.setCache(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP, leads);
+      return leads;
+    } catch (neonError) {
+      console.warn('Direct Neon fetch leads fallback:', neonError);
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('neon-leads', {
         body: {
@@ -221,6 +243,46 @@ class DatabaseService {
     } catch (error) {
       console.error('Database error - fetch leads:', error);
       return [];
+    }
+  }
+
+  async deleteLead(id: string): Promise<boolean> {
+    return this.deleteLeadsBulk([id]);
+  }
+
+  async deleteLeadsBulk(ids: string[]): Promise<boolean> {
+    if (!ids || ids.length === 0) return true;
+
+    // Direct Neon Database delete
+    try {
+      const sql = getNeonSql();
+      await sql`
+        DELETE FROM public.leads
+        WHERE id = ANY(${ids}::uuid[]) OR id = ANY(${ids}::text[]);
+      `;
+      this.clearLeadsCache();
+      return true;
+    } catch (neonError) {
+      console.warn('Direct Neon delete leads fallback:', neonError);
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('neon-leads', {
+        body: {
+          action: 'delete',
+          ids
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      this.clearLeadsCache();
+      return data?.success === true;
+    } catch (error) {
+      console.error('Database error - delete leads bulk:', error);
+      throw error;
     }
   }
 
