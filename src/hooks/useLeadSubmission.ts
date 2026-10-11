@@ -190,9 +190,10 @@ export const useLeadSubmission = () => {
             console.warn('Lead notification dispatch warning:', notifErr);
           }
 
-          // Fire client conversion tracking (Meta Pixel & GA4)
+          // Fire client conversion tracking (Meta Pixel, GA4 & GTM dataLayer)
           try {
             if (typeof window !== 'undefined') {
+              // 1. Meta Pixel standard Lead event
               if ((window as any).fbq) {
                 (window as any).fbq('track', 'Lead', {
                   content_name: leadData.source || 'Website Lead',
@@ -201,11 +202,21 @@ export const useLeadSubmission = () => {
                   value: 100,
                 });
               }
+              // 2. Google Analytics 4 standard generate_lead event
               if ((window as any).gtag) {
                 (window as any).gtag('event', 'generate_lead', {
                   event_category: 'Lead Generation',
                   event_label: leadData.source || 'website',
                   value: 100,
+                });
+              }
+              // 3. Google Tag Manager (GTM) dataLayer trigger event
+              if (Array.isArray((window as any).dataLayer)) {
+                (window as any).dataLayer.push({
+                  event: 'generate_lead',
+                  lead_source: leadData.source || 'website',
+                  platform: leadData.primaryPlatform || 'general',
+                  ad_spend: leadData.monthlyAdSpend || 'n/a',
                 });
               }
             }
