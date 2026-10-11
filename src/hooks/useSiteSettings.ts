@@ -297,88 +297,75 @@ export async function sendTestEmail(
   resendApiKey?: string,
   url: string = SITE_SETTINGS_API_URL,
 ): Promise<{ success: boolean; message: string }> {
-  // If an API key is provided directly in the dashboard UI, we can dispatch directly to Resend API
-  if (resendApiKey && resendApiKey.trim().length > 0 && !resendApiKey.includes("...")) {
+  let effectiveApiKey = resendApiKey?.trim();
+
+  // If apiKey not provided or masked (e.g. 4bff4...7e4c), load full key directly from Neon database
+  if (!effectiveApiKey || effectiveApiKey.includes("...")) {
     try {
-      const directResponse = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendApiKey.trim()}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "AMZ Leads <onboarding@resend.dev>",
-          to: recipientEmail.split(",").map((e) => e.trim()).filter(Boolean),
-          subject: "AMZ AD SCOUT: Test Lead Delivery Verification",
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 8px;">
-              <h2 style="color: #0284c7; margin-top: 0;">🚀 Resend Integration Successful!</h2>
-              <p style="font-size: 15px; color: #334155;">
-                Your Resend API key and notification email pipeline are connected and functioning properly.
-              </p>
-              <div style="background: #f8fafc; padding: 16px; border-radius: 6px; margin: 16px 0; font-size: 14px;">
-                <p style="margin: 4px 0;"><strong>Recipient:</strong> ${recipientEmail}</p>
-                <p style="margin: 4px 0;"><strong>Dispatched At:</strong> ${new Date().toUTCString()}</p>
-                <p style="margin: 4px 0;"><strong>Sender:</strong> AMZ Leads &lt;onboarding@resend.dev&gt;</p>
-              </div>
-              <p style="font-size: 13px; color: #64748b;">
-                All future leads received through your website audit forms will be sent to this email address.
-              </p>
-            </div>
-          `,
-        }),
-      });
-
-      const resData = await readJson(directResponse);
-      if (!directResponse.ok) {
-        const errorMsg = errorMessage(
-          resData,
-          `Resend API error (${directResponse.status})`
-        );
-        throw new Error(errorMsg);
+      const sql = getNeonSql();
+      const rows = await sql`
+        SELECT resend_api_key FROM public.site_settings WHERE id = 1 LIMIT 1;
+      `;
+      if (rows && rows[0]?.resend_api_key) {
+        effectiveApiKey = rows[0].resend_api_key;
       }
-
-      return {
-        success: true,
-        message: "Test email delivered successfully via Resend!",
-      };
-    } catch (directErr: any) {
-      // If direct request failed with a Resend error (e.g. invalid key or unverified domain), rethrow clear message
-      if (directErr.message && !directErr.message.includes("Failed to fetch")) {
-        throw directErr;
-      }
-      // Otherwise fallback to edge function below
+    } catch (dbErr) {
+      console.warn("Could not load API key from Neon:", dbErr);
     }
   }
 
-  const token = await authService.getValidAccessToken();
-  if (!token) {
-    throw new SiteSettingsRequestError(401, "Your session has expired. Please sign in again.");
+  if (!effectiveApiKey) {
+    throw new Error("No Resend API key found. Please save your Resend API key first.");
   }
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: requestHeaders(url, {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    }),
-    body: JSON.stringify({
-      action: "test_email",
-      recipient_email: recipientEmail,
-      resend_api_key: resendApiKey || undefined,
-    }),
-  });
+  // Dispatch directly to Resend API
+  try {
+    const directResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${effectiveApiKey.trim()}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "AMZ Leads <onboarding@resend.dev>",
+        to: recipientEmail.split(",").map((e) => e.trim()).filter(Boolean),
+        subject: "AMZ AD SCOUT: Test Lead Delivery Verification",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <h2 style="color: #0284c7; margin-top: 0;">🚀 Resend Integration Successful!</h2>
+            <p style="font-size: 15px; color: #334155;">
+              Your Resend API key and notification email pipeline are connected and functioning properly with Neon database.
+            </p>
+            <div style="background: #f8fafc; padding: 16px; border-radius: 6px; margin: 16px 0; font-size: 14px;">
+              <p style="margin: 4px 0;"><strong>Recipient:</strong> ${recipientEmail}</p>
+              <p style="margin: 4px 0;"><strong>Dispatched At:</strong> ${new Date().toUTCString()}</p>
+              <p style="margin: 4px 0;"><strong>Sender:</strong> AMZ Leads &lt;onboarding@resend.dev&gt;</p>
+            </div>
+            <p style="font-size: 13px; color: #64748b;">
+              All future leads received through your website audit forms will be sent to this email address.
+            </p>
+          </div>
+        `,
+      }),
+    });
 
-  const data = await readJson(response);
-  if (!response.ok) {
-    const errorMsg = errorMessage(data, `Failed to send test email (status ${response.status})`);
-    throw new Error(errorMsg);
+    const resData = await readJson(directResponse);
+    if (!directResponse.ok) {
+      const errorMsg = errorMessage(
+        resData,
+        `Resend API error (${directResponse.status})`
+      );
+      throw new Error(errorMsg);
+    }
+
+    return {
+      success: true,
+      message: "Test email delivered successfully via Resend!",
+    };
+  } catch (directErr: any) {
+    console.error("Direct Resend error:", directErr);
+    throw new Error(directErr.message || "Failed to deliver test email via Resend API");
   }
-
-  return {
-    success: true,
-    message: (data as any)?.message || "Test email delivered successfully!",
-  };
 }
 
 export function useSiteSettings() {

@@ -181,10 +181,9 @@ function parseSettings(
   let rating_value = 0;
   if (record.rating_value !== undefined && record.rating_value !== null) {
     const rating = typeof record.rating_value === "number" ? record.rating_value : Number(record.rating_value);
-    if (!Number.isFinite(rating) || rating < 0 || rating > 5) {
-      return { ok: false, error: "rating_value must be a number between 0 and 5" };
+    if (Number.isFinite(rating) && rating >= 0 && rating <= 5) {
+      rating_value = Number(rating.toFixed(1));
     }
-    rating_value = Number(rating.toFixed(1));
   }
 
   let reviewCount = 0;
