@@ -162,7 +162,11 @@ export function LeadsSection({ leads, onDelete, onBulkDelete, onRefresh }: Leads
         throw new Error("No recipient email configured in Settings.");
       }
 
-      const res = await fetch("https://api.resend.com/emails", {
+      const resendEndpoint = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+        ? '/api/resend/emails'
+        : 'https://api.resend.com/emails';
+
+      const res = await fetch(resendEndpoint, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${s.resend_api_key}`,

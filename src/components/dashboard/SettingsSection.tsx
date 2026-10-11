@@ -300,10 +300,6 @@ export function SettingsSection({ activeSubSection = "general", onSubSectionChan
         <TabsContent value="email" className="space-y-6">
           <EmailNotificationsCard />
         </TabsContent>
-
-        <TabsContent value="email" className="space-y-6">
-          <EmailNotificationsCard />
-        </TabsContent>
       </Tabs>
     </div>
   );

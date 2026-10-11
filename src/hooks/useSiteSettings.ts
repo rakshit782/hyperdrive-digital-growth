@@ -335,9 +335,14 @@ export async function sendTestEmail(
     throw new Error("No Resend API key found. Please save your Resend API key first.");
   }
 
-  // Dispatch directly to Resend API
+  // Determine endpoint: use local Vite proxy in development to avoid browser CORS restrictions
+  const endpoint = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? '/api/resend/emails'
+    : 'https://api.resend.com/emails';
+
+  // Dispatch to Resend API
   try {
-    const directResponse = await fetch("https://api.resend.com/emails", {
+    const directResponse = await fetch(endpoint, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${effectiveApiKey.trim()}`,
