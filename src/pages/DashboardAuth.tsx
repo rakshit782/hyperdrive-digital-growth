@@ -14,6 +14,8 @@ const DashboardAuth = () => {
   const navigate = useNavigate();
   const { login, user, loading } = useAuth();
 
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     if (!loading && user) {
       navigate('/dashboard');
@@ -22,16 +24,22 @@ const DashboardAuth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
     
-    const { error } = await login(email, password);
+    try {
+      const trimmedEmail = email.trim().toLowerCase();
+      const { error } = await login(trimmedEmail, password);
 
-    if (error) {
-      toast.error(error);
-      return;
+      if (error) {
+        toast.error(error);
+        return;
+      }
+
+      toast.success('Login successful!');
+      navigate('/dashboard');
+    } finally {
+      setSubmitting(false);
     }
-
-    toast.success('Login successful!');
-    navigate('/dashboard');
   };
 
   if (loading) {
@@ -78,8 +86,8 @@ const DashboardAuth = () => {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
           

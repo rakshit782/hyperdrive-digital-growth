@@ -219,10 +219,13 @@ const Dashboard = () => {
     }
   };
 
-  if (authLoading) {
+  if (authLoading || !user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-7 w-7 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <p className="text-sm text-muted-foreground font-medium">Verifying authorization...</p>
+        </div>
       </div>
     );
   }
