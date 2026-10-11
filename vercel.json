@@ -3,7 +3,9 @@
   "trailingSlash": false,
   "redirects": [
     { "source": "/free-audit", "destination": "/contact", "permanent": true },
-    { "source": "/contact-us", "destination": "/contact", "permanent": true }
+    { "source": "/contact-us", "destination": "/contact", "permanent": true },
+    { "source": "/copilot", "destination": "https://copilot.amzadscout.com", "permanent": true },
+    { "source": "/copilot-login", "destination": "https://copilot.amzadscout.com", "permanent": true }
   ],
   "rewrites": [
     { "source": "/about", "destination": "/index.html" },
@@ -39,8 +41,6 @@
     { "source": "/ad-landing", "destination": "/spa.html" },
     { "source": "/blog/:slug", "destination": "/spa.html" },
     { "source": "/case-studies/:slug", "destination": "/spa.html" },
-    { "source": "/copilot-login", "destination": "/spa.html" },
-    { "source": "/copilot", "destination": "/spa.html" },
     { "source": "/dashboard", "destination": "/spa.html" },
     { "source": "/dashboard/:path*", "destination": "/spa.html" }
   ],

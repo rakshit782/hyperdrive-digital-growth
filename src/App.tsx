@@ -48,7 +48,6 @@ import DetailedServicePage from "./pages/DetailedServicePage";
 import AdLanding from "./pages/AdLanding";
 import ToolAlternativesPage from "./pages/ToolAlternativesPage";
 import VerifyCertificate from "./pages/VerifyCertificate";
-import CopilotLogin from "./pages/CopilotLogin";
 
 function createQueryClient() {
   return new QueryClient({
@@ -118,8 +117,6 @@ export function AppContent() {
                 <Route path="/services/:serviceType" element={<DetailedServicePage />} />
                 <Route path="/ad-landing" element={<AdLanding />} />
                 <Route path="/verify-certificate" element={<VerifyCertificate />} />
-                <Route path="/copilot-login" element={<CopilotLogin />} />
-                <Route path="/copilot" element={<CopilotLogin />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
     </>
