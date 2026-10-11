@@ -277,36 +277,18 @@ class DatabaseService {
   async deleteLeadsBulk(ids: string[]): Promise<boolean> {
     if (!ids || ids.length === 0) return true;
 
-    // Direct Neon Database delete
     try {
       const sql = getNeonSql();
-      await sql`
-        DELETE FROM public.leads
-        WHERE id = ANY(${ids}::uuid[]) OR id = ANY(${ids}::text[]);
-      `;
+      const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
+      await sql.query(
+        `DELETE FROM public.leads WHERE id IN (${placeholders})`,
+        ids
+      );
       this.clearLeadsCache();
       return true;
     } catch (neonError) {
-      console.warn('Direct Neon delete leads fallback:', neonError);
-    }
-
-    try {
-      const { data, error } = await supabase.functions.invoke('neon-leads', {
-        body: {
-          action: 'delete',
-          ids
-        }
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      this.clearLeadsCache();
-      return data?.success === true;
-    } catch (error) {
-      console.error('Database error - delete leads bulk:', error);
-      throw error;
+      console.error('Neon delete leads error:', neonError);
+      throw neonError;
     }
   }
 
