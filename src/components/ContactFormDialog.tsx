@@ -247,6 +247,12 @@ export const ContactFormDialog = ({
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </Button>
+              <p className="text-[11px] text-muted-foreground text-center">
+                We respect your privacy. View our{" "}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
+                  Privacy Policy
+                </a>.
+              </p>
             </form>
           </Form>
         )}

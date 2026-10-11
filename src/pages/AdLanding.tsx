@@ -537,15 +537,27 @@ export default function AdLanding() {
                           )}
                         </Button>
 
-                        {/* Trust Micro-copy */}
-                        <div className="flex items-center justify-center gap-3 text-[11px] text-slate-400 pt-1">
-                          <span className="flex items-center gap-1">
-                            <Lock className="h-3 w-3 text-slate-400" /> 100% Confidential
-                          </span>
-                          <span>•</span>
-                          <span>No Credit Card</span>
-                          <span>•</span>
-                          <span>Zero Obligation</span>
+                        {/* Trust Micro-copy & Privacy Compliance */}
+                        <div className="space-y-1.5 pt-1 text-center">
+                          <div className="flex items-center justify-center gap-3 text-[11px] text-slate-400">
+                            <span className="flex items-center gap-1">
+                              <Lock className="h-3 w-3 text-slate-400" /> 100% Confidential
+                            </span>
+                            <span>•</span>
+                            <span>No Credit Card</span>
+                            <span>•</span>
+                            <span>Zero Obligation</span>
+                          </div>
+                          <p className="text-[10px] text-slate-400">
+                            By submitting, you agree to our{" "}
+                            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">
+                              Privacy Policy
+                            </a>{" "}
+                            and{" "}
+                            <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">
+                              Terms
+                            </a>.
+                          </p>
                         </div>
                       </form>
                     </Form>

@@ -245,6 +245,12 @@ const Contact = () => {
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isSubmitting ? 'Submitting...' : 'Submit'}
                   </Button>
+                  <p className="text-xs text-muted-foreground text-center">
+                    By submitting this form, you acknowledge that you have read and agree to our{" "}
+                    <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
+                      Privacy Policy
+                    </a>.
+                  </p>
                 </form>
               </Form>
             </div>

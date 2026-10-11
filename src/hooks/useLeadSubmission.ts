@@ -159,6 +159,29 @@ export const useLeadSubmission = () => {
             console.warn('Lead notification dispatch warning:', notifErr);
           }
 
+          // Fire client conversion tracking (Meta Pixel & GA4)
+          try {
+            if (typeof window !== 'undefined') {
+              if ((window as any).fbq) {
+                (window as any).fbq('track', 'Lead', {
+                  content_name: leadData.source || 'Website Lead',
+                  content_category: leadData.auditType || 'General',
+                  currency: 'USD',
+                  value: 100,
+                });
+              }
+              if ((window as any).gtag) {
+                (window as any).gtag('event', 'generate_lead', {
+                  event_category: 'Lead Generation',
+                  event_label: leadData.source || 'website',
+                  value: 100,
+                });
+              }
+            }
+          } catch (trackErr) {
+            console.warn('Ad tracking dispatch warning:', trackErr);
+          }
+
           window.dispatchEvent(new CustomEvent('leadCreated', {
             detail: { id: leadId, leadNumber: assignedNumber, ...leadData }
           }));
@@ -183,6 +206,29 @@ export const useLeadSubmission = () => {
       }
 
       console.log('Lead created successfully with ID:', result.leadId);
+
+      // Fire client conversion tracking (Meta Pixel & GA4)
+      try {
+        if (typeof window !== 'undefined') {
+          if ((window as any).fbq) {
+            (window as any).fbq('track', 'Lead', {
+              content_name: leadData.source || 'Website Lead',
+              content_category: leadData.auditType || 'General',
+              currency: 'USD',
+              value: 100,
+            });
+          }
+          if ((window as any).gtag) {
+            (window as any).gtag('event', 'generate_lead', {
+              event_category: 'Lead Generation',
+              event_label: leadData.source || 'website',
+              value: 100,
+            });
+          }
+        }
+      } catch (trackErr) {
+        console.warn('Ad tracking dispatch warning:', trackErr);
+      }
 
       // Dispatch custom event for real-time updates
       window.dispatchEvent(new CustomEvent('leadCreated', {
