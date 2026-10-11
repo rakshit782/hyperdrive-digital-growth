@@ -477,19 +477,21 @@ export default function Header() {
             </Link>
 
             {/* CoPilot Login Button - Direct Redirect */}
-            <Button
-              asChild
-              variant="outline"
-              className="border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold px-4 h-11 rounded-xl text-sm gap-1.5 transition-colors shadow-2xs hover:bg-blue-50/50"
-            >
-              <a 
-                href="https://copilot.amzadscout.com" 
-                title="Login to AMZ CoPilot"
+            {settings.showCopilotLogin && (
+              <Button
+                asChild
+                variant="outline"
+                className="border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold px-4 h-11 rounded-xl text-sm gap-1.5 transition-colors shadow-2xs hover:bg-blue-50/50"
               >
-                <LogIn className="w-4 h-4 text-blue-600" />
-                <span>CoPilot Login</span>
-              </a>
-            </Button>
+                <a 
+                  href="https://copilot.amzadscout.com" 
+                  title="Login to AMZ CoPilot"
+                >
+                  <LogIn className="w-4 h-4 text-blue-600" />
+                  <span>CoPilot Login</span>
+                </a>
+              </Button>
+            )}
 
             <Button
               asChild
@@ -553,12 +555,14 @@ export default function Header() {
           </div>
 
           <div className="pt-4 flex flex-col gap-2">
-            <Button asChild variant="outline" className="w-full border-slate-300 text-slate-800 font-semibold gap-2">
-              <a href="https://copilot.amzadscout.com">
-                <LogIn className="w-4 h-4 text-blue-600" />
-                <span>CoPilot Login</span>
-              </a>
-            </Button>
+            {settings.showCopilotLogin && (
+              <Button asChild variant="outline" className="w-full border-slate-300 text-slate-800 font-semibold gap-2">
+                <a href="https://copilot.amzadscout.com">
+                  <LogIn className="w-4 h-4 text-blue-600" />
+                  <span>CoPilot Login</span>
+                </a>
+              </Button>
+            )}
             <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
               <Link to={settings.ctaLink || "/contact"}>
                 {settings.ctaText}
