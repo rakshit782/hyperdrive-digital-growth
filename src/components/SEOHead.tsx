@@ -73,6 +73,8 @@ const SEOHead = ({
   const ogUrl = url ? toAbsoluteCanonical(url) ?? url : canonicalHref;
   const blocks = schemaBlocks(schema);
 
+  const effectiveImage = image || `${SITE_ORIGIN}/logo.png`;
+
   return (
     <Helmet>
       <title>{title}</title>
@@ -83,11 +85,13 @@ const SEOHead = ({
       <meta property="og:description" content={description} />
       <meta property="og:type" content="website" />
       {ogUrl ? <meta property="og:url" content={ogUrl} /> : null}
-      {image ? <meta property="og:image" content={image} /> : null}
+      <meta property="og:image" content={effectiveImage} />
+      <meta property="og:image:alt" content="AMZ AD SCOUT — The Growth Agency" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      {image ? <meta name="twitter:image" content={image} /> : null}
+      <meta name="twitter:image" content={effectiveImage} />
+      <meta name="twitter:image:alt" content="AMZ AD SCOUT — The Growth Agency" />
       {blocks.map((block, index) => (
         <script key={index} type="application/ld+json">
           {JSON.stringify(block).replace(/</g, '\\u003c')}
