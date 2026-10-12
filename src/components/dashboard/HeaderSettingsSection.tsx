@@ -11,21 +11,41 @@ import { useHeaderSettings, HeaderSettings } from "@/hooks/useHeaderSettings";
 export function HeaderSettingsSection() {
   const { settings, saveSettings, defaultSettings } = useHeaderSettings();
   const [formData, setFormData] = useState<HeaderSettings>(settings);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Keep form in sync when database settings load
+  useEffect(() => {
+    setFormData(settings);
+  }, [settings]);
 
   const handleChange = (field: keyof HeaderSettings, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    saveSettings(formData);
-    toast.success("Header settings updated successfully!");
+    setIsSaving(true);
+    try {
+      await saveSettings(formData);
+      toast.success("Header settings updated successfully!");
+    } catch {
+      toast.error("Failed to save settings to server.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     setFormData(defaultSettings);
-    saveSettings(defaultSettings);
-    toast.info("Header settings reset to defaults");
+    setIsSaving(true);
+    try {
+      await saveSettings(defaultSettings);
+      toast.info("Header settings reset to defaults");
+    } catch {
+      toast.error("Failed to reset settings.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (

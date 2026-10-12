@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { fetchSiteSettings, saveSiteSettings } from "./useSiteSettings";
 
 export interface HeaderSettings {
   topBarText: string;
@@ -35,6 +36,7 @@ export const DEFAULT_HEADER_SETTINGS: HeaderSettings = {
 };
 
 const STORAGE_KEY = "header_navigation_settings";
+const HEADER_UPDATED_EVENT = "header-settings-updated";
 
 export function useHeaderSettings() {
   const [settings, setSettings] = useState<HeaderSettings>(() => {
@@ -49,6 +51,25 @@ export function useHeaderSettings() {
     return DEFAULT_HEADER_SETTINGS;
   });
 
+  // Load from database on mount so changes in dashboard apply across all browsers & devices
+  useEffect(() => {
+    fetchSiteSettings()
+      .then((data) => {
+        if (data.header_settings && typeof data.header_settings === "object") {
+          const merged = { ...DEFAULT_HEADER_SETTINGS, ...data.header_settings };
+          setSettings(merged);
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+          } catch {
+            // ignore
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not load header settings from database:", err);
+      });
+  }, []);
+
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY && e.newValue) {
@@ -59,13 +80,42 @@ export function useHeaderSettings() {
         }
       }
     };
+
+    const handleLocalUpdate = () => {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          setSettings({ ...DEFAULT_HEADER_SETTINGS, ...JSON.parse(saved) });
+        }
+      } catch {
+        // ignore error
+      }
+    };
+
     window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    window.addEventListener(HEADER_UPDATED_EVENT, handleLocalUpdate);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener(HEADER_UPDATED_EVENT, handleLocalUpdate);
+    };
   }, []);
 
-  const saveSettings = (newSettings: HeaderSettings) => {
+  const saveSettings = async (newSettings: HeaderSettings) => {
     setSettings(newSettings);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
+    } catch {
+      // ignore
+    }
+    window.dispatchEvent(new Event(HEADER_UPDATED_EVENT));
+
+    // Persist to Neon database
+    try {
+      await saveSiteSettings({ header_settings: newSettings });
+    } catch (err) {
+      console.error("Failed to save header settings to database:", err);
+      throw err;
+    }
   };
 
   return { settings, saveSettings, defaultSettings: DEFAULT_HEADER_SETTINGS };
