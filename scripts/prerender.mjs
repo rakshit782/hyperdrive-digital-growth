@@ -134,18 +134,19 @@ if (!Array.isArray(publicRoutes) || publicRoutes.length === 0) {
 }
 
 // Fetch live database settings so prerendered HTML matches database state (e.g. CoPilot login button visibility)
-try {
-  const { neon } = await import('@neondatabase/serverless');
-  const dbUrl = process.env.VITE_NEON_DATABASE_URL || "postgresql://neondb_owner:npg_F9DgXO8urHyx@ep-nameless-waterfall-ahjjfj7x-pooler.c-3.us-east-1.aws.neon.tech/website?sslmode=require";
-  const sql = neon(dbUrl);
-  const rows = await sql.query('SELECT header_settings FROM public.site_settings WHERE id = 1;');
-  if (rows && rows[0] && rows[0].header_settings) {
-    const hs = rows[0].header_settings;
-    win.localStorage.setItem('header_navigation_settings', JSON.stringify(hs));
-    console.log('Prerender loaded header_settings from Neon:', JSON.stringify(hs));
+if (process.env.VITE_NEON_DATABASE_URL) {
+  try {
+    const { neon } = await import('@neondatabase/serverless');
+    const sql = neon(process.env.VITE_NEON_DATABASE_URL);
+    const rows = await sql.query('SELECT header_settings FROM public.site_settings WHERE id = 1;');
+    if (rows && rows[0] && rows[0].header_settings) {
+      const hs = rows[0].header_settings;
+      win.localStorage.setItem('header_navigation_settings', JSON.stringify(hs));
+      console.log('Prerender loaded header_settings from Neon:', JSON.stringify(hs));
+    }
+  } catch (e) {
+    console.warn('Could not fetch live header_settings during prerender:', e.message);
   }
-} catch (e) {
-  console.warn('Could not fetch live header_settings during prerender:', e.message);
 }
 
 const written = [];
