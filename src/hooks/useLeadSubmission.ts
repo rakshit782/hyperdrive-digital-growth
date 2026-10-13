@@ -163,7 +163,7 @@ export const useLeadSubmission = () => {
                   .replaceAll('{lead_number}', assignedNumber)
                   .replaceAll('{company}', leadData.company || 'N/A');
 
-                await fetch('https://api.resend.com/emails', {
+                await fetch('/api/resend/emails', {
                   method: 'POST',
                   headers: {
                     Authorization: `Bearer ${resendApiKey}`,

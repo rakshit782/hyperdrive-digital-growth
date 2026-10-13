@@ -62,7 +62,7 @@ export const useContactSubmission = () => {
         if (s && s.email_notifications_enabled && resendApiKey && s.notification_email) {
           const recipients = s.notification_email.split(',').map((e: string) => e.trim()).filter(Boolean);
           if (recipients.length > 0) {
-            await fetch('https://api.resend.com/emails', {
+            await fetch('/api/resend/emails', {
               method: 'POST',
               headers: {
                 Authorization: `Bearer ${resendApiKey}`,

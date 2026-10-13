@@ -8,6 +8,7 @@
     { "source": "/copilot-login", "destination": "https://copilot.amzadscout.com", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/api/resend/:path*", "destination": "https://api.resend.com/:path*" },
     { "source": "/about", "destination": "/index.html" },
     { "source": "/services", "destination": "/index.html" },
     { "source": "/services/website-development", "destination": "/index.html" },

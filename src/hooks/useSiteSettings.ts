@@ -366,10 +366,8 @@ export async function sendTestEmail(
     throw new Error("No Resend API key found. Please save your Resend API key first.");
   }
 
-  // Determine endpoint: use local Vite proxy in development to avoid browser CORS restrictions
-  const endpoint = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? '/api/resend/emails'
-    : 'https://api.resend.com/emails';
+  // Always route through /api/resend/emails (proxied via Vite dev server & Vercel rewrite) to bypass browser CORS
+  const endpoint = '/api/resend/emails';
 
   // Dispatch to Resend API
   try {
