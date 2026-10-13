@@ -134,10 +134,28 @@ if (!Array.isArray(publicRoutes) || publicRoutes.length === 0) {
 }
 
 // Fetch live database settings so prerendered HTML matches database state (e.g. CoPilot login button visibility)
-if (process.env.VITE_NEON_DATABASE_URL) {
+let neonDbUrl = process.env.VITE_NEON_DATABASE_URL;
+if (!neonDbUrl) {
+  try {
+    const envContent = fs.readFileSync(path.join(ROOT, '.env'), 'utf8');
+    for (const line of envContent.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eq = trimmed.indexOf('=');
+      if (eq > 0 && trimmed.slice(0, eq).trim() === 'VITE_NEON_DATABASE_URL') {
+        neonDbUrl = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, '');
+        break;
+      }
+    }
+  } catch {
+    // ignore
+  }
+}
+
+if (neonDbUrl) {
   try {
     const { neon } = await import('@neondatabase/serverless');
-    const sql = neon(process.env.VITE_NEON_DATABASE_URL);
+    const sql = neon(neonDbUrl);
     const rows = await sql.query('SELECT header_settings FROM public.site_settings WHERE id = 1;');
     if (rows && rows[0] && rows[0].header_settings) {
       const hs = rows[0].header_settings;

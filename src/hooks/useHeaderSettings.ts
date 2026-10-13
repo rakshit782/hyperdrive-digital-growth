@@ -30,7 +30,7 @@ export const DEFAULT_HEADER_SETTINGS: HeaderSettings = {
   linkedinUrl: "https://www.linkedin.com/company/amz-ad-scout",
   facebookUrl: "https://www.facebook.com/amzadscout",
   instagramUrl: "https://www.instagram.com/amzadscout",
-  showCopilotLogin: true,
+  showCopilotLogin: false,
   ctaText: "Get Free Strategy Call",
   ctaLink: "/contact",
 };
