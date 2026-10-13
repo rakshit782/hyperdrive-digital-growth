@@ -403,9 +403,8 @@ function EmailNotificationsCard() {
         setCurrentRatingVisible(data.rating_visible);
 
         setHasExistingKey(Boolean(data.has_resend_api_key));
-        if (data.resend_api_key) {
-          setApiKey(data.resend_api_key);
-        }
+        // Keep apiKey input empty if an existing key is already configured so we don't accidentally send the masked snippet
+        setApiKey("");
         if (data.notification_email) {
           setRecipientEmail(data.notification_email);
         }
@@ -465,9 +464,7 @@ function EmailNotificationsCard() {
 
       const saved = await saveSiteSettings(payload, SITE_SETTINGS_API_URL);
       setHasExistingKey(Boolean(saved.has_resend_api_key));
-      if (saved.resend_api_key) {
-        setApiKey(saved.resend_api_key);
-      }
+      setApiKey("");
       if (saved.notification_email) {
         setRecipientEmail(saved.notification_email);
       }

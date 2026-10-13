@@ -1,8 +1,8 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { getNeonSql } from '@/services/neonClient';
+import { decryptSecret } from '@/services/cryptoVault';
 
 export interface LeadSubmissionData {
   name: string;
@@ -154,7 +154,8 @@ export const useLeadSubmission = () => {
               WHERE id = 1;
             `;
             const s = settingsRows[0];
-            if (s && s.email_notifications_enabled && s.resend_api_key && s.notification_email) {
+            const resendApiKey = s?.resend_api_key ? await decryptSecret(s.resend_api_key) : null;
+            if (s && s.email_notifications_enabled && resendApiKey && s.notification_email) {
               const recipients = s.notification_email.split(',').map((e: string) => e.trim()).filter(Boolean);
               if (recipients.length > 0) {
                 const subject = (s.email_subject_template || 'New Lead: {name} ({lead_number})')
@@ -165,7 +166,7 @@ export const useLeadSubmission = () => {
                 await fetch('https://api.resend.com/emails', {
                   method: 'POST',
                   headers: {
-                    Authorization: `Bearer ${s.resend_api_key}`,
+                    Authorization: `Bearer ${resendApiKey}`,
                     'Content-Type': 'application/json',
                   },
                   body: JSON.stringify({

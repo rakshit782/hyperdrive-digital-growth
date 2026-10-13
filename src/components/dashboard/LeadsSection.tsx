@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import { useState, useMemo } from "react";
 import { getNeonSql } from "@/services/neonClient";
+import { decryptSecret } from "@/services/cryptoVault";
 
 interface Lead {
   id: string;
@@ -149,7 +150,8 @@ export function LeadsSection({ leads, onDelete, onBulkDelete, onRefresh }: Leads
         WHERE id = 1;
       `;
       const s = settings[0];
-      if (!s || !s.resend_api_key) {
+      const resendApiKey = s?.resend_api_key ? await decryptSecret(s.resend_api_key) : null;
+      if (!resendApiKey) {
         throw new Error("No Resend API Key configured in Settings. Please add your key first.");
       }
 
@@ -169,7 +171,7 @@ export function LeadsSection({ leads, onDelete, onBulkDelete, onRefresh }: Leads
       const res = await fetch(resendEndpoint, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${s.resend_api_key}`,
+          Authorization: `Bearer ${resendApiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

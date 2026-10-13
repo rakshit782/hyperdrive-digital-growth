@@ -168,6 +168,7 @@ function errorMessage(data: unknown, fallback: string): string {
 }
 
 import { getNeonSql } from "@/services/neonClient";
+import { encryptSecret, decryptSecret } from "@/services/cryptoVault";
 
 export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
   // Directly query Neon database
@@ -184,7 +185,8 @@ export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
     `;
     if (rows && rows.length > 0) {
       const r = rows[0];
-      let displayKey = r.resend_api_key ?? null;
+      const decryptedKey = r.resend_api_key ? await decryptSecret(r.resend_api_key) : null;
+      let displayKey = decryptedKey ?? null;
       if (displayKey && displayKey.length > 8) {
         displayKey = `${displayKey.slice(0, 5)}...${displayKey.slice(-4)}`;
       }
@@ -194,7 +196,7 @@ export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
         review_source_url: r.review_source_url ?? null,
         rating_visible: r.rating_visible === true,
         resend_api_key: displayKey,
-        has_resend_api_key: Boolean(r.resend_api_key && r.resend_api_key.trim().length > 0),
+        has_resend_api_key: Boolean(decryptedKey && decryptedKey.trim().length > 0),
         notification_email: r.notification_email ?? null,
         email_notifications_enabled: r.email_notifications_enabled === true,
         email_subject_template: r.email_subject_template ?? null,
@@ -249,9 +251,14 @@ export async function saveSiteSettings(
     `;
     const existingRow = existing[0];
     
-    let finalApiKey = payload.resend_api_key;
-    if (!finalApiKey && existingRow?.resend_api_key) {
-      finalApiKey = existingRow.resend_api_key;
+    let finalApiKey: string | null = null;
+    const incomingKey = payload.resend_api_key?.trim();
+    if (incomingKey && !incomingKey.includes("...")) {
+      // Encrypt the new key with AES-GCM before saving to database
+      finalApiKey = await encryptSecret(incomingKey);
+    } else {
+      // Preserve already stored key (encrypted or legacy)
+      finalApiKey = existingRow?.resend_api_key ?? null;
     }
 
     const saved = await sql`
@@ -299,7 +306,8 @@ export async function saveSiteSettings(
     `;
 
     const row = saved[0];
-    let displayKey = row.resend_api_key ?? null;
+    const decryptedKey = row.resend_api_key ? await decryptSecret(row.resend_api_key) : null;
+    let displayKey = decryptedKey ?? null;
     if (displayKey && displayKey.length > 8) {
       displayKey = `${displayKey.slice(0, 5)}...${displayKey.slice(-4)}`;
     }
@@ -310,7 +318,7 @@ export async function saveSiteSettings(
       review_source_url: row.review_source_url ?? null,
       rating_visible: row.rating_visible === true,
       resend_api_key: displayKey,
-      has_resend_api_key: Boolean(row.resend_api_key && row.resend_api_key.trim().length > 0),
+      has_resend_api_key: Boolean(decryptedKey && decryptedKey.trim().length > 0),
       notification_email: row.notification_email ?? null,
       email_notifications_enabled: row.email_notifications_enabled === true,
       email_subject_template: row.email_subject_template ?? null,
@@ -348,6 +356,10 @@ export async function sendTestEmail(
     } catch (dbErr) {
       console.warn("Could not load API key from Neon:", dbErr);
     }
+  }
+
+  if (effectiveApiKey) {
+    effectiveApiKey = await decryptSecret(effectiveApiKey);
   }
 
   if (!effectiveApiKey) {
