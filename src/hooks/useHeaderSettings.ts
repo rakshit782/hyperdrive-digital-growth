@@ -30,7 +30,7 @@ export const DEFAULT_HEADER_SETTINGS: HeaderSettings = {
   linkedinUrl: "https://www.linkedin.com/company/amz-ad-scout",
   facebookUrl: "https://www.facebook.com/amzadscout",
   instagramUrl: "https://www.instagram.com/amzadscout",
-  showCopilotLogin: false,
+  showCopilotLogin: true,
   ctaText: "Get Free Strategy Call",
   ctaLink: "/contact",
 };
@@ -38,25 +38,48 @@ export const DEFAULT_HEADER_SETTINGS: HeaderSettings = {
 const STORAGE_KEY = "header_navigation_settings";
 const HEADER_UPDATED_EVENT = "header-settings-updated";
 
+let memorySettings: HeaderSettings | null = null;
+let isFetchingFromDb = false;
+let hasFetchedFromDb = false;
+
 export function useHeaderSettings() {
   const [settings, setSettings] = useState<HeaderSettings>(() => {
+    if (memorySettings) return memorySettings;
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        return { ...DEFAULT_HEADER_SETTINGS, ...JSON.parse(saved) };
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          memorySettings = { ...DEFAULT_HEADER_SETTINGS, ...parsed };
+          return memorySettings;
+        }
       }
     } catch (e) {
       console.warn("Failed to read header settings from localStorage:", e);
     }
+    memorySettings = DEFAULT_HEADER_SETTINGS;
     return DEFAULT_HEADER_SETTINGS;
   });
 
-  // Load from database on mount so changes in dashboard apply across all browsers & devices
+  // Ensure DOM class matches current settings immediately
   useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.toggle("hide-copilot", !settings.showCopilotLogin);
+    }
+  }, [settings.showCopilotLogin]);
+
+  // Load from database on mount once across application to avoid repeated network calls
+  useEffect(() => {
+    if (hasFetchedFromDb || isFetchingFromDb) return;
+    isFetchingFromDb = true;
+
     fetchSiteSettings()
       .then((data) => {
+        hasFetchedFromDb = true;
+        isFetchingFromDb = false;
         if (data.header_settings && typeof data.header_settings === "object") {
           const merged: HeaderSettings = { ...DEFAULT_HEADER_SETTINGS, ...data.header_settings };
+          memorySettings = merged;
           setSettings((prev) => {
             const hasChanged = Object.keys(merged).some(
               (key) => (merged as any)[key] !== (prev as any)[key]
@@ -66,12 +89,16 @@ export function useHeaderSettings() {
           });
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+            if (typeof document !== "undefined") {
+              document.documentElement.classList.toggle("hide-copilot", !merged.showCopilotLogin);
+            }
           } catch {
             // ignore
           }
         }
       })
       .catch((err) => {
+        isFetchingFromDb = false;
         console.warn("Could not load header settings from database:", err);
       });
   }, []);
@@ -80,7 +107,12 @@ export function useHeaderSettings() {
     const handleStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY && e.newValue) {
         try {
-          setSettings({ ...DEFAULT_HEADER_SETTINGS, ...JSON.parse(e.newValue) });
+          const parsed = { ...DEFAULT_HEADER_SETTINGS, ...JSON.parse(e.newValue) };
+          memorySettings = parsed;
+          setSettings(parsed);
+          if (typeof document !== "undefined") {
+            document.documentElement.classList.toggle("hide-copilot", !parsed.showCopilotLogin);
+          }
         } catch {
           // ignore error
         }
@@ -91,7 +123,12 @@ export function useHeaderSettings() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
-          setSettings({ ...DEFAULT_HEADER_SETTINGS, ...JSON.parse(saved) });
+          const parsed = { ...DEFAULT_HEADER_SETTINGS, ...JSON.parse(saved) };
+          memorySettings = parsed;
+          setSettings(parsed);
+          if (typeof document !== "undefined") {
+            document.documentElement.classList.toggle("hide-copilot", !parsed.showCopilotLogin);
+          }
         }
       } catch {
         // ignore error
@@ -107,7 +144,11 @@ export function useHeaderSettings() {
   }, []);
 
   const saveSettings = async (newSettings: HeaderSettings) => {
+    memorySettings = newSettings;
     setSettings(newSettings);
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.toggle("hide-copilot", !newSettings.showCopilotLogin);
+    }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
     } catch {

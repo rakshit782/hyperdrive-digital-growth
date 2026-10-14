@@ -481,7 +481,7 @@ export default function Header() {
               <Button
                 asChild
                 variant="outline"
-                className="border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold px-4 h-11 rounded-xl text-sm gap-1.5 transition-all duration-200 shadow-2xs hover:bg-blue-50/50 animate-in fade-in-50"
+                className="copilot-button border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold px-4 h-11 rounded-xl text-sm gap-1.5 transition-colors shadow-2xs hover:bg-blue-50/50"
               >
                 <a 
                   href="https://copilot.amzadscout.com" 
@@ -556,7 +556,7 @@ export default function Header() {
 
           <div className="pt-4 flex flex-col gap-2">
             {settings.showCopilotLogin && (
-              <Button asChild variant="outline" className="w-full border-slate-300 text-slate-800 font-semibold gap-2">
+              <Button asChild variant="outline" className="copilot-button w-full border-slate-300 text-slate-800 font-semibold gap-2">
                 <a href="https://copilot.amzadscout.com">
                   <LogIn className="w-4 h-4 text-blue-600" />
                   <span>CoPilot Login</span>
