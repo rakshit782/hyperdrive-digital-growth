@@ -160,11 +160,6 @@ if (neonDbUrl) {
     if (rows && rows[0] && rows[0].header_settings) {
       const hs = rows[0].header_settings;
       win.localStorage.setItem('header_navigation_settings', JSON.stringify(hs));
-      if (hs.showCopilotLogin === false) {
-        win.document.documentElement.classList.add('hide-copilot');
-      } else {
-        win.document.documentElement.classList.remove('hide-copilot');
-      }
       console.log('Prerender loaded header_settings from Neon:', JSON.stringify(hs));
     }
   } catch (e) {

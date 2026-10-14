@@ -61,13 +61,6 @@ export function useHeaderSettings() {
     return DEFAULT_HEADER_SETTINGS;
   });
 
-  // Ensure DOM class matches current settings immediately
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.documentElement.classList.toggle("hide-copilot", !settings.showCopilotLogin);
-    }
-  }, [settings.showCopilotLogin]);
-
   // Load from database on mount once across application to avoid repeated network calls
   useEffect(() => {
     if (hasFetchedFromDb || isFetchingFromDb) return;
@@ -89,9 +82,6 @@ export function useHeaderSettings() {
           });
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-            if (typeof document !== "undefined") {
-              document.documentElement.classList.toggle("hide-copilot", !merged.showCopilotLogin);
-            }
           } catch {
             // ignore
           }
@@ -110,9 +100,6 @@ export function useHeaderSettings() {
           const parsed = { ...DEFAULT_HEADER_SETTINGS, ...JSON.parse(e.newValue) };
           memorySettings = parsed;
           setSettings(parsed);
-          if (typeof document !== "undefined") {
-            document.documentElement.classList.toggle("hide-copilot", !parsed.showCopilotLogin);
-          }
         } catch {
           // ignore error
         }
@@ -126,9 +113,6 @@ export function useHeaderSettings() {
           const parsed = { ...DEFAULT_HEADER_SETTINGS, ...JSON.parse(saved) };
           memorySettings = parsed;
           setSettings(parsed);
-          if (typeof document !== "undefined") {
-            document.documentElement.classList.toggle("hide-copilot", !parsed.showCopilotLogin);
-          }
         }
       } catch {
         // ignore error
@@ -146,9 +130,6 @@ export function useHeaderSettings() {
   const saveSettings = async (newSettings: HeaderSettings) => {
     memorySettings = newSettings;
     setSettings(newSettings);
-    if (typeof document !== "undefined") {
-      document.documentElement.classList.toggle("hide-copilot", !newSettings.showCopilotLogin);
-    }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
     } catch {
