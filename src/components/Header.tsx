@@ -481,7 +481,7 @@ export default function Header() {
               <Button
                 asChild
                 variant="outline"
-                className="border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold px-4 h-11 rounded-xl text-sm gap-1.5 transition-colors shadow-2xs hover:bg-blue-50/50"
+                className="border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold px-4 h-11 rounded-xl text-sm gap-1.5 transition-all duration-200 shadow-2xs hover:bg-blue-50/50 animate-in fade-in-50"
               >
                 <a 
                   href="https://copilot.amzadscout.com" 

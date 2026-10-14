@@ -56,8 +56,14 @@ export function useHeaderSettings() {
     fetchSiteSettings()
       .then((data) => {
         if (data.header_settings && typeof data.header_settings === "object") {
-          const merged = { ...DEFAULT_HEADER_SETTINGS, ...data.header_settings };
-          setSettings(merged);
+          const merged: HeaderSettings = { ...DEFAULT_HEADER_SETTINGS, ...data.header_settings };
+          setSettings((prev) => {
+            const hasChanged = Object.keys(merged).some(
+              (key) => (merged as any)[key] !== (prev as any)[key]
+            );
+            if (!hasChanged) return prev;
+            return merged;
+          });
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
           } catch {
