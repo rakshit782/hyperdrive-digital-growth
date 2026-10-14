@@ -224,33 +224,16 @@ export function HeaderSettingsSection() {
           </CardContent>
         </Card>
 
-        {/* COPILOT & CTA BUTTON SETTINGS */}
+        {/* PRIMARY CTA BUTTON SETTINGS */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Header Action Buttons</CardTitle>
+            <CardTitle className="text-lg">Header Call-to-Action Button</CardTitle>
             <CardDescription>
-              Configure the CoPilot Login button visibility and the primary call-to-action button.
+              Configure the primary call-to-action button in the header navigation.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* CoPilot Toggle */}
-            <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-              <div className="space-y-0.5">
-                <Label htmlFor="showCopilotLogin" className="text-sm font-bold text-foreground">
-                  Show "CoPilot Login" Button
-                </Label>
-                <p className="text-xs text-muted-foreground">
-                  When enabled, displays the CoPilot Login button linking directly to copilot.amzadscout.com in desktop and mobile header navigation.
-                </p>
-              </div>
-              <Switch
-                id="showCopilotLogin"
-                checked={formData.showCopilotLogin}
-                onCheckedChange={(checked) => handleChange("showCopilotLogin", checked)}
-              />
-            </div>
-
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="ctaText">Primary Button Text</Label>
                 <Input

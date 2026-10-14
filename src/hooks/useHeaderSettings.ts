@@ -13,7 +13,7 @@ export interface HeaderSettings {
   linkedinUrl: string;
   facebookUrl: string;
   instagramUrl: string;
-  showCopilotLogin: boolean;
+  showCopilotLogin?: boolean;
   ctaText: string;
   ctaLink: string;
 }
@@ -30,7 +30,6 @@ export const DEFAULT_HEADER_SETTINGS: HeaderSettings = {
   linkedinUrl: "https://www.linkedin.com/company/amz-ad-scout",
   facebookUrl: "https://www.facebook.com/amzadscout",
   instagramUrl: "https://www.instagram.com/amzadscout",
-  showCopilotLogin: true,
   ctaText: "Get Free Strategy Call",
   ctaLink: "/contact",
 };

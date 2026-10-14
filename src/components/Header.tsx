@@ -15,8 +15,7 @@ import {
   Store,
   Layers,
   Link2,
-  Sparkles,
-  LogIn
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLogoData } from "@/hooks/useLogoData";
@@ -465,7 +464,7 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* Right Action: Search Icon + CoPilot Login + CTA Button */}
+          {/* Right Action: Search Icon + CTA Button */}
           <div className="hidden lg:flex items-center justify-end gap-2.5 shrink-0">
             <Link
               to="/services"
@@ -475,23 +474,6 @@ export default function Header() {
             >
               <Search className="w-4 h-4" />
             </Link>
-
-            {/* CoPilot Login Button - Direct Redirect */}
-            {settings.showCopilotLogin && (
-              <Button
-                asChild
-                variant="outline"
-                className="copilot-button border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 font-semibold px-4 h-11 rounded-xl text-sm gap-1.5 transition-colors shadow-2xs hover:bg-blue-50/50"
-              >
-                <a 
-                  href="https://copilot.amzadscout.com" 
-                  title="Login to AMZ CoPilot"
-                >
-                  <LogIn className="w-4 h-4 text-blue-600" />
-                  <span>CoPilot Login</span>
-                </a>
-              </Button>
-            )}
 
             <Button
               asChild
@@ -555,14 +537,6 @@ export default function Header() {
           </div>
 
           <div className="pt-4 flex flex-col gap-2">
-            {settings.showCopilotLogin && (
-              <Button asChild variant="outline" className="copilot-button w-full border-slate-300 text-slate-800 font-semibold gap-2">
-                <a href="https://copilot.amzadscout.com">
-                  <LogIn className="w-4 h-4 text-blue-600" />
-                  <span>CoPilot Login</span>
-                </a>
-              </Button>
-            )}
             <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
               <Link to={settings.ctaLink || "/contact"}>
                 {settings.ctaText}
