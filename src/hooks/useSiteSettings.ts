@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { authService } from "@/services/authService";
 
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6bmJzaHhobWh0ZW54Y3VmZmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MzEzMjEsImV4cCI6MjA2NDIwNzMyMX0.jydxpMEn5Z-fDDJXA9XAbx_mHEi_eQPFNEYikM21gnY";
+let inFlightSettingsPromise: Promise<SiteSettings> | null = null;
+let cachedSettingsData: { data: SiteSettings; timestamp: number } | null = null;
+const CACHE_TTL_MS = 60_000;
 
-const DEFAULT_SITE_SETTINGS_API_URL =
-  "https://hznbshxhmhtenxcuffhx.supabase.co/functions/v1/neon-site-settings";
-
-/** Change this one line (or set VITE_SITE_SETTINGS_API_URL) if the endpoint moves. */
 export const SITE_SETTINGS_API_URL =
-  (import.meta.env.VITE_SITE_SETTINGS_API_URL || "").trim() || DEFAULT_SITE_SETTINGS_API_URL;
+  (import.meta.env.VITE_SITE_SETTINGS_API_URL || "").trim();
 
 export interface SiteSettings {
   rating_value: number;
@@ -61,24 +57,6 @@ export class SiteSettingsRequestError extends Error {
 const MAX_REVIEW_COUNT = 2147483647;
 const MAX_REVIEW_URL_LENGTH = 500;
 
-export function isSupabaseSiteSettingsUrl(url: string): boolean {
-  try {
-    const base =
-      typeof window !== "undefined" ? window.location.origin : "https://www.amzadscout.com";
-    const hostname = new URL(url, base).hostname.toLowerCase();
-    return hostname === "supabase.co" || hostname.endsWith(".supabase.co");
-  } catch {
-    return false;
-  }
-}
-
-function requestHeaders(url: string, extra?: Record<string, string>): Record<string, string> {
-  const headers: Record<string, string> = { ...extra };
-  if (isSupabaseSiteSettingsUrl(url)) {
-    headers.apikey = SUPABASE_ANON_KEY;
-  }
-  return headers;
-}
 
 export function isValidReviewSourceUrl(value: string): boolean {
   if (!value.startsWith("https://") || value.length > MAX_REVIEW_URL_LENGTH) return false;
@@ -171,66 +149,81 @@ import { getNeonSql } from "@/services/neonClient";
 import { encryptSecret, decryptSecret } from "@/services/cryptoVault";
 
 export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
-  // Directly query Neon database
-  try {
-    const sql = getNeonSql();
-    const rows = await sql`
-      SELECT 
-        rating_value, review_count, review_source_url, rating_visible,
-        resend_api_key, notification_email, email_notifications_enabled,
-        email_subject_template, email_html_template, footer_email, footer_address,
-        logo_settings, header_settings, maintenance_mode, updated_at
-      FROM public.site_settings
-      WHERE id = 1;
-    `;
-    if (rows && rows.length > 0) {
-      const r = rows[0];
-      const decryptedKey = r.resend_api_key ? await decryptSecret(r.resend_api_key) : null;
-      let displayKey = decryptedKey ?? null;
-      if (displayKey && displayKey.length > 8) {
-        displayKey = `${displayKey.slice(0, 5)}...${displayKey.slice(-4)}`;
-      }
-      return {
-        rating_value: Number(r.rating_value) || 0,
-        review_count: Number(r.review_count) || 0,
-        review_source_url: r.review_source_url ?? null,
-        rating_visible: r.rating_visible === true,
-        resend_api_key: displayKey,
-        has_resend_api_key: Boolean(decryptedKey && decryptedKey.trim().length > 0),
-        notification_email: r.notification_email ?? null,
-        email_notifications_enabled: r.email_notifications_enabled === true,
-        email_subject_template: r.email_subject_template ?? null,
-        email_html_template: r.email_html_template ?? null,
-        footer_email: r.footer_email ?? null,
-        footer_address: r.footer_address ?? null,
-        logo_settings: r.logo_settings ?? null,
-        header_settings: r.header_settings ?? null,
-        maintenance_mode: r.maintenance_mode === true,
-        updated_at: r.updated_at ? new Date(r.updated_at).toISOString() : null,
-      };
-    }
-  } catch (neonErr) {
-    console.warn("Direct Neon fetch error:", neonErr);
+  const now = Date.now();
+  if (cachedSettingsData && now - cachedSettingsData.timestamp < CACHE_TTL_MS) {
+    return cachedSettingsData.data;
+  }
+  if (inFlightSettingsPromise) {
+    return inFlightSettingsPromise;
   }
 
-  return {
-    rating_value: 0,
-    review_count: 0,
-    review_source_url: null,
-    rating_visible: false,
-    resend_api_key: null,
-    has_resend_api_key: false,
-    notification_email: null,
-    email_notifications_enabled: false,
-    email_subject_template: null,
-    email_html_template: null,
-    footer_email: null,
-    footer_address: null,
-    logo_settings: null,
-    header_settings: null,
-    maintenance_mode: false,
-    updated_at: null,
-  };
+  inFlightSettingsPromise = (async () => {
+    try {
+      const sql = getNeonSql();
+      const rows = await sql`
+        SELECT 
+          rating_value, review_count, review_source_url, rating_visible,
+          resend_api_key, notification_email, email_notifications_enabled,
+          email_subject_template, email_html_template, footer_email, footer_address,
+          logo_settings, header_settings, maintenance_mode, updated_at
+        FROM public.site_settings
+        WHERE id = 1;
+      `;
+      if (rows && rows.length > 0) {
+        const r = rows[0];
+        const decryptedKey = r.resend_api_key ? await decryptSecret(r.resend_api_key) : null;
+        let displayKey = decryptedKey ?? null;
+        if (displayKey && displayKey.length > 8) {
+          displayKey = `${displayKey.slice(0, 5)}...${displayKey.slice(-4)}`;
+        }
+        const settings: SiteSettings = {
+          rating_value: Number(r.rating_value) || 0,
+          review_count: Number(r.review_count) || 0,
+          review_source_url: r.review_source_url ?? null,
+          rating_visible: r.rating_visible === true,
+          resend_api_key: displayKey,
+          has_resend_api_key: Boolean(decryptedKey && decryptedKey.trim().length > 0),
+          notification_email: r.notification_email ?? null,
+          email_notifications_enabled: r.email_notifications_enabled === true,
+          email_subject_template: r.email_subject_template ?? null,
+          email_html_template: r.email_html_template ?? null,
+          footer_email: r.footer_email ?? null,
+          footer_address: r.footer_address ?? null,
+          logo_settings: r.logo_settings ?? null,
+          header_settings: r.header_settings ?? null,
+          maintenance_mode: r.maintenance_mode === true,
+          updated_at: r.updated_at ? new Date(r.updated_at).toISOString() : null,
+        };
+        cachedSettingsData = { data: settings, timestamp: Date.now() };
+        return settings;
+      }
+    } catch (neonErr) {
+      console.warn("Direct Neon fetch error:", neonErr);
+    } finally {
+      inFlightSettingsPromise = null;
+    }
+
+    return {
+      rating_value: 0,
+      review_count: 0,
+      review_source_url: null,
+      rating_visible: false,
+      resend_api_key: null,
+      has_resend_api_key: false,
+      notification_email: null,
+      email_notifications_enabled: false,
+      email_subject_template: null,
+      email_html_template: null,
+      footer_email: null,
+      footer_address: null,
+      logo_settings: null,
+      header_settings: null,
+      maintenance_mode: false,
+      updated_at: null,
+    };
+  })();
+
+  return inFlightSettingsPromise;
 }
 
 export async function saveSiteSettings(
@@ -312,7 +305,7 @@ export async function saveSiteSettings(
       displayKey = `${displayKey.slice(0, 5)}...${displayKey.slice(-4)}`;
     }
 
-    return {
+    const result: SiteSettings = {
       rating_value: Number(row.rating_value) || 0,
       review_count: Number(row.review_count) || 0,
       review_source_url: row.review_source_url ?? null,
@@ -330,6 +323,9 @@ export async function saveSiteSettings(
       maintenance_mode: row.maintenance_mode === true,
       updated_at: row.updated_at ? new Date(row.updated_at).toISOString() : null,
     };
+    cachedSettingsData = { data: result, timestamp: Date.now() };
+    inFlightSettingsPromise = null;
+    return result;
   } catch (neonErr: any) {
     console.error("Direct Neon save error:", neonErr);
     throw new Error(neonErr?.message || "Failed to save settings to Neon database");

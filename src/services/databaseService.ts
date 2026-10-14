@@ -1,4 +1,3 @@
-import { supabase } from '@/integrations/supabase/client';
 import { getNeonSql } from '@/services/neonClient';
 
 // Generic database service for SQL operations
@@ -164,26 +163,7 @@ class DatabaseService {
       this.setCache(CACHE_KEYS.SECURITY_LOGS, CACHE_KEYS.SECURITY_LOGS_TIMESTAMP, logs);
       return logs;
     } catch (neonErr) {
-      console.warn('Direct Neon fetch security logs fallback:', neonErr);
-    }
-
-    try {
-      const { data, error } = await supabase.functions.invoke('neon-security-logs', {
-        body: {
-          action: 'list',
-          limit
-        }
-      });
-      
-      if (error) {
-        throw error;
-      }
-
-      const logs = data?.logs || [];
-      this.setCache(CACHE_KEYS.SECURITY_LOGS, CACHE_KEYS.SECURITY_LOGS_TIMESTAMP, logs);
-      return logs;
-    } catch (error) {
-      console.error('Database error - fetch security logs:', error);
+      console.warn('Direct Neon fetch security logs error:', neonErr);
       return [];
     }
   }
@@ -246,26 +226,7 @@ class DatabaseService {
       this.setCache(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP, leads);
       return leads;
     } catch (neonError) {
-      console.warn('Direct Neon fetch leads fallback:', neonError);
-    }
-
-    try {
-      const { data, error } = await supabase.functions.invoke('neon-leads', {
-        body: {
-          action: 'list',
-          limit
-        }
-      });
-      
-      if (error) {
-        throw error;
-      }
-
-      const leads = data?.leads || [];
-      this.setCache(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP, leads);
-      return leads;
-    } catch (error) {
-      console.error('Database error - fetch leads:', error);
+      console.warn('Direct Neon fetch leads error:', neonError);
       return [];
     }
   }
@@ -346,26 +307,7 @@ class DatabaseService {
       this.setCache(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP, contacts);
       return contacts;
     } catch (neonErr) {
-      console.warn('Direct Neon fetch contacts fallback:', neonErr);
-    }
-
-    try {
-      const { data, error } = await supabase.functions.invoke('neon-contacts', {
-        body: {
-          action: 'list',
-          limit
-        }
-      });
-      
-      if (error) {
-        throw error;
-      }
-
-      const contacts = data?.contacts || [];
-      this.setCache(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP, contacts);
-      return contacts;
-    } catch (error) {
-      console.error('Database error - fetch contact submissions:', error);
+      console.warn('Direct Neon fetch contacts error:', neonErr);
       return [];
     }
   }

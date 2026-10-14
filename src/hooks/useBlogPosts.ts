@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { serviceBlogPosts, BlogPost as StaticBlogPost } from '@/data/blogPosts';
+import { useState } from 'react';
+import { serviceBlogPosts } from '@/data/blogPosts';
 
 export interface BlogPost {
   id: string;
@@ -44,81 +43,19 @@ const staticPostsFormatted: BlogPost[] = serviceBlogPosts.map((sp) => ({
 }));
 
 export const useBlogPosts = () => {
-  const [posts, setPosts] = useState<BlogPost[]>(staticPostsFormatted);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [posts] = useState<BlogPost[]>(staticPostsFormatted);
+  const [loading] = useState(false);
+  const [error] = useState<string | null>(null);
 
-  const fetchPosts = async () => {
-    try {
-      const { data, error: dbError } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('status', 'published')
-        .order('published_at', { ascending: false });
-
-      if (dbError) {
-        // Fall back gracefully to static posts
-        setPosts(staticPostsFormatted);
-        return;
-      }
-
-      if (data && data.length > 0) {
-        // Merge Supabase posts with static posts ensuring no slug collisions
-        const supabaseSlugs = new Set(data.map((p) => p.slug));
-        const nonDuplicateStatic = staticPostsFormatted.filter((p) => !supabaseSlugs.has(p.slug));
-        setPosts([...data, ...nonDuplicateStatic]);
-      } else {
-        setPosts(staticPostsFormatted);
-      }
-    } catch {
-      // Graceful fallback to static posts without throwing unhandled rejection
-      setPosts(staticPostsFormatted);
-    }
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const fetchPosts = async () => {};
 
   return { posts, loading, error, refetch: fetchPosts };
 };
 
 export const useBlogPost = (slug: string) => {
-  const fallbackPost = staticPostsFormatted.find((p) => p.slug === slug) || null;
-  const [post, setPost] = useState<BlogPost | null>(fallbackPost);
-  const [loading, setLoading] = useState(!fallbackPost);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const { data, error: dbError } = await supabase
-          .from('blog_posts')
-          .select('*')
-          .eq('slug', slug)
-          .eq('status', 'published')
-          .single();
-
-        if (!dbError && data) {
-          setPost(data);
-        } else if (fallbackPost) {
-          setPost(fallbackPost);
-        } else {
-          setError('Article not found');
-        }
-      } catch {
-        if (fallbackPost) {
-          setPost(fallbackPost);
-        } else {
-          setError('Article not found');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) fetchPost();
-  }, [slug]);
+  const post = staticPostsFormatted.find((p) => p.slug === slug) || null;
+  const [loading] = useState(false);
+  const error = post ? null : 'Article not found';
 
   return { post, loading, error };
 };

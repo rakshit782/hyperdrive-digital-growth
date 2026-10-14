@@ -9,16 +9,8 @@ import Stats from "@/components/Stats";
 import CaseStudies from "@/components/CaseStudies";
 import CTA from "@/components/CTA";
 import SEOHead from "@/components/SEOHead";
-import { useEffect } from "react";
 
 const Index = () => {
-  useEffect(() => {
-    console.log('✅ Index page mounted successfully');
-    return () => console.log('Index page unmounted');
-  }, []);
-
-  console.log('🔄 Index page rendering...');
-
   const schema = {
     "@context": "https://schema.org",
     "@type": ["Organization", "LocalBusiness", "ProfessionalService"],
