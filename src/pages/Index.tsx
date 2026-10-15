@@ -25,8 +25,8 @@ const Index = () => {
     ],
     "description": "Independent e-commerce growth specialists helping brands advertise on Amazon, Walmart, and Meta platforms. Data-driven advertising management, marketplace optimization, and proven growth strategies for online sellers. We are not affiliated with or endorsed by Amazon.",
     "url": "https://www.amzadscout.com/",
-    "logo": `${window.location.origin}/logo.png`,
-    "image": `${window.location.origin}/logo.png`,
+    "logo": "https://www.amzadscout.com/logo.png",
+    "image": "https://www.amzadscout.com/logo.png",
     "priceRange": "$$",
     "areaServed": {
       "@type": "GeoCircle",

@@ -140,7 +140,7 @@ export function useHeaderSettings() {
     try {
       await saveSiteSettings({ header_settings: newSettings });
     } catch (err) {
-      console.error("Failed to save header settings to database:", err);
+      console.warn("Failed to save header settings to database:", err);
       throw err;
     }
   };

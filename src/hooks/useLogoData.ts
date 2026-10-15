@@ -32,7 +32,7 @@ export const useLogoData = () => {
         }
       }
     } catch (error) {
-      console.error('Failed to load logo from localStorage:', error);
+      console.warn('Failed to load logo from localStorage:', error);
     }
     return DEFAULT_LOGO;
   });
@@ -58,7 +58,7 @@ export const useLogoData = () => {
           }
         }
       } catch (error) {
-        console.error('Failed to parse logo data:', error);
+        console.warn('Failed to parse logo data:', error);
       }
     };
 
@@ -78,7 +78,7 @@ export const useLogoData = () => {
             }
           }
         } catch (error) {
-          console.error('Failed to parse storage event:', error);
+          console.warn('Failed to parse storage event:', error);
         }
       }
     };

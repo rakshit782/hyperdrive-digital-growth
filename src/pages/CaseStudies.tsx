@@ -28,7 +28,7 @@ export const CaseStudies = () => {
             return;
           }
         } catch (error) {
-          console.error("Failed to parse case studies:", error);
+          console.warn("Failed to parse case studies:", error);
         }
       }
       setCaseStudies(allBulkCaseStudies);

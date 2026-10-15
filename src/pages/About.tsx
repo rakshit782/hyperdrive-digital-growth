@@ -47,7 +47,7 @@ const About = () => {
       try {
         setAboutData((prev) => ({ ...prev, ...JSON.parse(savedAbout) }));
       } catch (err) {
-        console.error("Failed to parse about_data", err);
+        console.warn("Failed to parse about_data", err);
       }
     }
   }, []);

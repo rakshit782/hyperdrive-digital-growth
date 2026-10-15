@@ -4,13 +4,7 @@ import { useLogoData } from "@/hooks/useLogoData";
 import PlatformLogos from "./PlatformLogos";
 
 const Footer = () => {
-  let logoData;
-  try {
-    logoData = useLogoData();
-  } catch (error) {
-    console.error('Error in Footer useLogoData:', error);
-    logoData = { text: 'AMZ AD SCOUT', imageUrl: '/logo.png', faviconUrl: '/favicon.ico', size: 70 };
-  }
+  const logoData = useLogoData();
 
   return (
     <footer className="bg-slate-900 text-white">

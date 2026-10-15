@@ -22,7 +22,7 @@ const ToolAlternativesPage: React.FC = () => {
       "name": "AMZ Ad Scout",
       "logo": {
         "@type": "ImageObject",
-        "url": `${window.location.origin}/logo.png`
+        "url": "https://www.amzadscout.com/logo.png"
       }
     }
   };

@@ -32,22 +32,18 @@ const CTA = () => {
   const [ctaData, setCTAData] = useState<CTAData>(defaultCTAData);
 
   useEffect(() => {
-    console.log("CTA: Component mounted, initializing...");
-    
     const loadCTAData = () => {
       const savedCTA = localStorage.getItem('ctaData');
       if (savedCTA) {
         try {
           const parsedData = JSON.parse(savedCTA);
           if (parsedData && typeof parsedData === 'object') {
-            console.log("CTA: Loaded from localStorage:", parsedData);
             setCTAData({ ...defaultCTAData, ...parsedData });
           } else {
-            console.log("CTA: Invalid localStorage data, using defaults");
             setCTAData(defaultCTAData);
           }
         } catch (error) {
-          console.error("CTA: Error parsing saved CTA data:", error);
+          console.warn("CTA: Error parsing saved CTA data:", error);
           setCTAData(defaultCTAData);
         }
       }
@@ -58,7 +54,6 @@ const CTA = () => {
 
     // Listen for updates from dashboard
     const handleCTAUpdate = (event: CustomEvent) => {
-      console.log("CTA: Received update event:", event.detail);
       if (event.detail && typeof event.detail === 'object') {
         setCTAData({ ...defaultCTAData, ...event.detail });
       }

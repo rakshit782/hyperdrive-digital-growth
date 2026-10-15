@@ -280,7 +280,7 @@ export const useLeadSubmission = () => {
 
       return { success: true, leadId: result.leadId };
     } catch (error) {
-      console.error('Lead submission error:', error);
+      console.warn('Lead submission error:', error);
       
       let errorMessage = "There was an error submitting your form. Please try again.";
       if (error instanceof Error) {

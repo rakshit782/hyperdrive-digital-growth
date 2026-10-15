@@ -29,7 +29,7 @@ export const useNewsletterEmails = () => {
       `;
       setEmails((rows || []) as NewsletterEmail[]);
     } catch (error) {
-      console.error('Error fetching newsletter emails from Neon:', error);
+      console.warn('Error fetching newsletter emails from Neon:', error);
       toast({
         title: "Error",
         description: "Failed to load newsletter emails",
@@ -95,7 +95,7 @@ export const useNewsletterEmails = () => {
       await fetchEmails();
       return { success: true };
     } catch (error) {
-      console.error('Error adding newsletter email to Neon:', error);
+      console.warn('Error adding newsletter email to Neon:', error);
       toast({
         title: "Error",
         description: "Failed to add email to newsletter",
@@ -122,7 +122,7 @@ export const useNewsletterEmails = () => {
       await fetchEmails();
       return { success: true };
     } catch (error) {
-      console.error('Error updating email status:', error);
+      console.warn('Error updating email status:', error);
       toast({
         title: "Error",
         description: "Failed to update email status",
@@ -146,7 +146,7 @@ export const useNewsletterEmails = () => {
       });
       await fetchEmails();
     } catch (error) {
-      console.error('Error deleting email from Neon:', error);
+      console.warn('Error deleting email from Neon:', error);
       toast({
         title: "Error",
         description: "Failed to delete email",
