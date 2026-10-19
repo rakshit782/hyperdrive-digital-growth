@@ -61,6 +61,12 @@ for (let i = 1; i <= 4; i++) {
 const IGNORED_HEADERS = new Set(["published"]);
 
 const MAX_DATA_ROWS = 200;
+const MAX_REORDER_ITEMS = 500;
+const MAX_REORDER_SORT = 1_000_000;
+
+export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export type ReorderItem = { id: string; sort_order: number };
 
 export function slugify(brandName: string): string {
   const base = brandName
@@ -732,4 +738,37 @@ export function validateUpdateBody(body: unknown): { ok: true; patch: CaseStudyP
 
   if (errors.length > 0) return { ok: false, error: errorText(errors) };
   return { ok: true, patch };
+}
+
+export function validateReorderBody(
+  body: unknown,
+): { ok: true; order: ReorderItem[] } | { ok: false; error: string } {
+  if (!isRecord(body)) return { ok: false, error: "Request body must be a JSON object" };
+  if (!Array.isArray(body.order) || body.order.length === 0) {
+    return { ok: false, error: "order must be a non-empty array" };
+  }
+  if (body.order.length > MAX_REORDER_ITEMS) {
+    return { ok: false, error: "order must contain at most 500 items" };
+  }
+
+  const seen = new Set<string>();
+  const order: ReorderItem[] = [];
+  for (const item of body.order) {
+    if (!isRecord(item) || typeof item.id !== "string" || !UUID_RE.test(item.id)) {
+      return { ok: false, error: "Each order item must have a valid UUID id" };
+    }
+    if (
+      typeof item.sort_order !== "number" ||
+      !Number.isInteger(item.sort_order) ||
+      item.sort_order < 0 ||
+      item.sort_order > MAX_REORDER_SORT
+    ) {
+      return { ok: false, error: "sort_order must be an integer between 0 and 1000000" };
+    }
+    const key = item.id.toLowerCase();
+    if (seen.has(key)) return { ok: false, error: "order contains duplicate ids" };
+    seen.add(key);
+    order.push({ id: item.id, sort_order: item.sort_order });
+  }
+  return { ok: true, order };
 }
