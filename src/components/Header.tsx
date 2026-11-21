@@ -486,7 +486,7 @@ export default function Header() {
             >
               <a href={COPILOT_LOGIN_URL} target="_blank" rel="noopener noreferrer">
                 <LogIn className="w-4 h-4" />
-                <span>Login</span>
+                <span>CoPilot Login</span>
               </a>
             </Button>
 
@@ -555,7 +555,7 @@ export default function Header() {
             <Button asChild variant="outline" className="w-full font-semibold gap-2">
               <a href={COPILOT_LOGIN_URL} target="_blank" rel="noopener noreferrer">
                 <LogIn className="w-4 h-4" />
-                Login
+                CoPilot Login
               </a>
             </Button>
             <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">

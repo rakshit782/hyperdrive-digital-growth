@@ -11,7 +11,8 @@ import {
   Shield, 
   ShoppingCart, 
   CircleDollarSign, 
-  Check 
+  Check,
+  Bot
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -100,6 +101,33 @@ const Hero = () => {
       
       <div className="container-modern relative z-10">
         <div className="max-w-7xl mx-auto">
+          {/* CoPilot Automation promo banner */}
+          <a
+            href="https://copilot.amzadscout.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group mb-10 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 rounded-2xl bg-gradient-to-r from-[#071329] via-blue-900 to-indigo-900 px-5 py-4 sm:px-6 text-white shadow-lg shadow-blue-900/20 ring-1 ring-white/10 transition-shadow hover:shadow-xl animate-fade-in"
+          >
+            <div className="flex items-center gap-3 text-center sm:text-left">
+              <span className="hidden sm:flex w-10 h-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/15 text-orange-400 ring-1 ring-orange-400/30">
+                <Bot className="w-5 h-5" />
+              </span>
+              <div>
+                <div className="flex items-center justify-center sm:justify-start gap-2">
+                  <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">New</span>
+                  <span className="font-semibold">AMZ CoPilot Automation</span>
+                </div>
+                <p className="mt-1 text-sm text-slate-300">
+                  Put your Amazon ads on autopilot — find bleeding keywords, audit ASINs and track store profit automatically.
+                </p>
+              </div>
+            </div>
+            <span className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition-colors group-hover:bg-orange-600">
+              Try CoPilot
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </a>
+
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left space-y-8">
