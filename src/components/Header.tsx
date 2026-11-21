@@ -15,12 +15,16 @@ import {
   Store,
   Layers,
   Link2,
-  Sparkles
+  Sparkles,
+  LogIn
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { useLogoData } from "@/hooks/useLogoData";
 import { useHeaderSettings } from "@/hooks/useHeaderSettings";
 import amazonWordmarkWhite from "@/assets/amazon-wordmark-white.svg";
+
+const COPILOT_LOGIN_URL = "https://copilot.amzadscout.com";
 
 // Custom SVG Icons for Social Media
 function LinkedInIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -477,6 +481,17 @@ export default function Header() {
 
             <Button
               asChild
+              variant="outline"
+              className="border-slate-300 text-slate-800 hover:text-blue-600 hover:border-blue-600 font-semibold px-5 h-11 rounded-xl text-sm gap-2"
+            >
+              <a href={COPILOT_LOGIN_URL} target="_blank" rel="noopener noreferrer">
+                <LogIn className="w-4 h-4" />
+                <span>Login</span>
+              </a>
+            </Button>
+
+            <Button
+              asChild
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 h-11 rounded-xl shadow-md shadow-blue-500/20 text-sm gap-2"
             >
               <Link to={settings.ctaLink || "/contact"}>
@@ -537,6 +552,12 @@ export default function Header() {
           </div>
 
           <div className="pt-4 flex flex-col gap-2">
+            <Button asChild variant="outline" className="w-full font-semibold gap-2">
+              <a href={COPILOT_LOGIN_URL} target="_blank" rel="noopener noreferrer">
+                <LogIn className="w-4 h-4" />
+                Login
+              </a>
+            </Button>
             <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
               <Link to={settings.ctaLink || "/contact"}>
                 {settings.ctaText}
