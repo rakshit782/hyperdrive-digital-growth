@@ -1,7 +1,8 @@
 import { 
   LayoutDashboard, Users, Mail, MessageSquare, Shield, Settings, LogOut, 
   FileText, Code, Eye, Award, FileSpreadsheet, ChevronDown, Sliders, Star,
-  ExternalLink, Sparkles, Database, Activity
+  ExternalLink, Sparkles, Database, Activity,
+  Kanban, ListTodo, Building2, CreditCard, Briefcase, UserCog,
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -32,6 +33,15 @@ const mainNavItems: MenuItem[] = [
   { title: "Leads", icon: Users, section: "leads", badge: "Live" },
   { title: "Contacts", icon: MessageSquare, section: "contacts" },
   { title: "Newsletter", icon: Mail, section: "newsletter" },
+];
+
+const crmNavItems: MenuItem[] = [
+  { title: "Pipeline", icon: Kanban, section: "pipeline" },
+  { title: "Tasks", icon: ListTodo, section: "tasks" },
+  { title: "Clients", icon: Building2, section: "clients" },
+  { title: "Subscription Plans", icon: CreditCard, section: "plans" },
+  { title: "Services", icon: Briefcase, section: "services" },
+  { title: "Team & Users", icon: UserCog, section: "team" },
 ];
 
 const contentNavItems: MenuItem[] = [
@@ -202,6 +212,7 @@ export function AdminSidebar({ activeSection, onSectionChange, onLogout }: Admin
         {/* Scrollable Navigation Groups */}
         <div className="flex-1 overflow-y-auto px-2 py-3 space-y-3">
           {renderNavGroup("Core Activity", mainNavItems)}
+          {renderNavGroup("CRM", crmNavItems)}
           {renderNavGroup("Content & Media", contentNavItems)}
           {renderNavGroup("System & Config", systemNavItems)}
         </div>

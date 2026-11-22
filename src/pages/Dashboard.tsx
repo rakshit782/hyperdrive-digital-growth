@@ -15,6 +15,13 @@ import { VisitorLogsSection } from '@/components/dashboard/VisitorLogsSection';
 import { CertificatesSection } from '@/components/dashboard/CertificatesSection';
 import { BulkCaseStudiesSection } from '@/components/dashboard/BulkCaseStudiesSection';
 import { SystemStatusSection } from '@/components/dashboard/SystemStatusSection';
+import { PipelineSection } from '@/components/dashboard/crm/PipelineSection';
+import { TasksSection } from '@/components/dashboard/crm/TasksSection';
+import { ClientsSection } from '@/components/dashboard/crm/ClientsSection';
+import { PlansSection } from '@/components/dashboard/crm/PlansSection';
+import { ServicesSection } from '@/components/dashboard/crm/ServicesSection';
+import { TeamSection } from '@/components/dashboard/crm/TeamSection';
+import { CrmSummary } from '@/components/dashboard/crm/CrmSummary';
 import { databaseService } from '@/services/databaseService';
 import { getVisitorLogs } from '@/utils/visitorTracker';
 import { toast } from 'sonner';
@@ -174,14 +181,29 @@ const Dashboard = () => {
     switch (activeSection) {
       case 'overview':
         return (
-          <OverviewSection 
-            stats={stats} 
-            leads={leads}
-            contacts={contacts}
-            onNavigate={setActiveSection}
-            onRefresh={handleRefresh}
-          />
+          <>
+            <CrmSummary onNavigate={setActiveSection} />
+            <OverviewSection 
+              stats={stats} 
+              leads={leads}
+              contacts={contacts}
+              onNavigate={setActiveSection}
+              onRefresh={handleRefresh}
+            />
+          </>
         );
+      case 'pipeline':
+        return <PipelineSection />;
+      case 'tasks':
+        return <TasksSection />;
+      case 'clients':
+        return <ClientsSection />;
+      case 'plans':
+        return <PlansSection />;
+      case 'services':
+        return <ServicesSection />;
+      case 'team':
+        return <TeamSection />;
       case 'contacts':
         return (
           <ContactsSection
