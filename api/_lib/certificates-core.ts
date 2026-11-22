@@ -13,6 +13,8 @@ function deptInitials(dept: string) {
 let ready = false;
 async function ensureTable(db: Db) {
   if (ready) return;
+  // Only create when missing: CREATE needs schema privileges the app user may not have.
+  if ((await db.q<{ t: string | null }>("SELECT to_regclass('amz_app.internship_certificates')::text AS t"))[0]?.t) { ready = true; return; }
   await db.q(`CREATE TABLE IF NOT EXISTS amz_app.internship_certificates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(), certificate_id TEXT NOT NULL UNIQUE, student_name TEXT NOT NULL,
     email TEXT, role TEXT NOT NULL, department TEXT, city TEXT, start_date DATE NOT NULL, end_date DATE NOT NULL,

@@ -21,8 +21,26 @@ const CLIENT_STATUSES = ["active", "trial", "paused", "cancelled"];
 const ROLES = ["admin", "user"];
 
 let tablesReady = false;
+const CRM_TABLES = ["services", "subscription_plans", "clients", "tasks", "lead_meta"];
 async function ensureTables(client: Client) {
   if (tablesReady) return;
+  // Creating tables needs CREATE on schema amz_app, which the app's database user may not have,
+  // and Postgres checks that even for "IF NOT EXISTS". So only create when something is missing.
+  const have = await client.queryObject<{ t: string | null }>(
+    `SELECT to_regclass('amz_app.' || t)::text AS t FROM unnest($1::text[]) AS t`, [CRM_TABLES]);
+  if (have.rows.every((r) => r.t)) { tablesReady = true; return; }
+  try {
+    await createTables(client);
+  } catch (e: any) {
+    if (String(e?.code) === "42501" || /permission denied/i.test(String(e?.message))) {
+      throw new HttpError(503, "The CRM tables haven't been set up yet. Run docs/neon-crm-setup.sql once in the Neon SQL Editor, then reload.");
+    }
+    throw e;
+  }
+  tablesReady = true;
+}
+
+async function createTables(client: Client) {
   const ddl = `
     CREATE SCHEMA IF NOT EXISTS amz_app;
     CREATE TABLE IF NOT EXISTS amz_app.services (
@@ -96,7 +114,6 @@ async function ensureTables(client: Client) {
     CREATE INDEX IF NOT EXISTS clients_plan_idx ON amz_app.clients (plan_id);
   `;
   for (const stmt of ddl.split(";").map((s) => s.trim()).filter(Boolean)) await client.queryArray(stmt);
-  tablesReady = true;
 }
 
 // ---------- helpers ----------
