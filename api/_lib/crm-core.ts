@@ -1,6 +1,6 @@
 // CRM actions for the admin dashboard: lead pipeline, tasks, clients, plans, services, team users.
 // Runtime-agnostic: api/crm.ts runs it on Vercel against Neon; tests run it against a local Postgres.
-// New tables live in amz_app; public.leads, public.users and public.user_roles are used in place.
+// New tables live in amz_crm; public.leads, public.users and public.user_roles are used in place.
 import { HttpError, requireAdmin, type Db } from "./db.js";
 
 /** Minimal client shape used below, backed by Db.q. */
@@ -24,16 +24,16 @@ let tablesReady = false;
 const CRM_TABLES = ["services", "subscription_plans", "clients", "tasks", "lead_meta"];
 async function ensureTables(client: Client) {
   if (tablesReady) return;
-  // Creating tables needs CREATE on schema amz_app, which the app's database user may not have,
+  // Creating tables needs CREATE on schema amz_crm, which the app's database user may not have,
   // and Postgres checks that even for "IF NOT EXISTS". So only create when something is missing.
   const have = await client.queryObject<{ t: string | null }>(
-    `SELECT to_regclass('amz_app.' || t)::text AS t FROM unnest($1::text[]) AS t`, [CRM_TABLES]);
+    `SELECT to_regclass('amz_crm.' || t)::text AS t FROM unnest($1::text[]) AS t`, [CRM_TABLES]);
   if (have.rows.every((r) => r.t)) { tablesReady = true; return; }
   try {
     await createTables(client);
   } catch (e: any) {
     if (String(e?.code) === "42501" || /permission denied/i.test(String(e?.message))) {
-      throw new HttpError(503, "The CRM tables haven't been set up yet. Run docs/neon-crm-setup.sql once in the Neon SQL Editor, then reload.");
+      throw new HttpError(503, "The CRM tables haven't been set up yet. The database user in NEON_DATABASE_URL needs permission to create schemas (run docs/neon-crm-setup.sql in the Neon SQL Editor), then reload.");
     }
     throw e;
   }
@@ -42,8 +42,8 @@ async function ensureTables(client: Client) {
 
 async function createTables(client: Client) {
   const ddl = `
-    CREATE SCHEMA IF NOT EXISTS amz_app;
-    CREATE TABLE IF NOT EXISTS amz_app.services (
+    CREATE SCHEMA IF NOT EXISTS amz_crm;
+    CREATE TABLE IF NOT EXISTS amz_crm.services (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       slug TEXT NOT NULL UNIQUE,
       name TEXT NOT NULL,
@@ -55,7 +55,7 @@ async function createTables(client: Client) {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
-    CREATE TABLE IF NOT EXISTS amz_app.subscription_plans (
+    CREATE TABLE IF NOT EXISTS amz_crm.subscription_plans (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name TEXT NOT NULL,
       description TEXT,
@@ -69,7 +69,7 @@ async function createTables(client: Client) {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
-    CREATE TABLE IF NOT EXISTS amz_app.clients (
+    CREATE TABLE IF NOT EXISTS amz_crm.clients (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name TEXT NOT NULL,
       company TEXT,
@@ -77,7 +77,7 @@ async function createTables(client: Client) {
       phone TEXT,
       website TEXT,
       lead_id UUID,
-      plan_id UUID REFERENCES amz_app.subscription_plans(id) ON DELETE SET NULL,
+      plan_id UUID REFERENCES amz_crm.subscription_plans(id) ON DELETE SET NULL,
       plan_status TEXT NOT NULL DEFAULT 'active',
       start_date DATE,
       renewal_date DATE,
@@ -87,7 +87,7 @@ async function createTables(client: Client) {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
-    CREATE TABLE IF NOT EXISTS amz_app.tasks (
+    CREATE TABLE IF NOT EXISTS amz_crm.tasks (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       title TEXT NOT NULL,
       description TEXT,
@@ -96,22 +96,22 @@ async function createTables(client: Client) {
       due_date DATE,
       assignee_id UUID,
       lead_id UUID,
-      client_id UUID REFERENCES amz_app.clients(id) ON DELETE CASCADE,
+      client_id UUID REFERENCES amz_crm.clients(id) ON DELETE CASCADE,
       created_by UUID,
       completed_at TIMESTAMPTZ,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
-    CREATE TABLE IF NOT EXISTS amz_app.lead_meta (
+    CREATE TABLE IF NOT EXISTS amz_crm.lead_meta (
       lead_id UUID PRIMARY KEY,
       owner_id UUID,
       next_follow_up DATE,
       deal_value NUMERIC(12,2),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
-    CREATE INDEX IF NOT EXISTS tasks_assignee_idx ON amz_app.tasks (assignee_id);
-    CREATE INDEX IF NOT EXISTS tasks_status_idx ON amz_app.tasks (status);
-    CREATE INDEX IF NOT EXISTS clients_plan_idx ON amz_app.clients (plan_id);
+    CREATE INDEX IF NOT EXISTS tasks_assignee_idx ON amz_crm.tasks (assignee_id);
+    CREATE INDEX IF NOT EXISTS tasks_status_idx ON amz_crm.tasks (status);
+    CREATE INDEX IF NOT EXISTS clients_plan_idx ON amz_crm.clients (plan_id);
   `;
   for (const stmt of ddl.split(";").map((s) => s.trim()).filter(Boolean)) await client.queryArray(stmt);
 }
@@ -271,15 +271,15 @@ const actions: Record<string, Handler> = {
         count(*) FILTER (WHERE status <> 'done')::int AS open_tasks,
         count(*) FILTER (WHERE status <> 'done' AND due_date < CURRENT_DATE)::int AS overdue_tasks,
         count(*) FILTER (WHERE status <> 'done' AND due_date = CURRENT_DATE)::int AS due_today
-      FROM amz_app.tasks`);
+      FROM amz_crm.tasks`);
     const c = await client.queryObject<Record<string, number>>(`
       SELECT
         count(*) FILTER (WHERE plan_status IN ('active','trial'))::int AS active_clients,
         COALESCE(sum(monthly_value) FILTER (WHERE plan_status = 'active'), 0)::float AS mrr,
         count(*) FILTER (WHERE plan_status = 'active' AND renewal_date BETWEEN CURRENT_DATE AND CURRENT_DATE + 30)::int AS renewals_30d
-      FROM amz_app.clients`);
+      FROM amz_crm.clients`);
     const follow = await client.queryObject<{ n: number }>(
-      "SELECT count(*)::int AS n FROM amz_app.lead_meta WHERE next_follow_up <= CURRENT_DATE",
+      "SELECT count(*)::int AS n FROM amz_crm.lead_meta WHERE next_follow_up <= CURRENT_DATE",
     );
     return {
       leadsByStage: Object.fromEntries(leads.rows.map((r) => [r.status, r.n])),
@@ -289,7 +289,7 @@ const actions: Record<string, Handler> = {
     };
   },
 
-  // Lead pipeline (reads public.leads, extra fields in amz_app.lead_meta)
+  // Lead pipeline (reads public.leads, extra fields in amz_crm.lead_meta)
   "leads.list": async ({ client, body }) => {
     const limit = Math.min(Number(body.limit) || 500, 2000);
     const r = await client.queryObject(
@@ -297,10 +297,10 @@ const actions: Record<string, Handler> = {
               l.source, COALESCE(NULLIF(lower(l.status), ''), 'new') AS status, l.notes, l.lead_number, l.audit_type,
               l.current_spend, l.goals, l.created_at, l.updated_at,
               m.owner_id, m.next_follow_up, m.deal_value, u.full_name AS owner_name, u.email AS owner_email,
-              (SELECT count(*)::int FROM amz_app.tasks t WHERE t.lead_id = l.id AND t.status <> 'done') AS open_tasks,
-              (SELECT c.id FROM amz_app.clients c WHERE c.lead_id = l.id LIMIT 1) AS client_id
+              (SELECT count(*)::int FROM amz_crm.tasks t WHERE t.lead_id = l.id AND t.status <> 'done') AS open_tasks,
+              (SELECT c.id FROM amz_crm.clients c WHERE c.lead_id = l.id LIMIT 1) AS client_id
          FROM leads l
-         LEFT JOIN amz_app.lead_meta m ON m.lead_id = l.id
+         LEFT JOIN amz_crm.lead_meta m ON m.lead_id = l.id
          LEFT JOIN users u ON u.id = m.owner_id
         ORDER BY l.created_at DESC
         LIMIT $1`,
@@ -324,7 +324,7 @@ const actions: Record<string, Handler> = {
     if (Object.keys(meta).length) {
       const cols = Object.keys(meta);
       await client.queryObject(
-        `INSERT INTO amz_app.lead_meta (lead_id, ${cols.join(", ")}) VALUES ($1, ${cols.map((_, i) => `$${i + 2}`).join(", ")})
+        `INSERT INTO amz_crm.lead_meta (lead_id, ${cols.join(", ")}) VALUES ($1, ${cols.map((_, i) => `$${i + 2}`).join(", ")})
          ON CONFLICT (lead_id) DO UPDATE SET ${cols.map((c) => `${c} = EXCLUDED.${c}`).join(", ")}, updated_at = now()`,
         [id, ...Object.values(meta)],
       );
@@ -333,7 +333,7 @@ const actions: Record<string, Handler> = {
   },
   "leads.convert": async ({ client, body, adminId }) => {
     const id = requireId(body.id);
-    const existing = await client.queryObject<{ id: string }>("SELECT id FROM amz_app.clients WHERE lead_id = $1", [id]);
+    const existing = await client.queryObject<{ id: string }>("SELECT id FROM amz_crm.clients WHERE lead_id = $1", [id]);
     if (existing.rows.length) throw new HttpError(409, "This lead is already a client.");
     const l = await client.queryObject<Record<string, string>>(
       "SELECT name, company, brand_name, email, phone, website_url, amazon_store_url FROM leads WHERE id = $1", [id],
@@ -341,7 +341,7 @@ const actions: Record<string, Handler> = {
     const lead = l.rows[0];
     if (!lead) throw new HttpError(404, "Lead not found.");
     const extra = pick(body, { plan_id: uuid, monthly_value: num, start_date: date, renewal_date: date });
-    const row = await insertRow(client, "amz_app.clients", {
+    const row = await insertRow(client, "amz_crm.clients", {
       name: lead.name || lead.email,
       company: lead.company || lead.brand_name || null,
       email: lead.email || null,
@@ -361,10 +361,10 @@ const actions: Record<string, Handler> = {
     const r = await client.queryObject(
       `SELECT t.*, u.full_name AS assignee_name, u.email AS assignee_email,
               l.name AS lead_name, c.name AS client_name
-         FROM amz_app.tasks t
+         FROM amz_crm.tasks t
          LEFT JOIN users u ON u.id = t.assignee_id
          LEFT JOIN leads l ON l.id = t.lead_id
-         LEFT JOIN amz_app.clients c ON c.id = t.client_id
+         LEFT JOIN amz_crm.clients c ON c.id = t.client_id
         ORDER BY (t.status = 'done'), t.due_date NULLS LAST, t.created_at DESC
         LIMIT 1000`,
     );
@@ -373,7 +373,7 @@ const actions: Record<string, Handler> = {
   "tasks.create": async ({ client, body, adminId }) => {
     const data = pick(body, TASK_FIELDS);
     if (!data.title) throw new HttpError(400, "Give the task a title.");
-    return { task: await insertRow(client, "amz_app.tasks", { ...data, created_by: adminId }) };
+    return { task: await insertRow(client, "amz_crm.tasks", { ...data, created_by: adminId }) };
   },
   "tasks.update": async ({ client, body }) => {
     const id = requireId(body.id);
@@ -381,16 +381,16 @@ const actions: Record<string, Handler> = {
     if (data.title === null) throw new HttpError(400, "Give the task a title.");
     if (data.status !== undefined) {
       const done = data.status === "done";
-      const row = await updateRow(client, "amz_app.tasks", id, data);
+      const row = await updateRow(client, "amz_crm.tasks", id, data);
       await client.queryObject(
-        `UPDATE amz_app.tasks SET completed_at = ${done ? "COALESCE(completed_at, now())" : "NULL"} WHERE id = $1`, [id],
+        `UPDATE amz_crm.tasks SET completed_at = ${done ? "COALESCE(completed_at, now())" : "NULL"} WHERE id = $1`, [id],
       );
       return { task: row };
     }
-    return { task: await updateRow(client, "amz_app.tasks", id, data) };
+    return { task: await updateRow(client, "amz_crm.tasks", id, data) };
   },
   "tasks.delete": async ({ client, body }) => {
-    await deleteRow(client, "amz_app.tasks", requireId(body.id));
+    await deleteRow(client, "amz_crm.tasks", requireId(body.id));
     return { success: true };
   },
 
@@ -398,9 +398,9 @@ const actions: Record<string, Handler> = {
   "clients.list": async ({ client }) => {
     const r = await client.queryObject(
       `SELECT c.*, p.name AS plan_name, p.billing_period, u.full_name AS owner_name, u.email AS owner_email,
-              (SELECT count(*)::int FROM amz_app.tasks t WHERE t.client_id = c.id AND t.status <> 'done') AS open_tasks
-         FROM amz_app.clients c
-         LEFT JOIN amz_app.subscription_plans p ON p.id = c.plan_id
+              (SELECT count(*)::int FROM amz_crm.tasks t WHERE t.client_id = c.id AND t.status <> 'done') AS open_tasks
+         FROM amz_crm.clients c
+         LEFT JOIN amz_crm.subscription_plans p ON p.id = c.plan_id
          LEFT JOIN users u ON u.id = c.owner_id
         ORDER BY c.created_at DESC`,
     );
@@ -409,15 +409,15 @@ const actions: Record<string, Handler> = {
   "clients.create": async ({ client, body }) => {
     const data = pick(body, CLIENT_FIELDS);
     if (!data.name) throw new HttpError(400, "Enter the client's name.");
-    return { client: await insertRow(client, "amz_app.clients", data) };
+    return { client: await insertRow(client, "amz_crm.clients", data) };
   },
   "clients.update": async ({ client, body }) => {
     const data = pick(body, CLIENT_FIELDS);
     if (data.name === null) throw new HttpError(400, "Enter the client's name.");
-    return { client: await updateRow(client, "amz_app.clients", requireId(body.id), data) };
+    return { client: await updateRow(client, "amz_crm.clients", requireId(body.id), data) };
   },
   "clients.delete": async ({ client, body }) => {
-    await deleteRow(client, "amz_app.clients", requireId(body.id));
+    await deleteRow(client, "amz_crm.clients", requireId(body.id));
     return { success: true };
   },
 
@@ -425,9 +425,9 @@ const actions: Record<string, Handler> = {
   "plans.list": async ({ client }) => {
     const r = await client.queryObject(
       `SELECT p.*,
-              (SELECT count(*)::int FROM amz_app.clients c WHERE c.plan_id = p.id AND c.plan_status IN ('active','trial')) AS active_clients,
-              (SELECT COALESCE(sum(c.monthly_value), 0)::float FROM amz_app.clients c WHERE c.plan_id = p.id AND c.plan_status = 'active') AS mrr
-         FROM amz_app.subscription_plans p
+              (SELECT count(*)::int FROM amz_crm.clients c WHERE c.plan_id = p.id AND c.plan_status IN ('active','trial')) AS active_clients,
+              (SELECT COALESCE(sum(c.monthly_value), 0)::float FROM amz_crm.clients c WHERE c.plan_id = p.id AND c.plan_status = 'active') AS mrr
+         FROM amz_crm.subscription_plans p
         ORDER BY p.sort_order, p.created_at`,
     );
     return { plans: r.rows };
@@ -435,21 +435,21 @@ const actions: Record<string, Handler> = {
   "plans.create": async ({ client, body }) => {
     const data = pick(body, PLAN_FIELDS);
     if (!data.name) throw new HttpError(400, "Give the plan a name.");
-    return { plan: await insertRow(client, "amz_app.subscription_plans", data) };
+    return { plan: await insertRow(client, "amz_crm.subscription_plans", data) };
   },
   "plans.update": async ({ client, body }) => {
     const data = pick(body, PLAN_FIELDS);
     if (data.name === null) throw new HttpError(400, "Give the plan a name.");
-    return { plan: await updateRow(client, "amz_app.subscription_plans", requireId(body.id), data) };
+    return { plan: await updateRow(client, "amz_crm.subscription_plans", requireId(body.id), data) };
   },
   "plans.delete": async ({ client, body }) => {
-    await deleteRow(client, "amz_app.subscription_plans", requireId(body.id));
+    await deleteRow(client, "amz_crm.subscription_plans", requireId(body.id));
     return { success: true };
   },
 
   // Services catalog
   "services.list": async ({ client }) => {
-    const r = await client.queryObject("SELECT * FROM amz_app.services ORDER BY sort_order, name");
+    const r = await client.queryObject("SELECT * FROM amz_crm.services ORDER BY sort_order, name");
     return { services: r.rows };
   },
   "services.create": async ({ client, body }) => {
@@ -457,7 +457,7 @@ const actions: Record<string, Handler> = {
     if (!data.name) throw new HttpError(400, "Give the service a name.");
     if (!data.slug) data.slug = slugify(String(data.name));
     try {
-      return { service: await insertRow(client, "amz_app.services", data) };
+      return { service: await insertRow(client, "amz_crm.services", data) };
     } catch (e) {
       if (String(e).includes("duplicate key")) throw new HttpError(409, "Another service already uses that URL slug.");
       throw e;
@@ -467,7 +467,7 @@ const actions: Record<string, Handler> = {
     const data = pick(body, SERVICE_FIELDS);
     if (data.name === null) throw new HttpError(400, "Give the service a name.");
     try {
-      return { service: await updateRow(client, "amz_app.services", requireId(body.id), data) };
+      return { service: await updateRow(client, "amz_crm.services", requireId(body.id), data) };
     } catch (e) {
       if (String(e).includes("duplicate key")) throw new HttpError(409, "Another service already uses that URL slug.");
       throw e;
@@ -476,9 +476,9 @@ const actions: Record<string, Handler> = {
   "services.delete": async ({ client, body }) => {
     const id = requireId(body.id);
     await client.queryObject(
-      "UPDATE amz_app.subscription_plans SET service_ids = array_remove(service_ids, $1::uuid) WHERE $1::uuid = ANY(service_ids)", [id],
+      "UPDATE amz_crm.subscription_plans SET service_ids = array_remove(service_ids, $1::uuid) WHERE $1::uuid = ANY(service_ids)", [id],
     );
-    await deleteRow(client, "amz_app.services", id);
+    await deleteRow(client, "amz_crm.services", id);
     return { success: true };
   },
 
@@ -486,7 +486,7 @@ const actions: Record<string, Handler> = {
   "users.list": async ({ client }) => {
     const r = await client.queryObject(
       `SELECT u.id, u.email, u.full_name, u.created_at, COALESCE(ur.role, 'user') AS role,
-              (SELECT count(*)::int FROM amz_app.tasks t WHERE t.assignee_id = u.id AND t.status <> 'done') AS open_tasks
+              (SELECT count(*)::int FROM amz_crm.tasks t WHERE t.assignee_id = u.id AND t.status <> 'done') AS open_tasks
          FROM users u LEFT JOIN user_roles ur ON ur.user_id = u.id
         ORDER BY u.created_at`,
     );
@@ -524,9 +524,9 @@ const actions: Record<string, Handler> = {
   "users.delete": async ({ client, body, adminId }) => {
     const id = requireId(body.id);
     if (id === adminId) throw new HttpError(400, "You can't delete your own account.");
-    await client.queryObject("UPDATE amz_app.tasks SET assignee_id = NULL WHERE assignee_id = $1", [id]);
-    await client.queryObject("UPDATE amz_app.clients SET owner_id = NULL WHERE owner_id = $1", [id]);
-    await client.queryObject("UPDATE amz_app.lead_meta SET owner_id = NULL WHERE owner_id = $1", [id]);
+    await client.queryObject("UPDATE amz_crm.tasks SET assignee_id = NULL WHERE assignee_id = $1", [id]);
+    await client.queryObject("UPDATE amz_crm.clients SET owner_id = NULL WHERE owner_id = $1", [id]);
+    await client.queryObject("UPDATE amz_crm.lead_meta SET owner_id = NULL WHERE owner_id = $1", [id]);
     await client.queryObject("DELETE FROM user_roles WHERE user_id = $1", [id]);
     try {
       const r = await client.queryObject("DELETE FROM users WHERE id = $1 RETURNING id", [id]);
