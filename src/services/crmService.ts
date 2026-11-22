@@ -1,8 +1,7 @@
 import { authService } from "@/services/authService";
 
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || "https://hznbshxhmhtenxcuffhx.supabase.co").replace(/\/$/, "");
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
-const ENDPOINT = `${SUPABASE_URL}/functions/v1/neon-crm`;
+// Vercel function in api/crm.ts (talks to Neon directly).
+const ENDPOINT = "/api/crm";
 
 export const LEAD_STAGES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
 export type LeadStage = (typeof LEAD_STAGES)[number];
@@ -65,7 +64,6 @@ async function call<T>(action: string, payload: Record<string, unknown> = {}): P
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(SUPABASE_KEY ? { apikey: SUPABASE_KEY } : {}),
         "x-admin-token": token,
       },
       body: JSON.stringify({ action, ...payload }),
@@ -81,7 +79,7 @@ async function call<T>(action: string, payload: Record<string, unknown> = {}): P
     }
   } catch (e) {
     if (e instanceof Error && e.message.includes("session")) throw e;
-    throw new Error("Couldn't reach the CRM service. Check that the neon-crm function is deployed and try again.");
+    throw new Error("Couldn't reach the CRM service. Check your connection and try again.");
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `Request failed (${res.status}).`);

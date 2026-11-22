@@ -1,29 +1,17 @@
-// Admin CRM API: lead pipeline, tasks, clients, subscription plans, services and team users.
-// Every action requires an admin JWT in the `x-admin-token` header (see requireAdmin).
-// New tables live in the amz_app schema; public.leads, public.users and public.user_roles are read/updated in place.
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
-import { verify } from "https://deno.land/x/djwt@v2.8/mod.ts";
+// CRM actions for the admin dashboard: lead pipeline, tasks, clients, plans, services, team users.
+// Runtime-agnostic: api/crm.ts runs it on Vercel against Neon; tests run it against a local Postgres.
+// New tables live in amz_app; public.leads, public.users and public.user_roles are used in place.
+import { HttpError, requireAdmin, type Db } from "./db.js";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-admin-token",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+/** Minimal client shape used below, backed by Db.q. */
+type Client = {
+  queryObject<T = any>(text: string, args?: unknown[]): Promise<{ rows: T[] }>;
+  queryArray(text: string, args?: unknown[]): Promise<{ rows: any[] }>;
 };
-
-const JWT_SECRET = Deno.env.get("JWT_SECRET")!;
-
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-
-class HttpError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-  }
-}
+const wrap = (db: Db): Client => ({
+  queryObject: async (t, a) => ({ rows: await db.q(t, a) as any[] }),
+  queryArray: async (t, a) => ({ rows: await db.q(t, a) as any[] }),
+});
 
 export const LEAD_STAGES = ["new", "contacted", "qualified", "proposal", "won", "lost"];
 const TASK_STATUSES = ["todo", "in_progress", "done"];
@@ -35,7 +23,7 @@ const ROLES = ["admin", "user"];
 let tablesReady = false;
 async function ensureTables(client: Client) {
   if (tablesReady) return;
-  await client.queryArray(`
+  const ddl = `
     CREATE SCHEMA IF NOT EXISTS amz_app;
     CREATE TABLE IF NOT EXISTS amz_app.services (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -106,33 +94,9 @@ async function ensureTables(client: Client) {
     CREATE INDEX IF NOT EXISTS tasks_assignee_idx ON amz_app.tasks (assignee_id);
     CREATE INDEX IF NOT EXISTS tasks_status_idx ON amz_app.tasks (status);
     CREATE INDEX IF NOT EXISTS clients_plan_idx ON amz_app.clients (plan_id);
-  `);
+  `;
+  for (const stmt of ddl.split(";").map((s) => s.trim()).filter(Boolean)) await client.queryArray(stmt);
   tablesReady = true;
-}
-
-async function requireAdmin(req: Request, client: Client): Promise<string> {
-  const token = req.headers.get("x-admin-token") ?? "";
-  if (!token) throw new HttpError(401, "Sign in as an admin to continue.");
-  let sub: string;
-  try {
-    const key = await crypto.subtle.importKey(
-      "raw",
-      new TextEncoder().encode(JWT_SECRET),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["verify"],
-    );
-    const payload = await verify(token, key);
-    sub = String(payload.sub ?? "");
-  } catch (_e) {
-    throw new HttpError(401, "Your session has expired. Sign in again.");
-  }
-  const result = await client.queryObject<{ role: string | null }>(
-    "SELECT ur.role FROM users u LEFT JOIN user_roles ur ON u.id = ur.user_id WHERE u.id = $1",
-    [sub],
-  );
-  if (result.rows[0]?.role !== "admin") throw new HttpError(403, "Admin access required.");
-  return sub;
 }
 
 // ---------- helpers ----------
@@ -558,28 +522,19 @@ const actions: Record<string, Handler> = {
   },
 };
 
-serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-  if (req.method !== "POST") return json({ error: "Use POST." }, 405);
 
-  let client: Client | null = null;
+/** Handle one CRM request. Returns the HTTP status and JSON body. */
+export async function handleCrm(db: Db, opts: { action: string; body: Record<string, unknown>; token: string; jwtSecret?: string }) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const action = String(body?.action ?? "");
-    const handler = actions[action];
-    if (!handler) return json({ error: `Unknown action "${action}".` }, 400);
-
-    client = new Client(Deno.env.get("NEON_DATABASE_URL")!);
-    await client.connect();
-    const adminId = await requireAdmin(req, client);
+    const handler = actions[opts.action];
+    if (!handler) return { status: 400, body: { error: `Unknown action "${opts.action}".` } };
+    const client = wrap(db);
+    const adminId = await requireAdmin(db, opts.token, opts.jwtSecret);
     await ensureTables(client);
-    const result = await handler({ client, adminId, body });
-    return json(result);
+    return { status: 200, body: await handler({ client, adminId, body: opts.body }) };
   } catch (e) {
-    if (e instanceof HttpError) return json({ error: e.message }, e.status);
-    console.error("neon-crm error:", e);
-    return json({ error: "Something went wrong on the server. Try again." }, 500);
-  } finally {
-    try { await client?.end(); } catch (_e) { /* ignore */ }
+    if (e instanceof HttpError) return { status: e.status, body: { error: e.message } };
+    console.warn("crm error:", e);
+    return { status: 500, body: { error: "Something went wrong on the server. Try again." } };
   }
-});
+}

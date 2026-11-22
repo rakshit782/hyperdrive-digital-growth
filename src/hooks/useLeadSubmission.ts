@@ -5,9 +5,6 @@ import { getNeonSql } from '@/services/neonClient';
 import { decryptSecret } from '@/services/cryptoVault';
 import { trackMetaLead } from '@/utils/metaPixel';
 
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || 'https://hznbshxhmhtenxcuffhx.supabase.co').replace(/\/$/, '');
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
-
 export interface LeadSubmissionData {
   name: string;
   email: string;
@@ -235,10 +232,10 @@ export const useLeadSubmission = () => {
         console.warn('Direct Neon lead submission fallback:', neonErr);
       }
 
-      // 2. Submit to Neon database via edge function fallback
-      const fallbackRes = await fetch(`${SUPABASE_URL}/functions/v1/neon-lead-submission`, {
+      // 2. Fallback: save through the Vercel function (api/lead.ts), which writes to Neon
+      const fallbackRes = await fetch('/api/lead', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(SUPABASE_KEY ? { apikey: SUPABASE_KEY } : {}) },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...leadData, currentSpend: leadData.monthlyAdSpend, goals: leadData.businessGoals }),
       });
       const result = await fallbackRes.json().catch(() => ({}));

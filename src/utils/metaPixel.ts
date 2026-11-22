@@ -1,11 +1,9 @@
 /**
  * Meta Pixel helpers: visitor ID for match quality, advanced matching on leads,
- * and a server-side (Conversions API) copy of each Lead with the same event ID.
+ * and a server-side (Conversions API) copy of each Lead with the same event ID, sent by api/meta-capi.ts.
  */
 export const META_PIXEL_ID = '667154722169969';
 
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || 'https://hznbshxhmhtenxcuffhx.supabase.co').replace(/\/$/, '');
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 const VISITOR_KEY = 'amz_vid';
 
 /** Stable anonymous visitor ID (also set by index.html). Sent to Meta as external_id. */
@@ -81,12 +79,12 @@ export function trackMetaLead(info: LeadInfo) {
     console.warn('Meta Pixel Lead not sent:', e);
   }
 
-  // Server-side copy. Fire-and-forget; keepalive lets it finish if the page navigates.
+  // Server-side copy (api/meta-capi.ts on Vercel). Fire-and-forget; keepalive lets it finish if the page navigates.
   try {
-    fetch(`${SUPABASE_URL}/functions/v1/meta-capi`, {
+    fetch('/api/meta-capi', {
       method: 'POST',
       keepalive: true,
-      headers: { 'Content-Type': 'application/json', ...(SUPABASE_KEY ? { apikey: SUPABASE_KEY } : {}) },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         lead_id: info.leadId,
         event_id: eventId,
