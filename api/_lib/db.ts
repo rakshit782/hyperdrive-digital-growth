@@ -28,9 +28,10 @@ let cached: Db | null = null;
 
 export function getDb(): Db {
   if (cached) return cached;
-  // Accepts the server-only name or the VITE_ name the frontend already uses in Vercel.
-  const url = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || process.env.VITE_NEON_DATABASE_URL;
-  if (!url) throw new Error("No Neon connection string found (NEON_DATABASE_URL or VITE_NEON_DATABASE_URL) in the Vercel project.");
+  // Only the server-side NEON_DATABASE_URL (Vercel → Settings → Environment Variables). No fallbacks,
+  // so an old DATABASE_URL / VITE_NEON_DATABASE_URL can never be picked up by mistake.
+  const url = process.env.NEON_DATABASE_URL;
+  if (!url) throw new Error("NEON_DATABASE_URL is not set in the Vercel project.");
   const sql = neon(url, {
     types: { getTypeParser: (oid: number) => PARSERS[oid] || ((v: string) => v) } as any,
   });
