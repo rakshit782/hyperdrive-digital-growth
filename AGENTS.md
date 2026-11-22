@@ -1,11 +1,12 @@
 # Project Rules
 
 ## Backend
-- Neon app data lives in the `amz_app` schema (`internship_certificates`, `site_settings`, `case_studies`). The Neon role `website-admin` has no CREATE on `public`, so new tables must go to `amz_app`; `public.users` and `public.user_roles` already exist there and stay put.
-- The website never queries Neon directly. Every read or write goes through a Supabase edge function that connects with the `NEON_DATABASE_URL` secret.
-- Edge functions do their own auth, so `supabase/config.toml` keeps `verify_jwt = false` for them. Admin-only actions verify the caller's JWT from the `x-admin-token` header against `public.users` / `public.user_roles`.
-- When a function gains a custom request header, add it to that function's CORS `Access-Control-Allow-Headers` in the same change — a missing entry fails the browser pre-flight as "Failed to fetch".
-- A function must be deployed to exist: the Supabase gateway answers 404 (`sb-error-code: NOT_FOUND`) for anything not deployed, which the browser sees as a CORS/network failure.
+- Neon app data lives in the `amz_app` schema (`internship_certificates`, `site_settings`, `case_studies`, CRM tables). The Neon role `website-admin` has no CREATE on `public`, so new tables must go to `amz_app`; `public.users`, `public.user_roles`, `public.leads` and the other existing `public` tables stay put.
+- The website never queries Neon directly. Every read or write goes through a Vercel function in `api/` (`api/auth/[action]`, `api/admin`, `api/public`, `api/crm`, `api/lead`, `api/meta-capi`), which connects with the server-only `NEON_DATABASE_URL` env var. Never use a `VITE_` variable for secrets: Vite publishes those to the browser.
+- Admin-only actions verify the caller's JWT from the `x-admin-token` header (HS256, `JWT_SECRET`) against `public.users` / `public.user_roles`. Refresh tokens are not accepted as access tokens.
+- `/api/public` only returns public data. Email settings and the Resend key are admin-only and the key is only decrypted on the server.
+- Shared server code lives in `api/_lib/` (not exposed as routes). Use `.js` extensions in relative imports there (ESM).
+- The old Supabase edge functions in `supabase/functions/` are no longer called by the website.
 
 ## Frontend
 - Use `import.meta.env`, never `process.env` (the Vite + TS setup errors on the latter).

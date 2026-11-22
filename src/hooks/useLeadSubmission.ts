@@ -1,8 +1,6 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { getNeonSql } from '@/services/neonClient';
-import { decryptSecret } from '@/services/cryptoVault';
 import { trackMetaLead } from '@/utils/metaPixel';
 
 export interface LeadSubmissionData {
@@ -104,172 +102,42 @@ export const useLeadSubmission = () => {
         }
       };
 
-      console.log('Submitting lead to Neon database:', leadData);
-
-      // 1. Try Direct Neon Database insert first
-      try {
-        const sql = getNeonSql();
-        const leadNumber = `LEAD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
-        
-        const rows = await sql`
-          INSERT INTO public.leads (
-            name, email, phone, company, brand_name, website_url, amazon_store_url, walmart_store_url,
-            source, status, notes, lead_number, audit_type, current_spend, goals, lead_data, form_security,
-            created_at, updated_at
-          )
-          VALUES (
-            ${leadData.name},
-            ${leadData.email},
-            ${leadData.phone || null},
-            ${leadData.company || null},
-            ${leadData.brandName || null},
-            ${leadData.website || null},
-            ${leadData.amazonStoreUrl || null},
-            ${leadData.walmartStoreUrl || null},
-            ${leadData.source || 'website'},
-            ${leadData.status || 'new'},
-            ${leadData.notes || null},
-            ${leadNumber},
-            ${leadData.auditType || null},
-            ${leadData.monthlyAdSpend || null},
-            ${leadData.businessGoals || null},
-            ${JSON.stringify(leadData.uploadedFiles || {})},
-            ${JSON.stringify(leadData.formSecurity || {})},
-            NOW(),
-            NOW()
-          )
-          RETURNING id, lead_number;
-        `;
-
-        if (rows && rows.length > 0) {
-          const leadId = rows[0].id;
-          const assignedNumber = rows[0].lead_number;
-          console.log('Lead saved directly to Neon:', { leadId, assignedNumber });
-
-          // Trigger email notification if configured
-          try {
-            const settingsRows = await sql`
-              SELECT resend_api_key, notification_email, email_notifications_enabled,
-                     email_subject_template, email_html_template
-              FROM public.site_settings
-              WHERE id = 1;
-            `;
-            const s = settingsRows[0];
-            const resendApiKey = s?.resend_api_key ? await decryptSecret(s.resend_api_key) : null;
-            if (s && s.email_notifications_enabled && resendApiKey && s.notification_email) {
-              const recipients = s.notification_email.split(',').map((e: string) => e.trim()).filter(Boolean);
-              if (recipients.length > 0) {
-                const subject = (s.email_subject_template || 'New Lead: {name} ({lead_number})')
-                  .replaceAll('{name}', leadData.name)
-                  .replaceAll('{lead_number}', assignedNumber)
-                  .replaceAll('{company}', leadData.company || 'N/A');
-
-                await fetch('/api/resend/emails', {
-                  method: 'POST',
-                  headers: {
-                    Authorization: `Bearer ${resendApiKey}`,
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    from: 'AMZ Leads <onboarding@resend.dev>',
-                    to: recipients,
-                    subject,
-                    html: `
-                      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                        <h2>🎯 New Lead: ${leadData.name}</h2>
-                        <p><strong>Email:</strong> ${leadData.email}</p>
-                        <p><strong>Phone:</strong> ${leadData.phone || 'N/A'}</p>
-                        <p><strong>Company:</strong> ${leadData.company || 'N/A'}</p>
-                        <p><strong>Notes:</strong> ${leadData.notes || 'None'}</p>
-                        <p style="color: #64748b; font-size: 13px;">Lead ID: ${assignedNumber}</p>
-                      </div>
-                    `,
-                  }),
-                });
-              }
-            }
-          } catch (notifErr) {
-            console.warn('Lead notification dispatch warning:', notifErr);
-          }
-
-          // Fire client conversion tracking (Meta Pixel, GA4 & GTM dataLayer)
-          try {
-            if (typeof window !== 'undefined') {
-              // 1. Meta Lead: pixel with advanced matching + server-side copy (same event ID)
-              trackMetaLead({
-                leadId, email: leadData.email, phone: leadData.phone, name: leadData.name,
-                contentName: leadData.source || 'Website Lead', contentCategory: leadData.auditType || 'General',
-              });
-              // 2. Google Analytics 4 standard generate_lead event
-              if ((window as any).gtag) {
-                (window as any).gtag('event', 'generate_lead', {
-                  event_category: 'Lead Generation',
-                  event_label: leadData.source || 'website',
-                  value: 100,
-                });
-              }
-              // 3. Google Tag Manager (GTM) dataLayer trigger event
-              if (Array.isArray((window as any).dataLayer)) {
-                (window as any).dataLayer.push({
-                  event: 'generate_lead',
-                  lead_source: leadData.source || 'website',
-                  platform: leadData.primaryPlatform || 'general',
-                  ad_spend: leadData.monthlyAdSpend || 'n/a',
-                });
-              }
-            }
-          } catch (trackErr) {
-            console.warn('Ad tracking dispatch warning:', trackErr);
-          }
-
-          window.dispatchEvent(new CustomEvent('leadCreated', {
-            detail: { id: leadId, leadNumber: assignedNumber, ...leadData }
-          }));
-
-          return { success: true, leadId };
-        }
-      } catch (neonErr) {
-        console.warn('Direct Neon lead submission fallback:', neonErr);
-      }
-
-      // 2. Fallback: save through the Vercel function (api/lead.ts), which writes to Neon
-      const fallbackRes = await fetch('/api/lead', {
+      // Save through the Vercel function (api/lead.ts). It writes to Neon and sends the email alert.
+      const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...leadData, currentSpend: leadData.monthlyAdSpend, goals: leadData.businessGoals }),
+        body: JSON.stringify({
+          ...leadData,
+          currentSpend: leadData.monthlyAdSpend,
+          goals: leadData.businessGoals,
+          auditType: (data as any).auditType || data.primaryPlatform || null,
+        }),
       });
-      const result = await fallbackRes.json().catch(() => ({}));
-
-      if (!fallbackRes.ok) {
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result?.success) {
         throw new Error(result?.error || 'Failed to submit lead');
       }
 
-      if (!result?.success) {
-        throw new Error('Failed to create lead in database');
-      }
-
-      console.log('Lead created successfully with ID:', result.leadId);
-
-      // Fire client conversion tracking (Meta Pixel & GA4)
+      // Conversion tracking: one Meta Lead (pixel + server copy), GA4 generate_lead and a GTM dataLayer event
       try {
-        if (typeof window !== 'undefined') {
-          trackMetaLead({
-            leadId: result.leadId, email: leadData.email, phone: leadData.phone, name: leadData.name,
-            contentName: leadData.source || 'Website Lead', contentCategory: leadData.auditType || 'General',
+        trackMetaLead({
+          leadId: result.leadId, email: leadData.email, phone: leadData.phone || undefined, name: leadData.name,
+          contentName: leadData.source || 'Website Lead', contentCategory: data.primaryPlatform || 'General',
+        });
+        if ((window as any).gtag) {
+          (window as any).gtag('event', 'generate_lead', {
+            event_category: 'Lead Generation',
+            event_label: leadData.source || 'website',
+            value: 100,
           });
-          if ((window as any).gtag) {
-            (window as any).gtag('event', 'generate_lead', {
-              event_category: 'Lead Generation',
-              event_label: leadData.source || 'website',
-              value: 100,
-            });
-          }
+        }
+        if (Array.isArray((window as any).dataLayer)) {
+          (window as any).dataLayer.push({ event: 'generate_lead', lead_source: leadData.source || 'website', lead_id: result.leadId });
         }
       } catch (trackErr) {
         console.warn('Ad tracking dispatch warning:', trackErr);
       }
 
-      // Dispatch custom event for real-time updates
       window.dispatchEvent(new CustomEvent('leadCreated', {
         detail: { id: result.leadId, leadNumber: result.leadNumber, ...leadData }
       }));

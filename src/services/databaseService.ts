@@ -1,4 +1,4 @@
-import { getNeonSql } from '@/services/neonClient';
+import { adminCall, publicCall } from '@/services/apiClient';
 
 // Generic database service for SQL operations
 export interface SecurityLog {
@@ -113,57 +113,24 @@ class DatabaseService {
 
   async insertSecurityLog(logData: Omit<SecurityLog, 'id' | 'created_at'>): Promise<void> {
     try {
-      const sql = getNeonSql();
-      await sql`
-        INSERT INTO public.security_logs (
-          form_type, ip_address, user_agent, recaptcha_score,
-          honeypot_triggered, csrf_valid, submission_data, created_at
-        )
-        VALUES (
-          ${logData.form_type},
-          ${logData.ip_address},
-          ${logData.user_agent},
-          ${logData.recaptcha_score},
-          ${logData.honeypot_triggered},
-          ${logData.csrf_valid},
-          ${logData.submission_data ? JSON.stringify(logData.submission_data) : null}::jsonb,
-          NOW()
-        );
-      `;
-      // Clear cache after insert
+      await publicCall('security.log', { ...logData });
       this.clearSecurityLogsCache();
     } catch (error) {
-      console.warn('Neon database warning - insert security log:', error);
-      // Don't throw error to prevent form submission from failing
+      console.warn('Security log not saved:', error);
     }
   }
 
   async getSecurityLogs(limit: number = 100, forceRefresh: boolean = false): Promise<SecurityLog[]> {
-    // Try cache first unless forced refresh
     if (!forceRefresh) {
       const cached = this.getFromCache<SecurityLog[]>(CACHE_KEYS.SECURITY_LOGS, CACHE_KEYS.SECURITY_LOGS_TIMESTAMP);
-      if (cached) {
-        console.log('Returning cached security logs');
-        return cached;
-      }
+      if (cached) return cached;
     }
-
-    // Direct Neon Database query
     try {
-      const sql = getNeonSql();
-      const rows = await sql`
-        SELECT 
-          id, form_type, ip_address, user_agent, recaptcha_score, 
-          honeypot_triggered, csrf_valid, submission_data, created_at
-        FROM public.security_logs
-        ORDER BY created_at DESC
-        LIMIT ${limit};
-      `;
-      const logs = (rows || []) as SecurityLog[];
+      const { logs } = await adminCall<{ logs: SecurityLog[] }>('security_logs.list', { limit });
       this.setCache(CACHE_KEYS.SECURITY_LOGS, CACHE_KEYS.SECURITY_LOGS_TIMESTAMP, logs);
       return logs;
-    } catch (neonErr) {
-      console.warn('Direct Neon fetch security logs error:', neonErr);
+    } catch (err) {
+      console.warn('Security logs not loaded:', err);
       return [];
     }
   }
@@ -199,34 +166,16 @@ class DatabaseService {
   }
 
   async getLeads(limit: number = 100, forceRefresh: boolean = false): Promise<Lead[]> {
-    // Try cache first unless forced refresh
     if (!forceRefresh) {
       const cached = this.getFromCache<Lead[]>(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP);
-      if (cached) {
-        console.log('Returning cached leads');
-        return cached;
-      }
+      if (cached) return cached;
     }
-
-    // Direct Neon Database query
     try {
-      const sql = getNeonSql();
-      const rows = await sql`
-        SELECT 
-          id, name, email, phone, company, brand_name, 
-          amazon_store_url, walmart_store_url, source, status, 
-          notes, lead_number, audit_type, website_url, 
-          current_spend, goals, lead_data, form_security, 
-          created_at, updated_at
-        FROM public.leads
-        ORDER BY created_at DESC
-        LIMIT ${limit};
-      `;
-      const leads = (rows || []) as Lead[];
+      const { leads } = await adminCall<{ leads: Lead[] }>('leads.list', { limit });
       this.setCache(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP, leads);
       return leads;
-    } catch (neonError) {
-      console.warn('Direct Neon fetch leads error:', neonError);
+    } catch (err) {
+      console.warn('Leads not loaded:', err);
       return [];
     }
   }
@@ -237,20 +186,9 @@ class DatabaseService {
 
   async deleteLeadsBulk(ids: string[]): Promise<boolean> {
     if (!ids || ids.length === 0) return true;
-
-    try {
-      const sql = getNeonSql();
-      const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
-      await sql.query(
-        `DELETE FROM public.leads WHERE id IN (${placeholders})`,
-        ids
-      );
-      this.clearLeadsCache();
-      return true;
-    } catch (neonError) {
-      console.error('Neon delete leads error:', neonError);
-      throw neonError;
-    }
+    await adminCall('leads.delete', { ids });
+    this.clearLeadsCache();
+    return true;
   }
 
   async insertContactSubmission(contactData: {
@@ -283,78 +221,39 @@ class DatabaseService {
   }
 
   async getContactSubmissions(limit: number = 100, forceRefresh: boolean = false): Promise<any[]> {
-    // Try cache first unless forced refresh
     if (!forceRefresh) {
       const cached = this.getFromCache<any[]>(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP);
-      if (cached) {
-        console.log('Returning cached contacts');
-        return cached;
-      }
+      if (cached) return cached;
     }
-
-    // Direct Neon Database query
     try {
-      const sql = getNeonSql();
-      const rows = await sql`
-        SELECT 
-          id, name, email, phone, company, message, 
-          form_type, created_at, updated_at
-        FROM public.contact_submissions
-        ORDER BY created_at DESC
-        LIMIT ${limit};
-      `;
-      const contacts = (rows || []) as any[];
+      const { contacts } = await adminCall<{ contacts: any[] }>('contacts.list', { limit });
       this.setCache(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP, contacts);
       return contacts;
-    } catch (neonErr) {
-      console.warn('Direct Neon fetch contacts error:', neonErr);
+    } catch (err) {
+      console.warn('Contacts not loaded:', err);
       return [];
     }
   }
 
   async deleteContact(id: string): Promise<boolean> {
-    try {
-      const sql = getNeonSql();
-      await sql`
-        DELETE FROM public.contact_submissions
-        WHERE id = ${id}::uuid OR id = ${id}::text;
-      `;
-      this.clearContactsCache();
-      return true;
-    } catch (error) {
-      console.error('Database error - delete contact:', error);
-      throw error;
-    }
+    await adminCall('contacts.delete', { id });
+    this.clearContactsCache();
+    return true;
   }
 
   async getNewsletters(limit: number = 100): Promise<any[]> {
     try {
-      const sql = getNeonSql();
-      const rows = await sql`
-        SELECT id, email, name, status, created_at, updated_at
-        FROM public.newsletter_emails
-        ORDER BY created_at DESC
-        LIMIT ${limit};
-      `;
-      return (rows || []) as any[];
-    } catch (error) {
-      console.error('Database error - get newsletters:', error);
+      const { emails } = await adminCall<{ emails: any[] }>('newsletter.list', { limit });
+      return emails;
+    } catch (err) {
+      console.warn('Newsletter list not loaded:', err);
       return [];
     }
   }
 
   async deleteNewsletter(id: string): Promise<boolean> {
-    try {
-      const sql = getNeonSql();
-      await sql`
-        DELETE FROM public.newsletter_emails
-        WHERE id = ${id}::uuid OR id = ${id}::text;
-      `;
-      return true;
-    } catch (error) {
-      console.error('Database error - delete newsletter:', error);
-      throw error;
-    }
+    await adminCall('newsletter.delete', { id });
+    return true;
   }
 
   async pingNeon(): Promise<{
@@ -368,30 +267,10 @@ class DatabaseService {
   }> {
     const t0 = performance.now();
     try {
-      const sql = getNeonSql();
-      const rows = await sql`
-        SELECT 
-          current_database() as database,
-          version() as version,
-          NOW() as timestamp,
-          (SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public') as tables_count
-      `;
-      const latencyMs = Math.round(performance.now() - t0);
-      const row = rows[0] || {};
-      return {
-        ok: true,
-        latencyMs,
-        db: row.database || 'website',
-        version: row.version || '',
-        serverTime: row.timestamp || new Date().toISOString(),
-        tablesCount: Number(row.tables_count || 0)
-      };
+      const r = await adminCall<{ ok: boolean; db: string; version: string; serverTime: string; tablesCount: number }>('ping');
+      return { ...r, latencyMs: Math.round(performance.now() - t0) };
     } catch (err: any) {
-      return {
-        ok: false,
-        latencyMs: Math.round(performance.now() - t0),
-        error: err?.message || 'Failed to ping Neon database'
-      };
+      return { ok: false, latencyMs: Math.round(performance.now() - t0), error: err?.message || 'Database check failed' };
     }
   }
 

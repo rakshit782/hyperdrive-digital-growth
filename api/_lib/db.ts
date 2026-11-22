@@ -40,7 +40,7 @@ export function getDb(): Db {
 
 export function sendJson(res: any, status: number, body: unknown) {
   res.status(status).setHeader("Content-Type", "application/json");
-  res.setHeader("Cache-Control", "no-store");
+  if (!res.getHeader?.("Cache-Control")) res.setHeader("Cache-Control", "no-store");
   res.send(JSON.stringify(body));
 }
 
@@ -76,7 +76,9 @@ export async function requireAdmin(db: Db, token: string, secret: string | undef
   if (!token) throw new HttpError(401, "Sign in as an admin to continue.");
   let sub: string;
   try {
-    sub = String((await verifyJwt(token, secret)).sub ?? "");
+    const payload = await verifyJwt(token, secret);
+    if (payload.type === "refresh") throw new Error("refresh token used as access token");
+    sub = String(payload.sub ?? "");
   } catch {
     throw new HttpError(401, "Your session has expired. Sign in again.");
   }

@@ -1,10 +1,4 @@
-import { authService } from "@/services/authService";
-
-const SUPABASE_URL = "https://hznbshxhmhtenxcuffhx.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6bmJzaHhobWh0ZW54Y3VmZmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MzEzMjEsImV4cCI6MjA2NDIwNzMyMX0.jydxpMEn5Z-fDDJXA9XAbx_mHEi_eQPFNEYikM21gnY";
-
-const ENDPOINT = `${SUPABASE_URL}/functions/v1/neon-certificates`;
+import { adminCall, publicCall } from "@/services/apiClient";
 
 export interface Certificate {
   id?: string;
@@ -24,76 +18,16 @@ export interface Certificate {
   created_at?: string;
 }
 
-async function call(body: Record<string, unknown>, withAdmin = false) {
-  const request = async () => {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      apikey: SUPABASE_ANON_KEY,
-    };
-    if (withAdmin) {
-      const token = await authService.getValidAccessToken();
-      if (!token) throw new Error("Session expired. Please sign in again.");
-      headers["x-admin-token"] = token;
-    }
-
-    return fetch(ENDPOINT, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    });
-  };
-
-  let response = await request();
-  if (withAdmin && response.status === 401) {
-    const refreshed = await authService.refreshToken();
-    if (!refreshed.data) {
-      throw new Error("Session expired. Please sign in again.");
-    }
-    response = await request();
-  }
-
-  const data = await response.json().catch(() => ({ error: "Request failed" }));
-  if (!response.ok) throw new Error(data.error || "Request failed");
-  return data;
-}
-
-import { getNeonSql } from "@/services/neonClient";
-
 export const certificateService = {
-  verify: async (certificate_id: string): Promise<{
-    found: boolean;
-    certificate?: Certificate;
-  }> => {
-    try {
-      const sql = getNeonSql();
-      const rows = await sql`
-        SELECT 
-          id, certificate_id, student_name, email, role, department,
-          city, start_date, end_date, issue_date, mentor_name,
-          performance, status, notes, created_at
-        FROM amz_app.internship_certificates
-        WHERE LOWER(TRIM(certificate_id)) = LOWER(TRIM(${certificate_id}))
-        LIMIT 1;
-      `;
-      if (rows && rows.length > 0) {
-        return { found: true, certificate: rows[0] as Certificate };
-      }
-      return { found: false };
-    } catch (neonErr) {
-      console.warn("Direct Neon certificate verify fallback:", neonErr);
-      return call({ action: "verify", certificate_id }) as Promise<{
-        found: boolean;
-        certificate?: Certificate;
-      }>;
-    }
-  },
-  list: () => call({ action: "list" }, true) as Promise<{ certificates: Certificate[] }>,
+  verify: (certificate_id: string) =>
+    publicCall<{ found: boolean; certificate?: Certificate }>("certificate.verify", { certificate_id }),
+  list: () => adminCall("certificates.list") as Promise<{ certificates: Certificate[] }>,
   create: (certificate: Partial<Certificate>) =>
-    call({ action: "create", certificate }, true) as Promise<{ certificate: Certificate }>,
+    adminCall("certificates.create", { certificate }) as Promise<{ certificate: Certificate }>,
   bulkCreate: (certificates: Partial<Certificate>[]) =>
-    call({ action: "bulk_create", certificates }, true) as Promise<{ created: number }>,
+    adminCall("certificates.bulk_create", { certificates }) as Promise<{ created: number }>,
   update: (id: string, certificate: Record<string, unknown>) =>
-    call({ action: "update", id, certificate }, true) as Promise<{ certificate: Certificate }>,
-  setStatus: (id: string, status: string) => call({ action: "set_status", id, status }, true),
-  remove: (id: string) => call({ action: "delete", id }, true),
+    adminCall("certificates.update", { id, certificate }) as Promise<{ certificate: Certificate }>,
+  setStatus: (id: string, status: string) => adminCall("certificates.set_status", { id, status }),
+  remove: (id: string) => adminCall("certificates.delete", { id }),
 };

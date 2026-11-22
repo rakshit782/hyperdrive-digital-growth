@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { getNeonSql } from '@/services/neonClient';
+import { adminCall } from '@/services/apiClient';
 
 export interface NewsletterEmail {
   id?: string;
@@ -21,13 +21,8 @@ export const useNewsletterEmails = () => {
   const fetchEmails = async () => {
     try {
       setLoading(true);
-      const sql = getNeonSql();
-      const rows = await sql`
-        SELECT id, email, name, status, created_at, updated_at
-        FROM public.newsletter_emails
-        ORDER BY created_at DESC;
-      `;
-      setEmails((rows || []) as NewsletterEmail[]);
+      const { emails } = await adminCall<{ emails: NewsletterEmail[] }>('newsletter.list', { limit: 5000 });
+      setEmails(emails);
     } catch (error) {
       console.warn('Error fetching newsletter emails from Neon:', error);
       toast({
@@ -42,51 +37,16 @@ export const useNewsletterEmails = () => {
 
   const addEmail = async (emailData: Omit<NewsletterEmail, 'id' | 'created_at' | 'updated_at' | 'status'> & { status?: 'subscribed' | 'unsubscribed' }) => {
     try {
-      const sql = getNeonSql();
-      const normalizedEmail = emailData.email.trim().toLowerCase();
-
-      // Check if email already exists
-      const existing = await sql`
-        SELECT id, status FROM public.newsletter_emails WHERE email = ${normalizedEmail};
-      `;
-
-      if (existing && existing.length > 0) {
-        if (existing[0].status === 'subscribed') {
-          toast({
-            title: "Already Subscribed",
-            description: "This email is already subscribed to our newsletter",
-            variant: "destructive",
-          });
-          return { success: false, error: 'Email already subscribed' };
-        } else {
-          // Reactivate subscription
-          await sql`
-            UPDATE public.newsletter_emails 
-            SET status = 'subscribed', updated_at = NOW() 
-            WHERE id = ${existing[0].id};
-          `;
-          toast({
-            title: "Welcome Back!",
-            description: "Email subscription reactivated successfully",
-          });
-          await fetchEmails();
-          return { success: true };
-        }
+      const r = await adminCall<{ success: boolean; already?: boolean; reactivated?: boolean }>('newsletter.add', { email: emailData.email, name: emailData.name });
+      if (r.already) {
+        toast({ title: "Already Subscribed", description: "This email is already subscribed to our newsletter", variant: "destructive" });
+        return { success: false, error: 'Email already subscribed' };
       }
-
-      await sql`
-        INSERT INTO public.newsletter_emails (
-          email, name, status, created_at, updated_at
-        )
-        VALUES (
-          ${normalizedEmail},
-          ${emailData.name || null},
-          'subscribed',
-          NOW(),
-          NOW()
-        );
-      `;
-
+      if (r.reactivated) {
+        toast({ title: "Welcome Back!", description: "Email subscription reactivated successfully" });
+        await fetchEmails();
+        return { success: true };
+      }
       toast({
         title: "Success",
         description: "Email added to newsletter successfully",
@@ -107,12 +67,7 @@ export const useNewsletterEmails = () => {
 
   const updateEmailStatus = async (id: string, status: 'subscribed' | 'unsubscribed') => {
     try {
-      const sql = getNeonSql();
-      await sql`
-        UPDATE public.newsletter_emails
-        SET status = ${status}, updated_at = NOW()
-        WHERE id = ${id}::uuid OR id = ${id}::text;
-      `;
+      await adminCall('newsletter.set_status', { id, status });
 
       toast({
         title: "Status Updated",
@@ -134,11 +89,7 @@ export const useNewsletterEmails = () => {
 
   const deleteEmail = async (id: string) => {
     try {
-      const sql = getNeonSql();
-      await sql`
-        DELETE FROM public.newsletter_emails
-        WHERE id = ${id}::uuid OR id = ${id}::text;
-      `;
+      await adminCall('newsletter.delete', { id });
 
       toast({
         title: "Success",

@@ -1,5 +1,5 @@
-const SUPABASE_URL = "https://hznbshxhmhtenxcuffhx.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6bmJzaHhobWh0ZW54Y3VmZmh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MzEzMjEsImV4cCI6MjA2NDIwNzMyMX0.jydxpMEn5Z-fDDJXA9XAbx_mHEi_eQPFNEYikM21gnY";
+// Dashboard auth runs as Vercel functions (api/auth/[action].ts) against Neon.
+const AUTH_URL = "/api/auth";
 
 export interface User {
   id: string;
@@ -45,11 +45,10 @@ class AuthService {
 
   async signup(email: string, password: string, full_name?: string) {
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/neon-auth-signup`, {
+      const response = await fetch(`${AUTH_URL}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({ email, password, full_name }),
       });
@@ -75,11 +74,10 @@ class AuthService {
 
   async login(email: string, password: string) {
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/neon-auth-login`, {
+      const response = await fetch(`${AUTH_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({ email, password }),
       });
@@ -149,12 +147,11 @@ class AuthService {
     }
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/neon-auth-verify`, {
+      const response = await fetch(`${AUTH_URL}/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-          'apikey': SUPABASE_ANON_KEY,
         },
       });
 
@@ -192,11 +189,10 @@ class AuthService {
     }
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/neon-auth-refresh`, {
+      const response = await fetch(`${AUTH_URL}/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({ refreshToken: this.session.refreshToken }),
       });

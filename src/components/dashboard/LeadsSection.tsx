@@ -17,8 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useMemo } from "react";
-import { getNeonSql } from "@/services/neonClient";
-import { decryptSecret } from "@/services/cryptoVault";
+import { adminCall } from "@/services/apiClient";
 
 interface Lead {
   id: string;
@@ -143,66 +142,7 @@ export function LeadsSection({ leads, onDelete, onBulkDelete, onRefresh }: Leads
   const handleForwardLead = async (lead: Lead) => {
     setForwardingId(lead.id);
     try {
-      const sql = getNeonSql();
-      const settings = await sql`
-        SELECT resend_api_key, notification_email, email_notifications_enabled
-        FROM public.site_settings
-        WHERE id = 1;
-      `;
-      const s = settings[0];
-      const resendApiKey = s?.resend_api_key ? await decryptSecret(s.resend_api_key) : null;
-      if (!resendApiKey) {
-        throw new Error("No Resend API Key configured in Settings. Please add your key first.");
-      }
-
-      const recipients = (s.notification_email || lead.email)
-        .split(',')
-        .map((e: string) => e.trim())
-        .filter(Boolean);
-
-      if (recipients.length === 0) {
-        throw new Error("No recipient email configured in Settings.");
-      }
-
-      const resendEndpoint = '/api/resend/emails';
-
-      const res = await fetch(resendEndpoint, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "AMZ Leads <onboarding@resend.dev>",
-          to: recipients,
-          subject: `Forwarded Lead: ${lead.name} (${lead.lead_number || 'New'})`,
-          html: `
-            <div style="font-family: Arial, sans-serif; padding: 24px; border: 1px solid #e2e8f0; border-radius: 8px;">
-              <h2 style="color: #0284c7; margin-top: 0;">🎯 Forwarded Client Lead Details</h2>
-              <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                <tr><td style="padding: 6px 0; color: #64748b;"><strong>Name:</strong></td><td>${lead.name}</td></tr>
-                <tr><td style="padding: 6px 0; color: #64748b;"><strong>Email:</strong></td><td><a href="mailto:${lead.email}">${lead.email}</a></td></tr>
-                <tr><td style="padding: 6px 0; color: #64748b;"><strong>Phone:</strong></td><td>${lead.phone || 'N/A'}</td></tr>
-                <tr><td style="padding: 6px 0; color: #64748b;"><strong>Company:</strong></td><td>${lead.company || lead.brand_name || 'N/A'}</td></tr>
-                <tr><td style="padding: 6px 0; color: #64748b;"><strong>Website:</strong></td><td>${lead.website_url || 'N/A'}</td></tr>
-                <tr><td style="padding: 6px 0; color: #64748b;"><strong>Audit Type:</strong></td><td>${lead.audit_type || 'N/A'}</td></tr>
-                <tr><td style="padding: 6px 0; color: #64748b;"><strong>Monthly Spend:</strong></td><td>${lead.current_spend || 'N/A'}</td></tr>
-                <tr><td style="padding: 6px 0; color: #64748b;"><strong>Goals:</strong></td><td>${lead.goals || 'N/A'}</td></tr>
-                <tr><td style="padding: 6px 0; color: #64748b;"><strong>Notes:</strong></td><td>${lead.notes || 'None'}</td></tr>
-              </table>
-              <p style="margin-top: 16px; font-size: 12px; color: #94a3b8;">
-                Lead Number: ${lead.lead_number || lead.id} • Neon Database Record
-              </p>
-            </div>
-          `,
-        }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || errorData.error || `Resend error (${res.status})`);
-      }
-
+      await adminCall('leads.forward', { id: lead.id });
       toast.success(`Lead ${lead.lead_number || lead.name} dispatched to your notification email!`);
     } catch (err: any) {
       toast.error(err.message || "Failed to dispatch lead email");

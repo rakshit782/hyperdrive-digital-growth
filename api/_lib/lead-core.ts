@@ -1,24 +1,8 @@
 // Save a website lead to Neon (public.leads) and send the email alert configured in site settings.
-import { createHash, createDecipheriv } from "node:crypto";
 import type { Db } from "./db.js";
+import { decryptSecret, escapeHtml as esc } from "./secrets.js";
 
 const s = (v: unknown, n = 2000) => (v == null || v === "" ? null : String(v).trim().slice(0, n));
-const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
-
-/** Same scheme as src/services/cryptoVault.ts ("enc:v1:<iv hex>:<cipher+tag hex>", AES-GCM). */
-function decryptSecret(v: string | null): string | null {
-  if (!v || !v.startsWith("enc:v1:")) return v;
-  try {
-    const [ivHex, dataHex] = v.slice(7).split(":");
-    const key = createHash("sha256").update("amz_secure_credentials_v1_site_settings_vault").digest();
-    const data = Buffer.from(dataHex, "hex");
-    const d = createDecipheriv("aes-256-gcm", key, Buffer.from(ivHex, "hex"));
-    d.setAuthTag(data.subarray(data.length - 16));
-    return Buffer.concat([d.update(data.subarray(0, data.length - 16)), d.final()]).toString("utf8");
-  } catch {
-    return null;
-  }
-}
 
 export async function saveLead(db: Db, b: Record<string, any>, env: { resendKey?: string; fetch?: typeof fetch } = {}) {
   const name = s(b.name, 200), email = s(b.email, 320);
@@ -36,11 +20,13 @@ export async function saveLead(db: Db, b: Record<string, any>, env: { resendKey?
   };
   const rows = await db.q<{ id: string; lead_number: string }>(
     `INSERT INTO leads (name, email, phone, company, brand_name, website_url, amazon_store_url, walmart_store_url,
-       source, status, notes, lead_number, audit_type, current_spend, goals, created_at, updated_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'new',$10,$11,$12,$13,$14, now(), now())
+       source, status, notes, lead_number, audit_type, current_spend, goals, lead_data, form_security, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'new',$10,$11,$12,$13,$14,$15::jsonb,$16::jsonb, now(), now())
      RETURNING id, lead_number`,
     [lead.name, lead.email, lead.phone, lead.company, lead.brand_name, lead.website_url, lead.amazon_store_url, lead.walmart_store_url,
-     lead.source, lead.notes, leadNumber, lead.audit_type, lead.current_spend, lead.goals],
+     lead.source, lead.notes, leadNumber, lead.audit_type, lead.current_spend, lead.goals,
+     JSON.stringify(b.uploadedFiles && typeof b.uploadedFiles === "object" ? b.uploadedFiles : {}).slice(0, 20000),
+     JSON.stringify(b.formSecurity && typeof b.formSecurity === "object" ? b.formSecurity : {}).slice(0, 5000)],
   );
   const saved = rows[0];
 

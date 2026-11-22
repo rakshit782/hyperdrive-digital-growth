@@ -115,7 +115,6 @@ export class PerformanceOptimizer {
   addResourceHints() {
     const hints = [
       { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
-      { rel: 'dns-prefetch', href: 'https://hznbshxhmhtenxcuffhx.supabase.co' },
       { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' }
     ];
 

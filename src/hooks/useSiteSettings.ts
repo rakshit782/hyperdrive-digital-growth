@@ -145,9 +145,20 @@ function errorMessage(data: unknown, fallback: string): string {
   return fallback;
 }
 
-import { getNeonSql } from "@/services/neonClient";
-import { encryptSecret, decryptSecret } from "@/services/cryptoVault";
+import { adminCall, publicCall } from "@/services/apiClient";
+import { authService } from "@/services/authService";
 
+const EMPTY_SETTINGS: SiteSettings = {
+  rating_value: 0, review_count: 0, review_source_url: null, rating_visible: false,
+  resend_api_key: null, has_resend_api_key: false, notification_email: null, email_notifications_enabled: false,
+  email_subject_template: null, email_html_template: null, footer_email: null, footer_address: null,
+  logo_settings: null, header_settings: null, maintenance_mode: false, updated_at: null,
+};
+
+/**
+ * Site settings from /api. Visitors get the public fields only; a signed-in admin also gets the
+ * email settings (Resend key masked). The Resend key itself never reaches the browser.
+ */
 export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
   const now = Date.now();
   if (cachedSettingsData && now - cachedSettingsData.timestamp < CACHE_TTL_MS) {
@@ -156,73 +167,22 @@ export async function fetchSiteSettings(_url?: string): Promise<SiteSettings> {
   if (inFlightSettingsPromise) {
     return inFlightSettingsPromise;
   }
-
   inFlightSettingsPromise = (async () => {
     try {
-      const sql = getNeonSql();
-      const rows = await sql`
-        SELECT 
-          rating_value, review_count, review_source_url, rating_visible,
-          resend_api_key, notification_email, email_notifications_enabled,
-          email_subject_template, email_html_template, footer_email, footer_address,
-          logo_settings, header_settings, maintenance_mode, updated_at
-        FROM public.site_settings
-        WHERE id = 1;
-      `;
-      if (rows && rows.length > 0) {
-        const r = rows[0];
-        const decryptedKey = r.resend_api_key ? await decryptSecret(r.resend_api_key) : null;
-        let displayKey = decryptedKey ?? null;
-        if (displayKey && displayKey.length > 8) {
-          displayKey = `${displayKey.slice(0, 5)}...${displayKey.slice(-4)}`;
-        }
-        const settings: SiteSettings = {
-          rating_value: Number(r.rating_value) || 0,
-          review_count: Number(r.review_count) || 0,
-          review_source_url: r.review_source_url ?? null,
-          rating_visible: r.rating_visible === true,
-          resend_api_key: displayKey,
-          has_resend_api_key: Boolean(decryptedKey && decryptedKey.trim().length > 0),
-          notification_email: r.notification_email ?? null,
-          email_notifications_enabled: r.email_notifications_enabled === true,
-          email_subject_template: r.email_subject_template ?? null,
-          email_html_template: r.email_html_template ?? null,
-          footer_email: r.footer_email ?? null,
-          footer_address: r.footer_address ?? null,
-          logo_settings: r.logo_settings ?? null,
-          header_settings: r.header_settings ?? null,
-          maintenance_mode: r.maintenance_mode === true,
-          updated_at: r.updated_at ? new Date(r.updated_at).toISOString() : null,
-        };
-        cachedSettingsData = { data: settings, timestamp: Date.now() };
-        return settings;
-      }
-    } catch (neonErr) {
-      console.warn("Direct Neon fetch error:", neonErr);
+      const isAdmin = authService.getUser()?.role === "admin";
+      const data = isAdmin
+        ? await adminCall<SiteSettings>("settings.get").catch(() => publicCall<SiteSettings>("settings.get"))
+        : await publicCall<SiteSettings>("settings.get");
+      const settings = { ...EMPTY_SETTINGS, ...data };
+      cachedSettingsData = { data: settings, timestamp: Date.now() };
+      return settings;
+    } catch (err) {
+      console.warn("Site settings not loaded:", err);
+      return { ...EMPTY_SETTINGS };
     } finally {
       inFlightSettingsPromise = null;
     }
-
-    return {
-      rating_value: 0,
-      review_count: 0,
-      review_source_url: null,
-      rating_visible: false,
-      resend_api_key: null,
-      has_resend_api_key: false,
-      notification_email: null,
-      email_notifications_enabled: false,
-      email_subject_template: null,
-      email_html_template: null,
-      footer_email: null,
-      footer_address: null,
-      logo_settings: null,
-      header_settings: null,
-      maintenance_mode: false,
-      updated_at: null,
-    };
   })();
-
   return inFlightSettingsPromise;
 }
 
@@ -230,189 +190,22 @@ export async function saveSiteSettings(
   payload: SiteSettingsInput,
   _url?: string,
 ): Promise<SiteSettings> {
-  // Directly save to Neon database
-  try {
-    const sql = getNeonSql();
-    
-    // Check existing row to preserve API key and other fields if not re-entered
-    const existing = await sql`
-      SELECT 
-        resend_api_key, notification_email, email_subject_template, 
-        email_html_template, footer_email, footer_address, logo_settings, header_settings, maintenance_mode
-      FROM public.site_settings 
-      WHERE id = 1;
-    `;
-    const existingRow = existing[0];
-    
-    let finalApiKey: string | null = null;
-    const incomingKey = payload.resend_api_key?.trim();
-    if (incomingKey && !incomingKey.includes("...")) {
-      // Encrypt the new key with AES-GCM before saving to database
-      finalApiKey = await encryptSecret(incomingKey);
-    } else {
-      // Preserve already stored key (encrypted or legacy)
-      finalApiKey = existingRow?.resend_api_key ?? null;
-    }
-
-    const saved = await sql`
-      INSERT INTO public.site_settings (
-        id, rating_value, review_count, review_source_url, rating_visible,
-        resend_api_key, notification_email, email_notifications_enabled,
-        email_subject_template, email_html_template, footer_email, footer_address,
-        logo_settings, header_settings, maintenance_mode, updated_at
-      )
-      VALUES (
-        1,
-        ${payload.rating_value ?? 0},
-        ${payload.review_count ?? 0},
-        ${payload.review_source_url ?? null},
-        ${payload.rating_visible ?? false},
-        ${finalApiKey ?? null},
-        ${payload.notification_email !== undefined ? payload.notification_email : (existingRow?.notification_email ?? null)},
-        ${payload.email_notifications_enabled ?? false},
-        ${payload.email_subject_template !== undefined ? payload.email_subject_template : (existingRow?.email_subject_template ?? null)},
-        ${payload.email_html_template !== undefined ? payload.email_html_template : (existingRow?.email_html_template ?? null)},
-        ${payload.footer_email !== undefined ? payload.footer_email : (existingRow?.footer_email ?? null)},
-        ${payload.footer_address !== undefined ? payload.footer_address : (existingRow?.footer_address ?? null)},
-        ${payload.logo_settings !== undefined ? JSON.stringify(payload.logo_settings) : (existingRow?.logo_settings ?? null)}::jsonb,
-        ${payload.header_settings !== undefined ? JSON.stringify(payload.header_settings) : (existingRow?.header_settings ?? null)}::jsonb,
-        ${payload.maintenance_mode !== undefined ? payload.maintenance_mode : (existingRow?.maintenance_mode ?? false)},
-        now()
-      )
-      ON CONFLICT (id) DO UPDATE SET
-        rating_value = EXCLUDED.rating_value,
-        review_count = EXCLUDED.review_count,
-        review_source_url = EXCLUDED.review_source_url,
-        rating_visible = EXCLUDED.rating_visible,
-        resend_api_key = COALESCE(EXCLUDED.resend_api_key, public.site_settings.resend_api_key),
-        notification_email = COALESCE(EXCLUDED.notification_email, public.site_settings.notification_email),
-        email_notifications_enabled = EXCLUDED.email_notifications_enabled,
-        email_subject_template = COALESCE(EXCLUDED.email_subject_template, public.site_settings.email_subject_template),
-        email_html_template = COALESCE(EXCLUDED.email_html_template, public.site_settings.email_html_template),
-        footer_email = COALESCE(EXCLUDED.footer_email, public.site_settings.footer_email),
-        footer_address = COALESCE(EXCLUDED.footer_address, public.site_settings.footer_address),
-        logo_settings = COALESCE(EXCLUDED.logo_settings, public.site_settings.logo_settings),
-        header_settings = COALESCE(EXCLUDED.header_settings, public.site_settings.header_settings),
-        maintenance_mode = EXCLUDED.maintenance_mode,
-        updated_at = now()
-      RETURNING *;
-    `;
-
-    const row = saved[0];
-    const decryptedKey = row.resend_api_key ? await decryptSecret(row.resend_api_key) : null;
-    let displayKey = decryptedKey ?? null;
-    if (displayKey && displayKey.length > 8) {
-      displayKey = `${displayKey.slice(0, 5)}...${displayKey.slice(-4)}`;
-    }
-
-    const result: SiteSettings = {
-      rating_value: Number(row.rating_value) || 0,
-      review_count: Number(row.review_count) || 0,
-      review_source_url: row.review_source_url ?? null,
-      rating_visible: row.rating_visible === true,
-      resend_api_key: displayKey,
-      has_resend_api_key: Boolean(decryptedKey && decryptedKey.trim().length > 0),
-      notification_email: row.notification_email ?? null,
-      email_notifications_enabled: row.email_notifications_enabled === true,
-      email_subject_template: row.email_subject_template ?? null,
-      email_html_template: row.email_html_template ?? null,
-      footer_email: row.footer_email ?? null,
-      footer_address: row.footer_address ?? null,
-      logo_settings: row.logo_settings ?? null,
-      header_settings: row.header_settings ?? null,
-      maintenance_mode: row.maintenance_mode === true,
-      updated_at: row.updated_at ? new Date(row.updated_at).toISOString() : null,
-    };
-    cachedSettingsData = { data: result, timestamp: Date.now() };
-    inFlightSettingsPromise = null;
-    return result;
-  } catch (neonErr: any) {
-    console.error("Direct Neon save error:", neonErr);
-    throw new Error(neonErr?.message || "Failed to save settings to Neon database");
-  }
+  const saved = await adminCall<SiteSettings>("settings.save", { settings: payload });
+  const result = { ...EMPTY_SETTINGS, ...saved };
+  cachedSettingsData = { data: result, timestamp: Date.now() };
+  inFlightSettingsPromise = null;
+  return result;
 }
 
 export async function sendTestEmail(
   recipientEmail: string,
   resendApiKey?: string,
-  url: string = SITE_SETTINGS_API_URL,
+  _url: string = SITE_SETTINGS_API_URL,
 ): Promise<{ success: boolean; message: string }> {
-  let effectiveApiKey = resendApiKey?.trim();
-
-  // If apiKey not provided or masked (e.g. 4bff4...7e4c), load full key directly from Neon database
-  if (!effectiveApiKey || effectiveApiKey.includes("...")) {
-    try {
-      const sql = getNeonSql();
-      const rows = await sql`
-        SELECT resend_api_key FROM public.site_settings WHERE id = 1 LIMIT 1;
-      `;
-      if (rows && rows[0]?.resend_api_key) {
-        effectiveApiKey = rows[0].resend_api_key;
-      }
-    } catch (dbErr) {
-      console.warn("Could not load API key from Neon:", dbErr);
-    }
-  }
-
-  if (effectiveApiKey) {
-    effectiveApiKey = await decryptSecret(effectiveApiKey);
-  }
-
-  if (!effectiveApiKey) {
-    throw new Error("No Resend API key found. Please save your Resend API key first.");
-  }
-
-  // Always route through /api/resend/emails (proxied via Vite dev server & Vercel rewrite) to bypass browser CORS
-  const endpoint = '/api/resend/emails';
-
-  // Dispatch to Resend API
-  try {
-    const directResponse = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${effectiveApiKey.trim()}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "AMZ Leads <onboarding@resend.dev>",
-        to: recipientEmail.split(",").map((e) => e.trim()).filter(Boolean),
-        subject: "AMZ AD SCOUT: Test Lead Delivery Verification",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 8px;">
-            <h2 style="color: #0284c7; margin-top: 0;">🚀 Resend Integration Successful!</h2>
-            <p style="font-size: 15px; color: #334155;">
-              Your Resend API key and notification email pipeline are connected and functioning properly with Neon database.
-            </p>
-            <div style="background: #f8fafc; padding: 16px; border-radius: 6px; margin: 16px 0; font-size: 14px;">
-              <p style="margin: 4px 0;"><strong>Recipient:</strong> ${recipientEmail}</p>
-              <p style="margin: 4px 0;"><strong>Dispatched At:</strong> ${new Date().toUTCString()}</p>
-              <p style="margin: 4px 0;"><strong>Sender:</strong> AMZ Leads &lt;onboarding@resend.dev&gt;</p>
-            </div>
-            <p style="font-size: 13px; color: #64748b;">
-              All future leads received through your website audit forms will be sent to this email address.
-            </p>
-          </div>
-        `,
-      }),
-    });
-
-    const resData = await readJson(directResponse);
-    if (!directResponse.ok) {
-      const errorMsg = errorMessage(
-        resData,
-        `Resend API error (${directResponse.status})`
-      );
-      throw new Error(errorMsg);
-    }
-
-    return {
-      success: true,
-      message: "Test email delivered successfully via Resend!",
-    };
-  } catch (directErr: any) {
-    console.error("Direct Resend error:", directErr);
-    throw new Error(directErr.message || "Failed to deliver test email via Resend API");
-  }
+  return adminCall<{ success: boolean; message: string }>("settings.test_email", {
+    to: recipientEmail,
+    resend_api_key: resendApiKey?.trim() || undefined,
+  });
 }
 
 export function useSiteSettings() {

@@ -1,4 +1,4 @@
-import { getNeonSql } from '@/services/neonClient';
+import { adminCall, publicCall } from '@/services/apiClient';
 
 export type VisitorLogEnvironment = 'frontend' | 'backend' | 'localhost';
 
@@ -20,14 +20,9 @@ export interface VisitorLog {
 }
 
 // Get client IP address
+// The server records the visitor's IP from the request, so no third-party IP lookup is needed.
 async function getClientIP(): Promise<string> {
-  try {
-    const response = await fetch('https://api.ipify.org?format=json');
-    const data = await response.json();
-    return data.ip;
-  } catch {
-    return 'unknown';
-  }
+  return 'recorded by server';
 }
 
 /**
@@ -91,23 +86,10 @@ export async function trackVisitor() {
       ? '[Localhost Client Dev]' 
       : '[Direct Frontend Visitor]';
 
-    // Direct Neon Database insert
     try {
-      const sql = getNeonSql();
-      await sql`
-        INSERT INTO public.visitor_logs (
-          ip_address, user_agent, page_url, referrer, created_at
-        )
-        VALUES (
-          ${ip},
-          ${userAgent},
-          ${pageUrl},
-          ${enrichedReferrer},
-          NOW()
-        );
-      `;
-    } catch (neonErr) {
-      console.warn('Neon direct visitor log insert notice:', neonErr);
+      await publicCall('visitor.track', { page_url: pageUrl, referrer: enrichedReferrer });
+    } catch (err) {
+      console.warn('Visitor log not saved:', err);
     }
 
     // Also persist local record for instant offline/dev viewing
@@ -137,21 +119,9 @@ export async function trackBackendApiCall(endpoint: string, metadata?: Record<st
     const finalReferrer = `${referrer} ${metadata ? JSON.stringify(metadata) : ''}`.trim();
 
     try {
-      const sql = getNeonSql();
-      await sql`
-        INSERT INTO public.visitor_logs (
-          ip_address, user_agent, page_url, referrer, created_at
-        )
-        VALUES (
-          ${isLocal ? '127.0.0.1' : 'Server'},
-          ${userAgent},
-          ${pageUrl},
-          ${finalReferrer},
-          NOW()
-        );
-      `;
-    } catch (neonErr) {
-      console.warn('Neon direct backend log insert notice:', neonErr);
+      await adminCall('visitor_logs.backend_test', { user_agent: userAgent, page_url: pageUrl, referrer: finalReferrer });
+    } catch (err) {
+      console.warn('Backend test log not saved:', err);
     }
 
     saveLocalVisitorLog({
@@ -172,13 +142,7 @@ export async function trackBackendApiCall(endpoint: string, metadata?: Record<st
  */
 export async function getVisitorLogs(limit: number = 200): Promise<VisitorLog[]> {
   try {
-    const sql = getNeonSql();
-    const rows = await sql`
-      SELECT id, ip_address, user_agent, page_url, referrer, country, city, region, created_at
-      FROM public.visitor_logs
-      ORDER BY created_at DESC
-      LIMIT ${limit};
-    `;
+    const { logs: rows } = await adminCall<{ logs: any[] }>('visitor_logs.list', { limit });
 
     const neonLogs: VisitorLog[] = (rows || []).map((raw: any) => {
       const env = classifyVisitorEnvironment(raw);
