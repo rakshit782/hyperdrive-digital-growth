@@ -51,7 +51,8 @@ const Dashboard = () => {
         return;
       }
 
-      loadAllData();
+      // Always load fresh on open so leads submitted since the last visit show up immediately
+      loadAllData(true);
     }
   }, [user, authLoading, navigate]);
 
