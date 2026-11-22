@@ -9,13 +9,18 @@ export async function saveLead(db: Db, b: Record<string, any>, env: { resendKey?
   if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { status: 400, body: { error: "Name and a valid email are required." } };
   }
-  if (b.company_website) return { status: 200, body: { success: true, leadId: null } }; // honeypot
+  // Hidden spam-trap field. Browser autofill and password managers sometimes fill it for real people,
+  // so the lead is still saved, marked for review, rather than silently discarded.
+  const trap = String(b.honeypot ?? b.company_website ?? "").trim();
+  const flagged = trap.length > 0;
 
   const leadNumber = `LEAD-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${String(Math.floor(Math.random() * 10000)).padStart(4, "0")}`;
   const lead = {
     name, email, phone: s(b.phone, 60), company: s(b.company, 200), brand_name: s(b.brandName ?? b.company, 200),
     website_url: s(b.website, 500), amazon_store_url: s(b.amazonStoreUrl, 500), walmart_store_url: s(b.walmartStoreUrl, 500),
-    source: s(b.source, 80) || "website", notes: s(b.notes), audit_type: s(b.auditType, 120),
+    source: s(b.source, 80) || "website",
+    notes: flagged ? `[Possible spam: hidden spam-trap field was filled (could be browser autofill). Review before contacting.]${b.notes ? " " + s(b.notes) : ""}` : s(b.notes),
+    audit_type: s(b.auditType, 120),
     current_spend: s(b.currentSpend ?? b.monthlyAdSpend, 60), goals: s(b.goals ?? b.businessGoals),
   };
   const rows = await db.q<{ id: string; lead_number: string }>(
@@ -49,11 +54,12 @@ export async function saveLead(db: Db, b: Record<string, any>, env: { resendKey?
       ] as [string, string | null][]).filter(([, v]) => v).map(([k, v]) => `<p><strong>${k}:</strong> ${esc(v)}</p>`).join("");
       const subject = String(st.email_subject_template || "New Lead: {name} ({lead_number})")
         .replaceAll("{name}", lead.name).replaceAll("{lead_number}", saved.lead_number).replaceAll("{company}", lead.company || "N/A");
+      const subjectOut = flagged ? `[Possible spam] ${subject}` : subject;
       await (env.fetch || fetch)("https://api.resend.com/emails", {
         method: "POST",
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          from: "AMZ Leads <onboarding@resend.dev>", to, subject,
+          from: "AMZ Leads <onboarding@resend.dev>", to, subject: subjectOut,
           html: `<div style="font-family:sans-serif;max-width:600px"><h2>New lead: ${esc(saved.lead_number)}</h2><p style="color:#64748b">Source: ${esc(lead.source)}</p>${rowsHtml}</div>`,
         }),
       });
@@ -62,5 +68,12 @@ export async function saveLead(db: Db, b: Record<string, any>, env: { resendKey?
     console.warn("Lead email alert not sent:", String(e));
   }
 
-  return { status: 200, body: { success: true, leadId: saved.id, leadNumber: saved.lead_number } };
+  if (flagged) {
+    try {
+      await db.q(`INSERT INTO public.security_logs (form_type, honeypot_triggered, csrf_valid, submission_data, created_at)
+                  VALUES ($1, true, true, $2::jsonb, now())`, [lead.source, JSON.stringify({ lead_id: saved.id, trap_value_length: trap.length })]);
+    } catch { /* logging is best-effort */ }
+  }
+
+  return { status: 200, body: { success: true, leadId: saved.id, leadNumber: saved.lead_number, flagged } };
 }

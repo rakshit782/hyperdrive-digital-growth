@@ -44,10 +44,8 @@ export const useLeadSubmission = () => {
     
     try {
       // 1. Honeypot check (Bots fill hidden fields)
-      if (data.honeypot && data.honeypot.trim() !== '') {
-        console.warn('Bot detected via honeypot trap, suppressing lead.');
-        return { success: true, leadId: 'filtered' };
-      }
+      // Hidden spam-trap value is sent to the server, which saves the lead marked "possible spam"
+      // (autofill sometimes fills the hidden field for real people, so leads are never silently dropped).
 
       // 2. Validate required fields
       if (!data.email || !data.name) {
@@ -111,6 +109,7 @@ export const useLeadSubmission = () => {
           currentSpend: leadData.monthlyAdSpend,
           goals: leadData.businessGoals,
           auditType: (data as any).auditType || data.primaryPlatform || null,
+          honeypot: data.honeypot || '',
         }),
       });
       const result = await res.json().catch(() => ({}));
@@ -118,8 +117,9 @@ export const useLeadSubmission = () => {
         throw new Error(result?.error || 'Failed to submit lead');
       }
 
-      // Conversion tracking: one Meta Lead (pixel + server copy), GA4 generate_lead and a GTM dataLayer event
-      try {
+      // Conversion tracking: one Meta Lead (pixel + server copy), GA4 generate_lead and a GTM dataLayer event.
+      // Skipped for leads flagged as possible spam so they don't count as ad conversions.
+      if (!result.flagged) try {
         trackMetaLead({
           leadId: result.leadId, email: leadData.email, phone: leadData.phone || undefined, name: leadData.name,
           contentName: leadData.source || 'Website Lead', contentCategory: data.primaryPlatform || 'General',
