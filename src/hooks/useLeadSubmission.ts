@@ -3,6 +3,10 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { getNeonSql } from '@/services/neonClient';
 import { decryptSecret } from '@/services/cryptoVault';
+import { trackMetaLead } from '@/utils/metaPixel';
+
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || 'https://hznbshxhmhtenxcuffhx.supabase.co').replace(/\/$/, '');
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 
 export interface LeadSubmissionData {
   name: string;
@@ -194,15 +198,11 @@ export const useLeadSubmission = () => {
           // Fire client conversion tracking (Meta Pixel, GA4 & GTM dataLayer)
           try {
             if (typeof window !== 'undefined') {
-              // 1. Meta Pixel standard Lead event
-              if ((window as any).fbq) {
-                (window as any).fbq('track', 'Lead', {
-                  content_name: leadData.source || 'Website Lead',
-                  content_category: leadData.auditType || 'General',
-                  currency: 'USD',
-                  value: 100,
-                }, { eventID: `lead-${leadId}` });
-              }
+              // 1. Meta Lead: pixel with advanced matching + server-side copy (same event ID)
+              trackMetaLead({
+                leadId, email: leadData.email, phone: leadData.phone, name: leadData.name,
+                contentName: leadData.source || 'Website Lead', contentCategory: leadData.auditType || 'General',
+              });
               // 2. Google Analytics 4 standard generate_lead event
               if ((window as any).gtag) {
                 (window as any).gtag('event', 'generate_lead', {
@@ -236,12 +236,15 @@ export const useLeadSubmission = () => {
       }
 
       // 2. Submit to Neon database via edge function fallback
-      const { data: result, error } = await supabase.functions.invoke('neon-lead-submission', {
-        body: leadData
+      const fallbackRes = await fetch(`${SUPABASE_URL}/functions/v1/neon-lead-submission`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(SUPABASE_KEY ? { apikey: SUPABASE_KEY } : {}) },
+        body: JSON.stringify({ ...leadData, currentSpend: leadData.monthlyAdSpend, goals: leadData.businessGoals }),
       });
+      const result = await fallbackRes.json().catch(() => ({}));
 
-      if (error) {
-        throw new Error(error.message || 'Failed to submit lead');
+      if (!fallbackRes.ok) {
+        throw new Error(result?.error || 'Failed to submit lead');
       }
 
       if (!result?.success) {
@@ -253,14 +256,10 @@ export const useLeadSubmission = () => {
       // Fire client conversion tracking (Meta Pixel & GA4)
       try {
         if (typeof window !== 'undefined') {
-          if ((window as any).fbq) {
-            (window as any).fbq('track', 'Lead', {
-              content_name: leadData.source || 'Website Lead',
-              content_category: leadData.auditType || 'General',
-              currency: 'USD',
-              value: 100,
-            }, { eventID: `lead-${result.leadId}` });
-          }
+          trackMetaLead({
+            leadId: result.leadId, email: leadData.email, phone: leadData.phone, name: leadData.name,
+            contentName: leadData.source || 'Website Lead', contentCategory: leadData.auditType || 'General',
+          });
           if ((window as any).gtag) {
             (window as any).gtag('event', 'generate_lead', {
               event_category: 'Lead Generation',

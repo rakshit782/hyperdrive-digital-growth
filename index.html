@@ -25,7 +25,15 @@
       t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '667154722169969');
+      var amzVid = '';
+      try {
+        amzVid = localStorage.getItem('amz_vid') || '';
+        if (!amzVid) {
+          amzVid = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2);
+          localStorage.setItem('amz_vid', amzVid);
+        }
+      } catch (e) { /* storage blocked: send without external_id */ }
+      fbq('init', '667154722169969', amzVid ? { external_id: amzVid } : {});
       window.__amzPixelIds = ['667154722169969'];
       fbq('track', 'PageView');
     </script>
