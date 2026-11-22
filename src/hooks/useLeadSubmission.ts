@@ -201,7 +201,7 @@ export const useLeadSubmission = () => {
                   content_category: leadData.auditType || 'General',
                   currency: 'USD',
                   value: 100,
-                });
+                }, { eventID: `lead-${leadId}` });
               }
               // 2. Google Analytics 4 standard generate_lead event
               if ((window as any).gtag) {
@@ -259,7 +259,7 @@ export const useLeadSubmission = () => {
               content_category: leadData.auditType || 'General',
               currency: 'USD',
               value: 100,
-            });
+            }, { eventID: `lead-${result.leadId}` });
           }
           if ((window as any).gtag) {
             (window as any).gtag('event', 'generate_lead', {

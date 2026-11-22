@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { trackingManager, TrackerSetting } from '@/services/trackingManager';
 
@@ -61,7 +61,12 @@ const GlobalTracking = () => {
     }
 
     // 3. Meta / Facebook Pixel
+    // index.html already loads the base code and inits the site pixel (and records it in
+    // window.__amzPixelIds). Only load/init here what isn't already running, so each pixel
+    // is initialised once and the first PageView isn't counted twice.
     if (pixel?.enabled && pixel.trackingId) {
+      const pixelId = String(pixel.trackingId).trim();
+      const inited = (window.__amzPixelIds = window.__amzPixelIds || []);
       if (!window.fbq) {
         const metaScript = document.createElement('script');
         metaScript.id = 'amz-pixel-script';
@@ -74,16 +79,13 @@ const GlobalTracking = () => {
           t.src=v;s=b.getElementsByTagName(e)[0];
           s.parentNode.insertBefore(t,s)}(window, document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '${pixel.trackingId}');
-          fbq('track', 'PageView');
         `;
         document.head.appendChild(metaScript);
-      } else {
-        try {
-          window.fbq('init', pixel.trackingId);
-        } catch {
-          // ignore
-        }
+      }
+      if (/^\d{10,20}$/.test(pixelId) && !inited.includes(pixelId) && window.fbq) {
+        window.fbq('init', pixelId);
+        window.fbq('trackSingle', pixelId, 'PageView');
+        inited.push(pixelId);
       }
     }
 
@@ -124,8 +126,12 @@ const GlobalTracking = () => {
     }
   }, [trackers]);
 
-  // Track page views on route changes
+  // Track page views on route changes (the first page view is sent by the base code on load)
+  const lastPath = useRef<string | null>(null);
   useEffect(() => {
+    const isFirstView = lastPath.current === null;
+    const pathChanged = lastPath.current !== location.pathname;
+    lastPath.current = location.pathname;
     const ga4 = trackers.find((t) => t.id === 'ga4');
     const pixel = trackers.find((t) => t.id === 'meta-pixel');
 
@@ -138,8 +144,8 @@ const GlobalTracking = () => {
       });
     }
 
-    // Meta Pixel page view
-    if (pixel?.enabled && window.fbq) {
+    // Meta Pixel page view: only on client-side navigation, not on first load or tracker-settings changes
+    if (pixel?.enabled && window.fbq && !isFirstView && pathChanged) {
       window.fbq('track', 'PageView');
     }
   }, [location.pathname, trackers]);
@@ -155,6 +161,7 @@ declare global {
     dataLayer: any[];
     gtag: (...args: any[]) => void;
     fbq: (...args: any[]) => void;
+    __amzPixelIds?: string[];
     _fbq: any;
     clarity: (...args: any[]) => void;
     hj: (...args: any[]) => void;

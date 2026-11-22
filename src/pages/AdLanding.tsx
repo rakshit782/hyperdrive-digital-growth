@@ -77,23 +77,7 @@ export default function AdLanding() {
 
   const onSubmit = async (data: AdLeadFormValues) => {
     // Fire tracking conversions
-    if (typeof window !== 'undefined') {
-      if (window.gtag) {
-        window.gtag('event', 'generate_lead', {
-          event_category: 'Ad Campaign Lead',
-          event_label: data.primaryPlatform,
-          value: data.monthlyAdSpend,
-        });
-      }
-      if (window.fbq) {
-        window.fbq('track', 'Lead', {
-          content_name: 'Ad Landing Form Submission',
-          content_category: data.primaryPlatform,
-          value: 100,
-          currency: 'USD',
-        });
-      }
-    }
+    // Conversion events (Meta Lead, GA4 generate_lead) fire once in useLeadSubmission after the lead is saved.
 
     const result = await submitLead({
       name: data.name,

@@ -61,25 +61,7 @@ const Contact = () => {
   });
 
   const onSubmit = async (data: LeadFormValues) => {
-    // Tracking conversions
-    if (typeof window !== 'undefined') {
-      if ((window as any).gtag) {
-        (window as any).gtag('event', 'generate_lead', {
-          event_category: 'Contact Lead Generation',
-          event_label: data.primaryPlatform,
-          value: data.monthlyAdSpend,
-        });
-      }
-      if ((window as any).fbq) {
-        (window as any).fbq('track', 'Lead', {
-          content_name: 'Contact Page Lead Submission',
-          content_category: data.primaryPlatform,
-          value: 100,
-          currency: 'USD',
-        });
-      }
-    }
-
+    // Conversion events (Meta Lead, GA4 generate_lead) fire once in useLeadSubmission after the lead is saved.
     const result = await submitLead({
       name: data.name,
       email: data.email,
