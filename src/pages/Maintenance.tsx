@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import SEOHead from "@/components/SEOHead";
+import { publicCall } from "@/services/apiClient";
 
 // SHA-256 hash helper matching Neon users password_hash format
 async function sha256(str: string): Promise<string> {
@@ -28,6 +29,7 @@ export default function Maintenance() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [notifyError, setNotifyError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Login modal states
@@ -41,10 +43,17 @@ export default function Maintenance() {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    setNotifyError("");
+    try {
+      // Saved to newsletter_emails (dashboard → Newsletter) through /api/public.
+      await publicCall("newsletter.subscribe", { email: email.trim(), source: "maintenance-notify" });
       setSubmitted(true);
-    }, 600);
+    } catch (err) {
+      console.warn("Notify-me sign-up not saved:", err);
+      setNotifyError("We couldn't save your email. Please try again, or write to info@amzadscout.com.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -203,6 +212,7 @@ export default function Maintenance() {
                       )}
                     </Button>
                   </form>
+                  {notifyError && <p role="alert" className="mt-2 text-xs text-red-400">{notifyError}</p>}
                 </div>
               )}
             </div>

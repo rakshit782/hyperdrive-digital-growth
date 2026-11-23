@@ -24,6 +24,7 @@ import {
 import { useBlogPosts, BlogPost } from "@/hooks/useBlogPosts";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { publicCall } from "@/services/apiClient";
 
 const Blog = () => {
   const { posts, loading, error } = useBlogPosts();
@@ -92,15 +93,26 @@ const Blog = () => {
     return images[index % images.length];
   };
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const [newsletterSaving, setNewsletterSaving] = useState(false);
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newsletterEmail || !newsletterEmail.includes("@")) {
+    if (!newsletterEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newsletterEmail.trim())) {
       toast.error("Please enter a valid email address");
       return;
     }
-    setNewsletterSubscribed(true);
-    toast.success("Thank you for subscribing to marketplace growth insights!");
-    setNewsletterEmail("");
+    setNewsletterSaving(true);
+    try {
+      // Saved to newsletter_emails (dashboard → Newsletter) through /api/public.
+      await publicCall("newsletter.subscribe", { email: newsletterEmail.trim(), source: "blog-newsletter" });
+      setNewsletterSubscribed(true);
+      toast.success("Thank you for subscribing to marketplace growth insights!");
+      setNewsletterEmail("");
+    } catch (err) {
+      console.warn("Newsletter sign-up not saved:", err);
+      toast.error("We couldn't save your email. Please try again in a moment.");
+    } finally {
+      setNewsletterSaving(false);
+    }
   };
 
   return (
@@ -433,9 +445,10 @@ const Blog = () => {
                       />
                       <Button 
                         type="submit"
+                        disabled={newsletterSaving}
                         className="bg-blue-600 hover:bg-blue-500 text-white font-bold h-12 px-6 rounded-xl shadow-lg shadow-blue-600/30 shrink-0"
                       >
-                        Subscribe Free
+                        {newsletterSaving ? "Subscribing…" : "Subscribe Free"}
                       </Button>
                     </form>
                   )}
