@@ -18,6 +18,7 @@ export default async function handler(_req: any, res: any) {
     neon_database_url_set: Boolean(process.env.NEON_DATABASE_URL),
     jwt_secret_set: Boolean(process.env.JWT_SECRET),
     meta_capi_token_set: Boolean(process.env.META_CAPI_TOKEN),
+    resend_from_set: Boolean(process.env.RESEND_FROM),
     deployment_commit: (process.env.VERCEL_GIT_COMMIT_SHA || "").slice(0, 7) || null,
   };
   try {

@@ -1,6 +1,6 @@
 // Save a website lead to Neon (public.leads) and send the email alert configured in site settings.
 import type { Db } from "./db.js";
-import { decryptSecret, escapeHtml as esc } from "./secrets.js";
+import { decryptSecret, escapeHtml as esc, sendResend } from "./secrets.js";
 
 const s = (v: unknown, n = 2000) => (v == null || v === "" ? null : String(v).trim().slice(0, n));
 
@@ -55,14 +55,12 @@ export async function saveLead(db: Db, b: Record<string, any>, env: { resendKey?
       const subject = String(st.email_subject_template || "New Lead: {name} ({lead_number})")
         .replaceAll("{name}", lead.name).replaceAll("{lead_number}", saved.lead_number).replaceAll("{company}", lead.company || "N/A");
       const subjectOut = flagged ? `[Possible spam] ${subject}` : subject;
-      await (env.fetch || fetch)("https://api.resend.com/emails", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          from: "AMZ Leads <onboarding@resend.dev>", to, subject: subjectOut,
-          html: `<div style="font-family:sans-serif;max-width:600px"><h2>New lead: ${esc(saved.lead_number)}</h2><p style="color:#64748b">Source: ${esc(lead.source)}</p>${rowsHtml}</div>`,
-        }),
-      });
+      // Throws with Resend's own message (e.g. unverified sender) so the failure shows in Vercel logs.
+      await sendResend(key, to, subjectOut,
+        `<div style="font-family:sans-serif;max-width:600px"><h2>New lead: ${esc(saved.lead_number)}</h2><p style="color:#64748b">Source: ${esc(lead.source)}</p>${rowsHtml}</div>`,
+        env.fetch || fetch);
+    } else {
+      console.warn("Lead email alert skipped:", !st?.email_notifications_enabled ? "notifications are off in Settings" : !key ? "no Resend API key saved" : "no notification email set");
     }
   } catch (e) {
     console.warn("Lead email alert not sent:", String(e));
