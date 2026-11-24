@@ -29,8 +29,11 @@ export interface LeadSubmissionData {
   };
 }
 
-/** Only leads from the contact form (/contact) count as a Meta "Lead". Must match META_LEAD_SOURCES in api/_lib/meta-capi-core.ts. */
+/** Leads that count as a Meta "Lead": the contact form (/contact) and the ad landing form (/ad-landing,
+ *  source "<utm_source>-<utm_medium>-landing"). Must match isMetaLeadSource in api/_lib/meta-capi-core.ts. */
 export const META_LEAD_SOURCE = 'contact-page-lead';
+export const isMetaLeadSource = (source?: string | null) =>
+  source === META_LEAD_SOURCE || /-landing$/.test(source || '');
 
 const RATE_LIMIT_KEY = 'amz_lead_submit_throttle';
 const DISPOSABLE_DOMAINS = new Set([
@@ -121,9 +124,9 @@ export const useLeadSubmission = () => {
       }
 
       // Conversion tracking: GA4 generate_lead and a GTM dataLayer event for every saved lead, plus one Meta Lead
-      // (pixel + server copy) only for the contact form. Skipped for leads flagged as possible spam.
+      // (pixel + server copy) for the contact and ad landing forms. Skipped for leads flagged as possible spam.
       if (!result.flagged) try {
-        if (leadData.source === META_LEAD_SOURCE) trackMetaLead({
+        if (isMetaLeadSource(leadData.source)) trackMetaLead({
           leadId: result.leadId, email: leadData.email, phone: leadData.phone || undefined, name: leadData.name,
           contentName: leadData.source || 'Website Lead', contentCategory: data.primaryPlatform || 'General',
         });

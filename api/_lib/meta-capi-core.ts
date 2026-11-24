@@ -6,8 +6,8 @@ import { createHash } from "node:crypto";
 import type { Db } from "./db.js";
 
 const GRAPH_VERSION = "v21.0";
-/** Only contact-form leads are sent to Meta as a Lead (same rule as the browser, src/hooks/useLeadSubmission.ts). */
-const META_LEAD_SOURCES = ["contact-page-lead"];
+/** Contact-form and ad-landing leads are sent to Meta as a Lead (same rule as isMetaLeadSource in src/hooks/useLeadSubmission.ts). */
+const META_LEAD_SQL = `(source = 'contact-page-lead' OR source LIKE '%-landing')`;
 const sha256 = (v: string) => createHash("sha256").update(v).digest("hex");
 const norm = (v: unknown) => String(v ?? "").trim().toLowerCase();
 const clip = (v: unknown, n = 500) => (typeof v === "string" && v ? v.slice(0, n) : undefined);
@@ -25,10 +25,10 @@ export async function sendLeadToMeta(
   if (!/^[0-9a-f-]{36}$/i.test(leadId)) return { status: 400, body: { error: "Invalid lead_id." } };
 
   const rows = await db.q<{ email: string | null; phone: string | null; name: string | null }>(
-    `SELECT email, phone, name FROM leads WHERE id = $1 AND created_at > now() - interval '60 minutes' AND source = ANY($2::text[])`,
-    [leadId, META_LEAD_SOURCES]);
+    `SELECT email, phone, name FROM leads WHERE id = $1 AND created_at > now() - interval '60 minutes' AND ${META_LEAD_SQL}`,
+    [leadId]);
   const lead = rows[0];
-  if (!lead) return { status: 404, body: { error: "Lead not found, too old, or not from the contact form." } };
+  if (!lead) return { status: 404, body: { error: "Lead not found, too old, or not from the contact or ad landing form." } };
 
   const [first, ...rest] = norm(lead.name).split(/\s+/).filter(Boolean);
   const phone = String(lead.phone ?? "").replace(/\D/g, "");
