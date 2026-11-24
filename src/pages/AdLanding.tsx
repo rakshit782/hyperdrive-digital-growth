@@ -77,7 +77,7 @@ export default function AdLanding() {
 
   const onSubmit = async (data: AdLeadFormValues) => {
     // Fire tracking conversions
-    // Conversion events (Meta Lead, GA4 generate_lead) fire once in useLeadSubmission after the lead is saved.
+    // GA4 generate_lead fires in useLeadSubmission after the lead is saved. No Meta Lead here: Meta counts contact-form leads only.
 
     const result = await submitLead({
       name: data.name,

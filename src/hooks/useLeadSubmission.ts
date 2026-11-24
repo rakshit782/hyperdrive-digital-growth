@@ -29,6 +29,9 @@ export interface LeadSubmissionData {
   };
 }
 
+/** Only leads from the contact form (/contact) count as a Meta "Lead". Must match META_LEAD_SOURCES in api/_lib/meta-capi-core.ts. */
+export const META_LEAD_SOURCE = 'contact-page-lead';
+
 const RATE_LIMIT_KEY = 'amz_lead_submit_throttle';
 const DISPOSABLE_DOMAINS = new Set([
   'mailinator.com', 'tempmail.com', 'guerrillamail.com', '10minutemail.com',
@@ -117,10 +120,10 @@ export const useLeadSubmission = () => {
         throw new Error(result?.error || 'Failed to submit lead');
       }
 
-      // Conversion tracking: one Meta Lead (pixel + server copy), GA4 generate_lead and a GTM dataLayer event.
-      // Skipped for leads flagged as possible spam so they don't count as ad conversions.
+      // Conversion tracking: GA4 generate_lead and a GTM dataLayer event for every saved lead, plus one Meta Lead
+      // (pixel + server copy) only for the contact form. Skipped for leads flagged as possible spam.
       if (!result.flagged) try {
-        trackMetaLead({
+        if (leadData.source === META_LEAD_SOURCE) trackMetaLead({
           leadId: result.leadId, email: leadData.email, phone: leadData.phone || undefined, name: leadData.name,
           contentName: leadData.source || 'Website Lead', contentCategory: data.primaryPlatform || 'General',
         });

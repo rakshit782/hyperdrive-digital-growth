@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useLeadSubmission } from '@/hooks/useLeadSubmission';
+import { useLeadSubmission, META_LEAD_SOURCE } from '@/hooks/useLeadSubmission';
 import { toast } from 'sonner';
 import { 
   Loader2, 
@@ -72,7 +72,7 @@ const Contact = () => {
       monthlyAdSpend: data.monthlyAdSpend,
       primaryPlatform: data.primaryPlatform,
       notes: data.message ? `[CONTACT-PAGE / ${data.primaryPlatform.toUpperCase()}] ${data.message}` : `[CONTACT-PAGE / ${data.primaryPlatform.toUpperCase()}]`,
-      source: 'contact-page-lead',
+      source: META_LEAD_SOURCE,
       status: 'new',
       honeypot,
     });
