@@ -33,10 +33,10 @@ export const maskKey = (k: string | null) => (k && k.length > 8 ? `${k.slice(0, 
 export const escapeHtml = (v: unknown) =>
   String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
-/** Sender for all emails. Resend's test sender (onboarding@resend.dev) only delivers to the Resend
- *  account owner's address, so set RESEND_FROM in Vercel to an address on a domain verified in Resend,
- *  e.g. "AMZ Ad Scout Leads <leads@amzadscout.com>". */
-export const resendFrom = () => (process.env.RESEND_FROM || "").trim() || "AMZ Leads <onboarding@resend.dev>";
+/** Sender for all emails. amzadscout.com is verified in Resend, so any address on it can send to anyone.
+ *  RESEND_FROM in Vercel overrides it (must also be on a verified domain; onboarding@resend.dev only
+ *  delivers to the Resend account owner). */
+export const resendFrom = () => (process.env.RESEND_FROM || "").trim() || "AMZ Ad Scout Leads <leads@amzadscout.com>";
 
 export async function sendResend(key: string, to: string[], subject: string, html: string, doFetch: typeof fetch = fetch) {
   let res: Response;
