@@ -39,13 +39,19 @@ export const escapeHtml = (v: unknown) =>
 export const resendFrom = () => (process.env.RESEND_FROM || "").trim() || "AMZ Leads <onboarding@resend.dev>";
 
 export async function sendResend(key: string, to: string[], subject: string, html: string, doFetch: typeof fetch = fetch) {
-  const res = await doFetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: resendFrom(), to, subject, html }),
-  });
+  let res: Response;
+  try {
+    res = await doFetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: resendFrom(), to, subject, html }),
+    });
+  } catch (e) {
+    throw new Error(`Resend could not be reached: ${String(e)}`);
+  }
   if (!res.ok) {
     const d: any = await res.json().catch(() => ({}));
-    throw new Error(d.message || d.error || `Resend error (${res.status})`);
+    // Prefixed "Resend" so admin-core passes the real reason (unverified domain, test-sender limits, bad key) to the dashboard.
+    throw new Error(`Resend (${res.status}): ${d.message || d.error || "request failed"} [sender: ${resendFrom()}]`);
   }
 }
