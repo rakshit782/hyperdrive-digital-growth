@@ -1,25 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
-  Users, Mail, MessageSquare, Shield, TrendingUp, ArrowUpRight, 
+  Users, Mail, Shield, TrendingUp, ArrowUpRight, 
   Sparkles, CheckCircle2, Clock, Send, Eye, ShieldAlert,
   Database, RefreshCw
 } from "lucide-react";
 
 interface OverviewSectionProps {
   stats: {
-    contacts: number;
     leads: number;
     newsletters: number;
     securityLogs: number;
   };
   leads?: any[];
-  contacts?: any[];
   onNavigate?: (section: string) => void;
   onRefresh?: () => void;
 }
 
-export function OverviewSection({ stats, leads = [], contacts = [], onNavigate, onRefresh }: OverviewSectionProps) {
+export function OverviewSection({ stats, leads = [], onNavigate, onRefresh }: OverviewSectionProps) {
   const cards = [
     {
       title: "Total Captured Leads",
@@ -30,16 +28,6 @@ export function OverviewSection({ stats, leads = [], contacts = [], onNavigate, 
       color: "text-blue-600 dark:text-blue-400",
       bgColor: "bg-blue-500/10",
       target: "leads",
-    },
-    {
-      title: "Contact Inquiries",
-      value: stats.contacts,
-      subtitle: "General inquiries received",
-      icon: MessageSquare,
-      trend: "Direct database storage",
-      color: "text-emerald-600 dark:text-emerald-400",
-      bgColor: "bg-emerald-500/10",
-      target: "contacts",
     },
     {
       title: "Newsletter Subscribers",

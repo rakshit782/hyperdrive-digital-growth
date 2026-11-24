@@ -26,7 +26,6 @@ function tokens(userId: string, email: string, secret: string) {
   };
 }
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function authAction(db: Db, action: string, body: Record<string, any>, bearer: string, secret?: string): Promise<R> {
   if (!secret) return { status: 500, body: { error: "JWT_SECRET is not set in the Vercel project." } };
@@ -43,21 +42,8 @@ export async function authAction(db: Db, action: string, body: Record<string, an
     return { status: 200, body: { success: true, user: { id: user.id, email: user.email, full_name: user.full_name, role }, ...tokens(user.id, user.email, secret) } };
   }
 
-  if (action === "signup") {
-    const email = String(body.email ?? "").trim().toLowerCase();
-    const password = String(body.password ?? "");
-    if (!email || !password) return { status: 400, body: { error: "Email and password are required" } };
-    if (!EMAIL.test(email)) return { status: 400, body: { error: "Invalid email format" } };
-    if (password.length < 6) return { status: 400, body: { error: "Password must be at least 6 characters" } };
-    const exists = await db.q("SELECT id FROM users WHERE lower(email) = $1", [email]);
-    if (exists.length) return { status: 400, body: { error: "User with this email already exists" } };
-    const full = body.full_name ? String(body.full_name).slice(0, 200) : null;
-    const user = (await db.q<{ id: string; email: string; full_name: string | null; created_at: string }>(
-      `INSERT INTO users (email, password_hash, full_name, created_at, updated_at)
-       VALUES ($1, $2, $3, now(), now()) RETURNING id, email, full_name, created_at`, [email, hashPassword(password), full]))[0];
-    await db.q("INSERT INTO user_roles (user_id, role, created_at, updated_at) VALUES ($1, 'user', now(), now())", [user.id]);
-    return { status: 200, body: { success: true, user, ...tokens(user.id, user.email, secret) } };
-  }
+  // No self-signup: admins add dashboard users from Team & Users (api/crm users.create).
+  if (action === "signup") return { status: 403, body: { error: "Sign-up is closed. Ask an admin to add you." } };
 
   if (action === "verify") {
     if (!bearer) return { status: 401, body: { error: "Missing or invalid authorization header" } };

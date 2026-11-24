@@ -7,7 +7,6 @@ interface AuthContextType {
   session: AuthSession | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<{ error: string | null }>;
-  signup: (email: string, password: string, full_name?: string) => Promise<{ error: string | null }>;
   logout: () => void;
   refreshSession: () => Promise<void>;
 }
@@ -61,25 +60,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signup = async (email: string, password: string, full_name?: string) => {
-    try {
-      const { data, error } = await authService.signup(email, password, full_name);
-      
-      if (error) {
-        return { error };
-      }
-
-      if (data) {
-        setUser(data.user);
-        setSession(data);
-      }
-
-      return { error: null };
-    } catch (error: any) {
-      return { error: error.message };
-    }
-  };
-
   const logout = () => {
     authService.logout();
     setUser(null);
@@ -98,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, login, signup, logout, refreshSession }}>
+    <AuthContext.Provider value={{ user, session, loading, login, logout, refreshSession }}>
       {children}
     </AuthContext.Provider>
   );

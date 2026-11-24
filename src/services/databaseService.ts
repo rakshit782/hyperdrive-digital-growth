@@ -42,8 +42,6 @@ const CACHE_DURATION = 3 * 60 * 1000; // 3 minutes
 const CACHE_KEYS = {
   LEADS: 'dashboard_leads_cache',
   LEADS_TIMESTAMP: 'dashboard_leads_cache_timestamp',
-  CONTACTS: 'dashboard_contacts_cache',
-  CONTACTS_TIMESTAMP: 'dashboard_contacts_cache_timestamp',
   SECURITY_LOGS: 'dashboard_security_logs_cache',
   SECURITY_LOGS_TIMESTAMP: 'dashboard_security_logs_cache_timestamp',
 };
@@ -103,10 +101,6 @@ class DatabaseService {
     this.clearCache(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP);
   }
 
-  clearContactsCache(): void {
-    this.clearCache(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP);
-  }
-
   clearSecurityLogsCache(): void {
     this.clearCache(CACHE_KEYS.SECURITY_LOGS, CACHE_KEYS.SECURITY_LOGS_TIMESTAMP);
   }
@@ -135,36 +129,6 @@ class DatabaseService {
     }
   }
 
-  async insertLead(leadData: Omit<Lead, 'id' | 'created_at' | 'updated_at'>): Promise<Lead | null> {
-    try {
-      console.log('Inserting lead data:', leadData);
-      
-      const response = await fetch(`${this.apiUrl}/leads`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(leadData)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Failed to insert lead:', response.status, errorText);
-        throw new Error(`Failed to insert lead: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('Lead inserted successfully:', result);
-      
-      // Clear cache after insert
-      this.clearLeadsCache();
-      return result;
-    } catch (error) {
-      console.error('Database error - insert lead:', error);
-      return null;
-    }
-  }
-
   async getLeads(limit: number = 100, forceRefresh: boolean = false): Promise<Lead[]> {
     if (!forceRefresh) {
       const cached = this.getFromCache<Lead[]>(CACHE_KEYS.LEADS, CACHE_KEYS.LEADS_TIMESTAMP);
@@ -188,56 +152,6 @@ class DatabaseService {
     if (!ids || ids.length === 0) return true;
     await adminCall('leads.delete', { ids });
     this.clearLeadsCache();
-    return true;
-  }
-
-  async insertContactSubmission(contactData: {
-    name: string;
-    email: string;
-    phone: string | null;
-    company: string | null;
-    message: string | null;
-    form_type: string;
-  }): Promise<void> {
-    try {
-      const response = await fetch(`${this.apiUrl}/contact-submissions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(contactData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to insert contact submission');
-      }
-      
-      // Clear cache after insert
-      this.clearContactsCache();
-    } catch (error) {
-      console.error('Database error - contact submission:', error);
-      // Don't throw error to prevent form submission from failing
-    }
-  }
-
-  async getContactSubmissions(limit: number = 100, forceRefresh: boolean = false): Promise<any[]> {
-    if (!forceRefresh) {
-      const cached = this.getFromCache<any[]>(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP);
-      if (cached) return cached;
-    }
-    try {
-      const { contacts } = await adminCall<{ contacts: any[] }>('contacts.list', { limit });
-      this.setCache(CACHE_KEYS.CONTACTS, CACHE_KEYS.CONTACTS_TIMESTAMP, contacts);
-      return contacts;
-    } catch (err) {
-      console.warn('Contacts not loaded:', err);
-      return [];
-    }
-  }
-
-  async deleteContact(id: string): Promise<boolean> {
-    await adminCall('contacts.delete', { id });
-    this.clearContactsCache();
     return true;
   }
 

@@ -1,4 +1,4 @@
-// POST /api/auth/login | /api/auth/signup | /api/auth/refresh ; GET or POST /api/auth/verify (Authorization: Bearer <token>)
+// POST /api/auth/login | /api/auth/refresh ; GET or POST /api/auth/verify (Authorization: Bearer <token>)
 import { getDb, readBody, sendJson } from "../_lib/db.js";
 import { authAction } from "../_lib/auth-core.js";
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -93,10 +93,7 @@ const DashboardAuth = () => {
           
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{' '}
-              <Link to="/dashboard/signup" className="text-primary hover:underline">
-                Sign up
-              </Link>
+              No account? Ask an admin to add you under Team &amp; Users.
             </p>
           </div>
         </CardContent>

@@ -43,35 +43,6 @@ class AuthService {
     }
   }
 
-  async signup(email: string, password: string, full_name?: string) {
-    try {
-      const response = await fetch(`${AUTH_URL}/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, full_name }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Signup failed');
-      }
-
-      const session: AuthSession = {
-        user: data.user,
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-      };
-
-      this.saveSession(session);
-      return { data: session, error: null };
-    } catch (error: any) {
-      return { data: null, error: error.message };
-    }
-  }
-
   async login(email: string, password: string) {
     try {
       const response = await fetch(`${AUTH_URL}/login`, {

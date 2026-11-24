@@ -1,4 +1,4 @@
-// Admin-only dashboard data: leads, contacts, newsletter, logs, site settings, certificates, health check.
+// Admin-only dashboard data: leads, newsletter, logs, site settings, certificates, health check.
 // Every action requires an admin access token (x-admin-token).
 import { HttpError, requireAdmin, type Db } from "./db.js";
 import { getResendKey, getSettings, saveSettings } from "./settings-core.js";
@@ -46,14 +46,6 @@ const ACTIONS: Record<string, (c: Ctx) => Promise<unknown>> = {
         ${row("Website", lead.website_url)}${row("Audit type", lead.audit_type)}${row("Monthly spend", lead.current_spend)}
         ${row("Goals", lead.goals)}${row("Notes", lead.notes)}</table>
         <p style="font-size:12px;color:#94a3b8">Lead number: ${escapeHtml(lead.lead_number || lead.id)}</p></div>`, fetch);
-    return { success: true };
-  },
-
-  "contacts.list": async ({ db, body }) => ({ contacts: await db.q(
-    `SELECT id, name, email, phone, company, message, form_type, created_at, updated_at
-       FROM public.contact_submissions ORDER BY created_at DESC LIMIT $1`, [lim(body.limit)]) }),
-  "contacts.delete": async ({ db, body }) => {
-    await db.q("DELETE FROM public.contact_submissions WHERE id::text = $1", [String(body.id ?? "")]);
     return { success: true };
   },
 

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { OverviewSection } from '@/components/dashboard/OverviewSection';
-import { ContactsSection } from '@/components/dashboard/ContactsSection';
 import { LeadsSection } from '@/components/dashboard/LeadsSection';
 import { NewsletterSection } from '@/components/dashboard/NewsletterSection';
 import { SecuritySection } from '@/components/dashboard/SecuritySection';
@@ -31,7 +30,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, logout } = useAuth();
   const [activeSection, setActiveSection] = useState('overview');
-  const [contacts, setContacts] = useState<any[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
   const [newsletters, setNewsletters] = useState<any[]>([]);
   const [securityLogs, setSecurityLogs] = useState<any[]>([]);
@@ -59,23 +57,18 @@ const Dashboard = () => {
   const loadAllData = async (forceRefresh: boolean = false) => {
     setLoading(true);
     try {
-      const [contactsData, leadsData, newslettersData, logsData, visitorLogsData] = await Promise.all([
-        databaseService.getContactSubmissions(100, forceRefresh).catch(() => []),
+      const [leadsData, newslettersData, logsData, visitorLogsData] = await Promise.all([
         databaseService.getLeads(100, forceRefresh).catch(() => []),
         databaseService.getNewsletters(100).catch(() => []),
         databaseService.getSecurityLogs(100, forceRefresh).catch(() => []),
         getVisitorLogs(100).catch(() => []),
       ]);
 
-      const safeContacts = Array.isArray(contactsData) ? contactsData : [];
       const safeLeads = Array.isArray(leadsData) ? leadsData : [];
       const safeNewsletters = Array.isArray(newslettersData) ? newslettersData : [];
       const safeLogs = Array.isArray(logsData) ? logsData : [];
       const safeVisitorLogs = Array.isArray(visitorLogsData) ? visitorLogsData : [];
 
-      setContacts(safeContacts.sort((a: any, b: any) => 
-        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
-      ));
       setLeads(safeLeads.sort((a: any, b: any) => 
         new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
       ));
@@ -97,17 +90,6 @@ const Dashboard = () => {
   };
 
   const handleRefresh = () => loadAllData(true);
-
-  const deleteContact = async (id: string) => {
-    try {
-      await databaseService.deleteContact(id);
-      setContacts((prev) => prev.filter((c) => c.id !== id));
-      toast.success('Contact submission deleted from database');
-    } catch (error) {
-      console.error('Failed to delete contact:', error);
-      toast.error('Failed to delete contact submission');
-    }
-  };
 
   const deleteLead = async (id: string) => {
     try {
@@ -148,7 +130,6 @@ const Dashboard = () => {
   };
 
   const stats = {
-    contacts: contacts.length,
     leads: leads.length,
     newsletters: newsletters.length,
     securityLogs: securityLogs.length,
@@ -187,7 +168,6 @@ const Dashboard = () => {
             <OverviewSection 
               stats={stats} 
               leads={leads}
-              contacts={contacts}
               onNavigate={setActiveSection}
               onRefresh={handleRefresh}
             />
@@ -205,14 +185,6 @@ const Dashboard = () => {
         return <ServicesSection />;
       case 'team':
         return <TeamSection />;
-      case 'contacts':
-        return (
-          <ContactsSection
-            contacts={contacts}
-            onDelete={deleteContact}
-            onRefresh={handleRefresh}
-          />
-        );
       case 'newsletter':
         return (
           <NewsletterSection

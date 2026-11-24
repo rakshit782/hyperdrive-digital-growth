@@ -44,7 +44,6 @@ export const publicRoutes: string[] = [
 export const clientOnlyRoutes = [
   '/dashboard',
   '/dashboard/login',
-  '/dashboard/signup',
   '/ad-landing',
   '/blog/:slug',
 ];

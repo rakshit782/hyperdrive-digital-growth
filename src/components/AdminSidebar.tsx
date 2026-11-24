@@ -1,5 +1,5 @@
 import { 
-  LayoutDashboard, Users, Mail, MessageSquare, Shield, Settings, LogOut, 
+  LayoutDashboard, Users, Mail, Shield, Settings, LogOut, 
   FileText, Code, Eye, Award, FileSpreadsheet, ChevronDown, Sliders, Star,
   ExternalLink, Sparkles, Database, Activity,
   Kanban, ListTodo, Building2, CreditCard, Briefcase, UserCog,
@@ -31,7 +31,6 @@ interface MenuItem {
 const mainNavItems: MenuItem[] = [
   { title: "Overview", icon: LayoutDashboard, section: "overview" },
   { title: "Leads", icon: Users, section: "leads", badge: "Live" },
-  { title: "Contacts", icon: MessageSquare, section: "contacts" },
   { title: "Newsletter", icon: Mail, section: "newsletter" },
 ];
 

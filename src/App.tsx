@@ -46,7 +46,6 @@ import VerifyCertificate from "./pages/VerifyCertificate";
 // Client-only routes dynamically code-split to keep public page loads lightweight
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const DashboardAuth = lazy(() => import("./pages/DashboardAuth"));
-const DashboardSignup = lazy(() => import("./pages/DashboardSignup"));
 const AdLanding = lazy(() => import("./pages/AdLanding"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 
@@ -131,14 +130,6 @@ export function AppContent() {
           element={
             <Suspense fallback={<ClientRouteFallback />}>
               <DashboardAuth />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/dashboard/signup"
-          element={
-            <Suspense fallback={<ClientRouteFallback />}>
-              <DashboardSignup />
             </Suspense>
           }
         />
