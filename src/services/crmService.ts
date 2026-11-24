@@ -131,5 +131,6 @@ export const crm = {
     create: (u: { email: string; password: string; full_name?: string; role: string }) => call<{ user: TeamUser }>("users.create", u),
     setRole: (id: string, role: string) => call("users.set_role", { id, role }),
     remove: (id: string) => call("users.delete", { id }),
+    setPassword: (id: string, password: string) => call("users.set_password", { id, password }),
   },
 };

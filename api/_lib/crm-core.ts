@@ -2,6 +2,7 @@
 // Runtime-agnostic: api/crm.ts runs it on Vercel against Neon; tests run it against a local Postgres.
 // New tables live in amz_crm; public.leads, public.users and public.user_roles are used in place.
 import { HttpError, requireAdmin, type Db } from "./db.js";
+import { hashPassword } from "./passwords.js";
 
 /** Minimal client shape used below, backed by Db.q. */
 type Client = {
@@ -193,13 +194,6 @@ async function updateRow(client: Client, table: string, id: string, data: Record
 async function deleteRow(client: Client, table: string, id: string) {
   const r = await client.queryObject(`DELETE FROM ${table} WHERE id = $1 RETURNING id`, [id]);
   if (r.rows.length === 0) throw new HttpError(404, "Record not found.");
-}
-
-// Must match neon-auth-signup / neon-auth-login so created users can sign in.
-async function hashPassword(password: string): Promise<string> {
-  const data = new TextEncoder().encode(password);
-  const buf = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // ---------- field definitions ----------
@@ -500,14 +494,16 @@ const actions: Record<string, Handler> = {
     if (password.length < 8) throw new HttpError(400, "Passwords need at least 8 characters.");
     const exists = await client.queryObject("SELECT 1 FROM users WHERE lower(email) = $1", [email]);
     if (exists.rows.length) throw new HttpError(409, "A user with that email already exists.");
+    // One statement, so the user and their role are saved together or not at all.
     const u = await client.queryObject<{ id: string }>(
-      `INSERT INTO users (email, password_hash, full_name, created_at, updated_at)
-       VALUES ($1, $2, $3, now(), now()) RETURNING id, email, full_name, created_at`,
-      [email, await hashPassword(password), str(body.full_name, 200) ?? null],
-    );
-    await client.queryObject(
-      "INSERT INTO user_roles (user_id, role, created_at, updated_at) VALUES ($1, $2, now(), now())",
-      [u.rows[0].id, role],
+      `WITH u AS (
+         INSERT INTO users (email, password_hash, full_name, created_at, updated_at)
+         VALUES ($1, $2, $3, now(), now()) RETURNING id, email, full_name, created_at
+       ), r AS (
+         INSERT INTO user_roles (user_id, role, created_at, updated_at) SELECT id, $4, now(), now() FROM u
+       )
+       SELECT * FROM u`,
+      [email, await hashPassword(password), str(body.full_name, 200) ?? null, role],
     );
     return { user: { ...u.rows[0], role } };
   },
@@ -521,15 +517,26 @@ const actions: Record<string, Handler> = {
     }
     return { success: true };
   },
+  "users.set_password": async ({ client, body }) => {
+    const id = requireId(body.id);
+    const password = String(body.password ?? "");
+    if (password.length < 8) throw new HttpError(400, "Passwords need at least 8 characters.");
+    const r = await client.queryObject("UPDATE users SET password_hash = $2, updated_at = now() WHERE id = $1 RETURNING id",
+      [id, await hashPassword(password)]);
+    if (r.rows.length === 0) throw new HttpError(404, "User not found.");
+    return { success: true };
+  },
   "users.delete": async ({ client, body, adminId }) => {
     const id = requireId(body.id);
     if (id === adminId) throw new HttpError(400, "You can't delete your own account.");
-    await client.queryObject("UPDATE amz_crm.tasks SET assignee_id = NULL WHERE assignee_id = $1", [id]);
-    await client.queryObject("UPDATE amz_crm.clients SET owner_id = NULL WHERE owner_id = $1", [id]);
-    await client.queryObject("UPDATE amz_crm.lead_meta SET owner_id = NULL WHERE owner_id = $1", [id]);
-    await client.queryObject("DELETE FROM user_roles WHERE user_id = $1", [id]);
+    // One statement, so a failed delete leaves the user, their role and their assignments untouched.
     try {
-      const r = await client.queryObject("DELETE FROM users WHERE id = $1 RETURNING id", [id]);
+      const r = await client.queryObject(
+        `WITH t AS (UPDATE amz_crm.tasks SET assignee_id = NULL WHERE assignee_id = $1),
+              c AS (UPDATE amz_crm.clients SET owner_id = NULL WHERE owner_id = $1),
+              m AS (UPDATE amz_crm.lead_meta SET owner_id = NULL WHERE owner_id = $1),
+              ur AS (DELETE FROM user_roles WHERE user_id = $1)
+         DELETE FROM users WHERE id = $1 RETURNING id`, [id]);
       if (r.rows.length === 0) throw new HttpError(404, "User not found.");
     } catch (e) {
       if (e instanceof HttpError) throw e;

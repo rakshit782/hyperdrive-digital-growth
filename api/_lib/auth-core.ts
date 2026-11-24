@@ -1,14 +1,12 @@
 // Dashboard sign-up / sign-in / token check / refresh. Port of the former Supabase functions
 // neon-auth-*: same password hashing, same HS256 tokens (JWT_SECRET) and the same response shapes.
-import { createHash, createHmac } from "node:crypto";
+import { createHmac } from "node:crypto";
 import { verifyJwt, type Db } from "./db.js";
+import { hashPassword, isLegacyHash, verifyPassword } from "./passwords.js";
 
 const ACCESS_TTL = 60 * 60;            // 1 hour
 const REFRESH_TTL = 60 * 60 * 24 * 30; // 30 days
 type R = { status: number; body: Record<string, unknown> };
-
-// Must match the stored password_hash format (unsalted SHA-256 hex) so existing accounts keep working.
-export const hashPassword = (password: string) => createHash("sha256").update(password).digest("hex");
 
 export function signJwt(payload: Record<string, unknown>, secret: string): string {
   const enc = (o: unknown) => Buffer.from(JSON.stringify(o)).toString("base64url");
@@ -37,7 +35,11 @@ export async function authAction(db: Db, action: string, body: Record<string, an
     const rows = await db.q<{ id: string; email: string; password_hash: string; full_name: string | null }>(
       "SELECT id, email, password_hash, full_name FROM users WHERE lower(email) = lower($1) LIMIT 1", [email]);
     const user = rows[0];
-    if (!user || user.password_hash !== hashPassword(password)) return { status: 401, body: { error: "Invalid credentials" } };
+    if (!user || !(await verifyPassword(password, user.password_hash))) return { status: 401, body: { error: "Invalid credentials" } };
+    // Upgrade old unsalted SHA-256 hashes to scrypt now that we have the plain password.
+    if (isLegacyHash(user.password_hash)) {
+      await db.q("UPDATE users SET password_hash = $2, updated_at = now() WHERE id = $1", [user.id, await hashPassword(password)]);
+    }
     const role = (await db.q<{ role: string }>("SELECT role FROM user_roles WHERE user_id = $1", [user.id]))[0]?.role || "user";
     return { status: 200, body: { success: true, user: { id: user.id, email: user.email, full_name: user.full_name, role }, ...tokens(user.id, user.email, secret) } };
   }
@@ -67,6 +69,10 @@ export async function authAction(db: Db, action: string, body: Record<string, an
     try {
       const p = await verifyJwt(rt, secret);
       if (p.type !== "refresh") return { status: 401, body: { error: "Invalid refresh token" } };
+      // A deleted user's refresh token must stop working.
+      if (!(await db.q("SELECT 1 FROM users WHERE id = $1", [String(p.sub ?? "")])).length) {
+        return { status: 401, body: { error: "Invalid or expired refresh token" } };
+      }
       const iat = Math.floor(Date.now() / 1000);
       return { status: 200, body: { success: true, accessToken: signJwt({ sub: p.sub, email: p.email, exp: iat + ACCESS_TTL, iat }, secret) } };
     } catch {

@@ -134,24 +134,8 @@ if (!Array.isArray(publicRoutes) || publicRoutes.length === 0) {
 }
 
 // Fetch live database settings so prerendered HTML matches database state (e.g. CoPilot login button visibility)
-let neonDbUrl = process.env.VITE_NEON_DATABASE_URL;
-if (!neonDbUrl) {
-  try {
-    const envContent = fs.readFileSync(path.join(ROOT, '.env'), 'utf8');
-    for (const line of envContent.split(/\r?\n/)) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('#')) continue;
-      const eq = trimmed.indexOf('=');
-      if (eq > 0 && trimmed.slice(0, eq).trim() === 'VITE_NEON_DATABASE_URL') {
-        neonDbUrl = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, '');
-        break;
-      }
-    }
-  } catch {
-    // ignore
-  }
-}
-
+// Server-only NEON_DATABASE_URL (set in Vercel). Never read from a committed .env file.
+const neonDbUrl = process.env.NEON_DATABASE_URL;
 if (neonDbUrl) {
   try {
     const { neon } = await import('@neondatabase/serverless');

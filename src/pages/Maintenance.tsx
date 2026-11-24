@@ -12,21 +12,12 @@ import {
 } from "@/components/ui/dialog";
 import SEOHead from "@/components/SEOHead";
 import { publicCall } from "@/services/apiClient";
-
-// SHA-256 hash helper matching Neon users password_hash format
-async function sha256(str: string): Promise<string> {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-// Neon encrypted hash for rakshit@amzadscout.com / Rakshit@@1234
-const NEON_AUTHORIZED_EMAIL = "rakshit@amzadscout.com";
-const NEON_AUTHORIZED_HASH = "6b54031250ed150b4e6bd9c3c5e3842289fccb82bcfed46fcb702f4b9d7272c6";
+import { useAuth } from "@/contexts/AuthContext";
+import { authService } from "@/services/authService";
 
 export default function Maintenance() {
   const navigate = useNavigate();
+  const { login, logout } = useAuth();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [notifyError, setNotifyError] = useState("");
@@ -62,27 +53,16 @@ export default function Maintenance() {
     setIsAuthenticating(true);
 
     try {
-      // Encrypt entered password with SHA-256 matching the Neon DB stored hash
-      const computedHash = await sha256(loginPassword);
-      const normalizedEmail = loginEmail.trim().toLowerCase();
-
-      if (
-        normalizedEmail === NEON_AUTHORIZED_EMAIL &&
-        computedHash === NEON_AUTHORIZED_HASH
-      ) {
-        // Store authenticated session token for bypass
-        localStorage.setItem(
-          "neon_auth_session",
-          JSON.stringify({
-            email: normalizedEmail,
-            role: "admin",
-            timestamp: Date.now(),
-          })
-        );
+      // Real dashboard sign-in (api/auth/login). Only admins may preview the site during maintenance.
+      const { error } = await login(loginEmail.trim(), loginPassword);
+      if (error) {
+        setLoginError("Invalid credentials. Access restricted.");
+      } else if (authService.getUser()?.role !== "admin") {
+        logout();
+        setLoginError("Only admins can preview the site during maintenance.");
+      } else {
         setIsLoginOpen(false);
         navigate("/home");
-      } else {
-        setLoginError("Invalid credentials. Access restricted.");
       }
     } catch {
       setLoginError("Authentication error. Please try again.");

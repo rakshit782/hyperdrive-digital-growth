@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { KeyRound, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,10 +49,42 @@ function AddUserDialog({ onClose, onSaved }: { onClose: () => void; onSaved: () 
   );
 }
 
+function SetPasswordDialog({ user, isMe, onClose }: { user: TeamUser; isMe: boolean; onClose: () => void }) {
+  const [pw, setPw] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [saving, setSaving] = useState(false);
+  const save = async () => {
+    if (pw.length < 8) { toast.error("Use at least 8 characters."); return; }
+    if (pw !== confirm) { toast.error("The two passwords don't match."); return; }
+    setSaving(true);
+    try { await crm.users.setPassword(user.id, pw); toast.success(isMe ? "Your password was changed" : `Password changed for ${user.full_name || user.email}`); onClose(); }
+    catch (e) { toast.error(errMsg(e)); } finally { setSaving(false); }
+  };
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{isMe ? "Change your password" : `Set password for ${user.full_name || user.email}`}</DialogTitle>
+          <DialogDescription>{isMe ? "Use this new password next time you sign in." : "Share the new password with them privately."}</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4">
+          <Field label="New password" htmlFor="pw-new" hint="At least 8 characters."><Input id="pw-new" type="password" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} autoFocus /></Field>
+          <Field label="Confirm new password" htmlFor="pw-confirm"><Input id="pw-confirm" type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} /></Field>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save password"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function TeamSection() {
   const { user } = useAuth();
   const users = useLoader(() => crm.users.list(), [] as TeamUser[]);
   const [adding, setAdding] = useState(false);
+  const [pwFor, setPwFor] = useState<TeamUser | null>(null);
 
   const setRole = async (u: TeamUser, role: string) => {
     const before = u.role;
@@ -80,7 +112,7 @@ export function TeamSection() {
           <div className="rounded-xl border border-border overflow-x-auto">
             <Table>
               <TableHeader><TableRow>
-                <TableHead>Name</TableHead><TableHead>Role</TableHead><TableHead className="text-right">Open tasks</TableHead><TableHead>Joined</TableHead><TableHead className="w-[60px]"><span className="sr-only">Actions</span></TableHead>
+                <TableHead>Name</TableHead><TableHead>Role</TableHead><TableHead className="text-right">Open tasks</TableHead><TableHead>Joined</TableHead><TableHead className="w-[96px]"><span className="sr-only">Actions</span></TableHead>
               </TableRow></TableHeader>
               <TableBody>
                 {users.data.map((u) => {
@@ -103,7 +135,12 @@ export function TeamSection() {
                       </TableCell>
                       <TableCell className="text-right tabular-nums">{u.open_tasks}</TableCell>
                       <TableCell className="whitespace-nowrap">{fmtDate(u.created_at)}</TableCell>
-                      <TableCell>{!me && <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => remove(u)} aria-label={`Remove ${u.email}`}><Trash2 className="h-3.5 w-3.5" /></Button>}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setPwFor(u)} aria-label={me ? "Change your password" : `Set password for ${u.email}`} title={me ? "Change your password" : "Set password"}><KeyRound className="h-3.5 w-3.5" /></Button>
+                          {!me && <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => remove(u)} aria-label={`Remove ${u.email}`}><Trash2 className="h-3.5 w-3.5" /></Button>}
+                        </div>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -111,6 +148,7 @@ export function TeamSection() {
             </Table>
           </div>
         )}
+      {pwFor && <SetPasswordDialog user={pwFor} isMe={pwFor.id === user?.id} onClose={() => setPwFor(null)} />}
       {adding && <AddUserDialog onClose={() => setAdding(false)} onSaved={users.reload} />}
     </div>
   );

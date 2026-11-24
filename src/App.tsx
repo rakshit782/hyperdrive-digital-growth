@@ -10,7 +10,6 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthContext";
 import { VisitorTracker } from "./components/VisitorTracker";
 import GlobalTracking from "./components/GlobalTracking";
-import Index from "./pages/Index";
 import Maintenance from "./pages/Maintenance";
 import HomeOrMaintenance from "./pages/HomeOrMaintenance";
 
@@ -93,7 +92,7 @@ export function AppContent() {
       <VisitorTracker />
       <Routes>
         <Route path="/" element={<HomeOrMaintenance />} />
-        <Route path="/home" element={<Index />} />
+        <Route path="/home" element={<HomeOrMaintenance />} />
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />

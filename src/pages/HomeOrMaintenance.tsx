@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import Index from "./Index";
 import Maintenance from "./Maintenance";
 import { fetchSiteSettings } from "@/hooks/useSiteSettings";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function HomeOrMaintenance() {
+  const { user } = useAuth();
   const [isMaintenance, setIsMaintenance] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     const local = localStorage.getItem("maintenance_mode");
@@ -36,7 +38,8 @@ export default function HomeOrMaintenance() {
     };
   }, []);
 
-  if (isMaintenance) {
+  // Signed-in admins can preview the live site while maintenance mode is on.
+  if (isMaintenance && user?.role !== "admin") {
     return <Maintenance />;
   }
 
